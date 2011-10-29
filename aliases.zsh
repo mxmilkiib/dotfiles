@@ -38,6 +38,10 @@ alias 'sn=sudo nano'
 # For running an app in the background without any stdout in console
 alias -g S='&> /dev/null &'
 
+# Shutdown, reboot
+alias 'sd=sudo shutdown -h now'
+alias 're=sudo reboot'
+
 # Some application shortcuts.
 alias g="grep -EiRn --color=tty"
 alias u="uzbl"
