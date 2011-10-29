@@ -63,9 +63,6 @@ alias 'colours=for code in {000..255}; do print -P -- "$code: %F{$code}Test%f"; 
 # List open ports
 alias 'ports=netstat -plnt'
 
-# Pronounciation
-say() { mplayer "http://translate.google.com/translate_tts?q=$1"; }
-
 # Mount with coloum output
 alias 'mounts=mount | column -t'
 
@@ -75,49 +72,16 @@ alias 'cons=lsof -i'
 # Search running processes
 alias 'ps?'='ps ax | grep '
 
-# Browse path web browser like
-function up() { pushd .. > /dev/null; }
-function down() { popd > /dev/null; }
-
-# Search in files
-function gcode() { grep --color=always -rnC3 -- "$@" . | less -R; }
-
-# Etymology
-function etym(){
-    for term in "$@"
-    do
-        url="etymonline.com/index.php?term=$term"
-        curl -s $url | grep "<dd " |
-                sed -e 's/<a[^>]*>\([^<]*\)<[^>]*>/:\1:/g' -e 's/<[^>]*>//g' |
-                fold -sw `[ $COLUMNS -lt 80 ] && echo $COLUMNS || echo 79 `
-        echo
-    done
-}
-
 # Bastard Oper From Hell excuse
 alias bofh='nc bofh.jeffballard.us 666 | tail -n 1'
 
 # Public IP address
 alias pip='wget http://checkip.dyndns.org/ -O - -o /dev/null | cut -d: -f 2 | cut -d\< -f 1'
 
-
-# Check if there is an existing tmux server
-#function ctmux(){
-#	CTMUXC="$(tmux ls 2>&1 >/dev/null)"
-#        if [[ $CTMUXC = "server not found: Connection refused" ]]; then
-#		tmux -2
-#	else
-#		tmux -2 attach
-#	fi	
-#	zsh
-#}
-
-# get_iplayer radio 
-function gr() { get_iplayer -g --modes=flashaacstd --pid=$1; }
-
 # Git
 alias 'ga=git add.'
 alias 'gc=git commit -m'
 alias 'gp=git push'
 
+# Get shit done - temp redirect certain sites to localhost
 alias 'gsd=sudo /home/milk/scripts/get-shit-done/get-shit-done'

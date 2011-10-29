@@ -51,3 +51,39 @@ esac
 # Autoload some useful utilities.
 autoload -Uz zmv
 autoload -Uz zargs
+
+# Pronounciation
+say() { mplayer "http://translate.google.com/translate_tts?q=$1"; }
+
+# Browse path web browser like
+function up() { pushd .. > /dev/null; }
+function down() { popd > /dev/null; }
+
+# Search in files
+function gcode() { grep --color=always -rnC3 -- "$@" . | less -R; }
+
+# Etymology
+function etym(){
+    for term in "$@"
+    do
+        url="etymonline.com/index.php?term=$term"
+        curl -s $url | grep "<dd " |
+                sed -e 's/<a[^>]*>\([^<]*\)<[^>]*>/:\1:/g' -e 's/<[^>]*>//g' |
+                fold -sw `[ $COLUMNS -lt 80 ] && echo $COLUMNS || echo 79 `
+        echo
+    done
+}
+
+# Check if there is an existing tmux server
+#function ctmux(){
+#	CTMUXC="$(tmux ls 2>&1 >/dev/null)"
+#        if [[ $CTMUXC = "server not found: Connection refused" ]]; then
+#		tmux -2
+#	else
+#		tmux -2 attach
+#	fi	
+#	zsh
+#}
+
+# get_iplayer radio 
+function gr() { get_iplayer -g --modes=flashaacstd --pid=$1; }

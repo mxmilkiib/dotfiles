@@ -29,7 +29,9 @@ zstyle ':completion:*:*:kill:*' menu yes select
 zstyle ':completion:*:kill:*'   force-list always
 
 # If you end up using a directory as argument, this will remove the trailing slash (usefull in ln)
-
-
 zstyle ':completion:*' squeeze-slashes true
 
+
+# Sudo completion
+zstyle ':completion:*:sudo:*' command-path /usr/local/sbin /usr/local/bin \
+			     /usr/sbin /usr/bin /sbin /bin /usr/X11R6/bin
