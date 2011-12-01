@@ -106,5 +106,5 @@ function aurge(){
 }
 
 function gitc(){
-  git commit -m \"$@\";
+  git commit -m "$*";
 }
