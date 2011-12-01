@@ -75,15 +75,36 @@ function etym(){
 }
 
 # Check if there is an existing tmux server
-#function ctmux(){
-#	CTMUXC="$(tmux ls 2>&1 >/dev/null)"
-#        if [[ $CTMUXC = "server not found: Connection refused" ]]; then
-#		tmux -2
-#	else
-#		tmux -2 attach
-#	fi	
-#	zsh
-#}
+function ctmux(){
+	CTMUXC="$(tmux ls 2>&1 >/dev/null)"
+        if [[ $CTMUXC = "server not found: Connection refused" ]]; then
+		tmux -2
+	else
+		tmux -2 attach
+	fi	
+	zsh
+}
 
 # get_iplayer radio 
 function gr() { get_iplayer -g --modes=flashaacstd --pid=$1; }
+
+pS() {
+	local CL='\\e['
+	local RS='\\e[0;0m'
+
+	echo -e "$(pacman -Ss "$@" | sed "
+		/^core/		s,.*,${CL}1;31m&${RS},
+		/^extra/	s,.*,${CL}0;32m&${RS},
+		/^community/	s,.*,${CL}1;35m&${RS},
+		/^[^[:space:]]/	s,.*,${CL}0;36m&${RS},
+	")"
+}
+
+
+function aurge(){
+  aurget -Sy "$@" --deps --noedit --discard;
+}
+
+function gitc(){
+  git commit -m \"$@\";
+}
