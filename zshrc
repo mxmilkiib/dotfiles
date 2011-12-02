@@ -1,5 +1,6 @@
 # .zshrc: Configuration for the Z-Shell.
 # P.C. Shyamshankar <sykora@lucentbeing.com>
+# Hacked by milkmiruku
 
 export TERM="xterm-256color"
 
@@ -21,6 +22,7 @@ source $Z/functions.zsh
 # Set up the Z line editor.
 #source $Z/zle.zsh
 
+# Key bindings
 source $Z/bindings.zsh
 
 # Set the prompt.
@@ -30,13 +32,15 @@ else
     source $Z/prompt.zsh
 fi
 
-# Set up some colors for directory listings.
-#if (( C == 256 )); then
-#    source $Z/ls_colors_256.zsh
-#fi
-
 # Initialize the completion system.
 source $Z/completion.zsh
 
 # Private aliases, etc.
 source $Z/private.zsh
+
+# Set up colours for ls
+if (( C == 256 )); then
+  eval `dircolors dircolors`
+fi
+
+

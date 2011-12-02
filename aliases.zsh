@@ -35,8 +35,11 @@ alias 'lt=tree -d'
 # For quick viewing of txt files
 alias L=less
 
-# Quick sudo editing of txt files
+# Quick sudo nano
 alias 'sn=sudo nano'
+
+# Quick sudo vim
+alias 'sv=sudo vim'
 
 # For running an app in the background without any stdout in console
 alias -g S='&> /dev/null &'
