@@ -2,7 +2,8 @@
 # P.C. Shyamshankar <sykora@lucentbeing.com>
 # Hacked by milkmiruku
 
-export TERM="xterm-256color"
+# export TERM="xterm-256color"
+export TERM="rxvt-unicode-256color"
 
 # Where everything is.
 Z=/etc/zsh
@@ -40,7 +41,7 @@ source $Z/private.zsh
 
 # Set up colours for ls
 if (( C == 256 )); then
-  eval `dircolors dircolors`
+  eval `dircolors $Z/dircolors`
 fi
 
 

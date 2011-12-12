@@ -38,6 +38,9 @@ alias L=less
 # Quick sudo nano
 alias 'sn=sudo nano'
 
+# Quick vim
+alias v=vim
+
 # Quick sudo vim
 alias 'sv=sudo vim'
 
@@ -110,8 +113,9 @@ alias 'gsd=sudo /home/milk/scripts/get-shit-done/get-shit-done.sh'
 # Setup SSHFS access to Aegir's home on thingsandstuff
 alias 'sshfsa=sshfs aegir@thingsandstuff.org:/var/aegir /var/aegir -o idmap=user'
 
-# Mount BFS network drive
-alias 'mounttera=sudo mount -t cifs //192.168.1.127/bfs_share /mnt/tera -o user=admin,password=admin'
-
-# Vi to Vim
+# Vim
 alias 'vi=vim'
+alias 'v=vim'
+
+# Nyancat
+alias 'nyancat=telnet miku.acm.uiuc.edu'
