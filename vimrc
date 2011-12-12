@@ -158,6 +158,16 @@ augroup resCur
   autocmd BufWinEnter * call ResCur()
 augroup END
 
+" Diff with saved file - :diffsaved, :diffoff
+
+function! s:DiffWithSaved()
+  let filetype=&ft
+  diffthis
+  vnew | r # | normal! 1Gdd
+  diffthis
+  exe "setlocal bt=nofile bh=wipe nobl noswf ro ft=" . filetype
+endfunction
+com! DiffSaved call s:DiffWithSaved()
 
 """ Nifty
 
@@ -166,7 +176,6 @@ augroup END
 autocmd InsertEnter * syn clear EOLWS | syn match EOLWS excludenl /\s\+\%#\@!$/
 autocmd InsertLeave * syn clear EOLWS | syn match EOLWS excludenl /\s\+$/
 highlight EOLWS ctermbg=red guibg=red
-
 
 """ Gvim
 
