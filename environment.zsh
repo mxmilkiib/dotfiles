@@ -21,14 +21,13 @@ C=$(tput colors)
 #export WORKON_HOME=~/.virtualenvs
 
 # Important applications.
-#export EDITOR=vim
+export EDITOR=vim
 
 # History Settings
 export SAVEHIST=50000
 export HISTSIZE=50000
 export HISTFILE=~/.zsh_history
 eval `dircolors -b`
-
 
 # Zsh Reporting
 export REPORTTIME=10
