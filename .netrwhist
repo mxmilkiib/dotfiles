@@ -1,8 +1,0 @@
-let g:netrw_dirhistmax  =10
-let g:netrw_dirhist_cnt =6
-let g:netrw_dirhist_1='/lib/terminfo'
-let g:netrw_dirhist_2='/usr/share/terminfo'
-let g:netrw_dirhist_3='/usr/share/terminfo/u'
-let g:netrw_dirhist_4='/usr/share/terminfo'
-let g:netrw_dirhist_5='/usr/share/terminfo/r'
-let g:netrw_dirhist_6='/etc/zsh'
