@@ -4,6 +4,9 @@
 
 ### Gnu
 
+# Make sudo expand alises
+alias sudo='command sudo '
+
 # Colors for ls.
 if [[ -x "`whence -p dircolors`" ]]; then
   eval `dircolors`
@@ -35,14 +38,17 @@ alias 'lt=tree -d'
 # For quick viewing of txt files
 alias L=less
 
+# Nano with line numbers
+alias 'nano=nano -c'
+
 # Quick sudo nano
-alias 'sn=sudo nano'
+alias 'sn=sudo nano -c'
 
 # Quick vim
 alias v=vim
 
-# Quick sudo vim
-alias 'sv=sudo vim'
+# Quick sudo vim (with $EDITOR=vim)
+alias 'sv=sudoedit'
 
 # For running an app in the background without any stdout in console
 alias -g S='&> /dev/null &'

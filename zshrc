@@ -37,7 +37,9 @@ fi
 source $Z/completion.zsh
 
 # Private aliases, etc.
-source $Z/private.zsh
+if [ -e $Z/private.zsh ]; then
+  source $Z/private.zsh
+fi
 
 # Set up colours for ls
 if (( C == 256 )); then

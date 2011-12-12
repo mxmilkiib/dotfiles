@@ -10,7 +10,8 @@ fi
 
 # Prompt
 for color in RED GREEN YELLOW BLUE MAGENTA CYAN WHITE; do
-    eval PR_$color='%{$terminfo[bold]$fg[${(L)color}]%}'
+#   eval PR_$color='%{$terminfo[bold]$fg[${(L)color}]%}'
+    eval PR_$color='%{$fg[${(L)color}]%}'
     eval PR_LIGHT_$color='%{$fg[${(L)color}]%}'
     (( count = $count + 1 ))
 done
@@ -18,6 +19,4 @@ done
 
 PR_NO_COLOR="%{$terminfo[sgr0]%}"
 PS1="%(#~$PR_RED~$PR_CYAN)%n$PR_WHITE@$PR_MAGENTA%m$PR_NO_COLOR:$PR_RED%2c$PR_NO_COLOR %(!.#.$)$b % "
-RPS1="$FG[214](%D{%H:%M})$PR_NO_COLOR"
-
-#PR_YELLOW
+RPS1="$FG[214]$PR_YELLOW%D{%H:%M}$PR_NO_COLOR"
