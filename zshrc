@@ -3,7 +3,8 @@
 # Hacked by milkmiruku
 
 # export TERM="xterm-256color"
-export TERM="rxvt-unicode-256color"
+#export TERM="rxvt-unicode-256color"
+export TERM="rxvt-unicode"
 
 # Where everything is.
 Z=/etc/zsh

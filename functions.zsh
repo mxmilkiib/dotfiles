@@ -100,11 +100,26 @@ pS() {
 	")"
 }
 
-
+# Easy Aurget
 function aurge(){
   aurget -Sy "$@" --deps --noedit --discard;
 }
 
+# Easy Git commit
 function gitc(){
   git commit -m "$*";
+}
+
+# Check if command exists
+command_exists () {
+    type "$1" &> /dev/null ;
+}
+
+# Color diff
+diff () {
+  if command_exists colordiff ; then
+    colordiff "$@" | less -R
+  else
+    command diff "$@a" | less
+  fi
 }
