@@ -17,10 +17,10 @@ key[F11]='^[[23~'
 key[F12]='^[[24~'
 key[Backspace]='^?'
 key[Insert]='^[[2~'
-key[Home]='^[OH'
+key[Home]='^[[1~'
 key[PageUp]='^[[5~'
 key[Delete]='^[[3~'
-key[End]='^[OF'
+key[End]='^[[4~'
 key[PageDown]='^[[6~'
 key[Up]='^[[A'
 key[Left]='^[[D'
@@ -36,8 +36,8 @@ key[CtrlRight]='\e\e[C'
 #done
 #unset k
 
-bindkey "\e[1~" beginning-of-line
-bindkey "\e[4~" end-of-line
+#bindkey "\e[1~" beginning-of-line
+#bindkey "\e[4~" end-of-line
 
 
 # setup key accordingly
