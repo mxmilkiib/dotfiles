@@ -45,7 +45,7 @@ alias 'nano=nano -c'
 alias 'sn=sudo nano -c'
 
 # Quick vim
-alias v=vim
+alias 'v=vim'
 
 # Quick sudo vim (with $EDITOR=vim)
 alias 'sv=sudoedit'

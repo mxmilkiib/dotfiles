@@ -4,6 +4,7 @@
 
 # export TERM="xterm-256color"
 # export TERM="rxvt-unicode-256color"
+# export TERM="rxvt-unicode"
 export TERM="screen-256color" # for tmux backgrond color erase to work
 
 # Where everything is.
