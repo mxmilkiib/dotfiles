@@ -1,0 +1,3 @@
+Milk's Vim config
+
+ln -s ~/.vimrc ~/.vim/vimrc

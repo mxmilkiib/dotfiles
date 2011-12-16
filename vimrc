@@ -87,20 +87,8 @@ set viminfo='10,\"100,:20,%,n~/.viminfo
 " Make backspace work like most other apps
 set backspace=eol,indent,start
 
-" Delete whitespace at end of a line in normal
-" http://sartak.org/2011/03/end-of-line-whitespace-in-vim.html
-function! <SID>StripTrailingWhitespace()
-    " Preparation: save last search, and cursor position.
-    let _s=@/
-    let l = line(".")
-    let c = col(".")
-    " Do the business:
-    %s/\s\+$//e
-    " Clean up: restore previous search history, and cursor position
-    let @/=_s
-    call cursor(l, c)
-endfunction
-noremap <silent> <Leader><Space> :call <SID>StripTrailingWhitespace()<CR>
+" Shift-space as Esc - for gvim, vim requires mapping in terminal emulator config
+imap <S-Space> <Esc>
 
 " Backspace in normal mode
 " (beeps on blank line due to l)
@@ -132,15 +120,33 @@ nmap <silent> <Leader>sv :so $MYVIMRC<cr>
 "map <silent> <M-Left> :wincmd h<CR>
 "map <silent> <M-Right> :wincmd l<CR>
 
-" + and - to resize windows
-map - <C-W>-
-map + <C-W>+
+" Swap windows
+map <C-K> <C-W>x
+
+" Ctrl-+ and Ctrl-- to resize windows
+map <C--> <C-W>-
+map <C-+> <C-W>+
 
 " Remap hlsearch toggle, need to fix other bindings first
 " :set hlsearch
 " map <F5> :set hls!<bar>set hls?<CR>:
 " or
 " nmap <silent> <leader>n :silent :nohlsearch<CR>
+
+" Delete whitespace at end of a line in normal - <Leader><Space>
+" http://sartak.org/2011/03/end-of-line-whitespace-in-vim.html
+function! <SID>StripTrailingWhitespace()
+    " Preparation: save last search, and cursor position.
+    let _s=@/
+    let l = line(".")
+    let c = col(".")
+    " Do the business:
+    %s/\s\+$//e
+    " Clean up: restore previous search history, and cursor position
+    let @/=_s
+    call cursor(l, c)
+endfunction
+noremap <silent> <Leader><Space> :call <SID>StripTrailingWhitespace()<CR>
 
 
 """ Functions
@@ -168,6 +174,14 @@ function! s:DiffWithSaved()
   exe "setlocal bt=nofile bh=wipe nobl noswf ro ft=" . filetype
 endfunction
 com! DiffSaved call s:DiffWithSaved()
+
+" Convenient command to see the difference between the current buffer and the
+" file it was loaded from, thus the changes you made.
+" Only define it when not defined already.
+if !exists(":DiffOrig")
+  command DiffOrig vert new | set bt=nofile | r ++edit # | 0d_ | diffthis
+      \ | wincmd p | diffthis
+endif
 
 """ Nifty
 
