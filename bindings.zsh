@@ -17,24 +17,23 @@ key[F11]='^[[23~'
 key[F12]='^[[24~'
 key[Backspace]='^?'
 key[Insert]='^[[2~'
-key[Home]='^[[1~'
+key[Home]='\e[1~'
 key[PageUp]='^[[5~'
 key[Delete]='^[[3~'
-key[End]='^[[4~'
+key[End]='\e[4~'
 key[PageDown]='^[[6~'
 key[Up]='^[[A'
 key[Left]='^[[D'
 key[Down]='^[[B'
 key[Right]='^[[C'
-
 key[CtrlLeft]='\e\e[D'
 key[CtrlRight]='\e\e[C'
 
-#for k in ${(k)key} ; do
-#    # $terminfo[] entries are weird in ncurses application mode...
-#    [[ ${key[$k]} == $'\eO'* ]] && key[$k]=${key[$k]/O/[}
-#done
-#unset k
+for k in ${(k)key} ; do
+    # $terminfo[] entries are weird in ncurses application mode...
+    [[ ${key[$k]} == $'\eO'* ]] && key[$k]=${key[$k]/O/[}
+done
+unset k
 
 #bindkey "\e[1~" beginning-of-line
 #bindkey "\e[4~" end-of-line
