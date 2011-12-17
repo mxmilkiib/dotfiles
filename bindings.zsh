@@ -58,14 +58,21 @@ bindkey "\e[3~" delete-char
 bindkey "\e[1~" beginning-of-line       # urxvt
 bindkey "\e[4~" end-of-line             # urxvt
 
-bindkey "\e[OH" beginning-of-line       # lxterminal
-bindkey "\e[OF" end-of-line             # lxterminal
+bindkey "\e[OH~" beginning-of-line       # lxterminal
+bindkey "\e[OF~" end-of-line             # lxterminal
 
 bindkey "\e[5~" beginning-of-history
 bindkey "\e[6~" end-of-history
 
-bindkey "\e\e[D" backward-word
+bindkey "\e\e[D" backward-word          # urxvt
 bindkey "\e\e[C" forward-word
 
-bindkey "\e[1;5D" backward-word
+bindkey "\e[1;5D" backward-word		      # lxterminal
+bindkey "\e[1;5C" forward-word
 
+# Ctrl-W - push line to buffer, Ctrl-E - pop line from buffer
+bindkey '^w' push-line
+bindkey '^e' get-line
+
+# Ctrl-B - Comment out line with # and execute
+bindkey '^b' pound-insert
