@@ -64,4 +64,9 @@ bindkey "\e[6~" end-of-history
 bindkey "\e\e[D" backward-word
 bindkey "\e\e[C" forward-word
 
-bindkey -v
+# Ctrl-W - push line to buffer, Ctrl-E - pop line from buffer
+bindkey '^w' push-line
+bindkey '^e' get-line
+
+# Ctrl-B - Comment out line with # and execute
+bindkey '^b' pound-insert
