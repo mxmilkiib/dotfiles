@@ -55,8 +55,11 @@
 bindkey "\e[2~" overwrite-mode
 bindkey "\e[3~" delete-char
 
-bindkey "\e[1~" beginning-of-line
-bindkey "\e[4~" end-of-line
+bindkey "\e[1~" beginning-of-line       # urxvt
+bindkey "\e[4~" end-of-line             # urxvt
+
+bindkey "\e[OH" beginning-of-line       # lxterminal
+bindkey "\e[OF" end-of-line             # lxterminal
 
 bindkey "\e[5~" beginning-of-history
 bindkey "\e[6~" end-of-history
@@ -64,4 +67,5 @@ bindkey "\e[6~" end-of-history
 bindkey "\e\e[D" backward-word
 bindkey "\e\e[C" forward-word
 
-bindkey -v
+bindkey "\e[1;5D" backward-word
+

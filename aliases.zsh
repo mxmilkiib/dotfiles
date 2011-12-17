@@ -73,8 +73,9 @@ alias 'as=apt-cache search'
 alias 'aw=apt-cache show'
 
 # Pacman
-alias 'pu=sudo pacman -Syu'
 alias 'p=sudo pacman -Sy'
+alias 'pq=sudo pacman -S'
+alias 'pu=sudo pacman -Syu'
 alias 'pU=sudo pacman -U'
 alias 'pR=sudo pacman -R'
 
