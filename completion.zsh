@@ -11,8 +11,7 @@ zstyle ':completion:*:match:*' original only
 zstyle ':completion:*' max-errors 1 # Be lenient to 1 errors.
 
 # And if you want the number of errors allowed by _approximate to increase with the length of what you have typed so far:
-zstyle -e ':completion:*:approximate:*' \
-        max-errors 'reply=($((($#PREFIX+$#SUFFIX)/3))numeric)'
+zstyle -e ':completion:*:approximate:*' max-errors 'reply=($((($#PREFIX+$#SUFFIX)/3))numeric)'
 
 # Ignore completion functions for commands you don’t have:
 zstyle ':completion:*:functions' ignored-patterns '_*'
@@ -31,7 +30,5 @@ zstyle ':completion:*:kill:*'   force-list always
 # If you end up using a directory as argument, this will remove the trailing slash (usefull in ln)
 zstyle ':completion:*' squeeze-slashes true
 
-
 # Sudo completion
-zstyle ':completion:*:sudo:*' command-path /usr/local/sbin /usr/local/bin \
-			     /usr/sbin /usr/bin /sbin /bin /usr/X11R6/bin
+zstyle ':completion:*:sudo:*' command-path /usr/local/sbin /usr/local/bin /usr/sbin /usr/bin /sbin /bin /usr/X11R6/bin
