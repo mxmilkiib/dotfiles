@@ -158,6 +158,18 @@ augroup resCur
   autocmd BufWinEnter * call ResCur()
 augroup END
 
+""" Folding
+
+" These commands open folds
+set foldopen=block,insert,jump,mark,percent,quickfix,search,tag,undo
+
+" automatically fold code depending on indent
+set foldmethod=indent
+
+" set fillchars=vert:|,fold: ,diff:-
+
+" open/close folds with tab
+map <TAB> za
 
 """ Nifty
 
