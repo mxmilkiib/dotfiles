@@ -153,3 +153,30 @@ extract() {
 cpf() { cp "$@" && goto "$_"; }
 mvf() { mv "$@" && goto "$_"; }
 goto() { [ -d "$1" ] && cd "$1" || cd "$(dirname "$1")"; }
+
+# IRC like buffer new lines
+fake-accept-line() {
+  # If the Zle buffer is not empty
+  if [[ -n "$BUFFER" ]];
+  then
+    # Print the buffer silently
+    print -S "$BUFFER"
+#    zle .send-break
+  fi
+  return 0
+}
+
+zle -N fake-accept-line
+
+down-or-fake-accept-line() {
+  # If history line number equals the history line number of the 
+  if (( HISTNO == HISTCMD )) && [[ "$RBUFFER" != *$'\n'* ]];
+  then
+    zle fake-accept-line
+  fi
+  zle .down-line-or-history "$@"
+}
+
+zle -N down-or-fake-accept-line
+
+zle -N down-line-or-history down-or-fake-accept-line

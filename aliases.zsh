@@ -116,12 +116,6 @@ alias 'gitp=git push'
 # Get shit done - temp redirect certain sites to localhost
 alias 'gsd=sudo /home/milk/scripts/get-shit-done/get-shit-done.sh'
 
-# Sudo to aegir user
-alias 'sa=sudo -u aegir -i'
-
-# Setup SSHFS access to Aegir's home on thingsandstuff
-alias 'sshfsa=sshfs aegir@thingsandstuff.org:/var/aegir /var/aegir -o idmap=user'
-
 # Vim
 alias 'vi=vim'
 alias 'v=vim'

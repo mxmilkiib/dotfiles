@@ -8,9 +8,18 @@ setopt PUSHD_IGNORE_DUPS            # ...and don't duplicate them.
 
 # History Options
 setopt APPEND_HISTORY               # Don't overwrite history.
+
+# With this option all history items remain in chronological order even when multiple ZSH instance are open at the same time. This is achieved by writing entries directly into the file instead of dumping the whole history when the shell exits. http://www.refining-linux.org/archives/49/ZSH-Gem-15-Shared-history/
+
+# setopt INC_APPEND_HISTORY
+
+# write history entries directly to the history file, share the current history file between all sessions.
+
+setopt SHARE_HISTORY
+
+
 setopt HIST_VERIFY                  # Verify commands that use a history expansion.
 setopt EXTENDED_HISTORY             # Remember all sorts of stuff about the history.
-setopt INC_APPEND_HISTORY           # Incrementally append commands to the history.
 setopt HIST_IGNORE_SPACE            # Ignore commands with leading spaces.
 setopt HIST_IGNORE_ALL_DUPS         # Ignore all duplicate entries in the history.
 setopt HIST_REDUCE_BLANKS           # Tidy up commands before comitting them to history.
