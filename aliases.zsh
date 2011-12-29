@@ -8,16 +8,28 @@
 alias sudo='command sudo '
 
 # Colors for ls.
-if [[ -x "`whence -p dircolors`" ]]; then
-  eval `dircolors`
-  alias ls='ls -F --color=auto'
-else
-  alias ls='ls -F'
-fi
+#if [[ -x "`whence -p dircolors`" ]]; then
+#  eval `dircolors`
+#  alias ls='ls -F --color=auto'
+#else
+#  alias ls='ls -F'
+#fi
 
 # Looking around, and moving about.
-alias ll='ls -lh'
-alias la='ls -lah'
+#alias ll='ls -lh'
+#alias la='ls -lah'
+
+alias ll="ls -l --group-directories-first"
+alias ls="ls -h --color"   # add colors for filetype recognition
+alias la="ls -a"            # show hidden files
+alias lx="ls -xb"           # sort by extension
+alias lk="ls -lSr"          # sort by size, biggest last
+alias lc="ls -ltcr"         # sort by and show change time, most recent last
+alias lu="ls -ltur"         # sort by and show access time, most recent last
+alias lt="ls -ltr"          # sort by date, most recent last
+alias lm="ls -al |more"     # pipe through 'more'
+alias lr="ls -lR"           # recursive ls
+alias lsr="tree -Csu |more "       # nice alternative to 'recursive ls'
 
 alias ...=../..
 alias 'cd..=cd ..'
