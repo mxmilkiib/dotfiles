@@ -1,0 +1,48 @@
+background: black
+foreground: white
+scrollBar_right: true
+
+! Apperence
+URxvt*background: [80]black
+URxvt*depth: 32
+URxvt*foreground: white
+URxvt*scrollBar_right: true
+
+! Default shell
+URxvt*shell: /bin/zsh
+
+! Term name
+!XTerm*termName: xterm-256color
+!XTerm*termName: rxvt-unicode
+!Rxvt*termName: rxvt-unicode-256color
+
+! Scrollbar style - rxvt (default), plain (most compact), next, or xterm
+URxvt*scrollstyle:plain
+
+! Window icon
+!URxvt*iconFile: /usr/share/icons/gnome/scalable/apps/utilities-terminal-symbolic.svg
+
+! Perl scripts
+URxvt.perl-lib: /usr/lib/urxvt/perl/
+URxvt.perl-ext-common: default,matcher,searchable-scrollback,fullscreen,url-select
+
+! Launch URLs
+URxvt.urlLauncher: chromium-browser
+URxvt.matcher.button: 1
+
+URxvt.keysym.M-u:       perl:url-select:select_next
+URxvt.underlineURLs:    true
+
+! Alt-F11 fullscreen
+urxvt*keysym.M-F11: perl:fullscreen:switch
+
+! Unbreak zsh keys in URxvt
+URxvt*keysym.Home: \033[1~
+URxvt*keysym.End: \033[4~
+
+! Map Shift-space to an escape char for Vim
+URxvt.keysym.S-space:  \033
+
+XTerm*vt100.Translations:       #override\n\
+Ctrl <KeyPress> Left   : string("\033[90~")  \n\
+Ctrl <KeyPress> Right  : string("\033[91~")  \n

@@ -1,0 +1,4 @@
+Milk's X config files
+
+ln -s .x/.xinitrc .xinitrc
+ln -s .x/.Xresources .Xresources
