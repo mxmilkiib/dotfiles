@@ -91,8 +91,9 @@ alias 'pu=sudo pacman -Syu'
 alias 'pU=sudo pacman -U'
 alias 'pR=sudo pacman -R'
 
-# Aurbuild - http://aurbuild.berlios.de/
-alias aurbuild="sudo env EDITOR=\$EDITOR aurbuild --nopager"
+# Aurget
+alias 'ags=aurget -Ss'
+alias 'agu=aurget -Syu --deps --noedit'
 
 ### Bash
 
