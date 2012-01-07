@@ -15,7 +15,8 @@ local priv="%{$FX[reset]$FG[245]%}%#"
 
 git_branch=""
 
-PROMPT="${name}${p}@${host}${p}${jobs}${p}:${dir}${p}\${git_branch}${p} %(!.#.$) "
+# PROMPT="${name}${p}@${host}${p}${jobs}${p}:${dir}${p}\${git_branch}${p} %(!.#.$) "
+PROMPT="${name}${p}@${host}${p}${jobs}${p}:${dir}${p}\$(git_super_status)${p} %(!.#.$) "
 RPS1="${time}${p}"
 
 #PROMPT="${p}(${name}${p}@${host}${p})-${jobs}(${time}${p})-(${dir}${p}\${git_branch}${p})

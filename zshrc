@@ -28,6 +28,9 @@ source $Z/functions.zsh
 # Key bindings
 source $Z/bindings.zsh
 
+# Super gir prompt
+source $Z/git-prompt/zshrc.sh
+
 # Set the prompt.
 if (( C == 256 )); then
     source $Z/prompt_256.zsh
