@@ -34,6 +34,7 @@ alias lsr="tree -Csu |more "       # nice alternative to 'recursive ls'
 alias ...=../..
 alias 'cd..=cd ..'
 alias ',,=..'
+alias 'c.=cd $PWD'
 
 # Clear
 alias 'c=clear'
