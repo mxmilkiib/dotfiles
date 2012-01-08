@@ -136,3 +136,6 @@ alias 'v=vim'
 
 # Nyancat
 alias 'nyancat=telnet miku.acm.uiuc.edu'
+
+# To let Ubuntu Server know that python2 = python
+alias 'python2=python'
