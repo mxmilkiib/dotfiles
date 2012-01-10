@@ -92,6 +92,7 @@ alias 'pq=sudo pacman -S'
 alias 'pu=sudo pacman -Syu'
 alias 'pU=sudo pacman -U'
 alias 'pR=sudo pacman -R'
+alias 'pl=sudo rm /var/lib/pacman/db.lck'
 
 # Aurget
 alias 'ags=aurget -Ss'
