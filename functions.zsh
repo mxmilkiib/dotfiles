@@ -107,7 +107,7 @@ function aurge(){
 
 # Easy Git commit
 function gitc(){
-  git commit -m "$*";
+  git commit -am "$*";
 }
 
 # Check if command exists
