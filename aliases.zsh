@@ -66,9 +66,10 @@ alias 'sv=sudoedit'
 # For running an app in the background without any stdout in console
 alias -g S='&> /dev/null &'
 
-# Shutdown, reboot
+# Shutdown, reboot, logout
 alias 'sd=sudo shutdown -h now'
 alias 'sr=sudo reboot'
+alias 'sl=sudo killall -u milk'
 
 # Grep, extended-regexp, case insentitive, recursive, line number, strip colours control chars for pipes
 alias g="grep -EiRn --color=tty"
@@ -138,4 +139,4 @@ alias 'v=vim'
 alias 'nyancat=telnet miku.acm.uiuc.edu'
 
 # To let Ubuntu Server know that python2 = python
-alias 'python2=python'
+#alias 'python2=python'
