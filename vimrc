@@ -32,6 +32,9 @@ set shiftwidth=2
 " Turn on line numbers
 set nu
 
+" Always show status bar
+set laststatus=2
+
 " Always 10 lines at top, excluding top and bottom
 set scrolloff=10
 
