@@ -1,0 +1,1 @@
+/home/milk/.vim/bundle/scss-syntax/syntax/scss.vim
