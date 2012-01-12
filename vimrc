@@ -166,6 +166,19 @@ augroup resCur
   autocmd BufWinEnter * call ResCur()
 augroup END
 
+""" Folding
+
+" These commands open folds
+set foldopen=block,insert,jump,mark,percent,quickfix,search,tag,undo
+
+" automatically fold code depending on indent
+set foldmethod=indent
+
+" set fillchars=vert:|,fold: ,diff:-
+
+" open/close folds with tab
+map <TAB> za
+
 " Diff with saved file - :diffsaved, :diffoff
 
 function! s:DiffWithSaved()
@@ -184,6 +197,7 @@ if !exists(":DiffOrig")
   command DiffOrig vert new | set bt=nofile | r ++edit # | 0d_ | diffthis
       \ | wincmd p | diffthis
 endif
+
 
 """ Nifty
 
