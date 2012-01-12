@@ -7,3 +7,6 @@
 [submodule "bundle/scss-syntax"]
 	path = bundle/scss-syntax
 	url = https://github.com/cakebaker/scss-syntax.vim.git
+[submodule "bundle/better-css-syntax"]
+	path = bundle/better-css-syntax
+	url = https://github.com/ChrisYip/Better-CSS-Syntax-for-Vim.git
