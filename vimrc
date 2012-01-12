@@ -69,6 +69,19 @@ set title
 " These are files we are not likely to want to edit or read.
 set suffixes=.bak,~,.swp,.o,.info,.aux,.log,.dvi,.bbl,.blg,.brf,.cb,.ind,.idx,.ilg,.inx,.out,.toc
 
+" http://drupal.org/node/29325
+if has("autocmd")
+  " Drupal *.module and *.install files.
+  augroup module
+    autocmd BufRead,BufNewFile *.module set filetype=php
+    autocmd BufRead,BufNewFile *.install set filetype=php
+    autocmd BufRead,BufNewFile *.test set filetype=php
+    autocmd BufRead,BufNewFile *.inc set filetype=php
+    autocmd BufRead,BufNewFile *.profile set filetype=php
+    autocmd BufRead,BufNewFile *.view set filetype=php
+  augroup END
+endif
+
 " Basic syntax highlighting
 if has("syntax")
   syntax on
@@ -97,8 +110,6 @@ set backspace=eol,indent,start
 
 " Shift-space as Esc - for gvim, vim requires mapping in terminal emulator config
 imap <S-Space> <Esc>
-imap \ <Esc>
-
 
 " Backspace in normal mode
 " (beeps on blank line due to l)
