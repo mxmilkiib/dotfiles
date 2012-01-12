@@ -10,3 +10,6 @@
 [submodule "bundle/better-css-syntax"]
 	path = bundle/better-css-syntax
 	url = https://github.com/ChrisYip/Better-CSS-Syntax-for-Vim.git
+[submodule "bundle/css-color"]
+	path = bundle/css-color
+	url = https://github.com/skammer/vim-css-color.git
