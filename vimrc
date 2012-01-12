@@ -89,6 +89,8 @@ set backspace=eol,indent,start
 
 " Shift-space as Esc - for gvim, vim requires mapping in terminal emulator config
 imap <S-Space> <Esc>
+imap \ <Esc>
+
 
 " Backspace in normal mode
 " (beeps on blank line due to l)
