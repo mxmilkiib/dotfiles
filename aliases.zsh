@@ -96,7 +96,7 @@ alias 'pl=sudo rm /var/lib/pacman/db.lck'
 
 # Aurget
 alias 'ags=aurget -Ss'
-alias 'agu=aurget -Syu --deps --noedit'
+alias 'agu=aurget -Syu --deps --noedit --discard'
 
 ### Bash
 
