@@ -180,3 +180,7 @@ down-or-fake-accept-line() {
 zle -N down-or-fake-accept-line
 
 zle -N down-line-or-history down-or-fake-accept-line
+
+function headless(){
+        VBoxHeadless -startvm $1&
+}
