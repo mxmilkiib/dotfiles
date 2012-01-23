@@ -46,7 +46,7 @@ alias 'mkdir=mkdir -p'
 alias 'dus=du -ms * | sort -n'
 
 # Graphical tree of subdir files
-alias 'lt=tree -d'
+#alias 'lt=tree -d'
 
 # For quick viewing of txt files
 alias L=less
