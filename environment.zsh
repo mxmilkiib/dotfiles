@@ -3,7 +3,7 @@
 
 # Various Paths
 typeset -U path
-path=(~/bin $path /usr/local/bin)
+path=(~/bin $path /usr/local/bin /var/lib/gems/1.8/bin)
 export PATH
 
 typeset -U fpath
