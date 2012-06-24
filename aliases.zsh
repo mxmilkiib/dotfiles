@@ -140,4 +140,6 @@ alias 'v=vim'
 alias 'nyancat=telnet miku.acm.uiuc.edu'
 
 # To let Ubuntu Server know that python2 = python
-#alias 'python2=python'
+if [[ "$HOST" = "purple.thingsandstuff.org" ]] {
+  alias 'python2=python'
+}
