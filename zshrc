@@ -51,4 +51,8 @@ if (( C == 256 )); then
   eval `dircolors $Z/dircolors`
 fi
 
+. z/z.sh
 
+function precmd () {
+  _z --add "$(pwd -P)"
+}
