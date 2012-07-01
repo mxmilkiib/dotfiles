@@ -121,7 +121,7 @@ alias 'ps?'='ps ax | grep '
 alias bofh='nc bofh.jeffballard.us 666 | tail -n 1'
 
 # Public IP address
-alias pip='wget http://checkip.dyndns.org/ -O - -o /dev/null | cut -d: -f 2 | cut -d\< -f 1'
+alias publicip='wget http://checkip.dyndns.org/ -O - -o /dev/null | cut -d: -f 2 | cut -d\< -f 1'
 
 # Git
 alias 'gits=git status'
