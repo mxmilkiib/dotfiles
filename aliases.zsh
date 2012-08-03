@@ -53,6 +53,9 @@ alias 'mkdir=mkdir -p'
 # List dir items
 alias 'dus=du -ms * | sort -n'
 
+# Check disk usage in ncdu (arch root)
+alias 'ncduar=sudo ncdu / --exclude /home --exclude /media --exclude /run/media --exclude /boot --exclude /tmp --exclude /dev --exclude /proc'
+
 # Graphical tree of subdir files
 #alias 'lt=tree -d'
 
