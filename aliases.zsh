@@ -98,6 +98,9 @@ alias 'pl=sudo rm /var/lib/pacman/db.lck'
 alias 'ags=aurget -Ss'
 alias 'agu=aurget -Syu --deps --noedit --noconfirm'
 
+# Builds
+alias 'cu=sudo chromium-update'
+
 ### Bash
 
 # List ANSI colours
@@ -138,6 +141,9 @@ alias 'v=vim'
 
 # Nyancat
 alias 'nyancat=telnet miku.acm.uiuc.edu'
+
+# Chromium nightly update script
+alias 'gcu=sudo chromium-update'
 
 # To let Ubuntu Server know that python2 = python
 if [[ "$HOST" = "purple.thingsandstuff.org" ]] {
