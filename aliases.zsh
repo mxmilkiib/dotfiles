@@ -74,6 +74,11 @@ alias 'v=vim'
 # Quick sudo vim (with $EDITOR=vim)
 alias 'sv=sudoedit'
 
+# Other
+alias 'ak=awesome -k'
+alias u="uzbl"
+
+
 # For running an app in the background without any stdout in console
 alias -g S='&> /dev/null &'
 
@@ -84,7 +89,6 @@ alias 'sl=sudo killall -u milk'
 
 # Grep, extended-regexp, case insentitive, recursive, line number, strip colours control chars for pipes
 alias g="grep -EiRn --color=tty"
-alias u="uzbl"
 
 ### Package management
 
