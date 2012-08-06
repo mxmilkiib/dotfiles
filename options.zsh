@@ -21,7 +21,7 @@ setopt SHARE_HISTORY
 setopt HIST_VERIFY                  # Verify commands that use a history expansion.
 setopt EXTENDED_HISTORY             # Remember all sorts of stuff about the history.
 setopt HIST_IGNORE_SPACE            # Ignore commands with leading spaces.
-setopt HIST_IGNORE_ALL_DUPS         # Ignore all duplicate entries in the history.
+# setopt HIST_IGNORE_ALL_DUPS         # Ignore all duplicate entries in the history.
 setopt HIST_REDUCE_BLANKS           # Tidy up commands before comitting them to history.
 
 setopt RM_STAR_WAIT                 # Wait, and ask if the user is serious when doing rm *
