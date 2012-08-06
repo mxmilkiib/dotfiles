@@ -129,3 +129,7 @@ bindkey "\eOF" end-of-line
 # # for freebsd console
 bindkey "\e[H" beginning-of-line
 bindkey "\e[F" end-of-line
+
+# Type command then ctrl-up/ctrl-down to search history
+bindkey "^[[A" history-search-backward
+bindkey "^[[B" history-search-forward
