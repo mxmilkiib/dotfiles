@@ -51,7 +51,7 @@ alias 'c=clear'
 alias 'mkdir=mkdir -p'
 
 # Check disk usage in ncdu (arch)
-ncdu / --exclude /home --exclude /media --exclude /run/media --exclude /boot --exclude /tmp --exclude /dev --exclude /proc
+alias 'arch=ncdu / --exclude /home --exclude /media --exclude /run/media --exclude /boot --exclude /tmp --exclude /dev --exclude /proc'
 
 # List dir items
 alias 'dus=du -ms * | sort -n'
