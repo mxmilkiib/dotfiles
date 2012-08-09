@@ -1,9 +1,11 @@
 # environment.zsh: Sets up a working shell environment.
 # P.C. Shyamshankar <sykora@lucentbeing.com>
 
+# https://github.com/paulmars/huffshell
+
 # Various Paths
 typeset -U path
-path=(~/bin $path /usr/local/bin /var/lib/gems/1.8/bin $HOME/.gem/ruby/1.9.1/bin)
+path=(~/bin $path /usr/local/bin /var/lib/gems/1.8/bin $HOME/.gem/ruby/1.9.1/bin:/home/milk/.cabal/bin)
 export PATH
 
 typeset -U fpath

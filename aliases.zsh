@@ -56,6 +56,9 @@ ncdu / --exclude /home --exclude /media --exclude /run/media --exclude /boot --e
 # List dir items
 alias 'dus=du -ms * | sort -n'
 
+# Check disk usage in ncdu (arch root)
+alias 'ncduar=sudo ncdu / --exclude /home --exclude /media --exclude /run/media --exclude /boot --exclude /tmp --exclude /dev --exclude /proc'
+
 # Graphical tree of subdir files
 #alias 'lt=tree -d'
 
@@ -74,6 +77,11 @@ alias 'v=vim'
 # Quick sudo vim (with $EDITOR=vim)
 alias 'sv=sudoedit'
 
+# Other
+alias 'ak=awesome -k'
+alias u="uzbl"
+
+
 # For running an app in the background without any stdout in console
 alias -g S='&> /dev/null &'
 
@@ -84,7 +92,6 @@ alias 'sl=sudo killall -u milk'
 
 # Grep, extended-regexp, case insentitive, recursive, line number, strip colours control chars for pipes
 alias g="grep -EiRn --color=tty"
-alias u="uzbl"
 
 ### Package management
 
@@ -108,6 +115,9 @@ alias 'pl=sudo rm /var/lib/pacman/db.lck'
 # Aurget
 alias 'ags=aurget -Ss'
 alias 'agu=aurget -Syu --deps --noedit --noconfirm'
+
+# Builds
+alias 'cu=sudo chromium-update'
 
 ### Bash
 
@@ -149,6 +159,9 @@ alias 'v=vim'
 
 # Nyancat
 alias 'nyancat=telnet miku.acm.uiuc.edu'
+
+# Chromium nightly update script
+alias 'gcu=sudo chromium-update'
 
 # To let Ubuntu Server know that python2 = python
 if [[ "$HOST" = "purple.thingsandstuff.org" ]] {
