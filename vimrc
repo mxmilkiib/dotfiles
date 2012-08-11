@@ -1,13 +1,69 @@
 """ Milk's vimrc
 
 """ Init pathogen
-call pathogen#runtime_append_all_bundles()
-call pathogen#helptags()
+"call pathogen#runtime_append_all_bundles()
+"call pathogen#helptags()
 
+" Neobundle script manager
+filetype off                   " Required!
+filetype plugin indent off     " Required!
+
+if has('vim_starting')
+ set runtimepath+=~/.vim/bundle/neobundle.vim/
+endif
+
+call neobundle#rc(expand('~/.vim/bundle/'))
+
+" Let NeoBundle manage NeoBundle
+"NeoBundle 'Shougo/neobundle.vim'
+
+" Recommended to install
+" After install, turn shell ~/.vim/bundle/vimproc, (n,g)make -f your_machines_makefile
+NeoBundle 'Shougo/vimproc'
+
+" My Bundles here:
+"
+" Note: You don't set neobundle setting in .gvimrc!
+" Original repos on github
+
+" Git integration
+NeoBundle 'tpope/vim-fugitive'
+
+" File navigation
+NeoBundle 'Lokaltog/vim-easymotion'
+
+" New staus line tool
+NeoBundle 'Lokaltog/vim-powerline'
+
+" Zen coding like
+"NeoBundle 'rstacruz/sparkup', {'rtp': 'vim/'}
+
+" vim-scripts repos
+
+" find things easily
+NeoBundle 'FuzzyFinder'
+NeoBundle 'L9' " required by ff
+
+" Non github repos
+
+" Open files easily
+NeoBundle 'git://git.wincent.com/command-t.git'
+
+" Syntax
+NeoBundle 'cakebaker/scss-syntax.vim'
+NeoBundle 'vim-scripts/Better-CSS-Syntax-for-Vim'
+
+" Non git repos
+" NeoBundle 'https://bitbucket.org/ns9tks/vim-fuzzyfinder'
+
+" ...
+
+filetype plugin indent on     " Required!
 
 """ General
 
 " Color theme
+NeoBundle 'BlackSea'
 colorscheme BlackSea
 
 " Use Vim defaults instead of 100% vi compatibility
