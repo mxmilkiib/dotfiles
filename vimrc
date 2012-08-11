@@ -15,7 +15,7 @@ endif
 call neobundle#rc(expand('~/.vim/bundle/'))
 
 " Let NeoBundle manage NeoBundle
-"NeoBundle 'Shougo/neobundle.vim'
+NeoBundle 'Shougo/neobundle.vim'
 
 " Recommended to install
 " After install, turn shell ~/.vim/bundle/vimproc, (n,g)make -f your_machines_makefile
@@ -28,6 +28,7 @@ NeoBundle 'Shougo/vimproc'
 
 " Git integration
 NeoBundle 'tpope/vim-fugitive'
+NeoBundle 'gregsexton/gitv'
 
 " File navigation
 NeoBundle 'Lokaltog/vim-easymotion'
@@ -44,19 +45,32 @@ NeoBundle 'Lokaltog/vim-powerline'
 NeoBundle 'FuzzyFinder'
 NeoBundle 'L9' " required by ff
 
-" Non github repos
-
+" Non github repo
 " Open files easily
 NeoBundle 'git://git.wincent.com/command-t.git'
 
 " Syntax
 NeoBundle 'cakebaker/scss-syntax.vim'
 NeoBundle 'vim-scripts/Better-CSS-Syntax-for-Vim'
+NeoBundle 'pangloss/vim-javascript'
+
+NeoBundle 'tomtom/tcomment_vim'
+NeoBundle 'scrooloose/nerdtree'
+NeoBundle 'sickill/vim-pasta'
+
+
+NeoBundle 'msanders/snipmate.vim'
+
+NeoBundle 'Shougo/neocomplcache'
+let g:neocomplcache_enable_at_startup = 1
+" Plugin key-mappings.
+imap <C-k>     <Plug>(neocomplcache_snippets_expand)
+smap <C-k>     <Plug>(neocomplcache_snippets_expand)
+inoremap <expr><C-g>     neocomplcache#undo_completion()
+inoremap <expr><C-l>     neocomplcache#complete_common_string()
 
 " Non git repos
 " NeoBundle 'https://bitbucket.org/ns9tks/vim-fuzzyfinder'
-
-" ...
 
 filetype plugin indent on     " Required!
 
