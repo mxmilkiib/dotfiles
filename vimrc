@@ -39,6 +39,10 @@ NeoBundle 'Lokaltog/vim-powerline'
 " Zen coding like
 "NeoBundle 'rstacruz/sparkup', {'rtp': 'vim/'}
 
+" Yank ring
+NeoBundle 'vim-scripts/YankRing.vim'
+" 2p, paste sedonc last delete
+
 " vim-scripts repos
 
 " find things easily
