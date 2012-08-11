@@ -60,7 +60,7 @@ set directory=~/.vim-tmp,~/.tmp,~/tmp,/var/tmp,/tmp
 set ruler
 
 " Let pasting from middle click buffer work properly
-"set paste
+set paste
 
 " Set title to Vim for xterm systems
 set title
@@ -114,6 +114,11 @@ imap <S-Space> <Esc>
 " Backspace in normal mode
 " (beeps on blank line due to l)
 noremap <BS> i<BS><Esc>li
+
+" http://vim.wikia.com/wiki/Toggle_auto-indenting_for_code_paste
+nnoremap <F2> :set invpaste paste?<CR>
+set pastetoggle=<F2>
+set showmode
 
 " Space from normal to insert with a space
 nmap <Space> i<Space>
@@ -191,7 +196,7 @@ augroup END
 set foldopen=block,insert,jump,mark,percent,quickfix,search,tag,undo
 
 " automatically fold code depending on indent
-set foldmethod=indent
+set foldmethod=manual
 
 " set fillchars=vert:|,fold: ,diff:-
 
