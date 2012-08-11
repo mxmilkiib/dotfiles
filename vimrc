@@ -203,6 +203,10 @@ set foldmethod=manual
 " open/close folds with tab
 map <TAB> za
 
+" folding is on by default. setting a high fold start level stops this
+set foldlevel=20
+
+
 " Diff with saved file - :diffsaved, :diffoff
 
 function! s:DiffWithSaved()
