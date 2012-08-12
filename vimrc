@@ -69,6 +69,9 @@ smap <C-k>     <Plug>(neocomplcache_snippets_expand)
 inoremap <expr><C-g>     neocomplcache#undo_completion()
 inoremap <expr><C-l>     neocomplcache#complete_common_string()
 
+" Manage buffers
+NeoBundle 'fholgado/minibufexpl.vim'
+
 " Non git repos
 " NeoBundle 'https://bitbucket.org/ns9tks/vim-fuzzyfinder'
 
@@ -139,6 +142,8 @@ set title
 " These are files we are not likely to want to edit or read.
 set suffixes=.bak,~,.swp,.o,.info,.aux,.log,.dvi,.bbl,.blg,.brf,.cb,.ind,.idx,.ilg,.inx,.out,.toc
 
+set wildchar=<Tab> wildmenu wildmode=full
+
 " http://drupal.org/node/29325
 if has("autocmd")
   " Drupal *.module and *.install files.
@@ -203,11 +208,15 @@ nmap <C-N><C-N> :set invnumber<CR>
 "let mapleader = ","
 
 " Let's make it easy to edit this file (mnemonic for the key sequence is 'e'dit 'v'imrc)
+" \ev
 nmap <silent> <Leader>ev :e $MYVIMRC<cr>
 
 " And to source this file as well (mnemonic for the key sequence is 's'ource 'v'imrc)
+" \sv
 nmap <silent> <Leader>sv :so $MYVIMRC<cr>
 
+" \p - toggle nerdtree
+nmap <silent> <leader>p :NERDTreeToggle<CR>
 
 " Move between windows with alt-arrows "not working after a few tries
 " http://vim.wikia.com/wiki/Switch_between_Vim_window_splits_easily
