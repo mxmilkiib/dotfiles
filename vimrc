@@ -15,7 +15,7 @@ endif
 call neobundle#rc(expand('~/.vim/bundle/'))
 
 " Let NeoBundle manage NeoBundle
-NeoBundle 'Shougo/neobundle.vim'
+"NeoBundle 'Shougo/neobundle.vim'
 
 " Recommended to install
 " After install, turn shell ~/.vim/bundle/vimproc, (n,g)make -f your_machines_makefile
@@ -36,8 +36,15 @@ NeoBundle 'Lokaltog/vim-easymotion'
 " New staus line tool
 NeoBundle 'Lokaltog/vim-powerline'
 
+" Syntax checking
+NeoBundle 'scrooloose/syntastic'
+
 " Zen coding like
 "NeoBundle 'rstacruz/sparkup', {'rtp': 'vim/'}
+
+" Yank ring
+NeoBundle 'vim-scripts/YankRing.vim'
+" 2p, paste sedonc last delete
 
 " vim-scripts repos
 
