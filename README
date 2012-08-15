@@ -5,3 +5,9 @@ git clone git@github.com:milkmiruku/dotvim.git ~/.vim
 ln -s .vim/vimrc .vimrc
 
 Uses NeoBundle for plugin installation/update.
+
+mkdir -p ~/.vim/bundle
+git clone git://github.com/Shougo/neobundle.vim ~/.vim/bundle/neobundle.vim
+
+in Vim
+:NeoBundleInstall
