@@ -1,6 +1,7 @@
 Milk's Vim config
 
-ln -s ~/.vimrc ~/.vim/vimrc
+read only;
+git clone git@github.com:milkmiruku/dotvim.git ~/.vim
+ln -s .vim/vimrc .vimrc
 
-ln -s ~/.vim/bundle/scss-syntax/syntax/scss.vim ~/.vim/syntax/
-ln -s ~/.vim/bundle/scss-syntax/ftdetect/scss.vim ~/.vim/ftdetect/
+Uses NeoBundle for plugin installation/update.
