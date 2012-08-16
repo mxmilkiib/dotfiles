@@ -15,9 +15,7 @@ alias sudo='command sudo '
 #  alias ls='ls -F'
 #fi
 
-# Looking around, and moving about.
-#alias ll='ls -lh'
-#alias la='ls -lah'
+### Looking around, moving about.
 
 alias ll="ls -l --group-directories-first"
 alias ls="ls -h --color"    # add colors for filetype recognition
@@ -32,6 +30,11 @@ alias lk="ls -lSr"          # sort by size, biggest last
 alias lm="ls -al | more"     # pipe through 'more'
 alias lr="ls -lR"            # recursive ls
 alias lsr="tree -Csu | more "    # nice alternative to 'recursive ls'
+
+#alias ll='ls -lh'
+#alias la='ls -lah'
+# Graphical tree of subdir files
+#alias 'lt=tree -d'
 
 alias ..="cd .." # Automatic in ZSH (default?)
 alias ...=../..
@@ -50,41 +53,8 @@ alias 'c=clear'
 # Makes parent dir if it doesn't exist
 alias 'mkdir=mkdir -p'
 
-# Check disk usage in ncdu (arch)
-alias 'arch=ncdu / --exclude /home --exclude /media --exclude /run/media --exclude /boot --exclude /tmp --exclude /dev --exclude /proc'
-
-# List dir items
-alias 'dus=du -ms * | sort -n'
-
-# Check disk usage in ncdu (arch root)
-alias 'ncduar=sudo ncdu / --exclude /home --exclude /media --exclude /run/media --exclude /boot --exclude /tmp --exclude /dev --exclude /proc'
-
-# Graphical tree of subdir files
-#alias 'lt=tree -d'
-
-# For quick viewing of txt files
-alias L=less
-
-# Nano with line numbers
-alias 'nano=nano -c'
-
 # Quick sudo nano
 alias 'sn=sudo nano -c'
-
-# Quick vim
-alias 'v=vim'
-
-# Quick sudo vim (with $EDITOR=vim)
-alias 'sv=sudoedit'
-
-# Other
-alias 'ak=awesome -k'
-alias u="uzbl"
-
-
-# For running an app in the background without any stdout in console
-alias -g S='&> /dev/null &'
-
 # Shutdown, reboot, logout
 alias 'sd=sudo shutdown -h now'
 alias 'sr=sudo reboot'
@@ -92,6 +62,46 @@ alias 'sl=sudo killall -u milk'
 
 # Grep, extended-regexp, case insentitive, recursive, line number, strip colours control chars for pipes
 alias g="grep -EiRn --color=tty"
+
+### Apps
+
+# For running an app in the background without any stdout in console
+alias -g S='&> /dev/null &'
+
+# Check Awesome window manager config
+alias 'ak=awesome -k'
+
+# For quick viewing of txt files
+alias L=less
+
+# Quick vim
+alias 'v=vim'
+
+# Quick sudo vim (with $EDITOR=vim)
+alias 'sv=sudoedit'
+
+# Nano with line numbers
+alias 'nano=nano -c'
+
+# Web browsers
+alias u="uzbl"
+
+# Git
+alias 'gits=git status'
+alias 'gita=git add .'
+alias 'gitd=git diff --color'
+alias 'gitps=git push'
+alias 'gitpl=git pull'
+# see also gitc in functions.zsh
+
+# Check disk usage in ncdu (arch)
+alias 'ncdua=ncdu / --exclude /home --exclude /media --exclude /run/media --exclude /boot --exclude /tmp --exclude /dev --exclude /proc'
+
+# List dir items
+alias 'dus=du -ms * | sort -n'
+
+# Check disk usage in ncdu (arch root)
+alias 'ncduar=sudo ncdu / --exclude /home --exclude /media --exclude /run/media --exclude /boot --exclude /tmp --exclude /dev --exclude /proc --exclude '
 
 ### Package management
 
@@ -129,6 +139,10 @@ alias 'colours=for code in {000..255}; do print -P -- "$code: %F{$code}Test%f"; 
 # List open ports and their process
 alias 'ports=netstat -plnt'
 
+# Quick local HTTP server
+alias 'server=python2 -m SimpleHTTPServer'
+alias 'serverphp=php -S localhost:8000'
+
 # Mount with coloum output
 alias 'mounts=mount | column -t'
 
@@ -143,12 +157,6 @@ alias bofh='nc bofh.jeffballard.us 666 | tail -n 1'
 
 # Public IP address
 alias publicip='wget http://checkip.dyndns.org/ -O - -o /dev/null | cut -d: -f 2 | cut -d\< -f 1'
-
-# Git
-alias 'gits=git status'
-alias 'gita=git add .'
-alias 'gitp=git push'
-# see also gitc in functions.zsh
 
 # Get shit done - temp redirect certain sites to localhost
 alias 'gsd=sudo /home/milk/scripts/get-shit-done/get-shit-done.sh'
