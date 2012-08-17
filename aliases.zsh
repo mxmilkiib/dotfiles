@@ -94,6 +94,9 @@ alias 'gitps=git push'
 alias 'gitpl=git pull'
 # see also gitc in functions.zsh
 
+# Human readable df default
+alias 'df=df -h'
+
 # Check disk usage in ncdu (arch)
 alias 'ncdua=ncdu / --exclude /home --exclude /media --exclude /run/media --exclude /boot --exclude /tmp --exclude /dev --exclude /proc'
 
@@ -101,7 +104,7 @@ alias 'ncdua=ncdu / --exclude /home --exclude /media --exclude /run/media --excl
 alias 'dus=du -ms * | sort -n'
 
 # Check disk usage in ncdu (arch root)
-alias 'ncduar=sudo ncdu / --exclude /home --exclude /media --exclude /run/media --exclude /boot --exclude /tmp --exclude /dev --exclude /proc --exclude '
+alias 'ncduar=sudo ncdu / --exclude /home --exclude /media --exclude /run/media --exclude /boot --exclude /tmp --exclude /dev --exclude /proc --exclude /var/lib/mpd/music'
 
 ### Package management
 
