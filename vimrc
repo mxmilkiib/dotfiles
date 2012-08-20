@@ -58,26 +58,23 @@ NeoBundle 'git://git.wincent.com/command-t.git'
 
 " Syntax
 NeoBundle 'cakebaker/scss-syntax.vim'
-NeoBundle 'vim-scripts/Better-CSS-Syntax-for-Vim'
+" NeoBundle 'vim-scripts/Better-CSS-Syntax-for-Vim' - fuxks with scss :(
 NeoBundle 'pangloss/vim-javascript'
 
+" Add/remove comments with ease
 NeoBundle 'tomtom/tcomment_vim'
+
+" Manage multiple files with ease
 NeoBundle 'scrooloose/nerdtree'
-NeoBundle 'sickill/vim-pasta'
-
-
-NeoBundle 'msanders/snipmate.vim'
-
-NeoBundle 'Shougo/neocomplcache'
-let g:neocomplcache_enable_at_startup = 1
-" Plugin key-mappings.
-imap <C-k>     <Plug>(neocomplcache_snippets_expand)
-smap <C-k>     <Plug>(neocomplcache_snippets_expand)
-inoremap <expr><C-g>     neocomplcache#undo_completion()
-inoremap <expr><C-l>     neocomplcache#complete_common_string()
 
 " Manage buffers
 NeoBundle 'fholgado/minibufexpl.vim'
+
+"NeoBundle 'sickill/vim-pasta'
+
+"NeoBundle 'msanders/snipmate.vim'
+
+"NeoBundle 'Shougo/neocomplcache'
 
 " Non git repos
 " NeoBundle 'https://bitbucket.org/ns9tks/vim-fuzzyfinder'
