@@ -81,11 +81,14 @@ NeoBundle 'fholgado/minibufexpl.vim'
 
 filetype plugin indent on     " Required!
 
-""" General
-
 " Color theme
 NeoBundle 'BlackSea'
 colorscheme BlackSea
+
+""" General
+
+set ttymouse=xterm2
+set mouse=n
 
 " Use Vim defaults instead of 100% vi compatibility
 set nocompatible
