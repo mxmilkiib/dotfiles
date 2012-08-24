@@ -32,6 +32,14 @@ NeoBundle 'gregsexton/gitv'
 
 " File navigation
 NeoBundle 'Lokaltog/vim-easymotion'
+" NeoBundle 'spolu/dwm.vim'
+NeoBundle 'fabi1cazenave/suckless.vim'
+
+" Manage tab workspaces
+NeoBundle 'vim-scripts/TabBar'
+
+" Find things across windows/tabs
+NeoBundle 'kien/ctrlp.vim'
 
 " New staus line tool
 NeoBundle 'Lokaltog/vim-powerline'
@@ -68,9 +76,9 @@ NeoBundle 'tomtom/tcomment_vim'
 NeoBundle 'scrooloose/nerdtree'
 
 " Manage buffers
-NeoBundle 'fholgado/minibufexpl.vim'
+"NeoBundle 'fholgado/minibufexpl.vim'
 
-"NeoBundle 'sickill/vim-pasta'
+NeoBundle 'sickill/vim-pasta'
 
 "NeoBundle 'msanders/snipmate.vim'
 
