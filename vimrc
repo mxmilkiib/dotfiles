@@ -32,8 +32,8 @@ NeoBundle 'gregsexton/gitv'
 
 " File navigation
 NeoBundle 'Lokaltog/vim-easymotion'
-" NeoBundle 'spolu/dwm.vim'
-NeoBundle 'fabi1cazenave/suckless.vim'
+NeoBundle 'spolu/dwm.vim'
+"NeoBundle 'fabi1cazenave/suckless.vim'
 
 " Manage tab workspaces
 NeoBundle 'vim-scripts/TabBar'
