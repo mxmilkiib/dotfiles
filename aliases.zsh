@@ -106,6 +106,9 @@ alias 'dus=du -ms * | sort -n'
 # Check disk usage in ncdu (arch root)
 alias 'ncduar=sudo ncdu / --exclude /home --exclude /media --exclude /run/media --exclude /boot --exclude /tmp --exclude /dev --exclude /proc --exclude /var/lib/mpd/music'
 
+### Web frameworks
+alias 'dr=drush'
+
 ### Package management
 
 # Aptitude
@@ -118,10 +121,14 @@ alias 'as=apt-cache search'
 alias 'aw=apt-cache show'
 
 # Pacman
-alias 'p=sudo pacman -Sy'
-alias 'pq=sudo pacman -S'
-alias 'pu=sudo pacman -Syu'
-alias 'pU=sudo pacman -U'
+#alias 'p=packer-color --noedit --noconfirm -S 'tr '[A-Z]' '[a-z]' $1'' - tofix
+alias 'p=packer-color --noedit --noconfirm -S'
+alias 'pu=packer-color --noedit --noconfirm -Syu'
+alias 'pS=packer-color --noedit --noconfirm -Ss'
+# alias 'p=sudo pacman -Sy'
+# alias 'pq=sudo pacman -S'
+# alias 'pu=sudo pacman -Syu'
+# alias 'pU=sudo pacman -U'
 alias 'pR=sudo pacman -R'
 alias 'pl=sudo rm /var/lib/pacman/db.lck'
 
