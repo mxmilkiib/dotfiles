@@ -11,10 +11,6 @@ if [ -d /etc/X11/xinit/xinitrc.d ]; then
   unset f
 fi
 
-# Set background image
-# sh ~/scripts/fehbg &
-~/scripts/gifbg.sh  ~/images/backgrounds/animated/bladerunner.gif &
-
 # Source .Xresources for this session
 xrdb -merge ~/.Xresources
 
@@ -29,8 +25,16 @@ hsetroot -solid "#000000"
 # cairo-compmgr doesn't allow animated backgrounds
 xcompmgr &
 
+# Set background image
+# sh ~/scripts/fehbg &
+#~/scripts/gifbg.sh  ~/images/backgrounds/animated/bladerunner.gif &
+~/scripts/nasa-apod-desktop/nasa_apod_desktop.py &
+
+# Give time for background to take
+#sleep 4
+
 # Give opacity to specific windows. See ~/.devilspie/opacity.ds
-devilspie -a &
+#devilspie -a &
 
 # Redshift - changed screen colour temp
 gtk-redshift -l 55.978301:-3.228586 -t 6500:4500 &
@@ -38,5 +42,18 @@ gtk-redshift -l 55.978301:-3.228586 -t 6500:4500 &
 # Unclutter - hides the mouse cursor after 5 seconds of idle
 unclutter -root -jitter 10 &
 
+# As xmonad default to x cursor
+xsetroot -cursor_name left_ptr &
+
+# Set new NASA background
+python2 ~/scripts/nasa-apod-desktop/nasa_apod_desktop.py &
+
+# Start urxvt demon
+urxvtd -q -f -o &
+
+# Start xscreensaver
+xscreensaver -nosplash &
+
 # Start Openbox
-exec openbox-session
+#exec openbox
+exec awesome

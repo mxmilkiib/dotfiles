@@ -1,6 +1,6 @@
-background: black
-foreground: white
-scrollBar_right: true
+XTerm*background: black
+XTerm*foreground: white
+XTerm*scrollBar_right: true
 
 ! Apperence
 URxvt*background: [80]black
@@ -26,8 +26,11 @@ URxvt*scrollstyle:plain
 URxvt.perl-lib: /usr/lib/urxvt/perl/
 URxvt.perl-ext-common: default,matcher,searchable-scrollback,fullscreen,url-select
 
+! Bell
+URxvt.urgentOnBell: True
+
 ! Launch URLs
-URxvt.urlLauncher: chromium-browser
+URxvt.urlLauncher: chromium
 URxvt.matcher.button: 1
 
 URxvt.keysym.M-u:       perl:url-select:select_next
@@ -46,3 +49,10 @@ URxvt.keysym.S-space:  \033
 XTerm*vt100.Translations:       #override\n\
 Ctrl <KeyPress> Left   : string("\033[90~")  \n\
 Ctrl <KeyPress> Right  : string("\033[91~")  \n
+
+Xft.autohint: 0
+Xft.lcdfilter:  lcddefault
+Xft.hintstyle:  hintfull
+Xft.hinting: 1
+Xft.antialias: 1
+Xft.rgba: rgb
