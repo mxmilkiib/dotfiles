@@ -1,3 +1,5 @@
+
+
 """ Milk's vimrc
 
 """ Init pathogen
@@ -36,7 +38,7 @@ NeoBundle 'spolu/dwm.vim'
 "NeoBundle 'fabi1cazenave/suckless.vim'
 
 " Manage tab workspaces
-NeoBundle 'vim-scripts/TabBar'
+"NeoBundle 'vim-scripts/TabBar'
 
 " Find things across windows/tabs
 NeoBundle 'kien/ctrlp.vim'
@@ -241,7 +243,7 @@ nmap <silent> <leader>p :NERDTreeToggle<CR>
 "map <silent> <M-Right> :wincmd l<CR>
 
 " Swap windows
-map <C-K> <C-W>x
+" map <C-K> <C-W>x
 
 " Ctrl-+ and Ctrl-- to resize windows
 map <C--> <C-W>-
