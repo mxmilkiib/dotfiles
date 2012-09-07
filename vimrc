@@ -47,6 +47,8 @@ NeoBundle 'Lokaltog/vim-powerline'
 " Syntax checking
 NeoBundle 'scrooloose/syntastic'
 
+NeoBundle 'vim-lua-inspect'
+
 " Zen coding like
 "NeoBundle 'rstacruz/sparkup', {'rtp': 'vim/'}
 
