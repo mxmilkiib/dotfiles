@@ -47,6 +47,9 @@ alias 'cd..=cd ..'
 alias ',,=..'
 alias 'c.=cd $PWD'
 
+# Copy with progress bar
+alias cp='rsync --progress -ah'
+
 # Clear
 alias 'c=clear'
 
@@ -60,9 +63,6 @@ alias 'sd=sudo shutdown -h now'
 alias 'sr=sudo reboot'
 alias 'sl=sudo killall -u milk'
 
-# Grep, extended-regexp, case insentitive, recursive, line number, strip colours control chars for pipes
-alias g="grep -EiRn --color=tty"
-
 ### Apps
 
 # For running an app in the background without any stdout in console
@@ -71,8 +71,15 @@ alias -g S='&> /dev/null &'
 # Check Awesome window manager config
 alias 'ak=awesome -k'
 
+# Open a file
+alias 'o=xdg-open'
+
+# Grep, extended-regexp, case insentitive, recursive, line number, strip colours control chars for pipes
+alias g="grep -EiRn --color=tty"
+
 # For quick viewing of txt files
 alias L=less
+alias M=more    # does colour
 
 # Quick vim
 alias 'v=vim'
@@ -121,16 +128,17 @@ alias 'as=apt-cache search'
 alias 'aw=apt-cache show'
 
 # Pacman
-#alias 'p=packer-color --noedit --noconfirm -S 'tr '[A-Z]' '[a-z]' $1'' - tofix
-alias 'p=packer-color --noedit --noconfirm -S'
-alias 'pu=packer-color --noedit --noconfirm -Syu'
-alias 'pS=packer-color --noedit --noconfirm -Ss'
-# alias 'p=sudo pacman -Sy'
-# alias 'pq=sudo pacman -S'
+# #alias 'p=packer-color --noedit --noconfirm -S 'tr '[A-Z]' '[a-z]' $1'' - tofix
 # alias 'pu=sudo pacman -Syu'
-# alias 'pU=sudo pacman -U'
-alias 'pR=sudo pacman -R'
+# # alias 'pU=sudo pacman -U'
+
+alias 'p=packer --noconfirm -S'
+alias 'pu=packer --noconfirm -Syu'
+
 alias 'pl=sudo rm /var/lib/pacman/db.lck'
+alias 'pR=sudo pacman -R'
+
+# see functions.php for pS
 
 # Aurget
 alias 'ags=aurget -Ss'
