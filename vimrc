@@ -33,10 +33,12 @@ NeoBundle 'tpope/vim-fugitive'
 NeoBundle 'gregsexton/gitv'
 
 " File navigation
+" Jump to word using characters <leader><leader>w (like f in vimium)
 NeoBundle 'Lokaltog/vim-easymotion'
-NeoBundle 'tpope/dwm.vim'
 
-"NeoBundle 'fabi1cazenave/suckless.vim'
+" Tiling buffer window manager
+" Ctrl-j/k/space/...
+NeoBundle 'tpope/dwm.vim'
 
 " Manage tab workspaces
 "NeoBundle 'vim-scripts/TabBar'
@@ -65,9 +67,16 @@ NeoBundle 'vim-scripts/YankRing.vim'
 NeoBundle 'FuzzyFinder'
 NeoBundle 'L9' " required by ff
 
+" Search for text in open buffers
+NeoBundle 'buffergrep'
+
+" <leader>v
+" holy shit yello
+NeoBundle 'compview'
+
 " Non github repo
 " Open files easily
-NeoBundle 'git://git.wincent.com/command-t.git'
+"NeoBundle 'git://git.wincent.com/command-t.git'
 
 " Syntax
 NeoBundle 'cakebaker/scss-syntax.vim'
