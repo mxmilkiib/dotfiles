@@ -1,5 +1,3 @@
-
-
 """ Milk's vimrc
 
 """ Init pathogen
@@ -11,7 +9,7 @@ filetype off                   " Required!
 filetype plugin indent off     " Required!
 
 if has('vim_starting')
- set runtimepath+=~/.vim/bundle/neobundle.vim/
+  set runtimepath+=~/.vim/bundle/neobundle.vim/
 endif
 
 call neobundle#rc(expand('~/.vim/bundle/'))
@@ -28,6 +26,9 @@ NeoBundle 'Shougo/vimproc'
 " Note: You don't set neobundle setting in .gvimrc!
 " Original repos on github
 
+" . repeat for plugin actions
+NeoBundle 'tpope/vim-repeat'
+
 " Git integration
 NeoBundle 'tpope/vim-fugitive'
 NeoBundle 'gregsexton/gitv'
@@ -35,6 +36,9 @@ NeoBundle 'gregsexton/gitv'
 " File navigation
 " Jump to word using characters <leader><leader>w (like f in vimium)
 NeoBundle 'Lokaltog/vim-easymotion'
+
+NeoBundle 'myusuf3/numbers.vim'
+nnoremap <leader>n :NumbersToggle<CR>
 
 " Tiling buffer window manager
 " Ctrl-j/k/space/...
@@ -235,7 +239,6 @@ nmap <C-N><C-N> :set invnumber<CR>
 
 " Leader key (default = \)
 "let mapleader = ","
-
 " Let's make it easy to edit this file (mnemonic for the key sequence is 'e'dit 'v'imrc)
 " \ev
 nmap <silent> <Leader>ev :e $MYVIMRC<cr>
@@ -246,6 +249,9 @@ nmap <silent> <Leader>sv :so $MYVIMRC<cr>
 
 " \p - toggle nerdtree
 nmap <silent> <leader>p :NERDTreeToggle<CR>
+
+" Turn of indentation and paste from clipboard
+noremap <leader>p :set paste<CR>:put  *<CR>:set nopaste<CR>
 
 " Move between windows with alt-arrows "not working after a few tries
 " http://vim.wikia.com/wiki/Switch_between_Vim_window_splits_easily
@@ -270,15 +276,15 @@ map <C-+> <C-W>+
 " Delete whitespace at end of a line in normal - <Leader><Space>
 " http://sartak.org/2011/03/end-of-line-whitespace-in-vim.html
 function! <SID>StripTrailingWhitespace()
-    " Preparation: save last search, and cursor position.
-    let _s=@/
-    let l = line(".")
-    let c = col(".")
-    " Do the business:
-    %s/\s\+$//e
-    " Clean up: restore previous search history, and cursor position
-    let @/=_s
-    call cursor(l, c)
+  " Preparation: save last search, and cursor position.
+  let _s=@/
+  let l = line(".")
+  let c = col(".")
+  " Do the business:
+  %s/\s\+$//e
+  " Clean up: restore previous search history, and cursor position
+  let @/=_s
+  call cursor(l, c)
 endfunction
 noremap <silent> <Leader><Space> :call <SID>StripTrailingWhitespace()<CR>
 
@@ -331,7 +337,7 @@ com! DiffSaved call s:DiffWithSaved()
 " Only define it when not defined already.
 if !exists(":DiffOrig")
   command DiffOrig vert new | set bt=nofile | r ++edit # | 0d_ | diffthis
-      \ | wincmd p | diffthis
+        \ | wincmd p | diffthis
 endif
 
 
