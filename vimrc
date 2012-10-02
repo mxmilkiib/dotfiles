@@ -214,6 +214,7 @@ set backspace=eol,indent,start
 
 " Shift-space as Esc - for gvim, vim requires mapping in terminal emulator config
 imap <S-Space> <Esc>
+imap <C-c> <Esc>
 
 " Backspace in normal mode
 " (beeps on blank line due to l)
@@ -350,3 +351,11 @@ if has('gui_running')
   map <S-Insert> <MiddleMouse>
   map! <S-Insert> <MiddleMouse>
 endif
+
+""" Ctrl-q, insert just one character, not working!
+"function! RepeatChar(char, count)
+"   return repeat(a:char, a:count)
+" endfunction
+" nnoremap <C-q> :<C-U>exec "normal i".RepeatChar(nr2char(getchar()), v:count1)<CR>
+" below not urxvt friendly
+" nnoremap C-S :<C-U>exec "normal a".RepeatChar(nr2char(getchar()), v:count1)<CR>
