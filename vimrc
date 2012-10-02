@@ -56,7 +56,7 @@ NeoBundle 'Lokaltog/vim-powerline'
 " Syntax checking
 NeoBundle 'scrooloose/syntastic'
 
-NeoBundle 'vim-lua-inspect'
+NeoBundle 'xolox/vim-lua-inspect'
 
 " Zen coding like
 "NeoBundle 'rstacruz/sparkup', {'rtp': 'vim/'}
@@ -97,6 +97,8 @@ NeoBundle 'scrooloose/nerdtree'
 "NeoBundle 'fholgado/minibufexpl.vim'
 
 NeoBundle 'sickill/vim-pasta'
+
+NeoBundle 'inky/tumblr'
 
 "NeoBundle 'msanders/snipmate.vim'
 
