@@ -17,8 +17,8 @@ alias sudo='command sudo '
 
 ### Looking around, moving about.
 
-alias ll="ls -l --group-directories-first"
-alias ls="ls -h --color"    # add colors for filetype recognition
+alias ll="ls -lh --group-directories-first"
+alias ls="ls --color"       # add colors for filetype recognition
 alias la="ls -a"            # show hidden files
 
 alias lt="ls -ltr"          # sort by date, most recent last

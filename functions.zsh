@@ -157,7 +157,11 @@ cpf() { cp "$@" && goto "$_"; }
 mvf() { mv "$@" && goto "$_"; }
 goto() { [ -d "$1" ] && cd "$1" || cd "$(dirname "$1")"; }
 
+# cd and ls -la
+cl() { cd "$1" && ls -la . ; }
+
 # IRC like buffer new lines
+# works on arch anyway....
 fake-accept-line() {
   # If the Zle buffer is not empty
   if [[ -n "$BUFFER" ]];
