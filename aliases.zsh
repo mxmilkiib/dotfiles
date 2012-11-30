@@ -190,6 +190,6 @@ alias 'nyancat=telnet miku.acm.uiuc.edu'
 alias 'gcu=sudo chromium-update'
 
 # To let Ubuntu Server know that python2 = python
-if [[ "$HOST" = "purple.thingsandstuff.org" ]] {
+if [[ "$HOST" != "silver.local" ]] {
   alias 'python2=python'
 }
