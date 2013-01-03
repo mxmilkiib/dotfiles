@@ -9,7 +9,7 @@ filetype off                   " Required!
 filetype plugin indent off     " Required!
 
 if has('vim_starting')
-  set runtimepath+=~/.vim/bundle/neobundle.vim/
+  set runtimepath+=~/.vim/bundle/neobundle.vim/,/usr/share/vim/vim72
 endif
 
 call neobundle#rc(expand('~/.vim/bundle/'))
@@ -42,7 +42,7 @@ nnoremap <leader>n :NumbersToggle<CR>
 
 " Tiling buffer window manager
 " Ctrl-j/k/space/...
-NeoBundle 'tpope/dwm.vim'
+NeoBundle 'spolu/dwm.vim'
 
 " Manage tab workspaces
 "NeoBundle 'vim-scripts/TabBar'
@@ -54,7 +54,7 @@ NeoBundle 'kien/ctrlp.vim'
 NeoBundle 'Lokaltog/vim-powerline'
 
 " Syntax checking
-NeoBundle 'scrooloose/syntastic'
+" NeoBundle 'scrooloose/syntastic'
 
 " Doesn't work right with Awesome
 " NeoBundle 'xolox/vim-lua-inspect'
@@ -84,9 +84,14 @@ NeoBundle 'compview'
 "NeoBundle 'git://git.wincent.com/command-t.git'
 
 " Syntax
+NeoBundle 'othree/html5.vim'
+
+NeoBundle 'skammer/vim-css-color.git'
+
 NeoBundle 'cakebaker/scss-syntax.vim'
 " NeoBundle 'vim-scripts/Better-CSS-Syntax-for-Vim' - fuxks with scss :(
 NeoBundle 'pangloss/vim-javascript'
+
 
 " Add/remove comments with ease
 NeoBundle 'tomtom/tcomment_vim'
@@ -201,6 +206,32 @@ if has("syntax")
   " filetype indent on " causes comments to be indented down??
 endif
 
+" Tag syntax config
+
+" Vim syntax file
+" Language: HTML (version 5)
+" Maintainer: Rodrigo Machado <rcmachado [at] gmail [dot] com>
+" URL: http://rm.blog.br/vim/syntax/html.vim
+" Last Change: 2009 Aug 19
+" License: Public domain
+" (but let me know if you liked it :) )
+"
+" Note: This file just adds the new tags from HTML 5
+" and don't replace default html.vim syntax file
+
+" HTML 5 tags
+syn keyword htmlTagName contained article aside audio bb canvas command datagrid
+syn keyword htmlTagName contained datalist details dialog embed figure footer
+syn keyword htmlTagName contained header hgroup keygen mark meter nav output
+syn keyword htmlTagName contained progress time ruby rt rp section time video
+
+" HTML 5 arguments
+syn keyword htmlArg contained autofocus placeholder min max step
+syn keyword htmlArg contained contenteditable contextmenu draggable hidden item
+syn keyword htmlArg contained itemprop list subject spellcheck
+" this doesn't work because default syntax file alredy define a 'data' attribute
+syn match htmlArg "\<\(data-[\-a-zA-Z0-9_]\+\)=" contained
+
 "Tell vim to remember certain things when we exit
 "  '10  :  marks will be remembered for up to 10 previously edited files
 "  "100 :  will save up to 100 lines for each register
@@ -255,7 +286,7 @@ nmap <silent> <Leader>sv :so $MYVIMRC<cr>
 nmap <silent> <leader>p :NERDTreeToggle<CR>
 
 " Turn of indentation and paste from clipboard
-noremap <leader>p :set paste<CR>:put  *<CR>:set nopaste<CR>
+noremap <leader><leader>p :set paste<CR>:put  *<CR>:set nopaste<CR>
 
 " Move between windows with alt-arrows "not working after a few tries
 " http://vim.wikia.com/wiki/Switch_between_Vim_window_splits_easily
