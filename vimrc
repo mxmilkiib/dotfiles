@@ -99,6 +99,9 @@ NeoBundle 'tomtom/tcomment_vim'
 " Manage multiple files with ease
 NeoBundle 'scrooloose/nerdtree'
 
+" Display sections in sidebar
+NeoBundle 'yazug/vim-taglist-plus'
+
 " Manage buffers
 "NeoBundle 'fholgado/minibufexpl.vim'
 
