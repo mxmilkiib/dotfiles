@@ -100,7 +100,8 @@ NeoBundle 'tomtom/tcomment_vim'
 NeoBundle 'scrooloose/nerdtree'
 
 " Display sections in sidebar
-NeoBundle 'yazug/vim-taglist-plus'
+" NeoBundle 'yazug/vim-taglist-plus'
+" required ctags installed
 
 " Manage buffers
 "NeoBundle 'fholgado/minibufexpl.vim'
