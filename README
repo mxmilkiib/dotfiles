@@ -2,7 +2,7 @@ Milk's Vim config
 
 read only;
 git clone git@github.com:milkmiruku/dotvim.git ~/.vim
-ln -s ~/.vim/vimrc .vimrc
+ln -s ~/.vim/vimrc ~/.vimrc
 
 Uses NeoBundle for plugin installation/update.
 
