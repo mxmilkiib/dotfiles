@@ -35,4 +35,4 @@ eval `dircolors -b`
 export REPORTTIME=10
 
 # https://github.com/clvv/fasd
-eval "$(/etc/zsh/fasd/fasd --init auto)"
+eval "$($Z/fasd/fasd --init auto)"
