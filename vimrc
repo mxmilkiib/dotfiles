@@ -26,12 +26,16 @@ NeoBundle 'Shougo/vimproc'
 " Note: You don't set neobundle setting in .gvimrc!
 " Original repos on github
 
+NeoBundle 'mhinz/vim-startify'
+
 " . repeat for plugin actions
 NeoBundle 'tpope/vim-repeat'
 
 " Git integration
 NeoBundle 'tpope/vim-fugitive'
 NeoBundle 'gregsexton/gitv'
+
+NeoBundle 'airblade/vim-gitgutter'
 
 " File navigation
 " Jump to word using characters <leader><leader>w (like f in vimium)
@@ -45,7 +49,7 @@ nnoremap <leader>n :NumbersToggle<CR>
 NeoBundle 'spolu/dwm.vim'
 
 " Manage tab workspaces
-"NeoBundle 'vim-scripts/TabBar'
+" NeoBundle 'sjbach/lusty'
 
 " Find things across windows/tabs
 NeoBundle 'kien/ctrlp.vim'
@@ -98,6 +102,18 @@ NeoBundle 'tomtom/tcomment_vim'
 
 " Manage multiple files with ease
 NeoBundle 'scrooloose/nerdtree'
+" \p - toggle nerdtree
+nmap <silent> <leader>p :NERDTreeToggle<CR>
+
+NeoBundle 'jistr/vim-nerdtree-tabs'
+map <Leader>o <plug>NERDTreeTabsToggle<CR>
+
+NeoBundle 'benatkin/vim-move-between-tabs'
+
+NeoBundle 'xolox/vim-session'
+" :SaveSession, :OpenSession, :RestartVim, etc.
+
+NeoBundle 'chrisbra/histwin.vim'
 
 " Display sections in sidebar
 " NeoBundle 'yazug/vim-taglist-plus'
@@ -286,8 +302,6 @@ nmap <silent> <Leader>ev :e $MYVIMRC<cr>
 " \sv
 nmap <silent> <Leader>sv :so $MYVIMRC<cr>
 
-" \p - toggle nerdtree
-nmap <silent> <leader>p :NERDTreeToggle<CR>
 
 " Turn of indentation and paste from clipboard
 noremap <leader><leader>p :set paste<CR>:put  *<CR>:set nopaste<CR>
