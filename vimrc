@@ -109,8 +109,9 @@ NeoBundle 'jistr/vim-nerdtree-tabs'
 map <Leader>o <plug>NERDTreeTabsToggle<CR>
 
 NeoBundle 'benatkin/vim-move-between-tabs'
+NeoBundle 'maxmeyer/vim-tabreorder'
 
-NeoBundle 'xolox/vim-session'
+"NeoBundle 'xolox/vim-session'
 " :SaveSession, :OpenSession, :RestartVim, etc.
 
 NeoBundle 'chrisbra/histwin.vim'
@@ -124,11 +125,12 @@ NeoBundle 'chrisbra/histwin.vim'
 
 " NeoBundle 'sickill/vim-pasta'
 
-NeoBundle 'inky/tumblr'
+" NeoBundle 'inky/tumblr'
 
 "NeoBundle 'msanders/snipmate.vim'
 
 "NeoBundle 'Shougo/neocomplcache'
+NeoBundle 'Valloric/YouCompleteMe'
 
 " Non git repos
 " NeoBundle 'https://bitbucket.org/ns9tks/vim-fuzzyfinder'
