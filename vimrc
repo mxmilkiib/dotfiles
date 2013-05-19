@@ -109,8 +109,9 @@ NeoBundle 'jistr/vim-nerdtree-tabs'
 map <Leader>o <plug>NERDTreeTabsToggle<CR>
 
 NeoBundle 'benatkin/vim-move-between-tabs'
+NeoBundle 'maxmeyer/vim-tabreorder'
 
-NeoBundle 'xolox/vim-session'
+"NeoBundle 'xolox/vim-session'
 " :SaveSession, :OpenSession, :RestartVim, etc.
 
 NeoBundle 'chrisbra/histwin.vim'
