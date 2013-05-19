@@ -26,7 +26,7 @@ NeoBundle 'Shougo/vimproc'
 " Note: You don't set neobundle setting in .gvimrc!
 " Original repos on github
 
-NeoBundle 'mhinz/vim-startify'
+" NeoBundle 'mhinz/vim-startify'
 
 " . repeat for plugin actions
 NeoBundle 'tpope/vim-repeat'
@@ -125,11 +125,12 @@ NeoBundle 'chrisbra/histwin.vim'
 
 " NeoBundle 'sickill/vim-pasta'
 
-NeoBundle 'inky/tumblr'
+" NeoBundle 'inky/tumblr'
 
 "NeoBundle 'msanders/snipmate.vim'
 
 "NeoBundle 'Shougo/neocomplcache'
+NeoBundle 'Valloric/YouCompleteMe'
 
 " Non git repos
 " NeoBundle 'https://bitbucket.org/ns9tks/vim-fuzzyfinder'
