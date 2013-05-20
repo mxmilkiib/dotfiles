@@ -87,6 +87,10 @@ NeoBundle 'compview'
 " Open files easily
 "NeoBundle 'git://git.wincent.com/command-t.git'
 
+
+" Coding
+NeoBundle 'Raimondi/delimitMate'
+
 " Syntax
 NeoBundle 'othree/html5.vim'
 
