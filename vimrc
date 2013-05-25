@@ -21,78 +21,24 @@ call neobundle#rc(expand('~/.vim/bundle/'))
 " After install, turn shell ~/.vim/bundle/vimproc, (n,g)make -f your_machines_makefile
 NeoBundle 'Shougo/vimproc'
 
-" My Bundles here:
-"
-" Note: You don't set neobundle setting in .gvimrc!
-" Original repos on github
 
-" NeoBundle 'mhinz/vim-startify'
+" Coding
+
+NeoBundle 'Raimondi/delimitMate'
+
+" Add/remove comments with ease
+NeoBundle 'tomtom/tcomment_vim'
 
 " . repeat for plugin actions
 NeoBundle 'tpope/vim-repeat'
 
-" Git integration
-NeoBundle 'tpope/vim-fugitive'
-NeoBundle 'gregsexton/gitv'
-
-NeoBundle 'airblade/vim-gitgutter'
-
-" File navigation
-" Jump to word using characters <leader><leader>w (like f in vimium)
-NeoBundle 'Lokaltog/vim-easymotion'
-
-NeoBundle 'myusuf3/numbers.vim'
-nnoremap <leader>n :NumbersToggle<CR>
-
-" Tiling buffer window manager
-" Ctrl-j/k/space/...
-NeoBundle 'spolu/dwm.vim'
-
-" Manage tab workspaces
-" NeoBundle 'sjbach/lusty'
-
-" Find things across windows/tabs
-NeoBundle 'kien/ctrlp.vim'
-
-" New staus line tool
-NeoBundle 'Lokaltog/vim-powerline'
-
-" Syntax checking
-" NeoBundle 'scrooloose/syntastic'
-
-" Doesn't work right with Awesome
-" NeoBundle 'xolox/vim-lua-inspect'
-
-" Zen coding like
-"NeoBundle 'rstacruz/sparkup', {'rtp': 'vim/'}
-
-" Yank ring
-NeoBundle 'vim-scripts/YankRing.vim'
-" 2p, paste sedonc last delete
-
-" vim-scripts repos
-
-" find things easily
-NeoBundle 'FuzzyFinder'
-NeoBundle 'L9' " required by ff
-
-" Search for text in open buffers
-NeoBundle 'buffergrep'
-
-" <leader>v
-" holy shit yello
-NeoBundle 'compview'
-
-" Non github repo
-" Open files easily
-"NeoBundle 'git://git.wincent.com/command-t.git'
-
-
-" Coding
-NeoBundle 'Raimondi/delimitMate'
 
 " Syntax
-NeoBundle 'othree/html5.vim'
+
+" NeoBundle 'othree/html5.vim'
+NeoBundle 'scrooloose/syntastic'
+
+NeoBundle 'Valloric/vim-operator-highlight'
 
 NeoBundle 'skammer/vim-css-color.git'
 
@@ -101,24 +47,89 @@ NeoBundle 'cakebaker/scss-syntax.vim'
 NeoBundle 'pangloss/vim-javascript'
 
 
-" Add/remove comments with ease
-NeoBundle 'tomtom/tcomment_vim'
+" Find things easily
+
+" NeoBundle 'FuzzyFinder'
+" NeoBundle 'L9' " required by ff
+
+" Search for text in open buffers
+" NeoBundle 'buffergrep'
+
+" <leader>v
+" holy shit yello
+NeoBundle 'compview'
+
+" Find things across windows/tabs
+NeoBundle 'kien/ctrlp.vim'
+
+" File navigation
+" Jump to word using characters <leader><leader>w (like f in vimium)
+NeoBundle 'Lokaltog/vim-easymotion'
+
+" NeoBundle 'https://bitbucket.org/ns9tks/vim-fuzzyfinder'
+
+NeoBundle 'myusuf3/numbers.vim'
+nnoremap <leader>n :NumbersToggle<CR>
+
+
+" Startup
+
+" NeoBundle 'mhinz/vim-startify'
+
+
+" Large interface
+
+" Tiling buffer window manager
+" Ctrl-j/k/space/...
+NeoBundle 'spolu/dwm.vim'
+
+" New staus line tool
+NeoBundle 'Lokaltog/vim-powerline'
 
 " Manage multiple files with ease
 NeoBundle 'scrooloose/nerdtree'
 " \p - toggle nerdtree
 nmap <silent> <leader>p :NERDTreeToggle<CR>
 
+
+" Tabs
 NeoBundle 'jistr/vim-nerdtree-tabs'
 map <Leader>o <plug>NERDTreeTabsToggle<CR>
 
 NeoBundle 'benatkin/vim-move-between-tabs'
 NeoBundle 'maxmeyer/vim-tabreorder'
 
+" Manage tab workspaces
+" NeoBundle 'sjbach/lusty'
+
+
+" Doesn't work right with Awesome
+" NeoBundle 'xolox/vim-lua-inspect'
+
+" Zen coding like
+"NeoBundle 'rstacruz/sparkup', {'rtp': 'vim/'}
+
+" Yank ring
+" NeoBundle 'vim-scripts/YankRing.vim'
+" 2p, paste sedonc last delete
+
+
+" Git integration
+NeoBundle 'tpope/vim-fugitive'
+NeoBundle 'gregsexton/gitv'
+
+NeoBundle 'airblade/vim-gitgutter'
+
+
+""" to sort
+
+" Open files easily
+"NeoBundle 'git://git.wincent.com/command-t.git'
+
 "NeoBundle 'xolox/vim-session'
 " :SaveSession, :OpenSession, :RestartVim, etc.
 
-NeoBundle 'chrisbra/histwin.vim'
+" NeoBundle 'chrisbra/histwin.vim'
 
 " Display sections in sidebar
 " NeoBundle 'yazug/vim-taglist-plus'
@@ -136,14 +147,16 @@ NeoBundle 'chrisbra/histwin.vim'
 "NeoBundle 'Shougo/neocomplcache'
 NeoBundle 'Valloric/YouCompleteMe'
 
-" Non git repos
-" NeoBundle 'https://bitbucket.org/ns9tks/vim-fuzzyfinder'
 
-filetype plugin indent on     " Required!
 
 " Color theme
 NeoBundle 'BlackSea'
 colorscheme BlackSea
+
+
+" NeoBundle required
+filetype plugin indent on     " Required!
+
 
 """ General
 
