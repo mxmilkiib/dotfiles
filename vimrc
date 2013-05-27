@@ -17,26 +17,37 @@ call neobundle#rc(expand('~/.vim/bundle/'))
 " Let NeoBundle manage NeoBundle
 "NeoBundle 'Shougo/neobundle.vim'
 
-" Recommended to install
+
 " After install, turn shell ~/.vim/bundle/vimproc, (n,g)make -f your_machines_makefile
 NeoBundle 'Shougo/vimproc'
+
+" :help ConqueTerm
+NeoBundle 'Flolagale/conque'
 
 
 " Coding
 
-NeoBundle 'Raimondi/delimitMate'
+" NeoBundle 'Raimondi/delimitMate'
 
 " Add/remove comments with ease
 NeoBundle 'tomtom/tcomment_vim'
 
+" Surrount objects with something
+NeoBundle 'tpope/vim-surround'
+
+" Multiline text objects
+NeoBundle 'paradigm/TextObjectify'
+
+" Repeat movements
+NeoBundle 'vim-scripts/repmo.vim'
+
 " . repeat for plugin actions
 NeoBundle 'tpope/vim-repeat'
-
 
 " Syntax
 
 " NeoBundle 'othree/html5.vim'
-NeoBundle 'scrooloose/syntastic'
+" NeoBundle 'scrooloose/syntastic'
 
 NeoBundle 'Valloric/vim-operator-highlight'
 
@@ -44,8 +55,17 @@ NeoBundle 'skammer/vim-css-color.git'
 
 NeoBundle 'cakebaker/scss-syntax.vim'
 " NeoBundle 'vim-scripts/Better-CSS-Syntax-for-Vim' - fuxks with scss :(
+" NeoBundle 'html.vim'
+
 NeoBundle 'pangloss/vim-javascript'
 
+NeoBundle 'Valloric/MatchTagAlways'
+
+" NeoBundle 'hallettj/jslint.vim'
+" NeoBundle 'joestelmach/lint.vim'
+
+" NeoBundle 'sleistner/vim-jshint'
+NeoBundle 'wookiehangover/jshint.vim'
 
 " Find things easily
 
@@ -63,8 +83,9 @@ NeoBundle 'compview'
 NeoBundle 'kien/ctrlp.vim'
 
 " File navigation
-" Jump to word using characters <leader><leader>w (like f in vimium)
+" Jump to word using characters <leader>w (like f in vimium)
 NeoBundle 'Lokaltog/vim-easymotion'
+let g:EasyMotion_leader_key = '<leader>'
 
 " NeoBundle 'https://bitbucket.org/ns9tks/vim-fuzzyfinder'
 
@@ -104,6 +125,7 @@ NeoBundle 'maxmeyer/vim-tabreorder'
 
 
 " Doesn't work right with Awesome
+" NeoBundle 'xolox/vim-misc'
 " NeoBundle 'xolox/vim-lua-inspect'
 
 " Zen coding like
@@ -129,7 +151,7 @@ NeoBundle 'airblade/vim-gitgutter'
 "NeoBundle 'xolox/vim-session'
 " :SaveSession, :OpenSession, :RestartVim, etc.
 
-" NeoBundle 'chrisbra/histwin.vim'
+NeoBundle 'chrisbra/histwin.vim'
 
 " Display sections in sidebar
 " NeoBundle 'yazug/vim-taglist-plus'
@@ -138,7 +160,7 @@ NeoBundle 'airblade/vim-gitgutter'
 " Manage buffers
 "NeoBundle 'fholgado/minibufexpl.vim'
 
-" NeoBundle 'sickill/vim-pasta'
+NeoBundle 'sickill/vim-pasta'
 
 " NeoBundle 'inky/tumblr'
 
@@ -155,7 +177,14 @@ colorscheme BlackSea
 
 
 " NeoBundle required
-filetype plugin indent on     " Required!
+" Basic syntax highlighting
+if has("syntax")
+  syntax on
+  filetype on
+  filetype plugin on
+  filetype indent on
+endif
+
 
 
 """ General
@@ -224,26 +253,7 @@ set suffixes=.bak,~,.swp,.o,.info,.aux,.log,.dvi,.bbl,.blg,.brf,.cb,.ind,.idx,.i
 
 set wildchar=<Tab> wildmenu wildmode=full
 
-" http://drupal.org/node/29325
-if has("autocmd")
-  " Drupal *.module and *.install files.
-  augroup module
-    autocmd BufRead,BufNewFile *.module set filetype=php
-    autocmd BufRead,BufNewFile *.install set filetype=php
-    autocmd BufRead,BufNewFile *.test set filetype=php
-    autocmd BufRead,BufNewFile *.inc set filetype=php
-    autocmd BufRead,BufNewFile *.profile set filetype=php
-    autocmd BufRead,BufNewFile *.view set filetype=php
-  augroup END
-endif
 
-" Basic syntax highlighting
-if has("syntax")
-  syntax on
-  filetype on
-  filetype plugin on
-  " filetype indent on " causes comments to be indented down??
-endif
 
 " Tag syntax config
 
@@ -271,6 +281,7 @@ syn keyword htmlArg contained itemprop list subject spellcheck
 " this doesn't work because default syntax file alredy define a 'data' attribute
 syn match htmlArg "\<\(data-[\-a-zA-Z0-9_]\+\)=" contained
 
+
 "Tell vim to remember certain things when we exit
 "  '10  :  marks will be remembered for up to 10 previously edited files
 "  "100 :  will save up to 100 lines for each register
@@ -282,8 +293,21 @@ syn match htmlArg "\<\(data-[\-a-zA-Z0-9_]\+\)=" contained
 set viminfo='10,\"100,:20,%,n~/.viminfo
 
 
-""" Key settings and bindings
+" http://drupal.org/node/29325
+if has("autocmd")
+  " Drupal *.module and *.install files.
+  augroup module
+    autocmd BufRead,BufNewFile *.module set filetype=php
+    autocmd BufRead,BufNewFile *.install set filetype=php
+    autocmd BufRead,BufNewFile *.test set filetype=php
+    autocmd BufRead,BufNewFile *.inc set filetype=php
+    autocmd BufRead,BufNewFile *.profile set filetype=php
+    autocmd BufRead,BufNewFile *.view set filetype=php
+  augroup END
+endif
 
+
+""" Key settings and bindings
 " N.b. I have urxvt pass shift-space as an esc
 
 " Make backspace work like most other apps
@@ -296,11 +320,6 @@ imap <C-c> <Esc>
 " Backspace in normal mode
 " (beeps on blank line due to l)
 noremap <BS> i<BS><Esc>li
-
-" http://vim.wikia.com/wiki/Toggle_auto-indenting_for_code_paste
-nnoremap <F2> :set invpaste paste?<CR>
-set pastetoggle=<F2>
-set showmode
 
 " Space from normal to insert with a space
 nmap <Space> i<Space>
@@ -322,8 +341,16 @@ nmap <silent> <Leader>ev :e $MYVIMRC<cr>
 nmap <silent> <Leader>sv :so $MYVIMRC<cr>
 
 
+
+" http://vim.wikia.com/wiki/Toggle_auto-indenting_for_code_paste
+nnoremap <F2> :set invpaste paste?<CR>
+set pastetoggle=<F2>
+set showmode
+
 " Turn of indentation and paste from clipboard
 noremap <leader><leader>p :set paste<CR>:put  *<CR>:set nopaste<CR>
+
+
 
 " Move between windows with alt-arrows "not working after a few tries
 " http://vim.wikia.com/wiki/Switch_between_Vim_window_splits_easily
@@ -339,11 +366,13 @@ noremap <leader><leader>p :set paste<CR>:put  *<CR>:set nopaste<CR>
 map <C--> <C-W>-
 map <C-+> <C-W>+
 
+
 " Remap hlsearch toggle, need to fix other bindings first
-" :set hlsearch
+set hlsearch
 " map <F5> :set hls!<bar>set hls?<CR>:
 " or
 " nmap <silent> <leader>n :silent :nohlsearch<CR>
+
 
 " Delete whitespace at end of a line in normal - <Leader><Space>
 " http://sartak.org/2011/03/end-of-line-whitespace-in-vim.html
@@ -359,6 +388,14 @@ function! <SID>StripTrailingWhitespace()
   call cursor(l, c)
 endfunction
 noremap <silent> <Leader><Space> :call <SID>StripTrailingWhitespace()<CR>
+
+
+" http://vim.wikia.com/wiki/Quickly_adding_and_deleting_empty_lines
+" Ctrl-j/k deletes blank line below/above, and Alt-j/k inserts.
+nnoremap <silent><leader>j :set paste<CR>m`o<Esc>``:set nopaste<CR>
+nnoremap <silent><leader>k :set paste<CR>m`O<Esc>``:set nopaste<CR>`
+nnoremap <silent><leader><leader>j m`:silent +g/\m^\s*$/d<CR>``:noh<CR>
+nnoremap <silent><leader><leader>k m`:silent -g/\m^\s*$/d<CR>``:noh<CR>
 
 
 """ Functions
@@ -427,6 +464,13 @@ if has('gui_running')
   " Make shift-insert work like in Xterm
   map <S-Insert> <MiddleMouse>
   map! <S-Insert> <MiddleMouse>
+
+  set guifont=monospace\ 8
+  set guioptions-=m  "remove menu bar
+  set guioptions-=T  "remove toolbar
+  set guioptions-=r  "remove right-hand scroll bar
+  set guioptions-=L  "remove left-hand scroll bar
+
 endif
 
 """ Ctrl-q, insert just one character, not working!
@@ -436,3 +480,6 @@ endif
 " nnoremap <C-q> :<C-U>exec "normal i".RepeatChar(nr2char(getchar()), v:count1)<CR>
 " below not urxvt friendly
 " nnoremap C-S :<C-U>exec "normal a".RepeatChar(nr2char(getchar()), v:count1)<CR>
+
+autocmd VimEnter * NERDTree
+autocmd BufEnter * NERDTreeMirror
