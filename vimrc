@@ -332,12 +332,12 @@ nmap <C-N><C-N> :set invnumber<CR>
 
 " Leader key (default = \)
 "let mapleader = ","
-" Let's make it easy to edit this file (mnemonic for the key sequence is 'e'dit 'v'imrc)
-" \ev
+
+
+" Edit .vimrc in current buffer with \ev
 nmap <silent> <Leader>ev :e $MYVIMRC<cr>
 
-" And to source this file as well (mnemonic for the key sequence is 's'ource 'v'imrc)
-" \sv
+" Source .vimrc with \sv
 nmap <silent> <Leader>sv :so $MYVIMRC<cr>
 
 
@@ -367,15 +367,19 @@ map <C--> <C-W>-
 map <C-+> <C-W>+
 
 
-" Remap hlsearch toggle, need to fix other bindings first
+" Highlight search term in all buffers
 set hlsearch
-" map <F5> :set hls!<bar>set hls?<CR>:
-" or
-" nmap <silent> <leader>n :silent :nohlsearch<CR>
+" Toggle search term highlight
+nmap <silent> <leader>/ :silent set invhlsearch<CR>
 
+
+" Highlight trailing whitespace in red on non-active line
+" http://sartak.org/2011/03/end-of-line-whitespace-in-vim.html
+autocmd InsertEnter * syn clear EOLWS | syn match EOLWS excludenl /\s\+\%#\@!$/
+autocmd InsertLeave * syn clear EOLWS | syn match EOLWS excludenl /\s\+$/
+highlight EOLWS ctermbg=red guibg=red
 
 " Delete whitespace at end of a line in normal - <Leader><Space>
-" http://sartak.org/2011/03/end-of-line-whitespace-in-vim.html
 function! <SID>StripTrailingWhitespace()
   " Preparation: save last search, and cursor position.
   let _s=@/
@@ -391,7 +395,6 @@ noremap <silent> <Leader><Space> :call <SID>StripTrailingWhitespace()<CR>
 
 
 " http://vim.wikia.com/wiki/Quickly_adding_and_deleting_empty_lines
-" Ctrl-j/k deletes blank line below/above, and Alt-j/k inserts.
 nnoremap <silent><leader>j :set paste<CR>m`o<Esc>``:set nopaste<CR>
 nnoremap <silent><leader>k :set paste<CR>m`O<Esc>``:set nopaste<CR>`
 nnoremap <silent><leader><leader>j m`:silent +g/\m^\s*$/d<CR>``:noh<CR>
@@ -412,6 +415,7 @@ augroup resCur
   autocmd!
   autocmd BufWinEnter * call ResCur()
 augroup END
+
 
 """ Folding
 
@@ -450,14 +454,6 @@ if !exists(":DiffOrig")
 endif
 
 
-""" Nifty
-
-" Highlight trailing whitespace in red on non-active line
-" http://sartak.org/2011/03/end-of-line-whitespace-in-vim.html
-autocmd InsertEnter * syn clear EOLWS | syn match EOLWS excludenl /\s\+\%#\@!$/
-autocmd InsertLeave * syn clear EOLWS | syn match EOLWS excludenl /\s\+$/
-highlight EOLWS ctermbg=red guibg=red
-
 """ Gvim
 
 if has('gui_running')
@@ -473,6 +469,7 @@ if has('gui_running')
 
 endif
 
+
 """ Ctrl-q, insert just one character, not working!
 "function! RepeatChar(char, count)
 "   return repeat(a:char, a:count)
@@ -481,5 +478,6 @@ endif
 " below not urxvt friendly
 " nnoremap C-S :<C-U>exec "normal a".RepeatChar(nr2char(getchar()), v:count1)<CR>
 
-autocmd VimEnter * NERDTree
-autocmd BufEnter * NERDTreeMirror
+" Auto open NERDTree on start - to fix
+" autocmd VimEnter * NERDTree
+" autocmd BufEnter * NERDTreeMirror
