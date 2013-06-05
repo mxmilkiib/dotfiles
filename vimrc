@@ -125,8 +125,8 @@ NeoBundle 'maxmeyer/vim-tabreorder'
 
 
 " Doesn't work right with Awesome
-" NeoBundle 'xolox/vim-misc'
-" NeoBundle 'xolox/vim-lua-inspect'
+NeoBundle 'xolox/vim-misc'
+NeoBundle 'xolox/vim-lua-inspect'
 
 " Zen coding like
 "NeoBundle 'rstacruz/sparkup', {'rtp': 'vim/'}
@@ -368,7 +368,7 @@ map <C-+> <C-W>+
 
 
 " Highlight search term in all buffers
-set hlsearch
+" set hlsearch
 " Toggle search term highlight
 nmap <silent> <leader>/ :silent set invhlsearch<CR>
 
