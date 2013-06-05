@@ -46,7 +46,7 @@ NeoBundle 'tpope/vim-repeat'
 
 " Syntax
 
-" NeoBundle 'othree/html5.vim'
+NeoBundle 'othree/html5.vim'
 " NeoBundle 'scrooloose/syntastic'
 
 NeoBundle 'Valloric/vim-operator-highlight'
@@ -130,6 +130,7 @@ NeoBundle 'xolox/vim-lua-inspect'
 
 " Zen coding like
 "NeoBundle 'rstacruz/sparkup', {'rtp': 'vim/'}
+NeoBundle 'mattn/zencoding-vim'
 
 " Yank ring
 " NeoBundle 'vim-scripts/YankRing.vim'
@@ -322,7 +323,7 @@ imap <C-c> <Esc>
 noremap <BS> i<BS><Esc>li
 
 " Space from normal to insert with a space
-nmap <Space> i<Space>
+nmap <Space> i<Space><Esc>
 
 " Enter in normal to add a line below and escape back to normal
 nmap <CR> i<CR><Esc>
