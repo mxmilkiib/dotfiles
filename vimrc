@@ -39,7 +39,7 @@ NeoBundle 'tpope/vim-surround'
 NeoBundle 'paradigm/TextObjectify'
 
 " Repeat movements
-NeoBundle 'vim-scripts/repmo.vim'
+" NeoBundle 'vim-scripts/repmo.vim'
 
 " . repeat for plugin actions
 NeoBundle 'tpope/vim-repeat'
@@ -125,8 +125,8 @@ NeoBundle 'maxmeyer/vim-tabreorder'
 
 
 " Doesn't work right with Awesome
-NeoBundle 'xolox/vim-misc'
-NeoBundle 'xolox/vim-lua-inspect'
+" NeoBundle 'xolox/vim-misc'
+" NeoBundle 'xolox/vim-lua-inspect'
 
 " Zen coding like
 "NeoBundle 'rstacruz/sparkup', {'rtp': 'vim/'}
