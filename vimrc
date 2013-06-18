@@ -15,7 +15,7 @@ endif
 call neobundle#rc(expand('~/.vim/bundle/'))
 
 " Let NeoBundle manage NeoBundle
-"NeoBundle 'Shougo/neobundle.vim'
+NeoBundle 'Shougo/neobundle.vim'
 
 
 " After install, turn shell ~/.vim/bundle/vimproc, (n,g)make -f your_machines_makefile
@@ -47,6 +47,7 @@ NeoBundle 'tpope/vim-repeat'
 " Syntax
 
 NeoBundle 'othree/html5.vim'
+
 " NeoBundle 'scrooloose/syntastic'
 
 NeoBundle 'Valloric/vim-operator-highlight'
@@ -55,7 +56,6 @@ NeoBundle 'skammer/vim-css-color.git'
 
 NeoBundle 'cakebaker/scss-syntax.vim'
 " NeoBundle 'vim-scripts/Better-CSS-Syntax-for-Vim' - fuxks with scss :(
-" NeoBundle 'html.vim'
 
 NeoBundle 'pangloss/vim-javascript'
 
@@ -168,7 +168,7 @@ NeoBundle 'sickill/vim-pasta'
 "NeoBundle 'msanders/snipmate.vim'
 
 "NeoBundle 'Shougo/neocomplcache'
-NeoBundle 'Valloric/YouCompleteMe'
+" NeoBundle 'Valloric/YouCompleteMe'
 
 
 
@@ -256,33 +256,6 @@ set wildchar=<Tab> wildmenu wildmode=full
 
 
 
-" Tag syntax config
-
-" Vim syntax file
-" Language: HTML (version 5)
-" Maintainer: Rodrigo Machado <rcmachado [at] gmail [dot] com>
-" URL: http://rm.blog.br/vim/syntax/html.vim
-" Last Change: 2009 Aug 19
-" License: Public domain
-" (but let me know if you liked it :) )
-"
-" Note: This file just adds the new tags from HTML 5
-" and don't replace default html.vim syntax file
-
-" HTML 5 tags
-syn keyword htmlTagName contained article aside audio bb canvas command datagrid
-syn keyword htmlTagName contained datalist details dialog embed figure footer
-syn keyword htmlTagName contained header hgroup keygen mark meter nav output
-syn keyword htmlTagName contained progress time ruby rt rp section time video
-
-" HTML 5 arguments
-syn keyword htmlArg contained autofocus placeholder min max step
-syn keyword htmlArg contained contenteditable contextmenu draggable hidden item
-syn keyword htmlArg contained itemprop list subject spellcheck
-" this doesn't work because default syntax file alredy define a 'data' attribute
-syn match htmlArg "\<\(data-[\-a-zA-Z0-9_]\+\)=" contained
-
-
 "Tell vim to remember certain things when we exit
 "  '10  :  marks will be remembered for up to 10 previously edited files
 "  "100 :  will save up to 100 lines for each register
@@ -315,6 +288,7 @@ endif
 set backspace=eol,indent,start
 
 " Shift-space as Esc - for gvim, vim requires mapping in terminal emulator config
+" ..but doesn't work in gvim??
 imap <S-Space> <Esc>
 imap <C-c> <Esc>
 
@@ -352,7 +326,6 @@ set showmode
 noremap <leader><leader>p :set paste<CR>:put  *<CR>:set nopaste<CR>
 
 
-
 " Move between windows with alt-arrows "not working after a few tries
 " http://vim.wikia.com/wiki/Switch_between_Vim_window_splits_easily
 "map  <C-+> :wincmd k<CR>
@@ -373,6 +346,23 @@ map <C-+> <C-W>+
 " Toggle search term highlight
 nmap <silent> <leader>/ :silent set invhlsearch<CR>
 
+
+" Map numpad keys to numbers
+imap <Esc>Oq 1
+imap <Esc>Or 2
+imap <Esc>Os 3
+imap <Esc>Ot 4
+imap <Esc>Ou 5
+imap <Esc>Ov 6
+imap <Esc>Ow 7
+imap <Esc>Ox 8
+imap <Esc>Oy 9
+imap <Esc>Op 0
+imap <Esc>On .
+imap <Esc>OR *
+imap <Esc>OQ /
+imap <Esc>Ol +
+imap <Esc>OS -
 
 " Highlight trailing whitespace in red on non-active line
 " http://sartak.org/2011/03/end-of-line-whitespace-in-vim.html
