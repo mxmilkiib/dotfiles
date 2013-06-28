@@ -39,7 +39,7 @@ NeoBundle 'tpope/vim-surround'
 NeoBundle 'paradigm/TextObjectify'
 
 " Repeat movements
-" NeoBundle 'vim-scripts/repmo.vim'
+NeoBundle 'vim-scripts/repmo.vim'
 
 " . repeat for plugin actions
 NeoBundle 'tpope/vim-repeat'
@@ -58,6 +58,8 @@ NeoBundle 'cakebaker/scss-syntax.vim'
 " NeoBundle 'vim-scripts/Better-CSS-Syntax-for-Vim' - fuxks with scss :(
 
 NeoBundle 'pangloss/vim-javascript'
+
+" NeoBundle 'StanAngeloff/php.vim'
 
 NeoBundle 'Valloric/MatchTagAlways'
 
@@ -105,7 +107,8 @@ nnoremap <leader>n :NumbersToggle<CR>
 NeoBundle 'spolu/dwm.vim'
 
 " New staus line tool
-NeoBundle 'Lokaltog/vim-powerline'
+NeoBundle 'Lokaltog/powerline'
+set rtp+=~/.vim/bundle/powerline/powerline/bindings/vim
 
 " Manage multiple files with ease
 NeoBundle 'scrooloose/nerdtree'
@@ -127,7 +130,7 @@ NeoBundle 'maxmeyer/vim-tabreorder'
 
 
 " Doesn't work right with Awesome
-" NeoBundle 'xolox/vim-misc'
+NeoBundle 'xolox/vim-misc'
 " NeoBundle 'xolox/vim-lua-inspect'
 
 " Zen coding like
@@ -151,7 +154,8 @@ NeoBundle 'airblade/vim-gitgutter'
 " Open files easily
 "NeoBundle 'git://git.wincent.com/command-t.git'
 
-"NeoBundle 'xolox/vim-session'
+
+NeoBundle 'xolox/vim-session'
 " :SaveSession, :OpenSession, :RestartVim, etc.
 
 NeoBundle 'chrisbra/histwin.vim'
