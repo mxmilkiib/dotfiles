@@ -111,7 +111,9 @@ NeoBundle 'Lokaltog/vim-powerline'
 NeoBundle 'scrooloose/nerdtree'
 " \p - toggle nerdtree
 nmap <silent> <leader>p :NERDTreeToggle<CR>
-
+" Close Vim if only NERDtree buffer is open
+" https://github.com/scrooloose/nerdtree/issues/21
+autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | en
 
 " Tabs
 NeoBundle 'jistr/vim-nerdtree-tabs'
