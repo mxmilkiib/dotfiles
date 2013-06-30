@@ -59,7 +59,7 @@ NeoBundle 'cakebaker/scss-syntax.vim'
 
 NeoBundle 'pangloss/vim-javascript'
 
-" NeoBundle 'StanAngeloff/php.vim'
+NeoBundle 'StanAngeloff/php.vim'
 
 NeoBundle 'Valloric/MatchTagAlways'
 
