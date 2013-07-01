@@ -69,6 +69,9 @@ NeoBundle 'Valloric/MatchTagAlways'
 " NeoBundle 'sleistner/vim-jshint'
 NeoBundle 'wookiehangover/jshint.vim'
 
+NeoBundle 'baskerville/vim-sxhkdrc'
+
+
 " Find things easily
 
 " NeoBundle 'FuzzyFinder'
@@ -157,6 +160,7 @@ NeoBundle 'airblade/vim-gitgutter'
 
 NeoBundle 'xolox/vim-session'
 " :SaveSession, :OpenSession, :RestartVim, etc.
+:let g:session_autosave = 'no'
 
 NeoBundle 'chrisbra/histwin.vim'
 
