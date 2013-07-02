@@ -48,7 +48,7 @@ alias ',,=..'
 alias 'c.=cd $PWD'
 
 # Copy with progress bar
-alias cp='rsync --progress -ah'
+# alias cp='rsync --progress -ah'
 
 # Clear
 alias 'c=clear'
@@ -81,8 +81,8 @@ alias g="grep -EiRn --color=tty"
 alias L=less
 alias M=more    # does colour
 
-# Quick vim
-alias 'v=vim'
+alias vg=gvim
+alias v=vim
 
 # Quick sudo vim (with $EDITOR=vim)
 alias 'sv=sudoedit'
@@ -103,6 +103,9 @@ alias 'gitpl=git pull'
 
 # Human readable df default
 alias 'df=df -h'
+
+# better cdu
+alias du='cdu -idh'
 
 # Check disk usage in ncdu (arch)
 alias 'ncdua=ncdu / --exclude /home --exclude /media --exclude /run/media --exclude /boot --exclude /tmp --exclude /dev --exclude /proc'
@@ -177,7 +180,7 @@ alias bofh='nc bofh.jeffballard.us 666 | tail -n 1'
 alias publicip='wget http://checkip.dyndns.org/ -O - -o /dev/null | cut -d: -f 2 | cut -d\< -f 1'
 
 # Get shit done - temp redirect certain sites to localhost
-alias 'gsd=sudo /home/milk/scripts/get-shit-done/get-shit-done.sh'
+alias 'gsd=sudo /home/milk/scripts/gsd.sh/gsd.sh'
 
 # Vim
 alias 'vi=vim'
