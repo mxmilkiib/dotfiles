@@ -302,6 +302,9 @@ set backspace=eol,indent,start
 imap <S-Space> <Esc>
 imap <C-c> <Esc>
 
+" ` for : to avoid shift
+nmap ` :
+
 " Backspace in normal mode
 " (beeps on blank line due to l)
 noremap <BS> i<BS><Esc>li
