@@ -24,7 +24,7 @@ URxvt*scrollstyle:plain
 
 ! Perl scripts
 URxvt.perl-lib: /usr/lib/urxvt/perl/
-URxvt.perl-ext-common: default,matcher,searchable-scrollback,fullscreen,url-select
+URxvt.perl-ext-common: default,matcher,searchable-scrollback,fullscreen,url-select,font-size
 
 ! Bell
 URxvt.urgentOnBell: True
@@ -56,3 +56,16 @@ Xft.hintstyle:  hintfull
 Xft.hinting: 1
 Xft.antialias: 1
 Xft.rgba: rgb
+
+! :Bind C-0, C-+ and C-= to activate small, medium, and big font size resp.     
+
+URxvt.font: xft:Terminus for Powerline:pixelsize=12
+
+URxvt.keysym.C-0: command:\033]710;-*-dina-medium-r-normal--13-*-*-*-*-*-*-*\007
+URxvt.keysym.C-minus: command:\033]710;-*-dina-medium-r-normal--15-*-*-*-*-*-*-*\007
+URxvt.keysym.C-equal: command:\033]710;-*-dina-medium-r-normal--16-*-*-*-*-*-*-*\007
+
+URxvt.keysym.C-Up:     perl:font-size:increase
+ URxvt.keysym.C-Down:   perl:font-size:decrease
+ URxvt.keysym.C-S-Up:   perl:font-size:incglobal
+ URxvt.keysym.C-S-Down: perl:font-size:decglobal
