@@ -71,6 +71,7 @@ NeoBundle 'wookiehangover/jshint.vim'
 
 NeoBundle 'baskerville/vim-sxhkdrc'
 
+NeoBundle 'chase/nginx.vim'
 
 " Find things easily
 
