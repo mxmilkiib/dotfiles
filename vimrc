@@ -304,7 +304,7 @@ imap <S-Space> <Esc>
 imap <C-c> <Esc>
 
 " ` for : to avoid shift
-nmap ` :
+nmap ` :w<CR>
 
 " Backspace in normal mode
 " (beeps on blank line due to l)
