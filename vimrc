@@ -162,7 +162,7 @@ NeoBundle 'mhinz/vim-signify'
 
 NeoBundle 'xolox/vim-session'
 " :SaveSession, :OpenSession, :RestartVim, etc.
-:let g:session_autosave = 'no'
+let g:session_autosave = 'no'
 
 NeoBundle 'chrisbra/histwin.vim'
 
