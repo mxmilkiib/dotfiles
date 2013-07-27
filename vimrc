@@ -200,8 +200,13 @@ endif
 
 """ General
 
+" Send more characters for redraws
+set ttyfast
+
+" Enable terminal mouse support
 set ttymouse=xterm2
-set mouse=n
+" Enable mouse use in all modes
+set mouse=a
 
 " Use Vim defaults instead of 100% vi compatibility
 set nocompatible
