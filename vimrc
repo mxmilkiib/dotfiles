@@ -71,6 +71,7 @@ NeoBundle 'wookiehangover/jshint.vim'
 
 NeoBundle 'baskerville/vim-sxhkdrc'
 
+NeoBundle 'chase/nginx.vim'
 
 " Find things easily
 
@@ -149,7 +150,8 @@ NeoBundle 'mattn/zencoding-vim'
 NeoBundle 'tpope/vim-fugitive'
 NeoBundle 'gregsexton/gitv'
 
-NeoBundle 'airblade/vim-gitgutter'
+" NeoBundle 'airblade/vim-gitgutter'
+NeoBundle 'mhinz/vim-signify'
 
 
 """ to sort
