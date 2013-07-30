@@ -27,7 +27,9 @@ hsetroot -solid "#000000"
 #~/scripts/gifbg.sh  ~/images/backgrounds/animated/bladerunner.gif &
 # ~/scripts/nasa-apod-desktop/nasa_apod_desktop.py &
 # python2 ~/scripts/nasa-apod-desktop/nasa_apod_desktop.py &
-feh --bg-max --no-xinerama /home/milk/documents/images/backgrounds/technical/git-vim-1280_and_1024.png
+# feh --bg-max --no-xinerama /home/milk/documents/images/backgrounds/technical/git-vim-1280_and_1024.png
+# feh --bg-fill --no-xinerama /home/milk/documents/images/backgrounds/6785760453_975351e590_o.jpg -Z       
+feh --bg-fill --no-xinerama /home/milk/documents/images/backgrounds/highres/VnXDN9J.jpg -Z
 
 
 # Give time for background to take
@@ -54,6 +56,7 @@ xscreensaver -nosplash &
 # Automount USB
 udiskie &
 
+# Volume systemtray
 sxhkd &
 
 # bmpanel2 --theme=Kupo_Finale-dark &
@@ -64,7 +67,8 @@ sxhkd &
 xfce4-panel &
 
 # Volume system tray
-pa-applet &
+# pa-applet &
+volti &
 
 # Radio streams
 radiotray &
@@ -78,6 +82,13 @@ radiotray &
 
 # slow virtual desktop switching
 # compton --respect-prop-shadow -bc -t -8 -l -9 -r 6 -o 0.7 &
+# compton -cCGfF -o 0.38 -O 200 -I 200 -t 0.02 -l 0.02 -r 3.2 -D2 -m 0.88 -i 0 &
+compton -cCGfzb -o 0.8 -O 200 -I 200 -t -9 -l -9 -r 6 -D 2 -m 0.98 -e 1 -i 1 --respect-prop-shadow  --shadow-ignore-shaped
+
+# Notification daemon
+dunst &
+
+# oneko -fg "#555" -bg "#000" &
 
 # skippy-xd --start-daemon &
 
@@ -85,29 +96,29 @@ radiotray &
 # export LIBETC_BLACKLIST=/bin/cp:/bin/ln:/bin/ls:/bin/mv:/bin/rm:/usr/bin/find
 
 export DEFAULT_SESSION=bspwm
-
 export BSPWM_SOCKET=/tmp/bspwm-socket
-
 export PANEL_FIFO=/tmp/panel-fifo
-
-[ -e "$PANEL_FIFO" ] && rm "$PANEL_FIFO"
-mkfifo "$PANEL_FIFO"
-exec bspwm -s "$PANEL_FIFO"
 
 # exec gnome-session
 # exec consort-session
 # exec openbox
 
-# awesome)
-#   exec awesome
-#   ;;
-# i3)
-#   exec i3
-#   ;;
-# bspwm)
-#   exec bspwm
-#   ;;
-# *)
-#   exec $DEFAULT_SESSION
-#   ;;
-# esac
+case $1 in
+  awesome)
+    exec awesome
+    ;;
+  i3)
+    exec i3
+    ;;
+  gnome)
+    exec gnome-session
+    ;;
+  kde)
+    exec startkde
+    ;;
+  bspwm|*)
+    [ -e "$PANEL_FIFO" ] && rm "$PANEL_FIFO"
+    mkfifo "$PANEL_FIFO"
+    exec bspwm -s "$PANEL_FIFO"
+    ;;
+esac

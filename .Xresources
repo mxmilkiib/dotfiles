@@ -62,10 +62,10 @@ Xft.rgba: rgb
 URxvt.font: xft:Terminus for Powerline:pixelsize=12
 
 URxvt.keysym.C-0: command:\033]710;-*-dina-medium-r-normal--13-*-*-*-*-*-*-*\007
-URxvt.keysym.C-minus: command:\033]710;-*-dina-medium-r-normal--15-*-*-*-*-*-*-*\007
-URxvt.keysym.C-equal: command:\033]710;-*-dina-medium-r-normal--16-*-*-*-*-*-*-*\007
+! URxvt.keysym.C-minus: command:\033]710;-*-dina-medium-r-normal--15-*-*-*-*-*-*-*\007
+! URxvt.keysym.C-equal: command:\033]710;-*-dina-medium-r-normal--16-*-*-*-*-*-*-*\007
 
-URxvt.keysym.C-Up:     perl:font-size:increase
- URxvt.keysym.C-Down:   perl:font-size:decrease
+! URxvt.keysym.C-Up:     perl:font-size:increase
+ ! URxvt.keysym.C-Down:   perl:font-size:decrease
  URxvt.keysym.C-S-Up:   perl:font-size:incglobal
  URxvt.keysym.C-S-Down: perl:font-size:decglobal
