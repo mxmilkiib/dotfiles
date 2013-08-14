@@ -18,17 +18,17 @@ alias sudo='command sudo '
 ### Looking around, moving about.
 
 alias ll="ls -lh --group-directories-first"
-alias ls="ls --color"       # add colors for filetype recognition
-alias la="ls -a"            # show hidden files
+alias ls="ls --color"        # add colors for filetype recognition
+alias la="ls -ah"            # show hidden files
 
-alias lt="ls -ltr"          # sort by date, most recent last
-alias lc="ls -ltcr"         # sort by and show change time, most recent last
-alias lu="ls -ltur"         # sort by and show access time, most recent last
+alias lt="ls -ltrh"          # sort by date, most recent last
+alias lc="ls -ltcrh"         # sort by and show change time, most recent last
+alias lu="ls -lturh"         # sort by and show access time, most recent last
 
-alias lk="ls -lSr"          # sort by size, biggest last
+alias lk="ls -lSrh"          # sort by size, biggest last
 
-alias lm="ls -al | more"     # pipe through 'more'
-alias lr="ls -lR"            # recursive ls
+alias lm="ls -alh | more"    # pipe through 'more'
+alias lr="ls -lRh"           # recursive ls
 alias lsr="tree -Csu | more "    # nice alternative to 'recursive ls'
 
 #alias ll='ls -lh'
@@ -74,18 +74,20 @@ alias 'ak=awesome -k'
 # Open a file
 alias 'o=xdg-open'
 
-# Grep, extended-regexp, case insentitive, recursive, line number, strip colours control chars for pipes
-alias g="grep -EiRn --color=tty"
+# Grep, extended-regexp, case insentitive, line number, strip colours control chars for pipes
+alias g="grep -Ein --color=tty"
 
 # For quick viewing of txt files
 alias L=less
 alias M=more    # does colour
 
-alias vg=gvim
-alias v=vim
 
 # Quick sudo vim (with $EDITOR=vim)
 alias 'sv=sudoedit'
+# Vim
+alias 'vg=gvim'
+alias 'vi=vim'
+alias 'v=vim'
 
 # Nano with line numbers
 alias 'nano=nano -c'
@@ -173,6 +175,9 @@ alias 'cons=lsof -i'
 # Search running processes
 alias 'ps?'='ps ax | grep '
 
+# Pipes
+alias pipes="nice -n 19 /home/milk/scripts/pipes.sh -R -r 0 -p 3"
+
 # Bastard Oper From Hell excuse
 alias bofh='nc bofh.jeffballard.us 666 | tail -n 1'
 
@@ -182,15 +187,8 @@ alias publicip='wget http://checkip.dyndns.org/ -O - -o /dev/null | cut -d: -f 2
 # Get shit done - temp redirect certain sites to localhost
 alias 'gsd=sudo /home/milk/scripts/gsd.sh/gsd.sh'
 
-# Vim
-alias 'vi=vim'
-alias 'v=vim'
-
 # Nyancat
 alias 'nyancat=telnet miku.acm.uiuc.edu'
-
-# Chromium nightly update script
-alias 'gcu=sudo chromium-update'
 
 # To let Ubuntu Server know that python2 = python
 if [[ "$HOST" != "silver.local" ]] {

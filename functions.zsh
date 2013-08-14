@@ -81,11 +81,11 @@ function ctmux(){
 		tmux -2
 	else
 		tmux -2 attach
-	fi	
+	fi
 	zsh
 }
 
-# get_iplayer radio 
+# get_iplayer radio
 function gr() { get_iplayer -g --modes=flashaacstd --pid=$1; }
 
 pS() {
@@ -103,14 +103,14 @@ pS() {
 # Easy Aurget
 function aurge(){
   local pretmp=$PWD
-  cd /tmp
+  cd /var/tmp/pkg
   aurget -Sy "$@" --deps --noedit;
   cd $pretmp
 }
 
 # Easy Git commit
 function gitc(){
-  git commit -am "$*";
+  git commit -m "$*";
 }
 
 # Check if command exists
@@ -158,7 +158,15 @@ mvf() { mv "$@" && goto "$_"; }
 goto() { [ -d "$1" ] && cd "$1" || cd "$(dirname "$1")"; }
 
 # cd and ls -la
-cl() { cd "$1" && ls -la . ; }
+cl() { cd "$1" && ls -lah . ; }
+
+
+function zle-keymap-select {
+    VIMODE="${${KEYMAP/vicmd/ M:command}/(main|viins)/}"
+    zle reset-prompt
+}
+
+zle -N zle-keymap-select
 
 # IRC like buffer new lines
 # works on arch anyway....
@@ -176,7 +184,7 @@ fake-accept-line() {
 zle -N fake-accept-line
 
 down-or-fake-accept-line() {
-  # If history line number equals the history line number of the 
+  # If history line number equals the history line number of the
   if (( HISTNO == HISTCMD )) && [[ "$RBUFFER" != *$'\n'* ]];
   then
     zle fake-accept-line
@@ -194,9 +202,9 @@ function headless(){
 
 # Disk usage
 
-function duf {
-  du -sk "$@" | sort -n | while read size fname; do for unit in k M G T P E Z Y; do if [ $size -lt 1024 ]; then echo -e "${size}${unit}\t${fname}"; break; fi; size=$((size/1024)); done; done
-}
+# function duf {
+#   du -sk "$@" | sort -n | while read size fname; do for unit in k M G T P E Z Y; do if [ $size -lt 1024 ]; then echo -e "${size}${unit}\t${fname}"; break; fi; size=$((size/1024)); done; done
+# }
 
 # A shortcut function that simplifies usage of xclip.
 # - Accepts input from either stdin (pipe), or params.
@@ -234,101 +242,12 @@ cb() {
 # Aliases / functions leveraging the cb() function
 # ------------------------------------------------
 # Copy contents of a file
-function cbf() { cat "$1" | cb; }  
+function cbf() { cat "$1" | cb; }
 # Copy SSH public key
-alias cbssh="cb ~/.ssh/id_rsa.pub"  
+alias cbssh="cb ~/.ssh/id_rsa.pub"
 # Copy current working directory
-alias cbwd="pwd | cb"  
+alias cbwd="pwd | cb"
 # Copy most recent command in bash history
-alias cbhs="cat $HISTFILE | tail -n 1 | cb" 
+alias cbhs="cat $HISTFILE | tail -n 1 | cb"
 
-function cascade_colors()
-{
-  _I=1
-  _J=0
-  _K=0
-  _WIDTH=$COLUMNS
-  _MARGIN=0
-  while true; do
-  _A=$(($RANDOM % 3))
-  _B=$(($RANDOM % 2))
-  _C=$(($RANDOM % 3))
-  case $_A in
-  0)
-    case $_B in
-    0)
-      [ $_I -gt 1 ] && _I=$(($_I - 1))
-    ;;
-    1)
-      [ $_I -lt 6 ] && _I=$(($_I + 1))
-    ;;
-    esac
-  ;;
-  1)
-    case $_B in
-    0)
-      [ $_J -gt 0 ] && _J=$(($_J - 1))
-    ;;
-    1)
-      [ $_J -lt 5 ] && _J=$(($_J + 1))
-    ;;
-    esac
-  ;;
-  2)
-    case $_B in
-    0)
-      [ $_K -gt 0 ] && _K=$(($_K - 1))
-    ;;
-    1)
-      [ $_K -lt 5 ] && _K=$(($_K + 1))
-    ;;
-    esac
-  ;;
-  esac
-  case $1 in
-    1)
-      _DELTA=$2
-      case $_C in
-        0)
-          [ $_WIDTH -lt $(($COLUMNS - 2*$_DELTA)) ] && _WIDTH=$(($_WIDTH + 2*$_DELTA))
-        ;;
-        1)
-          [ $_WIDTH -gt $((1 + 2*$_DELTA)) ] && _WIDTH=$(($_WIDTH - 2*$_DELTA))
-        ;;
-      esac
-      _MARGIN=$((($COLUMNS-$_WIDTH)/2))
-    ;;
-    2)
-      _WIDTH=$2
-      _DELTA=$3
-      case $_C in
-        0)
-          [ $_MARGIN -le $(($COLUMNS - $_WIDTH - $_DELTA)) ] && _MARGIN=$(($_MARGIN + $_DELTA))
-        ;;
-        1)
-          [ $_MARGIN -ge $_DELTA ] && _MARGIN=$(($_MARGIN - $_DELTA))
-        ;;
-      esac
-    ;;
-    *)
-      _WIDTH=$COLUMNS
-      _MARGIN=0
-    ;;
-  esac
-  _NUMBER=$((15 + $_I + 6*$_J + 36*$_K))
-
-  echo -en "\e[0;49m"
-  if [ $_MARGIN -gt 0 ]; then
-    for _FOO in $(seq $_MARGIN); do
-      echo -en " "
-    done
-  fi
-
-  printf "\e[0;48;5;${_NUMBER}m"
-  for _FOO in $(seq $_WIDTH); do
-    echo -en " "
-  done
-
-  echo -e "\e[0;49m"
-  done
-}
+precmd() { [[ -t 0&&  -w 0 ]]&&  print -Pn '\e]2;%~\a' }

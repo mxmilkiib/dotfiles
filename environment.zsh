@@ -42,3 +42,10 @@ export REPORTTIME=10
 eval "$($Z/fasd/fasd --init auto)"
 
 export BSPWM_SOCKET=/tmp/bspwm-socket
+PANEL_FIFO=/tmp/panel-fifo
+
+export TMPDIR=/var/tmp
+
+export PAGER=/usr/bin/vimpager
+alias less=$PAGER
+alias zless=$PAGER
