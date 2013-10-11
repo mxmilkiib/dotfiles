@@ -128,7 +128,7 @@ diff () {
 }
 
 # Extract Files
-extract() {
+ext() {
   if [ -f $1 ] ; then
       case $1 in
           *.tar.bz2)   tar xvjf $1    ;;
@@ -251,3 +251,39 @@ alias cbwd="pwd | cb"
 alias cbhs="cat $HISTFILE | tail -n 1 | cb"
 
 precmd() { [[ -t 0&&  -w 0 ]]&&  print -Pn '\e]2;%~\a' }
+
+scan() {
+  if [[ -z $1 || -z $2 ]]; then
+    echo "Usage: $0 <host> <port, ports, or port-range>"
+    return
+  fi
+
+  local host=$1
+  local ports=()
+  case $2 in
+    *-*)
+      IFS=- read start end <<< "$2"
+      for ((port=start; port <= end; port++)); do
+        ports+=($port)
+      done
+      ;;
+    *,*)
+      IFS=, read -ra ports <<< "$2"
+      ;;
+    *)
+      ports+=($2)
+      ;;
+  esac
+
+
+  for port in "${ports[@]}"; do
+    alarm 1 "echo >/dev/tcp/$host/$port" &&
+      echo "port $port is open" ||
+      echo "port $port is closed"
+  done
+}
+
+# Link to Dropbox
+drbox() {
+  ln -s "$*" ~/Dropbox
+}

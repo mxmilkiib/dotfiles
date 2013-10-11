@@ -61,7 +61,7 @@ alias 'sn=sudo nano -c'
 # Shutdown, reboot, logout
 alias 'sd=sudo shutdown -h now'
 alias 'sr=sudo reboot'
-alias 'sl=sudo killall -u milk'
+alias 'slo=sudo killall -u milk'
 
 ### Apps
 
@@ -101,6 +101,7 @@ alias 'gita=git add .'
 alias 'gitd=git diff --color'
 alias 'gitps=git push'
 alias 'gitpl=git pull'
+alias cdg='cd $(git rev-parse --show-cdup)'
 # see also gitc in functions.zsh
 
 # Human readable df default
