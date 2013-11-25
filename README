@@ -1,3 +1,4 @@
 Compiled from various sources.
 
-git clone git@github.com:milkmiruku/zsh.git
+git clone git@github.com:milkmiruku/zsh.git ~/.zsh
+ln -s ~/.zsh/zshrc ~/.zshrc
