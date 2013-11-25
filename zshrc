@@ -8,7 +8,7 @@
 export TERM="screen-256color" # for tmux backgrond color erase (bce) to work
 
 # Where everything is.
-Z=/etc/zsh
+Z=~/.zsh
 
 # Set up a working environment.
 source $Z/environment.zsh
