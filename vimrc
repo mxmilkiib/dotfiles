@@ -111,8 +111,9 @@ nnoremap <leader>n :NumbersToggle<CR>
 NeoBundle 'spolu/dwm.vim'
 
 " New staus line tool
-NeoBundle 'Lokaltog/powerline'
-set rtp+=~/.vim/bundle/powerline/powerline/bindings/vim
+" NeoBundle 'Lokaltog/powerline'
+" set rtp+=~/.vim/bundle/powerline/powerline/bindings/vim
+NeoBundle 'bling/vim-airline'
 
 " Manage multiple files with ease
 NeoBundle 'scrooloose/nerdtree'
