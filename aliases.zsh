@@ -2,10 +2,11 @@
 # P.C. Shyamshankar <sykora@lucentbeing.com>
 # hacked by milkmiruku - still messy!
 
-### Gnu
-
 # Make sudo expand alises
 alias sudo='command sudo '
+
+# Info on machine
+alias wtf='hostname && cat /etc/*-release && whoami && pwd'
 
 # Colors for ls.
 #if [[ -x "`whence -p dircolors`" ]]; then
@@ -108,7 +109,7 @@ alias cdg='cd $(git rev-parse --show-cdup)'
 alias 'df=df -h'
 
 # better cdu
-alias du='cdu -idh'
+alias du2='cdu -idh'
 
 # Check disk usage in ncdu (arch)
 alias 'ncdua=ncdu / --exclude /home --exclude /media --exclude /run/media --exclude /boot --exclude /tmp --exclude /dev --exclude /proc'
