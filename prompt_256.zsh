@@ -6,7 +6,7 @@ local p="%{$FX[reset]$FG[255]%}"
 local name="%{$FX[reset]$FG[117]%}%n"
 local host="%{$FX[reset]$FG[177]%}%m"
 local jobs="%1(j.(%{$FX[reset]$FG[197]%}%j job%2(j.s.)${p})-.)"
-local time="%{$FX[reset]$FG[189]%}%D{%H:%M}"
+local time="%{$FX[reset]$FG[180]%}%D{%H:%M}"
 local dir="%{$FX[reset]$FG[199]%}%~"
 
 local last="%(?..%{$FX[reset]$FG[203]%}%??${p}:)"
