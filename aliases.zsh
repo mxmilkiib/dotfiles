@@ -64,7 +64,7 @@ alias 'sd=sudo shutdown -h now'
 alias 'sr=sudo reboot'
 alias 'slo=sudo killall -u milk'
 
-alias 'ssc=sudo systemctl'
+alias 'ssc=sudo systemctl '
 
 ### Apps
 
