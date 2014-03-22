@@ -272,7 +272,7 @@ set ruler
 set cursorline
 
 " Change cursorline highlight from underline to colour bar
-:hi CursorLine term=bold cterm=bols guibg=Grey40
+:hi CursorLine term=bold cterm=bold guibg=Grey40
 
 
 
