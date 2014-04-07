@@ -103,7 +103,7 @@ pS() {
 # Easy Aurget
 function aurge(){
   local pretmp=$PWD
-  cd /var/tmp/pkg
+  cd /tmp/
   aurget -Sy "$@" --deps --noedit;
   cd $pretmp
 }
