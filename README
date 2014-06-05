@@ -16,9 +16,10 @@ in Vim
 Quick copy+paste;
 
 git clone git@github.com:milkmiruku/dotvim.git ~/.vim
-ln -s ~/.vim/vimrc ~/.vimrcmkdir ~/.vim/bundle
+ln -s ~/.vim/vimrc ~/.vimrc
+mkdir ~/.vim/bundle
 git clone git://github.com/Shougo/neobundle.vim ~/.vim/bundle/neobundle.vim
-echo ':NeoBundleInstall' > ~/viminit.txt
-echo ':q' >> ~/viminit.vim
-vim -s ~/viminit.vim
-rm ~/viminit.vim
+echo ':NeoBundleInstall' > ~/.vim/viminit.vim
+echo ':q' >> ~/.vim/viminit.vim
+vim -s ~/.vim/viminit.vim
+rm ~/.vim/viminit.vim
