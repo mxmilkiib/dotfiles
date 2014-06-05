@@ -142,9 +142,8 @@ NeoBundle 'maxmeyer/vim-tabreorder'
 NeoBundle 'xolox/vim-misc'
 " NeoBundle 'xolox/vim-lua-inspect'
 
-" Zen coding like
-"NeoBundle 'rstacruz/sparkup', {'rtp': 'vim/'}
-NeoBundle 'mattn/zencoding-vim'
+" Zen coding like - see emmet.io
+NeoBundle 'mattn/emmet-vim'
 
 " Yank ring
 " NeoBundle 'vim-scripts/YankRing.vim'
