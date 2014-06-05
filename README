@@ -19,6 +19,10 @@ git clone git@github.com:milkmiruku/dotvim.git ~/.vim
 ln -s ~/.vim/vimrc ~/.vimrc
 mkdir ~/.vim/bundle
 git clone git://github.com/Shougo/neobundle.vim ~/.vim/bundle/neobundle.vim
+git clone git://github.com/Shougo/vimproc.vim ~/.vim/bundle/vimproc.vim
+cd ~/.vim/bundle/vimproc
+make
+cd
 echo ':NeoBundleInstall' > ~/.vim/viminit.vim
 echo ':q' >> ~/.vim/viminit.vim
 vim -s ~/.vim/viminit.vim
