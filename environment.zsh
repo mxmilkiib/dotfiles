@@ -11,6 +11,10 @@ export PATH
 typeset -U fpath
 fpath=($Z/functions $fpath)
 
+export XDG_CONFIG_HOME=${XDG_CONFIG_HOME:-"$HOME/.config"}
+export XDG_DATA_HOME=${XDG_DATA_HOME:-"$HOME/.local/share"}
+export XDG_CACHE_HOME=${XDG_CACHE_HOME:-"$HOME/.cache"}
+
 # Find out how many colors the terminal is capable of putting out.
 # Color-related settings _must_ use this if they don't want to blow up on less
 # endowed terminals.
@@ -36,3 +40,12 @@ export REPORTTIME=10
 
 # https://github.com/clvv/fasd
 eval "$($Z/fasd/fasd --init auto)"
+
+export BSPWM_SOCKET=/tmp/bspwm-socket
+PANEL_FIFO=/tmp/panel-fifo
+
+export TMPDIR=/var/tmp
+
+export PAGER=/usr/bin/vimpager
+alias less=$PAGER
+alias zless=$PAGER

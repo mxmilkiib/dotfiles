@@ -81,11 +81,11 @@ function ctmux(){
 		tmux -2
 	else
 		tmux -2 attach
-	fi	
+	fi
 	zsh
 }
 
-# get_iplayer radio 
+# get_iplayer radio
 function gr() { get_iplayer -g --modes=flashaacstd --pid=$1; }
 
 pS() {
@@ -103,14 +103,14 @@ pS() {
 # Easy Aurget
 function aurge(){
   local pretmp=$PWD
-  cd /tmp
+  cd /tmp/
   aurget -Sy "$@" --deps --noedit;
   cd $pretmp
 }
 
 # Easy Git commit
 function gitc(){
-  git commit -am "$*";
+  git commit -m "$*";
 }
 
 # Check if command exists
@@ -128,7 +128,7 @@ diff () {
 }
 
 # Extract Files
-extract() {
+ext() {
   if [ -f $1 ] ; then
       case $1 in
           *.tar.bz2)   tar xvjf $1    ;;
@@ -158,7 +158,15 @@ mvf() { mv "$@" && goto "$_"; }
 goto() { [ -d "$1" ] && cd "$1" || cd "$(dirname "$1")"; }
 
 # cd and ls -la
-cl() { cd "$1" && ls -la . ; }
+cl() { cd "$1" && ls -lah . ; }
+
+
+function zle-keymap-select {
+    VIMODE="${${KEYMAP/vicmd/ M:command}/(main|viins)/}"
+    zle reset-prompt
+}
+
+zle -N zle-keymap-select
 
 # IRC like buffer new lines
 # works on arch anyway....
@@ -176,7 +184,7 @@ fake-accept-line() {
 zle -N fake-accept-line
 
 down-or-fake-accept-line() {
-  # If history line number equals the history line number of the 
+  # If history line number equals the history line number of the
   if (( HISTNO == HISTCMD )) && [[ "$RBUFFER" != *$'\n'* ]];
   then
     zle fake-accept-line
@@ -194,9 +202,9 @@ function headless(){
 
 # Disk usage
 
-function duf {
-  du -sk "$@" | sort -n | while read size fname; do for unit in k M G T P E Z Y; do if [ $size -lt 1024 ]; then echo -e "${size}${unit}\t${fname}"; break; fi; size=$((size/1024)); done; done
-}
+# function duf {
+#   du -sk "$@" | sort -n | while read size fname; do for unit in k M G T P E Z Y; do if [ $size -lt 1024 ]; then echo -e "${size}${unit}\t${fname}"; break; fi; size=$((size/1024)); done; done
+# }
 
 # A shortcut function that simplifies usage of xclip.
 # - Accepts input from either stdin (pipe), or params.
@@ -234,12 +242,48 @@ cb() {
 # Aliases / functions leveraging the cb() function
 # ------------------------------------------------
 # Copy contents of a file
-function cbf() { cat "$1" | cb; }  
+function cbf() { cat "$1" | cb; }
 # Copy SSH public key
-alias cbssh="cb ~/.ssh/id_rsa.pub"  
+alias cbssh="cb ~/.ssh/id_rsa.pub"
 # Copy current working directory
-alias cbwd="pwd | cb"  
+alias cbwd="pwd | cb"
 # Copy most recent command in bash history
-alias cbhs="cat $HISTFILE | tail -n 1 | cb" 
+alias cbhs="cat $HISTFILE | tail -n 1 | cb"
+
+precmd() { [[ -t 0&&  -w 0 ]]&&  print -Pn '\e]2;%~\a' }
+
+scan() {
+  if [[ -z $1 || -z $2 ]]; then
+    echo "Usage: $0 <host> <port, ports, or port-range>"
+    return
+  fi
+
+  local host=$1
+  local ports=()
+  case $2 in
+    *-*)
+      IFS=- read start end <<< "$2"
+      for ((port=start; port <= end; port++)); do
+        ports+=($port)
+      done
+      ;;
+    *,*)
+      IFS=, read -ra ports <<< "$2"
+      ;;
+    *)
+      ports+=($2)
+      ;;
+  esac
 
 
+  for port in "${ports[@]}"; do
+    alarm 1 "echo >/dev/tcp/$host/$port" &&
+      echo "port $port is open" ||
+      echo "port $port is closed"
+  done
+}
+
+# Link to Dropbox
+drbox() {
+  ln -s "$*" ~/Dropbox
+}

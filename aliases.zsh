@@ -2,10 +2,11 @@
 # P.C. Shyamshankar <sykora@lucentbeing.com>
 # hacked by milkmiruku - still messy!
 
-### Gnu
-
 # Make sudo expand alises
 alias sudo='command sudo '
+
+# Info on machine
+alias wtf='hostname && cat /etc/*-release && whoami && pwd'
 
 # Colors for ls.
 #if [[ -x "`whence -p dircolors`" ]]; then
@@ -18,7 +19,7 @@ alias sudo='command sudo '
 ### Looking around, moving about.
 
 alias ll="ls -lh --group-directories-first"
-alias ls="ls --color"       # add colors for filetype recognition
+alias ls="ls --color"        # add colors for filetype recognition
 alias la="ls -ah"            # show hidden files
 
 alias lt="ls -ltrh"          # sort by date, most recent last
@@ -27,8 +28,8 @@ alias lu="ls -lturh"         # sort by and show access time, most recent last
 
 alias lk="ls -lSrh"          # sort by size, biggest last
 
-alias lm="ls -al | more"     # pipe through 'more'
-alias lr="ls -lR"            # recursive ls
+alias lm="ls -alh | more"    # pipe through 'more'
+alias lr="ls -lRh"           # recursive ls
 alias lsr="tree -Csu | more "    # nice alternative to 'recursive ls'
 
 #alias ll='ls -lh'
@@ -48,7 +49,7 @@ alias ',,=..'
 alias 'c.=cd $PWD'
 
 # Copy with progress bar
-alias cp='rsync --progress -ah'
+# alias cp='rsync --progress -ah'
 
 # Clear
 alias 'c=clear'
@@ -59,9 +60,11 @@ alias 'mkdir=mkdir -p'
 # Quick sudo nano
 alias 'sn=sudo nano -c'
 # Shutdown, reboot, logout
-alias 'sd=sudo shutdown -h now'
-alias 'sr=sudo reboot'
-alias 'sl=sudo killall -u milk'
+alias 'sd=systemctl poweroff'
+alias 'sr=systemctl reboot'
+alias 'slo=sudo killall -u milk'
+
+alias 'ssc=sudo systemctl '
 
 ### Apps
 
@@ -74,18 +77,21 @@ alias 'ak=awesome -k'
 # Open a file
 alias 'o=xdg-open'
 
-# Grep, extended-regexp, case insentitive, recursive, line number, strip colours control chars for pipes
-alias g="grep -EiRn --color=tty"
+# Grep, extended-regexp, case insentitive, line number, strip colours control chars for pipes
+alias g="grep -Ein --color=tty"
 
 # For quick viewing of txt files
 alias L=less
 alias M=more    # does colour
 
-# Quick vim
-alias 'v=vim'
 
 # Quick sudo vim (with $EDITOR=vim)
 alias 'sv=sudoedit'
+# Vim
+alias 'vg=gvim'
+alias 'vi=vim'
+alias 'v=vim'
+alias 'uv=urxvt -e vim'
 
 # Nano with line numbers
 alias 'nano=nano -c'
@@ -99,10 +105,14 @@ alias 'gita=git add .'
 alias 'gitd=git diff --color'
 alias 'gitps=git push'
 alias 'gitpl=git pull'
+alias cdg='cd $(git rev-parse --show-cdup)'
 # see also gitc in functions.zsh
 
 # Human readable df default
 alias 'df=df -h'
+
+# better cdu
+alias du2='cdu -idh'
 
 # Check disk usage in ncdu (arch)
 alias 'ncdua=ncdu / --exclude /home --exclude /media --exclude /run/media --exclude /boot --exclude /tmp --exclude /dev --exclude /proc'
@@ -170,6 +180,9 @@ alias 'cons=lsof -i'
 # Search running processes
 alias 'ps?'='ps ax | grep '
 
+# Pipes
+alias pipes="nice -n 19 /home/milk/scripts/pipes.sh -R -r 0 -p 3"
+
 # Bastard Oper From Hell excuse
 alias bofh='nc bofh.jeffballard.us 666 | tail -n 1'
 
@@ -177,17 +190,10 @@ alias bofh='nc bofh.jeffballard.us 666 | tail -n 1'
 alias publicip='wget http://checkip.dyndns.org/ -O - -o /dev/null | cut -d: -f 2 | cut -d\< -f 1'
 
 # Get shit done - temp redirect certain sites to localhost
-alias 'gsd=sudo /home/milk/scripts/get-shit-done/get-shit-done.sh'
-
-# Vim
-alias 'vi=vim'
-alias 'v=vim'
+alias 'gsd=sudo /home/milk/scripts/gsd.sh/gsd.sh'
 
 # Nyancat
 alias 'nyancat=telnet miku.acm.uiuc.edu'
-
-# Chromium nightly update script
-alias 'gcu=sudo chromium-update'
 
 # To let Ubuntu Server know that python2 = python
 if [[ "$HOST" != "silver.local" ]] {
