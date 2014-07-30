@@ -60,8 +60,8 @@ alias 'mkdir=mkdir -p'
 # Quick sudo nano
 alias 'sn=sudo nano -c'
 # Shutdown, reboot, logout
-alias 'sd=sudo shutdown -h now'
-alias 'sr=sudo reboot'
+alias 'sd=systemctl poweroff'
+alias 'sr=systemctl reboot'
 alias 'slo=sudo killall -u milk'
 
 alias 'ssc=sudo systemctl '
@@ -91,6 +91,7 @@ alias 'sv=sudoedit'
 alias 'vg=gvim'
 alias 'vi=vim'
 alias 'v=vim'
+alias 'uv=urxvt -e vim'
 
 # Nano with line numbers
 alias 'nano=nano -c'
