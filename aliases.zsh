@@ -19,13 +19,13 @@ alias sudo='command sudo '
 
 alias ll="ls -lh --group-directories-first"
 alias ls="ls --color"       # add colors for filetype recognition
-alias la="ls -a"            # show hidden files
+alias la="ls -ah"            # show hidden files
 
-alias lt="ls -ltr"          # sort by date, most recent last
-alias lc="ls -ltcr"         # sort by and show change time, most recent last
-alias lu="ls -ltur"         # sort by and show access time, most recent last
+alias lt="ls -ltrh"          # sort by date, most recent last
+alias lc="ls -ltcrh"         # sort by and show change time, most recent last
+alias lu="ls -lturh"         # sort by and show access time, most recent last
 
-alias lk="ls -lSr"          # sort by size, biggest last
+alias lk="ls -lSrh"          # sort by size, biggest last
 
 alias lm="ls -al | more"     # pipe through 'more'
 alias lr="ls -lR"            # recursive ls
@@ -193,3 +193,12 @@ alias 'gcu=sudo chromium-update'
 if [[ "$HOST" != "silver.local" ]] {
   alias 'python2=python'
 }
+
+tmux_pwd () {
+    [ -z "${TMUX}" ] && return
+    tmux set default-path $(pwd) > /dev/null && tmux new-window
+    (( sleep 300;
+    tmux set default-path ~/ > /dev/null; ) & ) > /dev/null 2>&1
+}
+
+alias tpwd="tmux_pwd"
