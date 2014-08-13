@@ -63,7 +63,7 @@ alias 'sn=sudo nano -c'
 alias 'sd=systemctl poweroff'
 alias 'sr=systemctl reboot'
 alias 'slo=sudo killall -u milk'
-
+alias 'sps=sudo pm-suspend'
 alias 'ssc=sudo systemctl '
 
 ### Apps
