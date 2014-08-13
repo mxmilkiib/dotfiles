@@ -4,6 +4,8 @@
 #
 # Executed by startx (run your window manager from here)
 
+dnscrypt-proxy &
+
 if [ -d /etc/X11/xinit/xinitrc.d ]; then
   for f in /etc/X11/xinit/xinitrc.d/*; do
     [ -x "$f" ] && . "$f"
@@ -11,13 +13,17 @@ if [ -d /etc/X11/xinit/xinitrc.d ]; then
   unset f
 fi
 
+# Set Xorg keyboard layout
+setxkbmap gb
+
 # Source .Xresources for this session
 xrdb -merge ~/.Xresources
 
-xrandr --output DVI-I-1 --mode 1280x1024 --pos 0x0 --output VGA-1 --mode 1024x768 --pos 1280x195
+# Make additional fonts available
+xset +fp /usr/share/fonts/local
+xset fp rehash
 
-# Start the urxvtd daemon
-# urxvtd -q -f -o &
+xrandr --output DVI-I-1 --mode 1280x1024 --pos 0x0 --output VGA-1 --mode 1024x768 --pos 1280x195
 
 # Set X background color to black
 hsetroot -solid "#000000"
@@ -39,7 +45,7 @@ feh --bg-fill --no-xinerama /home/milk/documents/images/backgrounds/highres/VnXD
 #devilspie -a &
 
 # Redshift - changed screen colour temp
-gtk-redshift -l 55.978301:-3.228586 -t 6500:4500 &
+redshift-gtk -l 55.978301:-3.228586 -t 6000:4500 &
 
 # Unclutter - hides the mouse cursor after 5 seconds of idle
 unclutter -root -jitter 10 &
@@ -53,11 +59,11 @@ urxvtd -q -f -o &
 # Start xscreensaver
 xscreensaver -nosplash &
 
+# Disable screensaver on media fullscreen
+lightsOn.sh 545 &
+
 # Automount USB
 udiskie &
-
-# Volume systemtray
-sxhkd &
 
 # bmpanel2 --theme=Kupo_Finale-dark &
 # tint2 &
@@ -83,25 +89,56 @@ radiotray &
 # slow virtual desktop switching
 # compton --respect-prop-shadow -bc -t -8 -l -9 -r 6 -o 0.7 &
 # compton -cCGfF -o 0.38 -O 200 -I 200 -t 0.02 -l 0.02 -r 3.2 -D2 -m 0.88 -i 0 &
-compton -cCGfzb -o 0.8 -O 200 -I 200 -t -9 -l -9 -r 6 -D 2 -m 0.98 -e 1 -i 1 --respect-prop-shadow  --shadow-ignore-shaped
+# compton -cCGfzb -o 0.8 -O 200 -I 200 -t -9 -l -9 -r 6 -D 2 -m 0.98 -e 1 -i 1 --respect-prop-shadow  --shadow-ignore-shaped
 
 # Notification daemon
 dunst &
+
+# Dropbox w/ systray icon
+dropboxes=(documents/dropbox-personal documents/beltane/Dropbox documents/dropbox-drumming)
+
+# TMPHOME=~
+# for dropbox in ${dropboxes[@]}; do
+#    if ! [ -d $HOME/$dropbox ];then
+#        mkdir $HOME/$dropbox
+#    fi
+#    HOME=$HOME/$dropbox/ /opt/dropbox/dropbox start -i &
+# done
+# HOME=TMPHOME
 
 # oneko -fg "#555" -bg "#000" &
 
 # skippy-xd --start-daemon &
 
+# Start Jack for audio
+
+# jack_control start &
+
+# rulc -l > /dev/null || ruld &
+
 # export LD_PRELOAD=libetc.so
 # export LIBETC_BLACKLIST=/bin/cp:/bin/ln:/bin/ls:/bin/mv:/bin/rm:/usr/bin/find
 
+autocutsel -fork &
+# autocutsel -selection PRIMARY -fork &
+
+# Update dynamic dns
+inadyn -u milkmiruku -p DcBaCCcchangeiP -a milkmiruku.no-ip.info --dyndns_system default@no-ip.com --background &
+
 export DEFAULT_SESSION=bspwm
 export BSPWM_SOCKET=/tmp/bspwm-socket
+export BSPWM_TREE=/tmp/bspwm.tree
+export BSPWM_HISTORY=/tmp/bspwm.history
+export BSPWM_STACK=/tmp/bspwm.stack
 export PANEL_FIFO=/tmp/panel-fifo
+export PANEL_HEIGHT=14
 
 # exec gnome-session
 # exec consort-session
 # exec openbox
+
+# Hotkeys
+sxhkd &
 
 case $1 in
   awesome)
@@ -118,7 +155,8 @@ case $1 in
     ;;
   bspwm|*)
     [ -e "$PANEL_FIFO" ] && rm "$PANEL_FIFO"
-    mkfifo "$PANEL_FIFO"
-    exec bspwm -s "$PANEL_FIFO"
+    # mkfifo "$PANEL_FIFO"
+exec bspwm
+    # exec bspwm -s "$PANEL_FIFO" -p W
     ;;
 esac
