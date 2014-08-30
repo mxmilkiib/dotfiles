@@ -60,7 +60,7 @@ function up() { pushd .. > /dev/null; }
 function down() { popd > /dev/null; }
 
 # Search in files
-function gcode() { grep --color=always -rnC3 -- "$@" . | less -R; }
+function gcode() { grep --color=always -rnC3 -- "$@" . | /usr/bin/less -R; }
 
 # Etymology
 function etym(){
