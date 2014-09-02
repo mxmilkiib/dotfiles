@@ -1,27 +1,9 @@
 #! /bin/sh
 
 # Layout
-bspc config -m focused top_padding 22
+bspc config top_padding         22
 bspc config border_width        1
 bspc config window_gap          3
-
-# Rename and create desktops
-bspc desktop -n A1
-bspc monitor -a A2 A3 A4
-
-# Switch to second monitor
-bspc monitor -f next
-
-bspc config -m focused top_padding 22
-bspc config border_width        1
-bspc config window_gap          3
-
-# Rename and create desktops
-bspc desktop -n B1
-bspc monitor -a B2 B3 B4
-
-# Switch to first monitor
-bspc monitor -f next
 
 bspc config focused_border_color "#ff7415" #e785d8
 bspc config active_border_color "#000000"
@@ -41,12 +23,27 @@ bspc config wm_name bspwm
 bspc config pointer_follows_monitor true
 bspc config history_aware_focus true
 
-# bspc config rule_command "xwinfo -cints 0x%X | xargs -d '\n' rulc -t"
-bspc config rule_command "$(which rule_command)"
 
-bspwm_rules
+# Rename and create desktops
+bspc desktop -n A1
+bspc monitor -d A1          # Reset for config changes as desktop is created on bspwm launch
+bspc monitor -a A2 A3 A4
+
+# Switch to second monitor
+bspc monitor -f next
+
+# Rename and create desktops
+bspc desktop -n B1
+bspc monitor -d B1          # Reset for config changes as desktop is created on bspwm launch
+bspc monitor -a B2 B3 B4
+
+# Switch back to first monitor
+bspc monitor -f next
+
 
 # rulc -a 'instance=="plugin-container"' 'floating=on, focus=yes'
+# bspc config rule_command "xwinfo -cints 0x%X | xargs -d '\n' rulc -t"
+# bspc config rule_command "$(which rule_command)"
 
 bspc rule -a vlc floating=on
 bspc rule -a mpv floating=on
@@ -56,9 +53,10 @@ bspc rule -a keepassx desktop=B3
 bspc rule -a Pidgin desktop=B4 floating=on
 bspc rule -a pavucontrol floating=on
 bspc rule -a Mixer floating=on
+bspc rule -a xfce4-panel floating=on
 
 # Reset monitor settings to use above (gh:143)
-bspc monitor -d B1 B2 B3 B4
+# bspc monitor -d B1 B2 B3 B4
 
 if [ -e "$BSPWM_LAYOUT" ] ; then
     bspc restore_layout "$BSPWM_LAYOUT"

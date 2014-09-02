@@ -138,7 +138,7 @@ super + alt + space
   # xboomx
 
 super + space
-  xboomx
+  ~/bin/dmenu_run.pl -h 22
 
 # make sxhkd reload its configuration files:
 super + Escape  
