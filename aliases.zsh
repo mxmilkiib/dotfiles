@@ -59,11 +59,12 @@ alias 'mkdir=mkdir -p'
 
 # Quick sudo nano
 alias 'sn=sudo nano -c'
+alias 'sc=systemctl '
 # Shutdown, reboot, logout
 alias 'sd=systemctl poweroff'
 alias 'sr=systemctl reboot'
 alias 'slo=sudo killall -u milk'
-alias 'sps=sudo pm-suspend'
+alias 'pms=sudo pm-suspend'
 alias 'ssc=sudo systemctl '
 
 ### Apps
