@@ -8,23 +8,51 @@ alias sudo='command sudo '
 # Info on machine
 alias wtf='hostname && cat /etc/*-release && whoami && pwd'
 
-# Colors for ls.
-#if [[ -x "`whence -p dircolors`" ]]; then
-#  eval `dircolors`
-#  alias ls='ls -F --color=auto'
-#else
-#  alias ls='ls -F'
-#fi
+# Commands for more info
+
+systemecho='echo history
+history info | awk "{CMD[$2]++;count++;}END { for (a in CMD)print CMD[a] " " CMD[a]/count*100 "% " a;}" | grep -v "./" | column -c3 -s 
+w
+last -a
+uname -a
+grep -H  /etc/*release /proc/version
+df -h
+free -m
+who
+id
+netstat -tlpnu
+iptables -nvxL
+ss -s
+top
+ps auxf
+dmesg |less
+ls -lR /etc/cron*
+tail /var/log/*
+cat /proc/cpuinfo
+lsblk -io KNAME,TYPE,SIZE,MODEL 
+findmnt
+env'
+
+alias system='echo $systemecho'
+
 
 ### Looking around, moving about.
 
-alias ll="ls -lh --group-directories-first"
-alias ls="ls --color"        # add colors for filetype recognition
-alias la="ls -ah"            # show hidden files
+# ls colors for filetype recognition
+if [[ -x "`whence -p dircolors`" ]]; then
+ eval `dircolors`
+ alias ls='ls -F --color=auto'
+else
+ alias ls='ls -F'
+fi
 
-alias lt="ls -ltrh"          # sort by date, most recent last
-alias lc="ls -ltcrh"         # sort by and show change time, most recent last
-alias lu="ls -lturh"         # sort by and show access time, most recent last
+alias ll="ls -lh --group-directories-first"
+# alias ls="ls --color"        # add colors for filetype recognition
+alias la="ls -ah"            # show hidden files with human readable sizes
+
+alias lt="ls -ltrh"          # list, sort by date, most recent last, SI unit
+alias lc="ls -ltcrh"         # list, sort by and show change time, most recent last
+alias lu="ls -lturh"         # list, sort by and show access time, most recent last
 
 alias lk="ls -lSrh"          # sort by size, biggest last
 
@@ -32,7 +60,6 @@ alias lm="ls -alh | more"    # pipe through 'more'
 alias lr="ls -lRh"           # recursive ls
 alias lsr="tree -Csu | more "    # nice alternative to 'recursive ls'
 
-#alias ll='ls -lh'
 #alias la='ls -lah'
 # Graphical tree of subdir files
 #alias 'lt=tree -d'
@@ -57,15 +84,21 @@ alias 'c=clear'
 # Makes parent dir if it doesn't exist
 alias 'mkdir=mkdir -p'
 
-# Quick sudo nano
-alias 'sn=sudo nano -c'
+
+### Shutdown, reboot, logout
+
+# alias 'slo=sudo killall -u milk'
+alias 'pms=sudo pm-suspend'
+alias 'suspend=pm-suspend' # With sudoers
+
+# systemd
 alias 'sc=systemctl '
-# Shutdown, reboot, logout
+alias 'ssc=sudo systemctl '
+alias 'slo=systemctl restart display-manager' # Logout
+
 alias 'sd=systemctl poweroff'
 alias 'sr=systemctl reboot'
-alias 'slo=sudo killall -u milk'
-alias 'pms=sudo pm-suspend'
-alias 'ssc=sudo systemctl '
+
 
 ### Apps
 
@@ -85,17 +118,17 @@ alias g="grep -Ein --color=tty"
 alias L=less
 alias M=more    # does colour
 
+# Quick sudo nano
+alias 'sn=sudo nano -c' # With line numbers
 
 # Quick sudo vim (with $EDITOR=vim)
 alias 'sv=sudoedit'
+
 # Vim
 alias 'vg=gvim'
 alias 'vi=vim'
 alias 'v=vim'
 alias 'uv=urxvt -e vim'
-
-# Nano with line numbers
-alias 'nano=nano -c'
 
 # Web browsers
 alias u="uzbl"
@@ -127,6 +160,7 @@ alias 'ncduar=sudo ncdu / --exclude /home --exclude /media --exclude /run/media 
 ### Web frameworks
 alias 'dr=drush'
 
+
 ### Package management
 
 # Aptitude
@@ -157,6 +191,7 @@ alias 'agu=aurget -Syu --deps --noedit --noconfirm'
 
 # Builds
 alias 'cu=sudo chromium-update'
+
 
 ### Bash
 

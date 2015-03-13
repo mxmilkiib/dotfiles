@@ -131,5 +131,5 @@ bindkey "\e[H" beginning-of-line
 bindkey "\e[F" end-of-line
 
 # Type command then ctrl-up/ctrl-down to search history
-bindkey "^[[A" history-search-backward
-bindkey "^[[B" history-search-forward
+bindkey "\e[A" history-beginning-search-backward
+bindkey "\e[B" history-beginning-search-forward
