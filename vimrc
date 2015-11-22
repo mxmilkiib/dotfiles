@@ -14,6 +14,8 @@ endif
 
 call neobundle#rc(expand('~/.vim/bundle/'))
 
+call neobundle#end()
+
 " Let NeoBundle manage NeoBundle
 NeoBundle 'Shougo/neobundle.vim'
 
@@ -46,7 +48,6 @@ NeoBundle 'tpope/vim-repeat'
 
 
 " Syntax
-
 NeoBundle 'othree/html5.vim'
 
 " NeoBundle 'scrooloose/syntastic'
@@ -193,6 +194,7 @@ NeoBundle 'BlackSea'
 colorscheme BlackSea
 
 
+
 " NeoBundle required
 " Basic syntax highlighting
 if has("syntax")
@@ -202,6 +204,7 @@ if has("syntax")
   filetype indent on
 endif
 
+NeoBundleCheck
 
 
 """ General
