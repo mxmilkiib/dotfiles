@@ -47,6 +47,6 @@ PANEL_FIFO=/tmp/panel-fifo
 
 export TMPDIR=/var/tmp
 
-export PAGER=/usr/bin/vimpager
-alias less=$PAGER
-alias zless=$PAGER
+# export PAGER=/usr/bin/vimpager
+# alias less=$PAGER
+# alias zless=$PAGER
