@@ -2,10 +2,10 @@
 
 # Layout
 bspc config top_padding         22
-bspc config border_width        1
+bspc config border_width        3
 bspc config window_gap          3
 
-bspc config focused_border_color "#ff7415" #e785d8
+bspc config focused_border_color "#e785d8"
 bspc config active_border_color "#000000"
 bspc config normal_border_color "#000000"
 bspc config presel_border_color "#A7BF81"
@@ -18,6 +18,10 @@ bspc config focus_follows_pointer true
 bspc config borderless_monocle  false
 bspc config gapless_monocle     false
 bspc config adaptative_raise    true
+bspc config initial_polarity    first_child
+
+# cancel presel with another presel
+bspc config auto_cancel         true
 
 bspc config wm_name bspwm
 bspc config pointer_follows_monitor true
@@ -54,6 +58,8 @@ bspc rule -a Pidgin desktop=B4 floating=on
 bspc rule -a pavucontrol floating=on
 bspc rule -a Mixer floating=on
 bspc rule -a xfce4-panel floating=on
+bspc rule -a qjackctl floating=on
+bspc rule -a candence.py floating=on
 
 # Reset monitor settings to use above (gh:143)
 # bspc monitor -d B1 B2 B3 B4

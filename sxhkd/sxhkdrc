@@ -21,11 +21,11 @@ super + b
 super + {s,f}
 	bspc window -t {floating,fullscreen}
 
-# switch between last window or desktop
+# switch between last window with tab or desktop with `
 super + {grave,Tab}
-	bspc {window,desktop} -f last
+	bspc {desktop,window} -f last
 
-# swap windows
+# swap window with last window
 super + apostrophe
 	bspc window -s last
 
@@ -126,8 +126,11 @@ super + {r,ctrl + r}
 # wm independent hotkeys
 #
 
+#super + Return
+#  urxvtc
+
 super + Return
-  urxvtc
+  if [ $(bspc query -W -w next) ]; then urxvtc; else bspc rule -a \* --one-shot split_dir=down; urxvtc; fi 
 
 super + ctrl + Return
 #	rulc -a true floating=true duration=1 | urxvtc
@@ -142,4 +145,4 @@ super + space
 
 # make sxhkd reload its configuration files:
 super + Escape  
-  pkill -x sxhkd
+  pkill -USR1 -x sxhkd
