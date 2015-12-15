@@ -55,3 +55,4 @@ fi
 
 # export FZF_DEFAULT_COMMAND='find .'
 export FZF_DEFAULT_OPTS='--reverse'
+export FZF_TMUX='1'
