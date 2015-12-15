@@ -1,7 +1,7 @@
 # completion.zsh: Directives for the Z-Shell completion system.
 # P.C. Shyamshankar <sykora@lucentbeing.com>
 
-autoload -Uz compinit && compinit
+# autoload -Uz compinit && compinit
 
 zstyle ':completion:*' list-colors "${LS_COLORS}" # Complete with same colors as ls.
 
@@ -37,9 +37,9 @@ zstyle ':completion:*:sudo:*' command-path /usr/local/sbin /usr/local/bin /usr/s
 source ~/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 # Load zsh-autosuggestions.
-source ~/.zsh/zsh-autosuggestions/autosuggestions.zsh
+# source ~/.zsh/zsh-autosuggestions/autosuggestions.zsh
 
-zle-line-init() {
-    zle autosuggest-start
-}
-zle -N zle-line-init
+# zle-line-init() {
+#     zle autosuggest-start
+# }
+# zle -N zle-line-init
