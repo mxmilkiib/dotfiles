@@ -20,7 +20,7 @@ ln -s ~/.vim/vimrc ~/.vimrc
 mkdir ~/.vim/bundle
 git clone git://github.com/Shougo/neobundle.vim ~/.vim/bundle/neobundle.vim
 git clone git://github.com/Shougo/vimproc.vim ~/.vim/bundle/vimproc.vim
-cd ~/.vim/bundle/vimproc
+cd ~/.vim/bundle/vimproc.vim
 make
 cd
 echo ':NeoBundleInstall' > ~/.vim/viminit.vim

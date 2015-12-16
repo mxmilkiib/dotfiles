@@ -9,10 +9,17 @@ filetype off                   " Required!
 filetype plugin indent off     " Required!
 
 if has('vim_starting')
-  set runtimepath+=~/.vim/bundle/neobundle.vim/,/usr/share/vim/vim72
+  if &compatible
+    " Use Vim defaults instead of 100% vi compatibility
+    set nocompatible
+  endif
+
+    set runtimepath+=~/.vim/bundle/neobundle.vim/,/usr/share/vim/vim72
 endif
 
-call neobundle#rc(expand('~/.vim/bundle/'))
+call neobundle#begin(expand('~/.vim/bundle/'))
+
+" call neobundle#end()
 
 " Let NeoBundle manage NeoBundle
 NeoBundle 'Shougo/neobundle.vim'
@@ -46,7 +53,6 @@ NeoBundle 'tpope/vim-repeat'
 
 
 " Syntax
-
 NeoBundle 'othree/html5.vim'
 
 " NeoBundle 'scrooloose/syntastic'
@@ -216,6 +222,7 @@ NeoBundle 'sickill/vim-pasta'
 NeoBundle 'BlackSea'
 colorscheme BlackSea
 
+call neobundle#end()
 
 " NeoBundle required
 " Basic syntax highlighting
@@ -226,6 +233,7 @@ if has("syntax")
   filetype indent on
 endif
 
+" NeoBundleCheck
 
 
 """ General
@@ -237,9 +245,6 @@ set ttyfast
 set ttymouse=xterm2
 " Enable mouse use in all modes
 set mouse=a
-
-" Use Vim defaults instead of 100% vi compatibility
-set nocompatible
 
 " Set bell to visual
 set visualbell
