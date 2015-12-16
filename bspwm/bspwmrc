@@ -5,7 +5,8 @@ bspc config top_padding         22
 bspc config border_width        3
 bspc config window_gap          3
 
-bspc config focused_border_color "#e785d8"
+# http://paletton.com/#uid=34r0u0kgJHN6oX3bWQhkPyZoTtA
+bspc config focused_border_color "#ECBC34"
 bspc config active_border_color "#000000"
 bspc config normal_border_color "#000000"
 bspc config presel_border_color "#A7BF81"
@@ -64,14 +65,12 @@ bspc rule -a candence.py floating=on
 # Reset monitor settings to use above (gh:143)
 # bspc monitor -d B1 B2 B3 B4
 
-if [ -e "$BSPWM_LAYOUT" ] ; then
-    bspc restore_layout "$BSPWM_LAYOUT"
-    rm "$BSPWM_LAYOUT"
-else
-    bspc adopt_orphans
-fi
 
-if [ -e "$BSPWM_HISTORY" ] ; then
-    bspc restore_history "$BSPWM_HISTORY"
-    rm "$BSPWM_HISTORY"
+export BSPWM_TREE=/tmp/bspwm-tree.json
+export BSPWM_HISTORY=/tmp/bspwm-history.txt
+export BSPWM_STACK=/tmp/bspwm-stack.txt
+
+if [ -e "$BSPWM_TREE" ] ; then
+	bspc restore -T "$BSPWM_TREE" -H "$BSPWM_HISTORY" -S "$BSPWM_STACK"
+	rm "$BSPWM_TREE" "$BSPWM_HISTORY" "$BSPWM_STACK"
 fi
