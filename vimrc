@@ -89,6 +89,9 @@ NeoBundle 'compview'
 " Find things across windows/tabs
 NeoBundle 'kien/ctrlp.vim'
 
+" Open files and buffers
+NeoBundle 'wincent/Command-T'
+
 " File navigation
 " Jump to word using characters <leader>w (like f in vimium)
 " NeoBundle 'Lokaltog/vim-easymotion'
@@ -97,8 +100,6 @@ NeoBundle 'kien/ctrlp.vim'
 " NeoBundle 'https://bitbucket.org/ns9tks/vim-fuzzyfinder'
 
 NeoBundle 'svermeulen/vim-extended-ft'
-
-NeoBundle 'kien/ctrlp.vim'
 
 NeoBundle 'myusuf3/numbers.vim'
 nnoremap <leader>n :NumbersToggle<CR>
@@ -114,10 +115,12 @@ nnoremap <leader>n :NumbersToggle<CR>
 " Ctrl-j/k/space/...
 NeoBundle 'spolu/dwm.vim'
 
+
 " New staus line tool
 " NeoBundle 'Lokaltog/powerline'
 " set rtp+=~/.vim/bundle/powerline/powerline/bindings/vim
 NeoBundle 'bling/vim-airline'
+
 
 " Manage multiple files with ease
 NeoBundle 'scrooloose/nerdtree'
@@ -125,7 +128,17 @@ NeoBundle 'scrooloose/nerdtree'
 nmap <silent> <leader>p :NERDTreeToggle<CR>
 " Close Vim if only NERDtree buffer is open
 " https://github.com/scrooloose/nerdtree/issues/21
-autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | en
+" autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | en
+
+augroup AuNERDTreeCmd
+  autocmd!
+augroup end
+
+if has('gui_running')
+  " autocmd! NERDTreeHijackNetrw 
+  autocmd! NERDTreeTabs
+  autocmd! NERDTree
+endif
 
 " Tabs
 NeoBundle 'jistr/vim-nerdtree-tabs'
@@ -134,16 +147,24 @@ map <Leader>o <plug>NERDTreeTabsToggle<CR>
 NeoBundle 'benatkin/vim-move-between-tabs'
 NeoBundle 'maxmeyer/vim-tabreorder'
 
+
 " Manage tab workspaces
 " NeoBundle 'sjbach/lusty'
+
+
+" Minimal GUI
+NeoBundle 'junegunn/goyo.vim'
+" NeoBundle 'amix/vim-zenroom2'
 
 
 " Doesn't work right with Awesome
 NeoBundle 'xolox/vim-misc'
 " NeoBundle 'xolox/vim-lua-inspect'
 
+
 " Zen coding like - see emmet.io
 NeoBundle 'mattn/emmet-vim'
+
 
 " Yank ring
 " NeoBundle 'vim-scripts/YankRing.vim'
@@ -153,6 +174,7 @@ NeoBundle 'mattn/emmet-vim'
 " Git integration
 NeoBundle 'tpope/vim-fugitive'
 NeoBundle 'gregsexton/gitv'
+
 
 " NeoBundle 'airblade/vim-gitgutter'
 NeoBundle 'mhinz/vim-signify'
@@ -164,9 +186,11 @@ NeoBundle 'mhinz/vim-signify'
 "NeoBundle 'git://git.wincent.com/command-t.git'
 
 
-NeoBundle 'xolox/vim-session'
+" NeoBundle 'xolox/vim-session'
 " :SaveSession, :OpenSession, :RestartVim, etc.
-let g:session_autosave = 'no'
+" let g:session_autosave = 'no'
+
+NeoBundle 'tpope/obsession.vim'
 
 NeoBundle 'chrisbra/histwin.vim'
 
@@ -490,17 +514,20 @@ endif
 """ Gvim
 
 if has('gui_running')
+
   " Make shift-insert work like in Xterm
   map <S-Insert> <MiddleMouse>
   map! <S-Insert> <MiddleMouse>
 
-  set guifont=monospace\ 8
+  set guifont=terminus\ 8
   set guioptions-=m  "remove menu bar
   set guioptions-=T  "remove toolbar
   set guioptions-=r  "remove right-hand scroll bar
   set guioptions-=L  "remove left-hand scroll bar
+  set guiheadroom=0 "make gvim not leave bottom border to gtk default background colour - doesn't work?! ARGH
 
 endif
+
 
 
 """ Ctrl-q, insert just one character, not working!
@@ -510,11 +537,6 @@ endif
 " nnoremap <C-q> :<C-U>exec "normal i".RepeatChar(nr2char(getchar()), v:count1)<CR>
 " below not urxvt friendly
 " nnoremap C-S :<C-U>exec "normal a".RepeatChar(nr2char(getchar()), v:count1)<CR>
-
-" Auto open NERDTree on start - to fix
-" autocmd VimEnter * NERDTree
-" autocmd BufEnter * NERDTreeMirror
-
 
 
 
