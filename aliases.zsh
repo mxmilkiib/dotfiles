@@ -81,7 +81,7 @@ alias lc="ls -ltcrh"         										# long list, sort by and show attribute c
 alias lk="ls -lSrh"          										# long list, sort by size, reversed (largest last), human readable
 
 alias la='ls -Atr --group-directories-first'	  # show almost all (hidden files), sort by time, reversed
-alias laa='ls -lAtrh -color | less -R'						# long list of above
+alias laa='ls -lAtrh --color | less -R'						# long list of above
 
 alias lr="ls -lRh | more"           						# recursive ls
 alias lsr="tree -Csu | more "    								# alternative recursive ls
