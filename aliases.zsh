@@ -38,33 +38,10 @@ alias system='echo $systemecho'
 
 ### Looking around, moving about.
 
-# ls colors for filetype recognition
-if [[ -x "`whence -p dircolors`" ]]; then
- eval `dircolors`
- alias ls='ls -F --color=auto'
-else
- alias ls='ls -F'
-fi
-
-alias ll="ls -lh --group-directories-first"
-# alias ls="ls --color"        # add colors for filetype recognition
-alias la="ls -ah"            # show hidden files with human readable sizes
-
-alias lt="ls -ltrh"          # list, sort by date, most recent last, SI unit
-alias lc="ls -ltcrh"         # list, sort by and show change time, most recent last
-alias lu="ls -lturh"         # list, sort by and show access time, most recent last
-
-alias lk="ls -lSrh"          # sort by size, biggest last
-
-alias lm="ls -alh | more"    # pipe through 'more'
-alias lr="ls -lRh"           # recursive ls
-alias lsr="tree -Csu | more "    # nice alternative to 'recursive ls'
-
-#alias la='ls -lah'
 # Graphical tree of subdir files
 #alias 'lt=tree -d'
 
-alias ..="cd .." # Automatic in ZSH (default?)
+alias ..="cd .." 		# Automatic in ZSH (default?)
 alias ...=../..
 alias ....="cd ../../.."
 alias .....="cd ../../../.."
@@ -84,6 +61,31 @@ alias sd='fasd -sid'     # interactive directory selection
 alias sf='fasd -sif'     # interactive file selection
 alias z='fasd_cd -d'     # cd, same functionality as j in autojump
 alias zz='fasd_cd -d -i' # cd with interactive selection
+
+
+# ls colors for filetype recognition
+if [[ -x "`whence -p dircolors`" ]]; then
+ eval `dircolors`
+ alias ls='ls -F --color=auto'
+else
+ alias ls='ls -F'
+fi
+
+# alias ls="ls --color"        									# add colors for filetype recognition
+
+alias ll="ls -lh --group-directories-first"     # long list, human readable
+
+alias lt="ls -ltrh"          										# long list, sort by modification time, reversed (recent last), human readable, (K, M, etc.)
+alias lu="ls -lturh"         										# long list, sort by and show access time, reversed, human readable
+alias lc="ls -ltcrh"         										# long list, sort by and show attribute change time, reversed, human readable
+alias lk="ls -lSrh"          										# long list, sort by size, reversed (largest last), human readable
+
+alias la='ls -Atr --group-directories-first'	  # show almost all (hidden files), sort by time, reversed
+alias laa='ls -lAtrh -color | less -R'						# long list of above
+
+alias lr="ls -lRh | more"           						# recursive ls
+alias lsr="tree -Csu | more "    								# alternative recursive ls
+
 
 # Copy with progress bar
 # alias cp='rsync --progress -ah'
@@ -207,6 +209,12 @@ alias 'cu=sudo chromium-update'
 
 # List ANSI colours
 alias 'colours=for code in {000..255}; do print -P -- "$code: %F{$code}Test%f"; done'
+
+
+### X
+alias lm xmodmap -e "pointer = 3 2 1"
+
+
 
 ### To sort
 
