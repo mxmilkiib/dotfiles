@@ -178,7 +178,7 @@ alias 'a=sudo aptitude'
 alias 'ai=sudo aptitude install'
 alias 'ar=sudo aptitude remove'
 alias 'au=sudo aptitude update'
-alias 'ag=sudo aptitude safe-upgrade'
+alias 'auu=sudo aptitude safe-upgrade'
 alias 'as=apt-cache search'
 alias 'aw=apt-cache show'
 

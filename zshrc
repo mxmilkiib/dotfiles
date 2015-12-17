@@ -50,3 +50,9 @@ fi
 if (( C == 256 )); then
   eval `dircolors $Z/dircolors`
 fi
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+# export FZF_DEFAULT_COMMAND='find .'
+export FZF_DEFAULT_OPTS='--reverse'
+export FZF_TMUX='1'
