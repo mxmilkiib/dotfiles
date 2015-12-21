@@ -287,3 +287,57 @@ scan() {
 drbox() {
   ln -s "$*" ~/Dropbox
 }
+
+# http://stackoverflow.com/a/187853
+# URL encode something and print it.
+function url-encode; {
+        setopt extendedglob
+        echo "${${(j: :)@}//(#b)(?)/%$[[##16]##${match[1]}]}"
+}
+
+# Search google for the given keywords.
+function google; {
+        $BROWSER "http://www.google.com/search?q=`url-encode "${(j: :)@}"`" 1> /dev/null
+}
+
+
+# https://github.com/robbyrussell/oh-my-zsh/blob/master/plugins/last-working-dir/last-working-dir.plugin.zsh
+typeset -g ZSH_LAST_WORKING_DIRECTORY
+cache_file="$Z/cache/last-working-dir"
+
+# Updates the last directory once directory is changed.
+chpwd_functions+=(chpwd_last_working_dir)
+function chpwd_last_working_dir() {
+  # Use >| in case noclobber is set to avoid "file exists" error
+	pwd >| "$cache_file"
+}
+
+# Changes directory to the last working directory.
+function lwd() {
+	[[ ! -r "$cache_file" ]] || cd "`cat "$cache_file"`"
+}
+
+# Automatically jump to last working directory unless this isn't the first time
+# this plugin has been loaded.
+if [[ -z "$ZSH_LAST_WORKING_DIRECTORY" ]]; then
+	lwd 2>/dev/null && ZSH_LAST_WORKING_DIRECTORY=1 || true
+fi
+
+
+
+
+function most_useless_use_of_zsh {
+   local lines columns colour a b p q i pnew
+   ((columns=COLUMNS-1, lines=LINES-1, colour=0))
+   for ((b=-1.5; b<=1.5; b+=3.0/lines)) do
+       for ((a=-2.0; a<=1; a+=3.0/columns)) do
+           for ((p=0.0, q=0.0, i=0; p*p+q*q < 4 && i < 32; i++)) do
+               ((pnew=p*p-q*q+a, q=2*p*q+b, p=pnew))
+           done
+           ((colour=(i/4)%8))
+            echo -n "\\e[4${colour}m "
+        done
+        echo
+    done
+}
+
