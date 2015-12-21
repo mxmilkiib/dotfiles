@@ -1,7 +1,12 @@
 # completion.zsh: Directives for the Z-Shell completion system.
 # P.C. Shyamshankar <sykora@lucentbeing.com>
 
-# autoload -Uz compinit && compinit
+# -U avoids expanding aliases, -z for zsh not ksh(?)
+autoload -Uz compinit && compinit
+
+zstyle ':completion:*' verbose yes
+
+zstyle ':completion:*' menu select
 
 zstyle ':completion:*' list-colors "${LS_COLORS}" # Complete with same colors as ls.
 
@@ -21,7 +26,7 @@ zstyle ':completion:*' ignore-parents pwd
 
 # Use a completion cache
 zstyle ':completion:*' use-cache true
-zstyle ':completion:*' cache-path /.zsh/cache
+zstyle ':completion:*' cache-path $Z/cache/$HOST
 
 # Completing process IDs with menu selection:
 zstyle ':completion:*:*:kill:*' menu yes select
