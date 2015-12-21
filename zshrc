@@ -22,8 +22,9 @@ source $Z/options.zsh
 # Define some functions.
 source $Z/functions.zsh
 
+# to fix
 # Set up the Z line editor.
-#source $Z/zle.zsh
+# source $Z/zle.zsh
 
 # Key bindings
 source $Z/bindings.zsh
@@ -50,12 +51,21 @@ if [ -e $Z/private.zsh ]; then
 fi
 
 # Set up colours for ls
-if (( C == 256 )); then
-  eval `dircolors $Z/dircolors`
-fi
+# if (( C == 256 )); then
+#   eval `dircolors $Z/dircolors`
+# fi
+
+eval $(dircolors -p | sed -e 's/DIR 01;34/DIR 01;36/' | dircolors /dev/stdin)
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 # export FZF_DEFAULT_COMMAND='find .'
 export FZF_DEFAULT_OPTS='--reverse'
 export FZF_TMUX='1'
+
+# still buggy!!
+# source ~/.zsh/zsh-autosuggestions/autosuggestions.zsh
+# zle-line-init() {
+    # zle autosuggest-start
+# }
+# zle -N zle-line-init

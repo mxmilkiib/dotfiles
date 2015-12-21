@@ -89,6 +89,9 @@ bindkey $key[F1] run-help
 bindkey $key[F2] edit-command-line
 
 
+bindkey " " magic-space # do history expansion ($ !ssh ...) on space
+
+
 if [[ "$TERM" != emacs ]]; then
 [[ -z "$terminfo[kdch1]" ]] || bindkey -M emacs "$terminfo[kdch1]" delete-char
 [[ -z "$terminfo[khome]" ]] || bindkey -M emacs "$terminfo[khome]" beginning-of-line
