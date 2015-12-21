@@ -133,3 +133,7 @@ bindkey "\e[F" end-of-line
 # Type command then ctrl-up/ctrl-down to search history
 bindkey "\e[A" history-beginning-search-backward
 bindkey "\e[B" history-beginning-search-forward
+
+insert_sudo () { zle beginning-of-line; zle -U "sudo " }
+zle -N insert-sudo insert_sudo
+bindkey "^[s" insert-sudo

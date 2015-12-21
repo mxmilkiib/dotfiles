@@ -5,36 +5,6 @@
 # Make sudo expand alises
 alias sudo='command sudo '
 
-# Info on machine
-alias wtf='hostname && cat /etc/*-release && whoami && pwd'
-
-# Commands for more info
-
-systemecho='echo history
-history info | awk "{CMD[$2]++;count++;}END { for (a in CMD)print CMD[a] " " CMD[a]/count*100 "% " a;}" | grep -v "./" | column -c3 -s 
-w
-last -a
-uname -a
-grep -H  /etc/*release /proc/version
-df -h
-free -m
-who
-id
-netstat -tlpnu
-iptables -nvxL
-ss -s
-top
-ps auxf
-dmesg |less
-ls -lR /etc/cron*
-tail /var/log/*
-cat /proc/cpuinfo
-lsblk -io KNAME,TYPE,SIZE,MODEL 
-findmnt
-env'
-
-alias system='echo $systemecho'
-
 
 ### Looking around, moving about.
 
@@ -65,36 +35,39 @@ alias zz='fasd_cd -d -i' # cd with interactive selection
 
 # ls colors for filetype recognition
 if [[ -x "`whence -p dircolors`" ]]; then
- eval `dircolors`
+#  eval `dircolors`
  alias ls='ls -F --color=auto'
 else
  alias ls='ls -F'
 fi
 
-# alias ls="ls --color"        									# add colors for filetype recognition
+# Alias ls="ls --color"        									# add colors for filetype recognition
 
-alias ll="ls -lh --group-directories-first"     # long list, human readable
+alias ll="ls -lh --group-directories-first"     # long list, alphabetical sort (default), human readable (K, M, etc.), directories first
 
-alias lt="ls -ltrh"          										# long list, sort by modification time, reversed (recent last), human readable, (K, M, etc.)
+alias lt="ls -ltrh"          										# long list, sort by modification time, reversed (recent last), human readable
 alias lu="ls -lturh"         										# long list, sort by and show access time, reversed, human readable
 alias lc="ls -ltcrh"         										# long list, sort by and show attribute change time, reversed, human readable
 alias lk="ls -lSrh"          										# long list, sort by size, reversed (largest last), human readable
 
 alias la='ls -Atr --group-directories-first'	  # show almost all (hidden files), sort by time, reversed
-alias laa='ls -lAth --color | less -RFX'				# long list of above wo/ reverse, piped to less w/ redraw (color), quit if under one screen, don't init/deinit terminal
+alias laa='ls -lAh --color | less -RFX'				  # long, almost all, no reverse, piped to less w/ redraw (color), quit if under one screen, don't init/deinit terminal
 
 alias lr="ls -lRh | more"           						# recursive ls
 alias lsr="tree -Csu | more "    								# alternative recursive ls
 
+# Mount with coloum output
+alias 'mounts=mount | column -t'
 
-# Copy with progress bar
-# alias cp='rsync --progress -ah'
 
-# Clear
-alias 'c=clear'
+# Search running processes
+alias 'ps?'='ps ax | grep '
 
 # Makes parent dir if it doesn't exist
 alias 'mkdir=mkdir -p'
+
+# 'Copy with progress bar'
+alias ccp='rsync --progress -ah'
 
 
 ### Shutdown, reboot, logout
@@ -110,67 +83,6 @@ alias 'slo=systemctl restart display-manager' # Logout
 
 alias 'sd=systemctl poweroff'
 alias 'sr=systemctl reboot'
-
-
-### Apps
-
-# For running an app in the background without any stdout in console
-alias -g S='&> /dev/null &'
-
-# Check Awesome window manager config
-alias 'ak=awesome -k'
-
-# Open a file
-alias 'o=xdg-open'
-
-# Grep, extended-regexp, case insentitive, line number, strip colours control chars for pipes
-alias g="grep -Ein --color=tty"
-
-# For quick viewing of txt files
-alias L=less
-alias M=more    # does colour
-
-# Quick sudo nano
-alias 'sn=sudo nano -c' # With line numbers
-
-# Quick sudo vim (with $EDITOR=vim)
-alias 'sv=sudoedit'
-
-# Vim
-alias 'vg=gvim'
-alias 'vi=vim'
-alias 'v=vim'
-alias 'uv=urxvt -e vim'
-
-# Web browsers
-alias u="uzbl"
-
-# Git
-alias 'gits=git status'
-alias 'gita=git add .'
-alias 'gitd=git diff --color'
-alias 'gitps=git push'
-alias 'gitpl=git pull'
-alias cdg='cd $(git rev-parse --show-cdup)'
-# see also gitc in functions.zsh
-
-# Human readable df default
-alias 'df=df -h'
-
-# better cdu
-alias du2='cdu -idh'
-
-# Check disk usage in ncdu (arch)
-alias 'ncdua=ncdu / --exclude /home --exclude /media --exclude /run/media --exclude /boot --exclude /tmp --exclude /dev --exclude /proc'
-
-# List dir items
-alias 'dus=du -ms * | sort -n'
-
-# Check disk usage in ncdu (arch root)
-alias 'ncduar=sudo ncdu / --exclude /home --exclude /media --exclude /run/media --exclude /boot --exclude /tmp --exclude /dev --exclude /proc --exclude /var/lib/mpd/music'
-
-### Web frameworks
-alias 'dr=drush'
 
 
 ### Package management
@@ -201,22 +113,90 @@ alias 'pR=sudo pacman -R'
 alias 'ags=aurget -Ss'
 alias 'agu=aurget -Syu --deps --noedit --noconfirm'
 
-# Builds
-alias 'cu=sudo chromium-update'
-
 
 ### Bash
 
 # List ANSI colours
 alias 'colours=for code in {000..255}; do print -P -- "$code: %F{$code}Test%f"; done'
 
+# For running an app in the background without any stdout in console
+alias -g S='&> /dev/null &'
 
-### X
-alias lm xmodmap -e "pointer = 3 2 1"
+### Zsh
+alias sz='source ~/.zshrc'
 
 
+### Sysadmin
 
-### To sort
+# Info on machine
+alias wtf='hostname && cat /etc/*-release && whoami && pwd'
+
+# Commands for more info
+
+systemecho='echo history
+history info | awk "{CMD[$2]++;count++;}END { for (a in CMD)print CMD[a] " " CMD[a]/count*100 "% " a;}" | grep -v "./" | column -c3 -s
+w
+last -a
+uname -a
+grep -H  /etc/*release /proc/version
+df -h
+free -m
+who
+id
+netstat -tlpnu
+iptables -nvxL
+ss -s
+top
+ps auxf
+dmesg |less
+ls -lR /etc/cron*
+tail /var/log/*
+cat /proc/cpuinfo
+lsblk -io KNAME,TYPE,SIZE,MODEL
+findmnt
+env'
+
+alias system='echo $systemecho'
+
+
+### Apps
+
+# Grep, extended-regexp, case insentitive, line number, strip colours control chars for pipes
+alias -g G="| grep -Ein --color=tty"
+
+# For quick viewing of txt files
+alias -g L='| less -RFX'     # redraw (color), quit under one page, dont init/deinit term
+
+# Open a file
+alias 'o=xdg-open'
+
+# Check Awesome window manager config
+alias 'ak=awesome -k'
+
+# Quick sudo nano
+alias 'sn=sudo nano -c' # With line numbers
+
+# Quick sudo vim (with $EDITOR=vim)
+alias 'sv=sudoedit'
+
+# Vim
+alias 'vg=gvim'
+alias 'vi=vim'
+alias 'v=vim --servername VIM'
+alias 'va=vim --remote +split'
+alias 'uv=urxvt -e vim'
+
+# Git
+alias 'gits=git status'
+alias 'gita=git add .'
+alias 'gitd=git diff --color'
+alias 'gitps=git push'
+alias 'gitpl=git pull'
+alias cdg='cd $(git rev-parse --show-cdup)'
+# see also gitc in functions.zsh
+
+
+### Network
 
 # List open ports and their process
 alias 'ports=netstat -plnt'
@@ -225,20 +205,8 @@ alias 'ports=netstat -plnt'
 alias 'server=python2 -m SimpleHTTPServer'
 alias 'serverphp=php -S localhost:8000'
 
-# Mount with coloum output
-alias 'mounts=mount | column -t'
-
 # List connections
 alias 'cons=lsof -i'
-
-# Search running processes
-alias 'ps?'='ps ax | grep '
-
-# Pipes
-alias pipes="nice -n 19 /home/milk/scripts/pipes.sh -R -r 0 -p 3"
-
-# Bastard Oper From Hell excuse
-alias bofh='nc bofh.jeffballard.us 666 | tail -n 1'
 
 # Public IP address
 alias publicip='wget http://checkip.dyndns.org/ -O - -o /dev/null | cut -d: -f 2 | cut -d\< -f 1'
@@ -246,19 +214,31 @@ alias publicip='wget http://checkip.dyndns.org/ -O - -o /dev/null | cut -d: -f 2
 # Get shit done - temp redirect certain sites to localhost
 alias 'gsd=sudo /home/milk/scripts/gsd.sh/gsd.sh'
 
+
+### Web frameworks
+alias 'dr=drush'
+
+
+### X
+
+# switch to left mouse and back
+alias lm='xmodmap -e "pointer = 3 2 1"'
+alias ulm='xmodmap -e "pointer = 1 2 3"'
+
+
+### Misc
+
+# Clear
+alias 'c=clear'
+
+# :q as exit
+alias ':q'='exit'
+
+# Bastard Oper From Hell excuse
+alias bofh='nc bofh.jeffballard.us 666 | tail -n 1'
+
+# Pipes
+alias pipes="nice -n 19 /home/milk/scripts/pipes.sh -R -r 0 -p 3"
+
 # Nyancat
 alias 'nyancat=telnet miku.acm.uiuc.edu'
-
-# To let Ubuntu Server know that python2 = python
-if [[ "$HOST" != "silver.local" ]] {
-  alias 'python2=python'
-}
-
-tmux_pwd () {
-    [ -z "${TMUX}" ] && return
-    tmux set default-path $(pwd) > /dev/null && tmux new-window
-    (( sleep 300;
-    tmux set default-path ~/ > /dev/null; ) & ) > /dev/null 2>&1
-}
-
-alias tpwd="tmux_pwd"
