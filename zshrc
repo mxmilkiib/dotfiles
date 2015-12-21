@@ -38,6 +38,9 @@ else
     source $Z/prompt.zsh
 fi
 
+
+source $HOME/.zsh/zsh-completion-generator/zsh-completion-generator.plugin.zsh
+
 # Initialize the completion system.
 source $Z/completion.zsh
 
