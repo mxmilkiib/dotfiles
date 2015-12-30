@@ -98,17 +98,17 @@ function etym(){
 function gr() { get_iplayer -g --modes=flashaacstd --pid=$1; }
 
 # Clour pacman/packer search output. tl;dr - use yaourt
-pS() {
-	local CL='\\e['
-	local RS='\\e[0;0m'
-
-	echo -e "$(packer -Ss "$@" | sed "
-		/^core/		s,.*,${CL}1;31m&${RS},
-		/^extra/	s,.*,${CL}0;32m&${RS},
-		/^community/	s,.*,${CL}1;35m&${RS},
-		/^[^[:space:]]/	s,.*,${CL}0;36m&${RS},
-	  ")"
-}
+# pS() {
+# 	local CL='\\e['
+# 	local RS='\\e[0;0m'
+# 
+# 	echo -e "$(packer -Ss "$@" | sed "
+# 		/^core/		s,.*,${CL}1;31m&${RS},
+# 		/^extra/	s,.*,${CL}0;32m&${RS},
+# 		/^community/	s,.*,${CL}1;35m&${RS},
+# 		/^[^[:space:]]/	s,.*,${CL}0;36m&${RS},
+# 	  ")"
+# }
 
 # Easy Aurget
 function aurge(){

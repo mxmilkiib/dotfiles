@@ -100,7 +100,8 @@ alias aw='apt-cache show'
 # alias 'pu=sudo pacman -Syu'
 # aurget was tempremental. packer doesn't display as much info as yaourt
 
-alias p='yaourt --noconfirm'
+alias p='yaourt -S --noconfirm'
+alias pS='yaourt --noconfirm'
 alias pu='yaourt -Syu --noconfirm'
 
 alias pR='sudo pacman -R'										# remove
@@ -180,9 +181,10 @@ alias sn='sudo nano -c' # With line numbers
 alias sv='sudoedit'
 
 # Vim
-alias vg=gvim
-alias v='vim --servername VIM'
-alias va='vim --remote +split'
+alias vg='gvim '
+alias v='vim '
+# alias v='vim --servername VIM'
+# alias va='vim --remote +split'
 alias uv='urxvt -e vim'
 
 # Git
