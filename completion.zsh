@@ -38,9 +38,6 @@ zstyle ':completion:*' squeeze-slashes true
 # Sudo completion
 zstyle ':completion:*:sudo:*' command-path /usr/local/sbin /usr/local/bin /usr/sbin /usr/bin /sbin /bin /usr/X11R6/bin
 
-# Load zsh-syntax-highlighting.
-source ~/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-
 # Load zsh-autosuggestions.
 # source ~/.zsh/zsh-autosuggestions/autosuggestions.zsh
 
