@@ -4,7 +4,7 @@
 
 # Make sudo expand alises
 alias sudo='command sudo '
-
+alias please='sudo $(fc -ln -1)'
 
 ### Looking around, moving about.
 
