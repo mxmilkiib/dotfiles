@@ -1,66 +1,85 @@
 # functions.zsh: Custom functions, and function invocations.
 # P.C. Shyamshankar <sykora@lucentbeing.com>
 
+# http://lucentbeing.com/writing/archives/a-guide-to-256-color-codes/
 if (( C == 256 )); then
     autoload spectrum && spectrum # Set up 256 color support.
 fi
 
-# Simple function to get the current git branch.
-function git_current_branch() {
-    ref=$(git symbolic-ref HEAD 2> /dev/null) || return
-    print "${ref#refs/heads/}"
-}
+# Print text normally, in color 214, which happens to be a nice orange.
+#$> echo "$FG[214]Hello, World"
+# Make the same text bold.
+#$> echo "$FX[bold]$FG[214]Hello, World"
+# Print underlined and italicized text, with normal foreground, and blue
+# background.
+#$> echo "$FX[italic]$FX[underline]$BG[020]Hello, World"
+# Bold, blinking purple text.
+#$> echo "$FX[bold]$FX[blink]$FG[093]Hello, World"
+# Simple purple text on yellow background.
+#$> echo "$FG[093]$BG[226]Hello, World"
 
-case $TERM in
-    *xterm*|*rxvt*|*screen*)
-        # Special function precmd, executed before displaying each prompt.
-        function precmd() {
-            # Set the terminal title to the current working directory.
-            print -Pn "\e]0;%~: %n@%m\a"
-
-            # Get the current git branch into the prompt.
-            git_branch=""
-            current_branch=$(git_current_branch)
-
-            if [[ ${current_branch} != "" ]]; then
-                if (( C == 256 )); then
-                    git_status=$(git status --porcelain)
-                    if [[ $git_status == "" ]]; then
-                        branch_color=222
-                    elif (( $(echo $git_status | grep -c "^.M\|??") > 0 )); then
-                        branch_color=160
-                    else
-                        branch_color=082
-                    fi
-
-                    git_branch=":%{$FX[reset]$FG[${branch_color}]%}${current_branch}"
-                else
-                    git_branch=":${current_branch}"
-                fi
-            fi
-        }
-
-        # Special function preexec, executed before running each command.
-        function preexec () {
-            # Set the terminal title to the currently executing command.
-            command=$(print -P "%60>...>$1")
-            print -Pn "\e]0;$command (%~) : %n@%m\a"
-        }
-esac
 
 # Autoload some useful utilities.
-autoload -Uz zmv
-autoload -Uz zargs
 
-# Pronounciation
-say() { mplayer "http://translate.google.com/translate_tts?q=$1"; }
+# http://onethingwell.org/post/24608988305/zmv
+# autoload -Uz zmv
+
+# https://github.com/johan/zsh/blob/master/Functions/Misc/zargs
+# autoload -Uz zargs
+
+
+# Check if there is an existing tmux server
+function ctmux(){
+	CTMUXC="$(tmux ls 2>&1 >/dev/null)"
+				if [[ $CTMUXC = "server not found: Connection refused" ]]; then
+		tmux -2
+	else
+		tmux -2 attach
+	fi
+	zsh
+}
+
+
+# Follow copied and moved files to destination directory
+cpf() { cp "$@" && goto "$_"; }
+mvf() { mv "$@" && goto "$_"; }
+
+# go to new directory
+function md() { mkdir -p "$1" && cd "$1"; }
+
+# cd and ls -la
+cl() { cd "$1" && lt . ; }
+
+
+# Search in files
+function gcode() { grep --color=always -rnC3 -- "$@" . | /usr/bin/less -R; }
 
 # Browse path web browser like
 function up() { pushd .. > /dev/null; }
 function down() { popd > /dev/null; }
 
-# Search in files
-function gcode() { grep --color=always -rnC3 -- "$@" . | /usr/bin/less -R; }
+# https://github.com/robbyrussell/oh-my-zsh/blob/master/plugins/last-working-dir/last-working-dir.plugin.zsh
+typeset -g ZSH_LAST_WORKING_DIRECTORY
+cache_file="$Z/cache/last-working-dir"
+
+# Updates the last directory once directory is changed.
+chpwd_functions+=(chpwd_last_working_dir)
+function chpwd_last_working_dir() {
+	# Use >| in case noclobber is set to avoid "file exists" error
+	pwd >| "$cache_file"
+}
+
+# Changes directory to the last working directory.
+function lwd() {
+	[[ ! -r "$cache_file" ]] || cd "`cat "$cache_file"`"
+}
+
+# Automatically jump to last working directory unless this isn't the first time
+# this plugin has been loaded.
+# if [[ -z "$ZSH_LAST_WORKING_DIRECTORY" ]]; then
+	# lwd 2>/dev/null && ZSH_LAST_WORKING_DIRECTORY=1 || true
+# fi
+
 
 # Etymology
 function etym(){
@@ -74,20 +93,11 @@ function etym(){
     done
 }
 
-# Check if there is an existing tmux server
-function ctmux(){
-	CTMUXC="$(tmux ls 2>&1 >/dev/null)"
-        if [[ $CTMUXC = "server not found: Connection refused" ]]; then
-		tmux -2
-	else
-		tmux -2 attach
-	fi
-	zsh
-}
 
 # get_iplayer radio
 function gr() { get_iplayer -g --modes=flashaacstd --pid=$1; }
 
+# Clour pacman/packer search output. tl;dr - use yaourt
 pS() {
 	local CL='\\e['
 	local RS='\\e[0;0m'
@@ -109,9 +119,10 @@ function aurge(){
 }
 
 # Easy Git commit
-function gitc(){
+function gc(){
   git commit -m "$*";
 }
+
 
 # Check if command exists
 command_exists () {
@@ -127,7 +138,7 @@ diff () {
   fi
 }
 
-# Extract Files
+# Extract content from an archive
 ext() {
   if [ -f $1 ] ; then
       case $1 in
@@ -152,17 +163,10 @@ ext() {
   fi
 }
 
-# Follow copied and moved files to destination directory
-cpf() { cp "$@" && goto "$_"; }
-mvf() { mv "$@" && goto "$_"; }
-goto() { [ -d "$1" ] && cd "$1" || cd "$(dirname "$1")"; }
-
-# cd and ls -la
-cl() { cd "$1" && ls -lah . ; }
 
 
 function zle-keymap-select {
-    VIMODE="${${KEYMAP/vicmd/ M:command}/(main|viins)/}"
+    VIMODE="${${KEYMAP/vicmd/-- NORMAL --}/(main|viins)/-- INSERT --}"
     zle reset-prompt
 }
 
@@ -300,28 +304,6 @@ function google; {
         $BROWSER "http://www.google.com/search?q=`url-encode "${(j: :)@}"`" 1> /dev/null
 }
 
-
-# https://github.com/robbyrussell/oh-my-zsh/blob/master/plugins/last-working-dir/last-working-dir.plugin.zsh
-typeset -g ZSH_LAST_WORKING_DIRECTORY
-cache_file="$Z/cache/last-working-dir"
-
-# Updates the last directory once directory is changed.
-chpwd_functions+=(chpwd_last_working_dir)
-function chpwd_last_working_dir() {
-  # Use >| in case noclobber is set to avoid "file exists" error
-	pwd >| "$cache_file"
-}
-
-# Changes directory to the last working directory.
-function lwd() {
-	[[ ! -r "$cache_file" ]] || cd "`cat "$cache_file"`"
-}
-
-# Automatically jump to last working directory unless this isn't the first time
-# this plugin has been loaded.
-if [[ -z "$ZSH_LAST_WORKING_DIRECTORY" ]]; then
-	lwd 2>/dev/null && ZSH_LAST_WORKING_DIRECTORY=1 || true
-fi
 
 
 

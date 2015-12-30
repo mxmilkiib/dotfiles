@@ -2,6 +2,9 @@
 # P.C. Shyamshankar <sykora@lucentbeing.com>
 # Hacked by milkmiruku
 
+# profiling module. 'zprof' for info.
+# zmodload zsh/zprof
+
 # export TERM="xterm-256color"
 # export TERM="rxvt-unicode-256color"
 # export TERM="rxvt-unicode"
@@ -10,17 +13,33 @@ export TERM="screen-256color" # for tmux backgrond color erase (bce) to work
 # Where everything is.
 Z=~/.zsh
 
+
 # Set up a working environment.
 source $Z/environment.zsh
-
-# Set up some aliases
-source $Z/aliases.zsh
 
 # Set some options.
 source $Z/options.zsh
 
+
+# Set up some aliases
+source $Z/aliases.zsh
+
+# Private aliases, etc.
+if [ -e $Z/private.zsh ]; then
+	source $Z/private.zsh
+fi
+
+
+# Initialize the completion system.
+source $Z/completion.zsh
+
+# https://github.com/RobSis/zsh-completion-generator
+source $HOME/.zsh/zsh-completion-generator/zsh-completion-generator.plugin.zsh
+
+
 # Define some functions.
 source $Z/functions.zsh
+
 
 # to fix
 # Set up the Z line editor.
@@ -29,7 +48,8 @@ source $Z/functions.zsh
 # Key bindings
 source $Z/bindings.zsh
 
-# Super gir prompt
+
+# Super git prompt - https://github.com/joto/zsh-git-prompt/blob/master/git-prompt.zsh
 source $Z/git-prompt/zshrc.sh
 
 # Set the prompt.
@@ -40,15 +60,6 @@ else
 fi
 
 
-source $HOME/.zsh/zsh-completion-generator/zsh-completion-generator.plugin.zsh
-
-# Initialize the completion system.
-source $Z/completion.zsh
-
-# Private aliases, etc.
-if [ -e $Z/private.zsh ]; then
-  source $Z/private.zsh
-fi
 
 # Set up colours for ls
 # if (( C == 256 )); then
