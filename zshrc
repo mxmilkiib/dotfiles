@@ -29,57 +29,80 @@ if [ -e $Z/private.zsh ]; then
 	source $Z/private.zsh
 fi
 
+# Define some functions.
+source $Z/functions.zsh
 
 # Initialize the completion system.
 source $Z/completion.zsh
 
 
+# Key bindings
+source $Z/bindings.zsh
+
 # plugin managament
-source $Z/antigen.zsh
+source $Z/zgen.zsh
 
-antigen bundle zsh-users/zsh-syntax-highlighting
+zgen load unixorn/autoupdate-zgen
 
-antigen bundle olivierverdier/zsh-git-prompt
+zgen load chrissicool/zsh-256color
+
+zgen load djui/alias-tips
+
+zgen load zsh-users/zsh-syntax-highlighting
+
+zgen load olivierverdier/zsh-git-prompt
 
 # joto/zsh-git-prompt/
 
-antigen bundle zsh-users/zsh-completions
+zgen load zsh-users/zsh-completions
 
-antigen bundle RobSis/zsh-completion-generator
+zgen load RobSis/zsh-completion-generator
 
-antigen bundle rupa/z
+zgen load rupa/z
 
-# antigen bundle clvv/fasd
+zgen load zsh-users/zsh-history-substring-search
+
+bindkey "$terminfo[kcuu1]" history-substring-search-up
+bindkey "$terminfo[kcud1]" history-substring-search-down
+
+zgen load skx/sysadmin-util
+
 # https://github.com/clvv/fasd
 # eval "$($Z/fasd/fasd --init auto)"
 
-antigen bundle junegunn/fzf
 
-# antigen bundle tarruda/zsh-autosuggestions
+# Set the prompt.
+if (( C == 256 )); then
+		source $Z/prompt_256.zsh
+else
+		source $Z/prompt.zsh
+fi
 
 
-# Define some functions.
-source $Z/functions.zsh
+# fzf after zsh-autosuggestions - fzf/issues/227
+zgen load junegunn/fzf
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+# export FZF_DEFAULT_COMMAND='find .'
+export FZF_DEFAULT_OPTS='--reverse'
+export FZF_TMUX='1'
+
+
+# buggy
+# zgen load tarruda/zsh-autosuggestions
+#
+# Enable autosuggestions automatically.
+# zle-line-init() {
+# 		zle autosuggest-start
+# }
+# zle -N zle-line-init
+
 
 
 # to fix
 # Set up the Z line editor.
 # source $Z/zle.zsh
-
-# Key bindings
-source $Z/bindings.zsh
-
-
-# Super git prompt - https://github.com/joto/zsh-git-prompt/blob/master/git-prompt.zsh
-# source $Z/git-prompt/zshrc.sh
-
-# Set the prompt.
-if (( C == 256 )); then
-    source $Z/prompt_256.zsh
-else
-    source $Z/prompt.zsh
-fi
-
 
 
 # Set up colours for ls
@@ -88,16 +111,3 @@ fi
 # fi
 
 # eval $(dircolors -p | sed -e 's/DIR 01;34/DIR 01;36/' | dircolors /dev/stdin)
-
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-
-# export FZF_DEFAULT_COMMAND='find .'
-export FZF_DEFAULT_OPTS='--reverse'
-export FZF_TMUX='1'
-
-# still buggy!!
-# source ~/.zsh/zsh-autosuggestions/autosuggestions.zsh
-# zle-line-init() {
-    # zle autosuggest-start
-# }
-# zle -N zle-line-init
