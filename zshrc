@@ -33,8 +33,29 @@ fi
 # Initialize the completion system.
 source $Z/completion.zsh
 
-# https://github.com/RobSis/zsh-completion-generator
-source $HOME/.zsh/zsh-completion-generator/zsh-completion-generator.plugin.zsh
+
+# plugin managament
+source $Z/antigen.zsh
+
+antigen bundle zsh-users/zsh-syntax-highlighting
+
+antigen bundle olivierverdier/zsh-git-prompt
+
+# joto/zsh-git-prompt/
+
+antigen bundle zsh-users/zsh-completions
+
+antigen bundle RobSis/zsh-completion-generator
+
+antigen bundle rupa/z
+
+# antigen bundle clvv/fasd
+# https://github.com/clvv/fasd
+# eval "$($Z/fasd/fasd --init auto)"
+
+antigen bundle junegunn/fzf
+
+# antigen bundle tarruda/zsh-autosuggestions
 
 
 # Define some functions.
@@ -50,7 +71,7 @@ source $Z/bindings.zsh
 
 
 # Super git prompt - https://github.com/joto/zsh-git-prompt/blob/master/git-prompt.zsh
-source $Z/git-prompt/zshrc.sh
+# source $Z/git-prompt/zshrc.sh
 
 # Set the prompt.
 if (( C == 256 )); then
@@ -66,7 +87,7 @@ fi
 #   eval `dircolors $Z/dircolors`
 # fi
 
-eval $(dircolors -p | sed -e 's/DIR 01;34/DIR 01;36/' | dircolors /dev/stdin)
+# eval $(dircolors -p | sed -e 's/DIR 01;34/DIR 01;36/' | dircolors /dev/stdin)
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 

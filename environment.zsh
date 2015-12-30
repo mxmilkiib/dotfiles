@@ -37,6 +37,3 @@ export TMPDIR=/var/tmp
 
 C=$(tput colors)
 eval $(dircolors -p | sed -e 's/DIR 01;34/DIR 01;36/' | dircolors /dev/stdin)
-
-# https://github.com/clvv/fasd
-eval "$($Z/fasd/fasd --init auto)"
