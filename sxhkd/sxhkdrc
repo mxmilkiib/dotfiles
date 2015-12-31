@@ -2,16 +2,16 @@
 # bspwm hotkeys
 #
 
-# close window
+# close window node
 super + w
-	bspc window -c
+	bspc node -c
 
 
 # toggle window state between tiled (default) and pseudo_tiled or floating or fullscreen
 super + {p,s,f}
     state={pseudo_tiled,floating,fullscreen}; \
     bspc query -W -w "focused.$\{state\}" > /dev/null && state=tiled; \
-    bspc window -t "$state"
+    bspc node -t "$state"
 
 # cycle desktop layout between monocle and tiled
 super + n
@@ -20,11 +20,11 @@ super + n
 
 # switch focus between last window with tab, or desktop with `
 super + {Tab,grave}
-	bspc {window,desktop} -f last
+	bspc {node,desktop} -f last
 
 # focus on next floating or next tiled window 
 super + {d,y}
-	bspc window -f {next.floating,next.tiled}
+	bspc node -f {next.floating,next.tiled}
 
 
 # rotate window tree on desktop
@@ -33,12 +33,12 @@ super + {_,shift +} r
 
 # circulate the leaves of desktop tree backward or forward
 super + comma
-	bspc window -f prev & \
+	bspc node -f prev & \
 	bspc desktop -C backward
 
 # circulate the leaves of desktop tree backward or forward
 super + period
-  bspc window -f next & \
+  bspc node -f next & \
 	bspc desktop -C forward
 
 
@@ -49,20 +49,20 @@ super + {_,alt +}b
 
 # swap focused window with last focused window on any desktop
 super + apostrophe
-	bspc window -s last
+	bspc node -s last
 
-# swap focused window with largest tiled window on the same desktop
+# swap focused window with largest tiled node on the same desktop
 super + m
-	bspc window -s biggest
+	bspc node -s biggest
 
 
 # move window to previous or next desktop
 super + alt + {Left,Right}
-	bspc window -d {prev,next}
+	bspc node -d {prev,next}
 
 # move window to previous or next desktop and follow with focus
 super + shift + {Left,Right}
-	bspc window -d {prev,next} -f
+	bspc node -d {prev,next} -f
 
 # focus on desktop number selected
 super + {1-9,0}
@@ -70,11 +70,11 @@ super + {1-9,0}
 
 # move window to selected desktop number and follow
 super + shift + {1-9,0}
-	bspc window -d ^{1-9,10} -f
+	bspc node -d ^{1-9,10} -f
 
 # move window to selected desktop number
 super + alt + {1-9}
-	bspc window -d ^{1-9}
+	bspc node -d ^{1-9}
 
 
 # focus on the next monitor
@@ -83,11 +83,11 @@ super + o
 
 # move window between monitors
 super + alt + o
-  bspc window -m next
+  bspc node -m next
 
 # move window between monitors and follow
 super + shift + o
-	bspc window -m next -f
+	bspc node -m next -f
 
 
 # focus on previous or next desktop
@@ -101,32 +101,32 @@ super + bracket{left,right}
 
 # focus to or swap window with direction given
 super + {_,shift + }{h,j,k,l}
-	bspc window -{f,s} {left,down,up,right}
+	bspc node -{f,s} {west,south,north,east}
 
 
 # tofix - i use the mouse instead
 
 # alter size of window (only works on left and bottom edges)
 super + alt + {h,j,k,l}
-	bspc window -e {left -10,down +10,down -10,left +10}
+	bspc node -e {west -10,south +10,south -10,west +10}
 
 # make smaller
 #super + alt + shift + {h,j,k,l}
-#	bspc window -e {right -10,up +10,up -10,right +10}
+#	bspc node -e {east -10,north +10,north -10,east +10}
 
 
 # preselect section of window edge
 super + ctrl + {h,j,k,l}
-	bspc window -p {left,down,up,right}
+	bspc node -p {west,south,north,east}
 
 # cancel preselect for window or desktop
 super + ctrl + {_,shift + }space
-	bspc {window -p cancel,desktop -c}
+	bspc {node -p cancel,desktop -c}
 
 
 # set the desktop split ratio
 super + ctrl + {1-9}
-	bspc window -r 0.{1-9}
+	bspc node -r 0.{1-9}
 
 
 
