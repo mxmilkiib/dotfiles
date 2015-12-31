@@ -131,10 +131,23 @@ NeoBundle 'bling/vim-airline'
 " Manage multiple files with ease
 NeoBundle 'scrooloose/nerdtree'
 " \p - toggle nerdtree
-nmap <silent> <leader>p :NERDTreeToggle<CR>
+" nmap <silent> <leader>p :NERDTreeToggle<CR>
 " Close Vim if only NERDtree buffer is open
 " https://github.com/scrooloose/nerdtree/issues/21
 " autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | en
+
+" Open NERDTree in the directory of the current file (or /home if no file is open)
+nmap <silent> <leader>p :call NERDTreeToggleInCurDir()<cr>
+function! NERDTreeToggleInCurDir()
+  " If NERDTree is open in the current buffer
+  if (exists("t:NERDTreeBufName") && bufwinnr(t:NERDTreeBufName) != -1)
+    exe ":NERDTreeClose"
+  else
+    exe ":NERDTreeFind"
+  endif
+endfunction
+
+
 
 augroup AuNERDTreeCmd
   autocmd!
