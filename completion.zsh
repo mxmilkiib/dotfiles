@@ -10,6 +10,7 @@ zstyle ':completion:*' menu select
 
 zstyle ':completion:*' list-colors "${LS_COLORS}" # Complete with same colors as ls.
 
+
 # Fuzzy matching of completions for when you mistype them:
 zstyle ':completion:*' completer _expand _complete _correct _approximate # Completion modifiers.
 zstyle ':completion:*:match:*' original only
@@ -23,6 +24,10 @@ zstyle ':completion:*:functions' ignored-patterns '_*'
 
 # Ignore the current directory in completions
 zstyle ':completion:*' ignore-parents pwd
+
+# auto rehash commands
+# http://www.zsh.org/mla/users/2011/msg00531.html
+zstyle ':completion:*' rehash true
 
 # Use a completion cache
 zstyle ':completion:*' use-cache true
@@ -38,10 +43,6 @@ zstyle ':completion:*' squeeze-slashes true
 # Sudo completion
 zstyle ':completion:*:sudo:*' command-path /usr/local/sbin /usr/local/bin /usr/sbin /usr/bin /sbin /bin /usr/X11R6/bin
 
-# Load zsh-autosuggestions.
-# source ~/.zsh/zsh-autosuggestions/autosuggestions.zsh
+# message when there are nmo completions
+# zstyle ':completion:*:warnings' format 'no results'
 
-# zle-line-init() {
-#     zle autosuggest-start
-# }
-# zle -N zle-line-init
