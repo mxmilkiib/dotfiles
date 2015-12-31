@@ -1,4 +1,10 @@
 Milk's X config files
 
-ln -s ~/.x/.xinitrc ~/.xinitrc
+# desktop
+ln -s ~/.x/silver/.xinitrc ~/.xinitrc
+
+# laptop
+ln -s ~/.x/rose/.xinitrc ~/.xinitrc
+
+# both
 ln -s ~/.x/.Xresources ~/.Xresources
