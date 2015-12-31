@@ -4,7 +4,7 @@
 
 # Make sudo expand alises
 alias sudo='command sudo '
-alias please='sudo $(fc -ln -1)'
+alias pls='sudo $(fc -ln -1)'
 
 ### Looking around, moving about.
 
@@ -77,7 +77,7 @@ alias pms='sudo pm-suspend'
 alias suspend='pm-suspend' # With sudoers
 
 # systemd
-alias sc='systemctl '
+alias sy='systemctl '
 alias ssc='sudo systemctl '
 alias slo='systemctl restart display-manager' # Logout
 
