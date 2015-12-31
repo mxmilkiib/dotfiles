@@ -3,9 +3,13 @@ XTerm*foreground: white
 XTerm*scrollBar_right: true
 
 ! Apperence
-URxvt*background: [80]black
+URxvt*background: [100]black
 URxvt*depth: 32
 URxvt*foreground: white
+
+URxvt*transparent: false
+! URxvt*shading: 18
+
 URxvt*scrollBar_right: true
 
 ! Default shell
@@ -24,7 +28,7 @@ URxvt*scrollstyle:plain
 
 ! Perl scripts
 URxvt.perl-lib: /usr/lib/urxvt/perl/
-URxvt.perl-ext-common: default,matcher,searchable-scrollback,fullscreen,font-size
+URxvt.perl-ext-common: default,matcher,searchable-scrollback,fullscreen,font-size,clipboard
 !url-select
 
 ! Bell
@@ -71,3 +75,9 @@ URxvt.keysym.C-0: command:\033]710;-*-dina-medium-r-normal--13-*-*-*-*-*-*-*\007
  ! URxvt.keysym.C-Down:   perl:font-size:decrease
  URxvt.keysym.C-S-Up:   perl:font-size:incglobal
  URxvt.keysym.C-S-Down: perl:font-size:decglobal
+
+! Shift ctrl-c
+URxvt.keysym.Shift-Control-V: perl:clipboard:paste
+
+URxvt.iso14755: False
+

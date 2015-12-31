@@ -23,7 +23,7 @@ xrdb -merge ~/.Xresources
 xset +fp /usr/share/fonts/local
 xset fp rehash
 
-xrandr --output DVI-I-1 --mode 1280x1024 --pos 0x0 --output VGA-1 --mode 1024x768 --pos 1280x195
+# xrandr --output DVI-I-1 --mode 1280x1024 --pos 0x0 --output VGA-1 --mode 1024x768 --pos 1280x195
 
 # Set X background color to black
 hsetroot -solid "#000000"
@@ -35,7 +35,7 @@ hsetroot -solid "#000000"
 # python2 ~/scripts/nasa-apod-desktop/nasa_apod_desktop.py &
 # feh --bg-max --no-xinerama /home/milk/documents/images/backgrounds/technical/git-vim-1280_and_1024.png
 # feh --bg-fill --no-xinerama /home/milk/documents/images/backgrounds/6785760453_975351e590_o.jpg -Z       
-feh --bg-fill --no-xinerama /home/milk/documents/images/backgrounds/highres/VnXDN9J.jpg -Z
+feh --bg-fill --no-xinerama ~/.wallpapers/VnXDN9J_colourised.png -Z
 
 
 # Give time for background to take
@@ -72,24 +72,14 @@ udiskie &
 # consort-panel &
 xfce4-panel &
 
-# Volume system tray
-# pa-applet &
-volti &
-
-# Radio streams
-radiotray &
-
 # Start GUI (F1 to cycle through)
 
 # Composition manager
-# compiz doesn't witk with openbox
-# cairo-compmgr doesn't allow animated backgrounds
-#xcompmgr &
-
-# slow virtual desktop switching
+# compton -b										# see ~/.config/compton.conf
 # compton --respect-prop-shadow -bc -t -8 -l -9 -r 6 -o 0.7 &
 # compton -cCGfF -o 0.38 -O 200 -I 200 -t 0.02 -l 0.02 -r 3.2 -D2 -m 0.88 -i 0 &
-# compton -cCGfzb -o 0.8 -O 200 -I 200 -t -9 -l -9 -r 6 -D 2 -m 0.98 -e 1 -i 1 --respect-prop-shadow  --shadow-ignore-shaped
+# compton -cCGfzb -o 0.8 -O 200 -I 200 -t -9 -l -9 -r 6 -D 2 -m 0.98 -e 1 -i 1 --respect-prop-shadow  --shadow-ignore-shape
+compton -b --active-opacity 0.85 --inactive-opacity 0.8 --frame-opacity 0.8 --opacity-rule 99:'name *="Chromium"'
 
 # Notification daemon
 dunst &
@@ -113,13 +103,22 @@ dropboxes=(documents/dropbox-personal documents/beltane/Dropbox documents/dropbo
 # Start Jack for audio
 
 # jack_control start &
+cadence --minimized &
+
+# Volume system tray
+# pa-applet &
+volti &
+
+# Radio streams
+radiotray &
+
 
 # rulc -l > /dev/null || ruld &
 
 # export LD_PRELOAD=libetc.so
 # export LIBETC_BLACKLIST=/bin/cp:/bin/ln:/bin/ls:/bin/mv:/bin/rm:/usr/bin/find
 
-autocutsel -fork &
+# autocutsel -fork &
 # autocutsel -selection PRIMARY -fork &
 
 # Update dynamic dns
@@ -153,10 +152,13 @@ case $1 in
   kde)
     exec startkde
     ;;
+  openbox)
+    exec openbox
+    ;;
   bspwm|*)
     [ -e "$PANEL_FIFO" ] && rm "$PANEL_FIFO"
     # mkfifo "$PANEL_FIFO"
-exec bspwm
+    exec bspwm
     # exec bspwm -s "$PANEL_FIFO" -p W
     ;;
 esac
