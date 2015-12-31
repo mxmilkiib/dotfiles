@@ -100,8 +100,9 @@ alias aw='apt-cache show'
 # alias 'pu=sudo pacman -Syu'
 # aurget was tempremental. packer doesn't display as much info as yaourt
 
-alias p='yaourt --noconfirm'
+alias p='yaourt -S --noconfirm'
 alias pu='yaourt -Syu --noconfirm'
+alias y='yaourt --noconfirm'
 
 alias pR='sudo pacman -R'										# remove
 alias pU='sudo pacman -U'										# upgrade (local package)
