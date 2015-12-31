@@ -60,7 +60,7 @@ function down() { popd > /dev/null; }
 
 # https://github.com/robbyrussell/oh-my-zsh/blob/master/plugins/last-working-dir/last-working-dir.plugin.zsh
 typeset -g ZSH_LAST_WORKING_DIRECTORY
-cache_file="$Z/cache/last-working-dir"
+cache_file="$Z/cache/$HOST/last-working-dir"
 
 # Updates the last directory once directory is changed.
 chpwd_functions+=(chpwd_last_working_dir)
