@@ -3,7 +3,8 @@ XTerm*foreground: white
 XTerm*scrollBar_right: true
 
 ! Apperence
-URxvt*background: [100]black
+! URxvt*background: [100]black
+URxvt*background: black
 URxvt*depth: 32
 URxvt*foreground: white
 
