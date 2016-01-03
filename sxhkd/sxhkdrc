@@ -2,10 +2,9 @@
 # bspwm hotkeys
 #
 
-# close window node
-super + w
-	bspc node -c
-
+# close and kill
+super + {_,shift + }w
+	bspc node -{c,k}
 
 # toggle window state between tiled (default) and pseudo_tiled or floating or fullscreen
 super + {p,s,f}
@@ -27,19 +26,19 @@ super + {d,y}
 	bspc node -f {next.floating,next.tiled}
 
 
-# rotate window tree on desktop
+# rotate current desktop node tree root
 super + {_,shift +} r
-	bspc desktop -R {90,270}
+	bspc node @/ -R {90,270}
 
 # circulate the leaves of desktop tree backward or forward
 super + comma
-	bspc node -f prev & \
-	bspc desktop -C backward
+	bspc node @/ -C backward; \
+	bspc node -f prev
 
 # circulate the leaves of desktop tree backward or forward
 super + period
-  bspc node -f next & \
-	bspc desktop -C forward
+	bspc node @/ -C forward; \
+	bspc node -f next
 
 
 # equalise or balance windows on current desktop
@@ -77,6 +76,7 @@ super + alt + {1-9}
 	bspc node -d ^{1-9}
 
 
+
 # focus on the next monitor
 super + o
 	bspc monitor -f next
@@ -104,31 +104,47 @@ super + {_,shift + }{h,j,k,l}
 	bspc node -{f,s} {west,south,north,east}
 
 
-# tofix - i use the mouse instead
-
-# alter size of window (only works on left and bottom edges)
-super + alt + {h,j,k,l}
-	bspc node -e {west -10,south +10,south -10,west +10}
-
-# make smaller
-#super + alt + shift + {h,j,k,l}
-#	bspc node -e {east -10,north +10,north -10,east +10}
-
+#
+# preselect
+#
 
 # preselect section of window edge
 super + ctrl + {h,j,k,l}
 	bspc node -p {west,south,north,east}
 
-# cancel preselect for window or desktop
-super + ctrl + {_,shift + }space
-	bspc {node -p cancel,desktop -c}
-
-
-# set the desktop split ratio
+# preselect the ratio
 super + ctrl + {1-9}
-	bspc node -r 0.{1-9}
+	bspc node -o 0.{1-9}
+
+# cancel preselect for window or desktop
+super + ctrl + space
+	bspc node -p cancel
+
+# cancel the preselection for the focused desktop
+super + ctrl + shift + space
+	bspc query -N -d | xargs -I id -n 1 bspc node id -p cancel
 
 
+#
+# resize tiled/floating
+#
+
+# expand the tiled space in the given direction
+super + alt + {h,j,k,l}
+	bspc node {@west -r -10,@south -r +10,@north -r -10,@east -r +10}
+
+# contract the tiled space in the given direction
+super + alt + shift + {h,j,k,l}
+	bspc node {@east -r -10,@north -r +10,@south -r -10,@west -r +10}
+
+# move a floating window
+super + ctrl + {Left,Down,Up,Right}
+	xdo move {-x -20,-y +20,-y -20,-x +20}
+
+
+#
+# pointer focus/move/resize
+#
 
 ~button1
 	bspc pointer -g focus
@@ -150,7 +166,7 @@ super + button{4,5}
 
 
 #
-# wm independent hotkeys
+# misc hotkeys
 #
 
 #super + Return
@@ -158,15 +174,12 @@ super + button{4,5}
 
 # open a urxvtc terminal window in a specific direction
 super + Return
-  if [ $(bspc query -W -w next) ]; then urxvtc; else bspc rule -a \* --one-shot split_dir=down; urxvtc; fi 
+  if [ $(bspc query -N -n next) ]; then urxvtc; else bspc rule -a \* --one-shot split_dir=down; urxvtc; fi 
 
 super + ctrl + Return
 #	rulc -a true floating=true duration=1 | urxvtc
   bspc rule -a \* --one-shot state=floating | urxvtc
 
-super + alt + space
-  dmenu_run -h 22
-  # xboomx
 
 super + space
   ~/bin/dmenu_run.pl -h 22
