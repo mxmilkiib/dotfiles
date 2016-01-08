@@ -46,21 +46,19 @@ bspc monitor -a B2 B3 B4
 bspc monitor -f next
 
 
-# rulc -a 'instance=="plugin-container"' 'floating=on, focus=yes'
-# bspc config rule_command "xwinfo -cints 0x%X | xargs -d '\n' rulc -t"
-# bspc config rule_command "$(which rule_command)"
-
-bspc rule -a vlc floating=on
-bspc rule -a mpv floating=on
+# Rules
+bspc rule -a vlc state=floating
+bspc rule -a mpv state=floating
+bspc rule -a cadence state=floating
 bspc rule -a Chromium desktop=A1
 # bspc rule -a Gimp desktop=A4
 bspc rule -a keepassx desktop=B3
-bspc rule -a Pidgin desktop=B4 floating=on
-bspc rule -a pavucontrol floating=on
-bspc rule -a Mixer floating=on
-bspc rule -a xfce4-panel floating=on
-bspc rule -a qjackctl floating=on
-bspc rule -a candence.py floating=on
+bspc rule -a Pidgin desktop=B4 state=floating
+bspc rule -a pavucontrol state=floating
+bspc rule -a Mixer state=floating
+bspc rule -a xfce4-panel state=floating
+bspc rule -a qjackctl state=floating
+bspc rule -a candence.py state=floating
 
 # Reset monitor settings to use above (gh:143)
 # bspc monitor -d B1 B2 B3 B4
