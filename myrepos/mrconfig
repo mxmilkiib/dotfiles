@@ -1,0 +1,15 @@
+
+[.zsh]
+checkout = git clone 'https://github.com/milkmiruku/dotzsh.git' '.zsh'
+
+[.tmux]
+checkout = git clone 'git@github.com:milkmiruku/dottmux.git' '.tmux'
+
+[.x]
+checkout = git clone 'git@github.com:milkmiruku/dotx.git' '.x'
+
+[.vim]
+checkout = git clone 'git@github.com:milkmiruku/dotvim.git' '.vim'
+
+[.config]
+checkout = git clone 'git@github.com:milkmiruku/dotconfig.git' '.config'
