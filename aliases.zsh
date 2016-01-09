@@ -238,6 +238,8 @@ alias dr='drush'
 alias lm='xmodmap -e "pointer = 3 2 1"'
 alias ulm='xmodmap -e "pointer = 1 2 3"'
 
+# Reload compton
+alias comptonrl='sudo killall compton; compton -b'
 
 ### Misc
 
