@@ -1,3 +1,0 @@
-Milk's tmux config
-
-ln -s ~/.tmux/.tmux.conf ~/.tmux.conf
