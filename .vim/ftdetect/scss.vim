@@ -1,0 +1,1 @@
+/home/milk/.vim/bundle/scss-syntax/ftdetect/scss.vim
