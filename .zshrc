@@ -20,6 +20,9 @@ source $Z/environment.zsh
 # Set some options.
 source $Z/options.zsh
 
+# Initialize the completion system.
+source $Z/completion.zsh
+
 
 # Set up some aliases
 source $Z/aliases.zsh
@@ -31,9 +34,6 @@ fi
 
 # Define some functions.
 source $Z/functions.zsh
-
-# Initialize the completion system.
-source $Z/completion.zsh
 
 
 # Key bindings

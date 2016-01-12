@@ -183,6 +183,7 @@ alias sn='sudo nano -c' # With line numbers
 
 # Quick sudo vim (with $EDITOR=vim)
 alias sv='sudoedit'
+compdef sv=vim
 
 # Vim
 alias vg='gvim '

@@ -37,8 +37,9 @@ setopt MULTIBYTE
 unsetopt FLOW_CONTROL
 
 # Correction
-setopt CORRECT											# spelling correction for commands
+# setopt CORRECT											# spelling correction for commands
 # setopt CORRECTALL										# spelling correction for arguments
+
 
 # Prompt settings
 setopt PROMPT_SUBST                 # Expand parameters within prompts.
