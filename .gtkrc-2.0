@@ -1,20 +1,110 @@
-# DO NOT EDIT! This file will be overwritten by LXAppearance.
-# Any customization should be done in ~/.gtkrc-2.0.mine instead.
+gtk-color-scheme="bg_color:#eaeaea\nfg_color:#000\nselected_fg_color:#ffffff\nbase_color:#666\nselected_bg_color:#729fcf\ntext_color:#fff\n"
 
-gtk-theme-name="Gelb"
-gtk-icon-theme-name="Humanity-Colors-Dark-Orange"
-gtk-font-name="Open Sans 9"
-gtk-cursor-theme-name="Adwaita"
-gtk-cursor-theme-size=0
-gtk-toolbar-style=GTK_TOOLBAR_BOTH
-gtk-toolbar-icon-size=GTK_ICON_SIZE_MENU
-gtk-button-images=1
-gtk-menu-images=1
-gtk-enable-event-sounds=1
-gtk-enable-input-feedback-sounds=1
-gtk-xft-antialias=1
-gtk-xft-hinting=1
-gtk-xft-hintstyle="hintfull"
-gtk-xft-rgba="rgb"
-gtk-color-scheme="tooltip_fg_color:#000\nbase_color:#fff\nselected_fg_color:#fff\ntext_color:#000\nbg_color:#d3d7cf\ntooltip_bg_color:#F5F5B5\nselected_bg_color:#ffff74741515\nfg_color:#000\n"
-include "/home/milk/.gtkrc-2.0.mine"
+# gtk-icon-sizes = "panel=16,16:gtk-button=16,16" # Icon sizes
+
+style "panel"
+{
+fg[NORMAL] = @text_color
+fg[SELECTED] = @text_color
+fg[ACTIVE] = @text_color
+fg[PRELIGHT] = @text_color
+fg[INSENSITIVE] = @fg_color
+
+bg[NORMAL] = "#666"
+bg[SELECTED] = "#999"
+bg[ACTIVE] = "#666"
+bg[PRELIGHT] = "#666"
+bg[INSENSITIVE] = "#333"
+
+text[NORMAL] = @text_color
+text[PRELIGHT] = @text_color
+text[SELECTED] = @text_color
+text[ACTIVE] = @text_color
+text[INSENSITIVE] = @text_color
+
+base[NORMAL] = "#000000"
+base[PRELIGHT] = "#000000"
+base[SELECTED] = "#000000"
+base[ACTIVE] = "#000000"
+base[INSENSITIVE] = "#000000"
+
+# xthickness = 0
+# ythickness = 0
+
+GtkButton::default-border = { 0, 0, 0, 0 }
+
+font_name = "Terminus for Powerline 8"
+}
+
+style "panel_tray" {
+fg[NORMAL] = "#000"
+fg[SELECTED] = "#000"
+fg[ACTIVE] = "#000"
+fg[PRELIGHT] = "#000"
+fg[INSENSITIVE] = "#000"
+
+bg[NORMAL] = "#000"
+bg[SELECTED] = "#000"
+bg[ACTIVE] = "#666"
+bg[PRELIGHT] = "#666"
+bg[INSENSITIVE] = "#666"
+
+base[NORMAL] = "#000"
+base[SELECTED] = "#000"
+base[ACTIVE] = "#000"
+base[PRELIGHT] = "#000"
+base[INSENSITIVE] = "#000"
+
+
+
+}
+
+style "panel_pager" {
+fg[NORMAL] = "#666"
+fg[SELECTED] = "#666"
+fg[ACTIVE] = "#666"
+fg[PRELIGHT] = "#666"
+fg[INSENSITIVE] = "#666"
+
+# bg[NORMAL] = "#666"
+# bg[SELECTED] = "#000"
+# bg[ACTIVE] = "#000"
+# bg[PRELIGHT] = "#666"
+# bg[INSENSITIVE] = "#666"
+
+# base[NORMAL] = "#000"
+# base[SELECTED] = "#000"
+# base[ACTIVE] = "#000"
+# base[PRELIGHT] = "#000"
+# base[INSENSITIVE] = "#000"
+}
+
+# class "*Panel*" style "panel"
+widget "*Panel*" style "panel"
+widget "*Tray*" style "panel_tray"
+widget "*tray*" style "panel_tray"
+
+
+# widget_class "*Panel*GtkToggleButton" style "panel"
+# widget_class "*Panel*GtkButton" style "panel"
+# widget_class "*.Panel*Button*" style "panel"
+# widget_class "*.Panel*GtkLabel" style "panel"
+# widget_class "*Panel*GtkButton" style "panel"
+
+# widget "*PanelWidget*" style "panel"
+# widget "*PanelApplet*" style "panel"
+
+# widget_class "*MenuItem*" style "panel"
+# widget_class "*ToolItem*" style "panel"
+# widget_class "*SeparatorMenuitem*" style "panel"
+# widget_class "*SeparatorToolitem*" style "panel"
+# widget_class "*ImageMenuitem*" style "panel"
+# widget_class "*RadioMenuitem*" style "panel"
+# widget_class "*CheckMenuitem*" style "panel"
+# widget_class "*TearoffMenuitem*" style "panel"
+# widget_class "*GtkNotebook*GtkLabel" style "panel"
+widget "*WnckPager*" style "panel_pager"
+
+# widget_class "*notif*" style "panel"
+# widget_class "*Notif*" style "panel"
+# widget_class "*date*" style "panel"
