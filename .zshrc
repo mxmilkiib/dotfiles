@@ -20,6 +20,9 @@ source $Z/environment.zsh
 # Set some options.
 source $Z/options.zsh
 
+# Key bindings
+source $Z/bindings.zsh
+
 # Initialize the completion system.
 source $Z/completion.zsh
 
@@ -35,9 +38,6 @@ fi
 # Define some functions.
 source $Z/functions.zsh
 
-
-# Key bindings
-source $Z/bindings.zsh
 
 # plugin managament
 source $Z/zgen.zsh
@@ -97,17 +97,3 @@ export FZF_TMUX='1'
 # 		zle autosuggest-start
 # }
 # zle -N zle-line-init
-
-
-
-# to fix
-# Set up the Z line editor.
-# source $Z/zle.zsh
-
-
-# Set up colours for ls
-# if (( C == 256 )); then
-#   eval `dircolors $Z/dircolors`
-# fi
-
-# eval $(dircolors -p | sed -e 's/DIR 01;34/DIR 01;36/' | dircolors /dev/stdin)

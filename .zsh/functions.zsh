@@ -154,6 +154,7 @@ ext() {
           *.zip)       unzip $1       ;;
           *.Z)         uncompress $1  ;;
           *.7z)        7z x $1        ;;
+					*.iso)       7z x $1        ;;
           *.xz)        unxz $1        ;;
           *.exe)       cabextract $1  ;;
           *)           echo "\`$1': unrecognized file compression" ;;
