@@ -103,6 +103,8 @@ dropboxes=(documents/dropbox-personal documents/beltane/Dropbox documents/dropbo
 # Start Jack for audio
 
 # jack_control start &
+cadence-session-start --system-start
+
 cadence --minimized &
 
 # Volume system tray
@@ -113,8 +115,7 @@ volti &
 radiotray &
 
 
-# rulc -l > /dev/null || ruld &
-
+# https://wiki.archlinux.org/index.php/Libetc
 # export LD_PRELOAD=libetc.so
 # export LIBETC_BLACKLIST=/bin/cp:/bin/ln:/bin/ls:/bin/mv:/bin/rm:/usr/bin/find
 
