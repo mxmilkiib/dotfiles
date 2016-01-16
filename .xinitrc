@@ -85,7 +85,7 @@ compton -b
 dunst &
 
 # Dropbox w/ systray icon
-dropboxes=(documents/dropbox-personal documents/beltane/Dropbox documents/dropbox-drumming)
+# dropboxes=(documents/dropbox-personal documents/beltane/Dropbox documents/dropbox-drumming)
 
 # TMPHOME=~
 # for dropbox in ${dropboxes[@]}; do
@@ -103,13 +103,14 @@ dropboxes=(documents/dropbox-personal documents/beltane/Dropbox documents/dropbo
 # Start Jack for audio
 
 # jack_control start &
-cadence-session-start --system-start
+cadence-session-start --start &
 
 cadence --minimized &
 
 # Volume system tray
 # pa-applet &
-volti &
+# volti &
+pnmixer &
 
 # Radio streams
 radiotray &
