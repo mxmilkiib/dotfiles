@@ -47,7 +47,7 @@ bspc monitor -f next
 
 
 # Rules
-bspc rule -a vlc state=floating
+bspc rule -a Vlc state=floating
 bspc rule -a mpv state=floating
 bspc rule -a cadence state=floating
 bspc rule -a Chromium desktop=A1
@@ -58,7 +58,7 @@ bspc rule -a Pavucontrol state=floating
 bspc rule -a Mixer state=floating
 bspc rule -a xfce4-panel state=floating
 bspc rule -a qjackctl state=floating
-bspc rule -a Candence.py state=floating
+bspc rule -a Cadence.py state=floating
 
 # Reset monitor settings to use above (gh:143)
 # bspc monitor -d B1 B2 B3 B4
