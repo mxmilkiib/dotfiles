@@ -37,3 +37,6 @@ export TMPDIR=/var/tmp
 
 C=$(tput colors)
 eval $(dircolors -p | sed -e 's/DIR 01;34/DIR 01;36/' | dircolors /dev/stdin)
+
+# sans / so deleting words doesn't delete a full path
+WORDCHARS='*?_-.[]~=&;!#$%^(){}<>'

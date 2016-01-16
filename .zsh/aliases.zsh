@@ -59,6 +59,22 @@ alias lsr='tree -Csu | more '    								# alternative recursive ls
 # Mount with coloum output
 alias mounts='mount | column -t'
 
+# Human readable df default
+alias 'df=df -h'
+
+# better cdu
+alias du2='cdu -idh'
+
+# Check disk usage in ncdu (arch)
+alias 'ncdua=ncdu / --exclude /home --exclude /media --exclude /run/media --exclude /boot --exclude /tmp --exclude /dev --exclude /proc'
+
+# List dir items
+alias 'dus=du -ms * | sort -n'
+
+# Check disk usage in ncdu (arch root)
+alias 'ncduar=sudo ncdu / --exclude /home --exclude /media --exclude /run/media --exclude /boot --exclude /tmp --exclude /dev --exclude /proc --exclude /var/lib/mpd/music --exclude /run/user'
+
+
 
 # Search running processes
 alias 'ps?'='ps ax | grep '
