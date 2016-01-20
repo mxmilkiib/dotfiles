@@ -1,7 +1,7 @@
 # completion.zsh: Directives for the Z-Shell completion system.
 # P.C. Shyamshankar <sykora@lucentbeing.com>
 
-# -U avoids expanding aliases, -z for zsh not ksh(?)
+# -U avoids expanding aliases, -z for zsh not ksh(?), then init all completion _files in $fpath
 autoload -Uz compinit && compinit
 
 zstyle ':completion:*' verbose yes

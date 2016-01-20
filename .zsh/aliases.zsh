@@ -44,6 +44,7 @@ fi
 # Alias ls='ls --color'        									# add colors for filetype recognition
 
 alias ll='ls -lh --group-directories-first'     # long list, alphabetical sort (default), human readable (K, M, etc.), directories first
+alias lla='ls -lha --group-directories-first'     # long list, alphabetical sort (default), human readable (K, M, etc.), directories first
 
 alias lt='ls -ltrh'          										# long list, sort by modification time, reversed (recent last), human readable
 alias lu='ls -lturh'         										# long list, sort by and show access time, reversed, human readable
@@ -65,15 +66,11 @@ alias 'df=df -h'
 # better cdu
 alias du2='cdu -idh'
 
-# Check disk usage in ncdu (arch)
-alias 'ncdua=ncdu / --exclude /home --exclude /media --exclude /run/media --exclude /boot --exclude /tmp --exclude /dev --exclude /proc'
-
 # List dir items
 alias 'dus=du -ms * | sort -n'
 
 # Check disk usage in ncdu (arch root)
 alias 'ncduar=sudo ncdu / --exclude /home --exclude /media --exclude /run/media --exclude /boot --exclude /tmp --exclude /dev --exclude /proc --exclude /var/lib/mpd/music --exclude /run/user'
-
 
 
 # Search running processes
