@@ -17,7 +17,7 @@ fi
 setxkbmap gb
 
 # Source .Xresources for this session
-xrdb -merge ~/.Xresources
+[[ -f ~/.Xresources ]] && xrdb -merge ~/.Xresources
 
 # Make additional fonts available
 xset +fp /usr/share/fonts/local
@@ -53,8 +53,8 @@ unclutter -root -jitter 10 &
 # As xmonad default to x cursor
 xsetroot -cursor_name left_ptr &
 
-# Start urxvt demon
-urxvtd -q -f -o &
+# Start urxvt demon, quiet, connect to $DISPLAY, fork after control socket binding
+urxvtd -q -o -f &
 
 # Start xscreensaver
 xscreensaver -nosplash &
