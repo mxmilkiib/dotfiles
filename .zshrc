@@ -39,7 +39,7 @@ fi
 source $Z/functions.zsh
 
 
-# plugin managament
+# Plugin managament
 source $Z/zgen.zsh
 
 zgen load unixorn/autoupdate-zgen

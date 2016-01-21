@@ -1,15 +1,11 @@
 # two thirds through fixing
 
-
-# Create some blank keymaps to play with. er, what for again?
-# bindkey -N sins .safe
-# bindkey -N scmd .safe
-
-# to add other keys to this hash, see: man 5 terminfo
+# use 'bindkey' to list current key bindings
 
 # create human readable global associative array from local terminfo in variable $key
 # this is instead of hardbinding to control codes as these can vary between terminals
 # make sure your terminfo is corrext! set in .Xresources. bad idea to overwrite $TERM.
+# to add other keys to this hash, see: man 5 terminfo
 
 typeset -g -A key
 
@@ -76,20 +72,22 @@ bindkey '^w' push-line
 # Ctrl-e - pop line from buffer stack
 bindkey '^e' get-line
 
-
 # Ctrl-b - Comment out line with # and execute
 bindkey '^b' pound-insert
 
 # bindkey "^V" quoted-insert
 
-# delete after cursor
+# Ctrl-k - delete after cursor
 bindkey "^k" kill-line
 
-# delete everything  
+# Ctrl-u - delete everything  
 bindkey "^u" kill-whole-line
 
 # clear screen (defauly anyway?)
-bindkey "^L" clear-screen
+bindkey "^l" clear-screen
+
+# Ctrl-* - add completion item to editing buffer but don't close completion menu
+bindkey '^[*' accept-and-hold
 
 # https://github.com/johan/zsh/blob/master/Functions/Zle/insert-composed-char
 autoload insert-composed-char
