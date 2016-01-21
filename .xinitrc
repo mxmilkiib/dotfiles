@@ -60,7 +60,7 @@ urxvtd -q -o -f &
 xscreensaver -nosplash &
 
 # Disable screensaver on media fullscreen
-lightsOn.sh 545 &
+lightsOn 545 &
 
 # Automount USB script with smart system tray icon
 udiskie -s &
@@ -83,6 +83,9 @@ compton -b
 
 # Notification daemon
 dunst &
+
+# Break timer
+workrave &
 
 # Dropbox w/ systray icon
 # dropboxes=(documents/dropbox-personal documents/beltane/Dropbox documents/dropbox-drumming)
