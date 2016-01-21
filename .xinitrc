@@ -37,9 +37,12 @@ hsetroot -solid "#000000"
 # feh --bg-fill --no-xinerama /home/milk/documents/images/backgrounds/6785760453_975351e590_o.jpg -Z       
 feh --bg-fill --no-xinerama ~/.wallpapers/VnXDN9J_colourised.png -Z
 
-
-# Give time for background to take
-#sleep 4
+# bmpanel2 --theme=Kupo_Finale-dark &
+# tint2 &
+# lxpanel &
+# gnome-panel &
+# consort-panel &
+xfce4-panel &
 
 # Give opacity to specific windows. See ~/.devilspie/opacity.ds
 #devilspie -a &
@@ -64,15 +67,6 @@ lightsOn 545 &
 
 # Automount USB script with smart system tray icon
 udiskie -s &
-
-# bmpanel2 --theme=Kupo_Finale-dark &
-# tint2 &
-# lxpanel &
-# gnome-panel &
-# consort-panel &
-xfce4-panel &
-
-# Start GUI (F1 to cycle through)
 
 # Composition manager
 # compton -b										# see ~/.config/compton.conf
