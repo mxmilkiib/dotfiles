@@ -42,30 +42,47 @@ source $Z/functions.zsh
 # Plugin managament
 source $Z/zgen.zsh
 
-zgen load unixorn/autoupdate-zgen
+# check if there's no init script
+if ! zgen saved; then
+    echo "Creating a zgen save"
 
-zgen load chrissicool/zsh-256color
+		zgen load unixorn/autoupdate-zgen
 
-zgen load djui/alias-tips
+		zgen load chrissicool/zsh-256color
 
-zgen load zsh-users/zsh-syntax-highlighting
+		zgen load djui/alias-tips
 
-zgen load olivierverdier/zsh-git-prompt
+		zgen load zsh-users/zsh-syntax-highlighting
 
-# joto/zsh-git-prompt/
+		zgen load olivierverdier/zsh-git-prompt
 
-zgen load zsh-users/zsh-completions
+		zgen load zsh-users/zsh-completions
 
-zgen load RobSis/zsh-completion-generator
+		zgen load RobSis/zsh-completion-generator
 
-zgen load rupa/z
+		zgen load rupa/z
 
-zgen load zsh-users/zsh-history-substring-search
+		zgen load zsh-users/zsh-history-substring-search
 
+		zgen load skx/sysadmin-util
+
+		# fzf after zsh-autosuggestions - fzf/issues/227
+		zgen load junegunn/fzf
+
+    zgen save
+fi
+
+# type then press up/down to search history
 bindkey "$terminfo[kcuu1]" history-substring-search-up
 bindkey "$terminfo[kcud1]" history-substring-search-down
 
-zgen load skx/sysadmin-util
+# [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+# export FZF_DEFAULT_COMMAND='find .'
+export FZF_DEFAULT_OPTS='--reverse'
+export FZF_TMUX='1'
+
+
 
 # https://github.com/clvv/fasd
 # eval "$($Z/fasd/fasd --init auto)"
@@ -77,17 +94,6 @@ if (( C == 256 )); then
 else
 		source $Z/prompt.zsh
 fi
-
-
-# fzf after zsh-autosuggestions - fzf/issues/227
-zgen load junegunn/fzf
-
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-
-# export FZF_DEFAULT_COMMAND='find .'
-export FZF_DEFAULT_OPTS='--reverse'
-export FZF_TMUX='1'
-
 
 # buggy
 # zgen load tarruda/zsh-autosuggestions
