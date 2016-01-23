@@ -21,6 +21,9 @@ super + space
 super + Escape  
 	pkill -USR1 -x sxhkd
 
+# volume control
+super + p
+	pavucontrol
 
 #
 # bspwm hotkeys
