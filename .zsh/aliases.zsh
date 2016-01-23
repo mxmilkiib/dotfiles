@@ -270,4 +270,4 @@ alias bofh='nc bofh.jeffballard.us 666 | tail -n 1'
 alias pipes='nice -n 19 /home/milk/scripts/pipes.sh -R -r 0 -p 3'
 
 # Nyancat
-alias nyancat='telnet miku.acm.uiuc.edu'
+alias nyancat='telnet nyancat.dakko.us'
