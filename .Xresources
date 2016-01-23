@@ -14,6 +14,8 @@ URxvt*foreground: white
 URxvt*transparent: false
 ! URxvt*shading: 18
 
+URxvt*saveLines: 4000
+
 URxvt*scrollBar_right: true
 
 ! Default shell
