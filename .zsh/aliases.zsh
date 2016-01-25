@@ -82,6 +82,9 @@ alias mkdir='mkdir -p'
 # 'Copy with progress bar'
 alias ccp='rsync --progress -ah'
 
+# Quick remove directory
+alias rd='rm -rf'
+
 
 ### Shutdown, reboot, logout
 

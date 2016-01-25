@@ -32,7 +32,7 @@ source $Z/aliases.zsh
 
 # Private aliases, etc.
 if [ -e $Z/private.zsh ]; then
-	source $Z/private.zsh
+  source $Z/private.zsh
 fi
 
 # Define some functions.
@@ -46,30 +46,30 @@ source $Z/zgen.zsh
 if ! zgen saved; then
     echo "Creating a zgen save"
 
-		zgen load unixorn/autoupdate-zgen
+  zgen load unixorn/autoupdate-zgen
 
-		zgen load chrissicool/zsh-256color
+  zgen load chrissicool/zsh-256color
 
-		zgen load djui/alias-tips
+  zgen load djui/alias-tips
 
-		zgen load zsh-users/zsh-syntax-highlighting
+  zgen load zsh-users/zsh-syntax-highlighting
 
-		zgen load olivierverdier/zsh-git-prompt
+  zgen load olivierverdier/zsh-git-prompt
 
-		zgen load zsh-users/zsh-completions
+  zgen load zsh-users/zsh-completions
 
-		zgen load RobSis/zsh-completion-generator
+  zgen load RobSis/zsh-completion-generator
 
-		zgen load rupa/z
+  zgen load rupa/z
 
-		zgen load zsh-users/zsh-history-substring-search
+  zgen load zsh-users/zsh-history-substring-search
 
-		zgen load skx/sysadmin-util
+  zgen load skx/sysadmin-util
 
-		# fzf after zsh-autosuggestions - fzf/issues/227
-		zgen load junegunn/fzf
+  # fzf after zsh-autosuggestions - fzf/issues/227
+  zgen load junegunn/fzf
 
-    zgen save
+  zgen save
 fi
 
 # type then press up/down to search history
