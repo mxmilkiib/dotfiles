@@ -118,7 +118,7 @@ radiotray &
 # export LIBETC_BLACKLIST=/bin/cp:/bin/ln:/bin/ls:/bin/mv:/bin/rm:/usr/bin/find
 
 # autocutsel -fork &
-# autocutsel -selection PRIMARY -fork &
+autocutsel -selection PRIMARY -fork
 
 # Update dynamic dns
 inadyn -u milkmiruku -p DcBaCCcchangeiP -a milkmiruku.no-ip.info --dyndns_system default@no-ip.com --background &
