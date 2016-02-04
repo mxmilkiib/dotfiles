@@ -1,4 +1,5 @@
-""" Milk's vimrc
+" Vim confiruration file
+" milk <dotconfig@milkmiruku.com>
 
 """ Init pathogen
 "call pathogen#runtime_append_all_bundles()
@@ -556,13 +557,57 @@ endif
 
 
 
-""" Ctrl-q, insert just one character, not working!
-"function! RepeatChar(char, count)
-"   return repeat(a:char, a:count)
-" endfunction
-" nnoremap <C-q> :<C-U>exec "normal i".RepeatChar(nr2char(getchar()), v:count1)<CR>
-" below not urxvt friendly
-" nnoremap C-S :<C-U>exec "normal a".RepeatChar(nr2char(getchar()), v:count1)<CR>
+"" Alt-i, Alt-a - insert/append just one character
+"" http://vim.wikia.com/wiki/Insert_a_single_character
+" Since I have switched to Neovim in which Meta key bindings works even in the terminal, I used <M-i> and <M-a> as the shortcuts. If you are using original Vim on a terminal, you could use the trick provided by Tim Pope in his rsi.vim plugin to make the meta key work.
+
+let s:insert_char_pre = ''
+let s:insert_leave = ''
+
+autocmd InsertCharPre * execute s:insert_char_pre
+autocmd InsertLeave   * execute s:insert_leave
+
+" basic layer
+function! s:QuickInput (operator, insert_char_pre) 
+    let s:insert_char_pre = a:insert_char_pre
+    let s:insert_leave = 'call <SID>RemoveFootprint()'
+    call feedkeys(a:operator, 'n')
+endfunction 
+
+function! s:RemoveFootprint() 
+    let s:insert_char_pre = ''
+    let s:insert_leave = ''
+    let s:char_count = 0
+endfunction 
+
+" secondary layer
+function! QuickInput_Count (operator, count) 
+    let insert_char_pre = 'call <SID>CountChars('.a:count.')'
+    call <SID>QuickInput(a:operator, insert_char_pre)
+endfunction 
+
+let s:char_count = 0
+function! s:CountChars (count) 
+    let s:char_count += 1
+    if s:char_count == a:count
+        call feedkeys("\<Esc>")
+    endif
+endfunction 
+
+" secondary layer
+function! QuickInput_Repeat (operator, count) 
+    let insert_char_pre = 'let v:char = repeat(v:char, '.a:count.') | call feedkeys("\<Esc>")'
+    call <SID>QuickInput(a:operator, insert_char_pre)
+endfunction 
+
+nnoremap i :<C-u>execute 'call ' v:count? 'QuickInput_Count("i", v:count)' : "feedkeys('i', 'n')"<CR>
+nnoremap a :<C-u>execute 'call ' v:count? 'QuickInput_Count("a", v:count)' : "feedkeys('a', 'n')"<CR>
+
+nnoremap <Plug>InsertAChar :<C-u>call QuickInput_Repeat('i', v:count1)<CR>
+nnoremap <Plug>AppendAChar :<C-u>call QuickInput_Repeat('a', v:count1)<CR>
+
+nmap <M-i> <Plug>InsertAChar
+nmap <M-a> <Plug>AppendAChar
 
 
 
