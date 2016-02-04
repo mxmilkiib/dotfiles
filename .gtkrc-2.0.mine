@@ -1,0 +1,106 @@
+gtk-color-scheme="bg_color:#eaeaea\nfg_color:#000\nselected_fg_color:#ffffff\nbase_color:#666\nselected_bg_color:#729fcf\ntext_color:#fff\n"
+
+# gtk-icon-sizes = "panel=16,16:gtk-button=16,16" # Icon sizes
+
+style "panel" {
+	fg[NORMAL] = @text_color
+	fg[SELECTED] = @text_color
+	fg[ACTIVE] = @text_color
+	fg[PRELIGHT] = @text_color
+	fg[INSENSITIVE] = @fg_color
+
+	bg[NORMAL] = "#666"
+	bg[SELECTED] = "#999"
+	bg[ACTIVE] = "#666"
+	bg[PRELIGHT] = "#666"
+	bg[INSENSITIVE] = "#333"
+
+	text[NORMAL] = @text_color
+	text[PRELIGHT] = @text_color
+	text[SELECTED] = @text_color
+	text[ACTIVE] = @text_color
+	text[INSENSITIVE] = @text_color
+
+	base[NORMAL] = "#000000"
+	base[PRELIGHT] = "#000000"
+	base[SELECTED] = "#000000"
+	base[ACTIVE] = "#000000"
+	base[INSENSITIVE] = "#000000"
+
+	# xthickness = 0
+	# ythickness = 0
+
+	GtkButton::default-border = { 0, 0, 0, 0 }
+
+	font_name = "dejavu mono 8"
+}
+
+style "panel_tray" {
+	fg[NORMAL] = "#000"
+	fg[SELECTED] = "#000"
+	fg[ACTIVE] = "#000"
+	fg[PRELIGHT] = "#000"
+	fg[INSENSITIVE] = "#000"
+
+	bg[NORMAL] = "#000"
+	bg[SELECTED] = "#000"
+	bg[ACTIVE] = "#666"
+	bg[PRELIGHT] = "#666"
+	bg[INSENSITIVE] = "#666"
+
+	base[NORMAL] = "#000"
+	base[SELECTED] = "#000"
+	base[ACTIVE] = "#000"
+	base[PRELIGHT] = "#000"
+	base[INSENSITIVE] = "#000"
+}
+
+style "panel_pager" {
+	fg[NORMAL] = "#666"
+	fg[SELECTED] = "#666"
+	fg[ACTIVE] = "#666"
+	fg[PRELIGHT] = "#666"
+	fg[INSENSITIVE] = "#666"
+
+	# bg[NORMAL] = "#666"
+	# bg[SELECTED] = "#000"
+	# bg[ACTIVE] = "#000"
+	# bg[PRELIGHT] = "#666"
+	# bg[INSENSITIVE] = "#666"
+
+	# base[NORMAL] = "#000"
+	# base[SELECTED] = "#000"
+	# base[ACTIVE] = "#000"
+	# base[PRELIGHT] = "#000"
+	# base[INSENSITIVE] = "#000"
+}
+
+# class "*Panel*" style "panel"
+widget "*Panel*" style "panel"
+widget "*Tray*" style "panel_tray"
+widget "*tray*" style "panel_tray"
+
+
+# widget_class "*Panel*GtkToggleButton" style "panel"
+# widget_class "*Panel*GtkButton" style "panel"
+# widget_class "*.Panel*Button*" style "panel"
+# widget_class "*.Panel*GtkLabel" style "panel"
+# widget_class "*Panel*GtkButton" style "panel"
+
+# widget "*PanelWidget*" style "panel"
+# widget "*PanelApplet*" style "panel"
+
+# widget_class "*MenuItem*" style "panel"
+# widget_class "*ToolItem*" style "panel"
+# widget_class "*SeparatorMenuitem*" style "panel"
+# widget_class "*SeparatorToolitem*" style "panel"
+# widget_class "*ImageMenuitem*" style "panel"
+# widget_class "*RadioMenuitem*" style "panel"
+# widget_class "*CheckMenuitem*" style "panel"
+# widget_class "*TearoffMenuitem*" style "panel"
+# widget_class "*GtkNotebook*GtkLabel" style "panel"
+widget "*WnckPager*" style "panel_pager"
+
+# widget_class "*notif*" style "panel"
+# widget_class "*Notif*" style "panel"
+# widget_class "*date*" style "panel"
