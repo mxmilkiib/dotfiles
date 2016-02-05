@@ -102,7 +102,10 @@ URxvt.keysym.C-S-Up:   perl:font-size:incglobal
 URxvt.keysym.C-S-Down: perl:font-size:decglobal
 
 ! Shift ctrl-c
-URxvt.keysym.Shift-Control-V: perl:clipboard:paste
+! URxvt.keysym.Shift-Control-V: perl:clipboard:paste
+URxvt.keysym.M-c:   perl:clipboard:copy
+URxvt.keysym.M-v:   perl:clipboard:paste
+URxvt.keysym.M-C-v: perl:clipboard:paste_escaped
 
 URxvt.iso14755: False
 
