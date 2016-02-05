@@ -117,17 +117,19 @@ radiotray &
 # export LD_PRELOAD=libetc.so
 # export LIBETC_BLACKLIST=/bin/cp:/bin/ln:/bin/ls:/bin/mv:/bin/rm:/usr/bin/find
 
-# autocutsel -fork &
-# autocutsel -selection PRIMARY -fork &
+
+# copy text selection clipboard to ctrl-v/shift-insert PRIMARY buffer, leaves middle mouse click for other opportunities
+autocutsel -fork &
+autocutsel -selection PRIMARY -fork &
 
 # Update dynamic dns
 inadyn -u milkmiruku -p DcBaCCcchangeiP -a milkmiruku.no-ip.info --dyndns_system default@no-ip.com --background &
 
 export DEFAULT_SESSION=bspwm
+export BSPWM_TREE=/tmp/bspwm-tree.json
+export BSPWM_HISTORY=/tmp/bspwm-history.txt
+export BSPWM_STACK=/tmp/bspwm-stack.txt
 export BSPWM_SOCKET=/tmp/bspwm-socket
-export BSPWM_TREE=/tmp/bspwm.tree
-export BSPWM_HISTORY=/tmp/bspwm.history
-export BSPWM_STACK=/tmp/bspwm.stack
 export PANEL_FIFO=/tmp/panel-fifo
 export PANEL_HEIGHT=14
 
@@ -137,6 +139,18 @@ export PANEL_HEIGHT=14
 
 # Hotkeys
 sxhkd &
+
+function settitle () {
+    export PREV_COMMAND=${PREV_COMMAND}${@}
+    echo -ne "\033]0;${PREV_COMMAND}\007"
+    export PREV_COMMAND=${PREV_COMMAND}' | '
+}
+
+export PROMPT_COMMAND=${PROMPT_COMMAND}';export PREV_COMMAND=""'
+
+trap 'echo $BASH_COMMAND |awk '\''!/\007/ {printf "\033]0;%s\007", $0}'\' DEBUG
+
+
 
 case $1 in
   awesome)
