@@ -309,7 +309,7 @@ alias aw='apt-cache show'
 alias p='yaourt -S --noconfirm'
 alias pu='yaourt -Syu --noconfirm'
 function pS(){
-	yaourt --noconfirm --color "$@ | less -RFX"
+	yaourt --noconfirm --color --pager $@
 }
 alias y='yaourt'
 
