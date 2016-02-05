@@ -28,22 +28,33 @@ bspc config wm_name bspwm
 bspc config pointer_follows_monitor true
 bspc config history_aware_focus true
 
+# Set up displays
+bspc monitor --reset-desktops 1
+bspc monitor --add-desktops 2
+bspc monitor --remove-desktops 2
+
+
+# [[ $(xrandr --query | grep " connected" | wc -l) == 1 ]]; then
+#   bspc desktop -n A1
+# 	bspc monitor -a 
+
+
 
 # Rename and create desktops
-bspc desktop -n A1
-bspc monitor -d A1          # Reset for config changes as desktop is created on bspwm launch
-bspc monitor -a A2 A3 A4
-
-# Switch to second monitor
-bspc monitor -f next
-
-# Rename and create desktops
-bspc desktop -n B1
-bspc monitor -d B1          # Reset for config changes as desktop is created on bspwm launch
-bspc monitor -a B2 B3 B4
-
-# Switch back to first monitor
-bspc monitor -f next
+# bspc desktop -n A1
+# bspc monitor -d A1          # Reset for config changes as desktop is created on bspwm launch
+# bspc monitor -a A2 A3 A4
+#
+# # Switch to second monitor
+# bspc monitor -f next
+#
+# # Rename and create desktops
+# bspc desktop -n B1
+# bspc monitor -d B1          # Reset for config changes as desktop is created on bspwm launch
+# bspc monitor -a B2 B3 B4
+#
+# # Switch back to first monitor
+# bspc monitor -f next
 
 
 # Rules
