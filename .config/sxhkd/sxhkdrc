@@ -1,5 +1,5 @@
 #
-# app hotkeys
+# Application hotkeys
 #
 
 #super + Return
@@ -26,12 +26,8 @@ super + p
 	pavucontrol
 
 #
-# bspwm hotkeys
+# BPSWM hotkeys
 #
-
-# close and kill
-super + {_,shift + }w
-	bspc node -{c,k}
 
 # quit bspwm or save layout and quit
 super + alt + {_,shift + }Escape
@@ -43,7 +39,7 @@ super + alt + {_,shift + }Escape
 
 
 #
-# state/flags
+# State/flags
 #
 
 # set the window state
@@ -58,6 +54,72 @@ super + ctrl + {x,y,z}
 # cycle desktop layout between monocle and tiled
 super + n
 	bspc desktop -l next
+
+
+
+#https://github.com/lietk12/dotfiles/tree/master/.config
+
+### Desktop management
+
+# Make a new desktop and switch to it
+super + F5
+  ~/.config/bspwm/scripts/add_desktop.sh;\
+  bspc desktop --focus next.!occupied
+
+# Move the current window onto a new desktop in the background
+super + alt + F5
+  ~/.config/bspwm/scripts/add_desktop.sh;\
+  bspc node --to-desktop next.!occupied
+
+# Move the current window onto a new desktop and switch to it
+super + shift + F5
+  ~/.config/bspwm/scripts/add_desktop.sh;\
+  bspc node --to-desktop next.!occupied;\
+  bspc node --focus last
+
+
+# Move the desktop to the previous monitor
+super + F9
+	bspc desktop --to-monitor prev;\
+	~/.config/bspwm/scripts/renumber_desktops.sh
+
+# Move the desktop to the next monitor
+super + F10
+	bspc desktop --to-monitor next;\
+	~/.config/bspwm/scripts/renumber_desktops.sh
+
+# Move the window to the next monitor and also remove the current desktop if it's empty after moving.
+super + alt + F9
+	bspc node --to-monitor next;\
+	~/.config/bspwm/scripts/remove_desktop.sh
+
+# Move the window to the previous monitor and also remove the current desktop if it's empty after moving.
+super + alt + F10
+	bspc node --to-monitor prev;\
+	~/.config/bspwm/scripts/remove_desktop.sh
+
+
+### Window & Desktop management
+
+# Close and kill
+super + {_,shift + }w
+	bspc node -{c,k}
+
+# Close the current window, and also remove the current desktop after closing (if possible).
+super + alt + w
+  bspc node -f -c;\
+  sleep 0.1;\
+  ~/.config/bspwm/scripts/remove_desktop.sh
+
+# Close the current window without removing the current desktop
+super + ctrl + w
+  bspc node -f -c
+
+# Move a window to a desktop, and remove the current desktop after closing (if possible).
+super + alt + {1-9,0}
+  bspc node --to-desktop ^{1-9,10};\
+  ~/.config/bspwm/scripts/remove_desktop.sh
+
 
 
 #
