@@ -117,7 +117,6 @@ radiotray &
 # export LD_PRELOAD=libetc.so
 # export LIBETC_BLACKLIST=/bin/cp:/bin/ln:/bin/ls:/bin/mv:/bin/rm:/usr/bin/find
 
-
 # copy text selection clipboard to ctrl-v/shift-insert PRIMARY buffer, leaves middle mouse click for other opportunities
 autocutsel -fork &
 autocutsel -selection PRIMARY -fork &
@@ -125,6 +124,19 @@ autocutsel -selection PRIMARY -fork &
 # Update dynamic dns
 inadyn -u milkmiruku -p DcBaCCcchangeiP -a milkmiruku.no-ip.info --dyndns_system default@no-ip.com --background &
 
+# Hotkeys
+sxhkd &
+
+
+function settitle () {
+		export PREV_COMMAND=${PREV_COMMAND}${@}
+		echo -ne "\033]0;${PREV_COMMAND}\007"
+		export PREV_COMMAND=${PREV_COMMAND}' | '
+}
+
+export PROMPT_COMMAND=${PROMPT_COMMAND}';export PREV_COMMAND=""'
+
+trap 'echo $BASH_COMMAND |awk '\''!/\007/ {printf "\033]0;%s\007", $0}'\' DEBUG
 export DEFAULT_SESSION=bspwm
 export BSPWM_TREE=/tmp/bspwm-tree.json
 export BSPWM_HISTORY=/tmp/bspwm-history.txt
@@ -137,18 +149,6 @@ export PANEL_HEIGHT=14
 # exec consort-session
 # exec openbox
 
-# Hotkeys
-sxhkd &
-
-function settitle () {
-    export PREV_COMMAND=${PREV_COMMAND}${@}
-    echo -ne "\033]0;${PREV_COMMAND}\007"
-    export PREV_COMMAND=${PREV_COMMAND}' | '
-}
-
-export PROMPT_COMMAND=${PROMPT_COMMAND}';export PREV_COMMAND=""'
-
-trap 'echo $BASH_COMMAND |awk '\''!/\007/ {printf "\033]0;%s\007", $0}'\' DEBUG
 
 
 
