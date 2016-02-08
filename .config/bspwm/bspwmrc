@@ -28,34 +28,20 @@ bspc config wm_name bspwm
 bspc config pointer_follows_monitor true
 bspc config history_aware_focus true
 
-# Set up displays
-bspc monitor --reset-desktops 1
-bspc monitor --add-desktops 2
-bspc monitor --remove-desktops 2
 
+# Rename initial desktop
+bspc monitor -d A1
 
-# [[ $(xrandr --query | grep " connected" | wc -l) == 1 ]]; then
-#   bspc desktop -n A1
-# 	bspc monitor -a 
+if [[ `bspc query -D | wc -l` > 1 ]]; then
+	# Switch to second monitor
+	bspc monitor -f next
 
+	# Rename and create desktops
+	bspc monitor -d B1
 
-
-# Rename and create desktops
-# bspc desktop -n A1
-# bspc monitor -d A1          # Reset for config changes as desktop is created on bspwm launch
-# bspc monitor -a A2 A3 A4
-#
-# # Switch to second monitor
-# bspc monitor -f next
-#
-# # Rename and create desktops
-# bspc desktop -n B1
-# bspc monitor -d B1          # Reset for config changes as desktop is created on bspwm launch
-# bspc monitor -a B2 B3 B4
-#
-# # Switch back to first monitor
-# bspc monitor -f next
-
+	# Switch back to first monitor
+	bspc monitor -f next
+fi
 
 # Rules
 bspc rule -a Vlc state=floating
@@ -63,7 +49,7 @@ bspc rule -a mpv state=floating
 bspc rule -a cadence state=floating
 bspc rule -a Chromium desktop=A1
 # bspc rule -a Gimp desktop=A4
-bspc rule -a Keepassx
+bspc rule -a Keepassx state=floating
 bspc rule -a Pidgin state=floating
 bspc rule -a Pavucontrol state=floating
 bspc rule -a Mixer state=floating
