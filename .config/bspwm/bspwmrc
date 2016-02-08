@@ -18,7 +18,9 @@ bspc config urgent_border_color "#EFA29A"
 bspc config focus_follows_pointer true
 bspc config borderless_monocle  false
 bspc config gapless_monocle     false
-bspc config adaptative_raise    true
+bspc config single_monocle      false
+bspc config paddingless_monocle false
+
 bspc config initial_polarity    second_child
 
 # cancel presel with another presel
@@ -57,15 +59,8 @@ bspc rule -a xfce4-panel state=floating
 bspc rule -a qjackctl state=floating
 bspc rule -a Cadence.py state=floating
 
-# Reset monitor settings to use above (gh:143)
-# bspc monitor -d B1 B2 B3 B4
-
-
-export BSPWM_TREE=/tmp/bspwm-tree.json
-export BSPWM_HISTORY=/tmp/bspwm-history.txt
-export BSPWM_STACK=/tmp/bspwm-stack.txt
-
-if [ -e "$BSPWM_TREE" ] ; then
-	bspc restore -T "$BSPWM_TREE" -H "$BSPWM_HISTORY" -S "$BSPWM_STACK"
-	rm "$BSPWM_TREE" "$BSPWM_HISTORY" "$BSPWM_STACK"
+# Restore state (on reload)
+if [ -e "$BSPWM_STATE" ] ; then
+	bspc wm -l "$BSPWM_STATE"
+	rm "$BSPWM_STATE"
 fi
