@@ -31,10 +31,7 @@ super + p
 
 # quit bspwm or save layout and quit
 super + alt + {_,shift + }Escape
-	{bspc query -T > "$BSPWM_TREE"; \
-		bspc query -H > "$BSPWM_HISTORY"; \
-		bspc query -S > "$BSPWM_STACK"; \
-		bspc quit,\
+	{bspc wm -d > "$BSPWM_STATE" && bspc quit, \
 	 bspc quit 1}
 
 
@@ -62,9 +59,14 @@ super + n
 ### Desktop management
 
 # Make a new desktop and switch to it
-super + F5
+super + numbersign
   ~/.config/bspwm/scripts/add_desktop.sh;\
   bspc desktop --focus next.!occupied
+
+super + ctrl + numbersign
+	~/.config/bspwm/scripts/add_desktop.sh;\
+	bspc desktop --focus next.!occupied;\
+	urxvtc
 
 # Move the current window onto a new desktop in the background
 super + alt + F5
@@ -110,7 +112,7 @@ super + {_,shift + }w
 	bspc node -{c,k}
 
 # Close the current window, and also remove the current desktop after closing (if possible).
-super + alt + w
+super + apostrophe 
   bspc node -f -c;\
   sleep 0.1;\
   ~/.config/bspwm/scripts/remove_desktop.sh
@@ -173,8 +175,8 @@ super + {_,alt +}b
 	bspc desktop {-E,-B}
 
 # swap focused window with last focused window on any desktop
-super + apostrophe
-	bspc node -s last
+#super + apostrophe
+#	bspc node -s last
 
 # swap focused window with largest tiled node on the same desktop
 super + m
@@ -263,8 +265,8 @@ super + button{1-3}
 	bspc pointer -g {move,resize_side,resize_corner}
 
 # motion
-#super + !button{1-3}
-#	bspc pointer -t %i %i
+super + !button{1-3}
+	bspc pointer -t %i %i
 
 # release
 super + @button{1-3}
