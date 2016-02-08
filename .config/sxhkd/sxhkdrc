@@ -77,6 +77,10 @@ super + shift + F5
   bspc node --to-desktop next.!occupied;\
   bspc node --focus last
 
+super + F6
+	~/.config/bspwm/scripts/add_desktop.sh;\
+	bspc desktop --focus next.!occupied;\
+  urxvtc
 
 # Move the desktop to the previous monitor
 super + F9
@@ -155,12 +159,12 @@ super + {_,shift +} r
 	bspc node @/ -R {90,270}
 
 # circulate the leaves of desktop tree backward or forward
-super + comma
+super + period
 	bspc node @/ -C backward; \
 	bspc node -f prev
 
 # circulate the leaves of desktop tree backward or forward
-super + period
+super + comma
 	bspc node @/ -C forward; \
 	bspc node -f next
 
@@ -191,8 +195,9 @@ super + shift + {Left,Right}
 
 # bubble (move) desktop left and right
 super + bracket{left,right}
-	bspc desktop focused -b {prev,next}
-
+	bspc desktop focused -b {prev,next};\
+	bspc desktop -f {prev,next};\
+	~/.config/bspwm/scripts/renumber_desktops.sh
 
 # focus on desktop number selected
 super + {1-9,0}
