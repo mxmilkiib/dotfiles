@@ -7,10 +7,10 @@
 dnscrypt-proxy &
 
 if [ -d /etc/X11/xinit/xinitrc.d ]; then
-  for f in /etc/X11/xinit/xinitrc.d/*; do
-    [ -x "$f" ] && . "$f"
-  done
-  unset f
+	for f in /etc/X11/xinit/xinitrc.d/*; do
+		[ -x "$f" ] && . "$f"
+	done
+	unset f
 fi
 
 # Set Xorg keyboard layout
@@ -128,15 +128,17 @@ inadyn -u milkmiruku -p DcBaCCcchangeiP -a milkmiruku.no-ip.info --dyndns_system
 sxhkd &
 
 
-function settitle () {
-		export PREV_COMMAND=${PREV_COMMAND}${@}
-		echo -ne "\033]0;${PREV_COMMAND}\007"
-		export PREV_COMMAND=${PREV_COMMAND}' | '
-}
+# function settitle () {
+# 		export PREV_COMMAND=${PREV_COMMAND}${@}
+# 		echo -ne "\033]0;${PREV_COMMAND}\007"
+# 		export PREV_COMMAND=${PREV_COMMAND}' | '
+# }
+#
+# export PROMPT_COMMAND=${PROMPT_COMMAND}';export PREV_COMMAND=""'
+#
+# trap 'echo $BASH_COMMAND |awk '\''!/\007/ {printf "\033]0;%s\007", $0}'\' DEBUG
 
-export PROMPT_COMMAND=${PROMPT_COMMAND}';export PREV_COMMAND=""'
 
-trap 'echo $BASH_COMMAND |awk '\''!/\007/ {printf "\033]0;%s\007", $0}'\' DEBUG
 export DEFAULT_SESSION=bspwm
 export BSPWM_TREE=/tmp/bspwm-tree.json
 export BSPWM_HISTORY=/tmp/bspwm-history.txt
@@ -149,29 +151,8 @@ export PANEL_HEIGHT=14
 # exec consort-session
 # exec openbox
 
+# [ -e "$PANEL_FIFO" ] && rm "$PANEL_FIFO"
+# mkfifo "$PANEL_FIFO"
+# exec bspwm -s "$PANEL_FIFO" -p W
 
-
-
-case $1 in
-  awesome)
-    exec awesome
-    ;;
-  i3)
-    exec i3
-    ;;
-  gnome)
-    exec gnome-session
-    ;;
-  kde)
-    exec startkde
-    ;;
-  openbox)
-    exec openbox
-    ;;
-  bspwm|*)
-    [ -e "$PANEL_FIFO" ] && rm "$PANEL_FIFO"
-    # mkfifo "$PANEL_FIFO"
-    exec bspwm
-    # exec bspwm -s "$PANEL_FIFO" -p W
-    ;;
-esac
+exec bspwm
