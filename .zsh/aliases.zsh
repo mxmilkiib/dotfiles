@@ -118,12 +118,17 @@ alias aw='apt-cache show'
 
 alias p='yaourt -S --noconfirm'
 alias pS='yaourt --noconfirm'
+alias pSu='yaourt --noconfirm $_'
 alias pu='yaourt -Syu --noconfirm'
 alias y='yaourt --noconfirm'
 
 alias pR='sudo pacman -R'										# remove
 alias pU='sudo pacman -U'										# upgrade (local package)
 alias pL='sudo rm /var/lib/pacman/db.lck'   # remove lockfile if pacman doesn't exit gracefully
+
+alias pQ='yaourt -Qi'
+alias pQl='yaourt -Ql'
+alias pQo='yaourt -Qo'
 
 # see functions.php for pS (packer search)
 
@@ -254,6 +259,9 @@ alias dr='drush'
 # switch to left mouse and back
 alias lm='xmodmap -e "pointer = 3 2 1"'
 alias ulm='xmodmap -e "pointer = 1 2 3"'
+
+# Reset desktops for two screen 1280x1024
+alias xrandrr="xrandr --output DVI-I-1 --mode 1280x1024 --pos 0x0 --panning 0x0+0+0 --output DVI-I-0 --mode 1280x1024 --pos 1280x0"
 
 # Reload compton
 alias comptonrl='sudo killall compton; compton -b'
