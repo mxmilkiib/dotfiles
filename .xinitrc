@@ -44,9 +44,6 @@ feh --bg-fill --no-xinerama ~/.wallpapers/VnXDN9J_colourised.png -Z
 # consort-panel &
 xfce4-panel &
 
-# Give opacity to specific windows. See ~/.devilspie/opacity.ds
-#devilspie -a &
-
 # Redshift - changed screen colour temp
 redshift-gtk -l 55.978301:-3.228586 -t 6000:4500 &
 
@@ -98,10 +95,8 @@ workrave &
 # skippy-xd --start-daemon &
 
 # Start Jack for audio
-
 # jack_control start &
 cadence-session-start --start &
-
 cadence --minimized &
 
 # Volume system tray
@@ -117,8 +112,10 @@ radiotray &
 # export LD_PRELOAD=libetc.so
 # export LIBETC_BLACKLIST=/bin/cp:/bin/ln:/bin/ls:/bin/mv:/bin/rm:/usr/bin/find
 
-# copy text selection clipboard to ctrl-v/shift-insert PRIMARY buffer, leaves middle mouse click for other opportunities
-autocutsel -fork &
+# copy middle-mouse PRIMARY selection to ctrl-xcv/shift-insert CLIPBOARD. mostly useful when without a mouse.
+# autocutsel -fork &
+
+# copy ctrl-xcv / shift-insert CLIPBOARD to middle mouse PRIMARY selection buffer
 autocutsel -selection PRIMARY -fork &
 
 # Update dynamic dns
@@ -127,32 +124,6 @@ inadyn -u milkmiruku -p DcBaCCcchangeiP -a milkmiruku.no-ip.info --dyndns_system
 # Hotkeys
 sxhkd &
 
+export BSPWM_STATE=/tmp/bspwm-state.json
 
-# function settitle () {
-# 		export PREV_COMMAND=${PREV_COMMAND}${@}
-# 		echo -ne "\033]0;${PREV_COMMAND}\007"
-# 		export PREV_COMMAND=${PREV_COMMAND}' | '
-# }
-#
-# export PROMPT_COMMAND=${PROMPT_COMMAND}';export PREV_COMMAND=""'
-#
-# trap 'echo $BASH_COMMAND |awk '\''!/\007/ {printf "\033]0;%s\007", $0}'\' DEBUG
-
-
-export DEFAULT_SESSION=bspwm
-export BSPWM_TREE=/tmp/bspwm-tree.json
-export BSPWM_HISTORY=/tmp/bspwm-history.txt
-export BSPWM_STACK=/tmp/bspwm-stack.txt
-export BSPWM_SOCKET=/tmp/bspwm-socket
-export PANEL_FIFO=/tmp/panel-fifo
-export PANEL_HEIGHT=14
-
-# exec gnome-session
-# exec consort-session
-# exec openbox
-
-# [ -e "$PANEL_FIFO" ] && rm "$PANEL_FIFO"
-# mkfifo "$PANEL_FIFO"
-# exec bspwm -s "$PANEL_FIFO" -p W
-
-exec bspwm
+exec wm
