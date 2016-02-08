@@ -13,5 +13,5 @@ for (( i=1; i<=${num_desktops}; ++i ))
 do
   monitor=$(bspc query -M -d "^${i}")
   monitorletter=`echo "$monitors" | grep -n "$monitor" | awk 'BEGIN {FS=":"}{print $1}' | tr "1-2" "A-B"`
-	bspc desktop "^${i}" --rename ${monitorletter}${i}
+  bspc desktop "^${i}" --rename ${monitorletter}${i}
 done
