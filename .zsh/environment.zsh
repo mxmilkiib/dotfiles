@@ -6,7 +6,7 @@
 # Various Paths
 # typeset -U path
 # path=(~/bin $path /usr/local/bin /var/lib/gems/1.8/bin $HOME/.gem/ruby/1.9.1/bin:/home/milk/.cabal/bin) - should be set in /etc/profile
-# path=(~/bin $path) 
+path=(~/bin $path) 
 # export PATH
 
 typeset -U fpath
@@ -15,6 +15,8 @@ fpath=($Z/functions $Z/zsh-completions/src $fpath)
 export XDG_CONFIG_HOME=${XDG_CONFIG_HOME:-"$HOME/.config"}
 export XDG_DATA_HOME=${XDG_DATA_HOME:-"$HOME/.local/share"}
 export XDG_CACHE_HOME=${XDG_CACHE_HOME:-"$HOME/.cache"}
+
+export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent.socket"
 
 # Important applications.
 export EDITOR=vim
@@ -38,5 +40,5 @@ export TMPDIR=/var/tmp
 C=$(tput colors)
 eval $(dircolors $Z/dircolors)
 
-# sans / so deleting words doesn't delete a full path
-WORDCHARS='*?_-.[]~=&;!#$%^(){}<>'
+# characters missing from WORDCHARS so deleting words doesn't delete a full path or a hyphen are / - =
+WORDCHARS='*?_.[]~&;!#$%^(){}<>'

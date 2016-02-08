@@ -27,16 +27,13 @@ source $Z/bindings.zsh
 source $Z/completion.zsh
 
 
-# Set up some aliases
+# Set up some aliases and functions
 source $Z/aliases.zsh
 
 # Private aliases, etc.
 if [ -e $Z/private.zsh ]; then
   source $Z/private.zsh
 fi
-
-# Define some functions.
-source $Z/functions.zsh
 
 
 # Plugin managament

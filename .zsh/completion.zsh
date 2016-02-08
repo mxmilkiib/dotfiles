@@ -10,9 +10,9 @@ zstyle ':completion:*' menu select
 
 zstyle ':completion:*' list-colors "${LS_COLORS}" # Complete with same colors as ls.
 
-
 # Fuzzy matching of completions for when you mistype them:
 zstyle ':completion:*' completer _expand _complete _correct _approximate # Completion modifiers.
+# _files 
 zstyle ':completion:*:match:*' original only
 zstyle ':completion:*' max-errors 1 # Be lenient to 1 errors.
 
