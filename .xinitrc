@@ -4,6 +4,7 @@
 #
 # Executed by startx (run your window manager from here)
 
+# Encrypted DNS
 dnscrypt-proxy &
 
 if [ -d /etc/X11/xinit/xinitrc.d ]; then
@@ -34,14 +35,10 @@ hsetroot -solid "#000000"
 # ~/scripts/nasa-apod-desktop/nasa_apod_desktop.py &
 # python2 ~/scripts/nasa-apod-desktop/nasa_apod_desktop.py &
 # feh --bg-max --no-xinerama /home/milk/documents/images/backgrounds/technical/git-vim-1280_and_1024.png
-# feh --bg-fill --no-xinerama /home/milk/documents/images/backgrounds/6785760453_975351e590_o.jpg -Z       
+# feh --bg-fill --no-xinerama /home/milk/documents/images/backgrounds/6785760453_975351e590_o.jpg -Z
 feh --bg-fill --no-xinerama ~/.wallpapers/VnXDN9J_colourised.png -Z
 
-# bmpanel2 --theme=Kupo_Finale-dark &
-# tint2 &
-# lxpanel &
-# gnome-panel &
-# consort-panel &
+# Panel bar w/ pager, systray, program windows, weather, time, etc.
 xfce4-panel &
 
 # Redshift - changed screen colour temp
@@ -63,7 +60,7 @@ xscreensaver -nosplash &
 lightsOn 545 &
 
 # Automount USB script with smart system tray icon
-udiskie -s &
+# udiskie -s &
 
 # Composition manager
 # compton -b										# see ~/.config/compton.conf
@@ -78,21 +75,7 @@ dunst &
 # Break timer
 workrave &
 
-# Dropbox w/ systray icon
-# dropboxes=(documents/dropbox-personal documents/beltane/Dropbox documents/dropbox-drumming)
-
-# TMPHOME=~
-# for dropbox in ${dropboxes[@]}; do
-#    if ! [ -d $HOME/$dropbox ];then
-#        mkdir $HOME/$dropbox
-#    fi
-#    HOME=$HOME/$dropbox/ /opt/dropbox/dropbox start -i &
-# done
-# HOME=TMPHOME
-
-# oneko -fg "#555" -bg "#000" &
-
-# skippy-xd --start-daemon &
+oneko -fg "#555" -bg "#000" -time 200000 -position +200+200 &
 
 # Start Jack for audio
 # jack_control start &
@@ -107,6 +90,8 @@ pnmixer &
 # Radio streams
 radiotray &
 
+# Update dynamic dns
+dyndns &
 
 # https://wiki.archlinux.org/index.php/Libetc
 # export LD_PRELOAD=libetc.so
@@ -114,16 +99,16 @@ radiotray &
 
 # copy middle-mouse PRIMARY selection to ctrl-xcv/shift-insert CLIPBOARD. mostly useful when without a mouse.
 # autocutsel -fork &
-
 # copy ctrl-xcv / shift-insert CLIPBOARD to middle mouse PRIMARY selection buffer
 autocutsel -selection PRIMARY -fork &
 
-# Update dynamic dns
-inadyn -u milkmiruku -p DcBaCCcchangeiP -a milkmiruku.no-ip.info --dyndns_system default@no-ip.com --background &
 
 # Hotkeys
 sxhkd &
 
 export BSPWM_STATE=/tmp/bspwm-state.json
 
+# exec bspwm
+
+# loop method to allow restarting bspwm
 exec wm
