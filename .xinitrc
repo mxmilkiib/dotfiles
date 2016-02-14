@@ -126,4 +126,5 @@ sxhkd &
 
 export BSPWM_STATE=/tmp/bspwm-state.json
 
-exec wm
+# exec wm
+exec bspwm
