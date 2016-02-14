@@ -119,18 +119,6 @@ super + {Tab,grave}
 super + {d,y}
 	bspc node -f {next.floating,next.tiled}
 
-# focus on the next monitor
-super + o
-	bspc monitor -f next
-
-# move window between monitors
-super + alt + o
-  bspc node -m next
-
-# move window between monitors and follow
-super + shift + o
-	bspc node -m next -f
-
 # rotate current desktop node tree root
 super + {_,shift +} r
 	bspc node @/ -R {90,270}
@@ -183,26 +171,6 @@ super + shift + numbersign
 	bspc node --focus last
 
 
-# Move the desktop to the previous monitor
-super + F9
-	bspc desktop --to-monitor prev;\
-	~/.config/bspwm/scripts/renumber_desktops.sh
-
-# Move the desktop to the next monitor
-super + F10
-	bspc desktop --to-monitor next;\
-	~/.config/bspwm/scripts/renumber_desktops.sh
-
-# Move the window to the next monitor and also remove the current desktop if it's empty after moving.
-super + alt + F9
-	bspc node --to-monitor next;\
-	~/.config/bspwm/scripts/remove_desktop.sh
-
-# Move the window to the previous monitor and also remove the current desktop if it's empty after moving.
-super + alt + F10
-	bspc node --to-monitor prev;\
-	~/.config/bspwm/scripts/remove_desktop.sh
-
 
 # focus on previous or next desktop
 super + {Left,Right}
@@ -235,12 +203,42 @@ super + alt + {1-9}
 	bspc node -d ^{1-9}
 
 
+### Monitor
+
+# focus on the next monitor
+super + o
+	bspc monitor -f next
+
+# move window between monitors
+super + alt + o
+	bspc node -m next
+
+# move window between monitors and follow
+super + shift + o
+	bspc node -m next -f
+
+# Move the desktop to the previous monitor
+super + F9
+	bspc desktop --to-monitor prev;\
+	~/.config/bspwm/scripts/renumber_desktops.sh
+
+# Move the desktop to the next monitor
+super + F10
+	bspc desktop --to-monitor next;\
+	~/.config/bspwm/scripts/renumber_desktops.sh
+
+# Move the window to the next monitor and also remove the current desktop if it's empty after moving.
+super + alt + F9
+	bspc node --to-monitor next;\
+	~/.config/bspwm/scripts/remove_desktop.sh
+
+# Move the window to the previous monitor and also remove the current desktop if it's empty after moving.
+super + alt + F10
+	bspc node --to-monitor prev;\
+	~/.config/bspwm/scripts/remove_desktop.sh
 
 
-
-#
-# pointer focus/move/resize
-#
+### Mouse and pointer
 
 ~button1
 	bspc pointer -g focus
