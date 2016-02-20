@@ -108,7 +108,7 @@ sxhkd &
 
 export BSPWM_STATE=/tmp/bspwm-state.json
 
-# exec bspwm
+exec bspwm
 
 # loop method to allow restarting bspwm
-exec wm
+# exec wm
