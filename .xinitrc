@@ -75,7 +75,7 @@ dunst &
 # Break timer
 workrave &
 
-oneko -fg "#555" -bg "#000" -time 200000 -position +200+200 &
+# oneko -fg "#555" -bg "#000" -time 200000 -position +200+200 &
 
 # Start Jack for audio
 # jack_control start &
