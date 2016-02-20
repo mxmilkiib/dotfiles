@@ -48,10 +48,10 @@ fi
 # Rules
 bspc rule -a Vlc state=floating
 bspc rule -a mpv state=floating
-bspc rule -a cadence state=floating
+# bspc rule -a cadence state=floating
 bspc rule -a Chromium desktop=A1
 # bspc rule -a Gimp desktop=A4
-bspc rule -a Keepassx state=floating
+# bspc rule -a Keepassx state=floating
 bspc rule -a Pidgin state=floating
 bspc rule -a Pavucontrol state=floating
 bspc rule -a Mixer state=floating
