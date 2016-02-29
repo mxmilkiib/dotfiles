@@ -390,10 +390,10 @@ map ` :w<CR>
 noremap <BS> i<BS><Esc>li
 
 " Space from normal to insert with a space
-nmap <Space> i<Space><Esc>
+nnoremap <Space> i <Esc>
 
 " Enter in normal to add a line below and escape back to normal
-nmap <CR> i<CR><Esc>
+nmap <CR> o<Esc>
 
 " Ctrl-N twice in normal mode toggles line numbers
 nmap <C-N><C-N> :set invnumber<CR>
