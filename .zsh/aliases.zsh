@@ -314,7 +314,7 @@ function pS(){
 }
 alias y='yaourt'
 
-alias pQ='yaourt -Qi'
+alias pQi='yaourt -Qi'
 alias pQl='yaourt -Ql'
 alias pQo='yaourt -Qo'
 

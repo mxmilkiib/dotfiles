@@ -23,6 +23,8 @@ export EDITOR=vim
 export VISUAL=vim
 
 export PAGER="/usr/bin/less -RFX"
+# < pager
+export READNULLCMD=less
 
 export BROWSER="chromium-continuous-bin"
 
