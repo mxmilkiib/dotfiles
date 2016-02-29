@@ -399,6 +399,7 @@ alias uv='urxvt -e vim'
 # Git
 alias gs='git status '
 alias gd='git diff --color'
+alias gdc='git diff --color --cached'
 alias gh='git log --pretty=format:"%h %ad | %s%d [%an]" --graph --date=short'
 alias ga='git add '
 alias gaa='git add .'
