@@ -92,6 +92,15 @@ else
 		source $Z/prompt.zsh
 fi
 
+
+# update prompt time when pressing return to launch a command
+reset-prompt-and-accept-line() {
+    zle reset-prompt
+    zle accept-line
+}
+zle -N reset-prompt-and-accept-line
+bindkey '^m' reset-prompt-and-accept-line
+
 # buggy
 # zgen load tarruda/zsh-autosuggestions
 #
