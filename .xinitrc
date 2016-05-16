@@ -4,9 +4,6 @@
 #
 # Executed by startx (run your window manager from here)
 
-# Encrypted DNS
-dnscrypt-proxy &
-
 if [ -d /etc/X11/xinit/xinitrc.d ]; then
 	for f in /etc/X11/xinit/xinitrc.d/*; do
 		[ -x "$f" ] && . "$f"
@@ -95,10 +92,15 @@ dyndns &
 autocutsel -selection PRIMARY -fork &
 
 # Start Jack for audio
-# jack_control start &
-cadence-session-start --start &
+jack_control start &
+# cadence-session-start --start &    # doesn't start jack sometimes
 
+# Jack GUI 
 cadence --minimized &
+
+# Set Pulseaudio to send audio to Jack by default
+pacmd set-default-source jack_in &
+pacmd set-default-sink jack_out &
 
 
 # Hotkeys
@@ -109,9 +111,14 @@ export BSPWM_STATE=/tmp/bspwm-state.json
 # Panel bar w/ pager, systray, program windows, weather, time, etc.
 xfce4-panel &
 
+# Folder sync
+syncthing-gtk &
 
 # exec selectwm
+
+# exec xterm
 # exec urxvt 
+
 exec bspwm
 # exec startxfce4
 # exec herbstluftwm
