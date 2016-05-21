@@ -78,8 +78,8 @@ workrave &
 # oneko -fg "#555" -bg "#000" -time 200000 -position +200+200 &
 
 # Start Jack for audio
-# jack_control start &
-cadence-session-start --start &
+jack_control start &
+# cadence-session-start --start &
 cadence --minimized &
 
 # Volume system tray
@@ -89,6 +89,9 @@ pnmixer &
 
 # Radio streams
 radiotray &
+
+# Battery monitor
+vattery &
 
 # Update dynamic dns
 dyndns &
@@ -102,6 +105,8 @@ dyndns &
 # copy ctrl-xcv / shift-insert CLIPBOARD to middle mouse PRIMARY selection buffer
 autocutsel -selection PRIMARY -fork &
 
+# File sync
+syncthing-gtk &
 
 # Hotkeys
 sxhkd &
@@ -109,6 +114,7 @@ sxhkd &
 export BSPWM_STATE=/tmp/bspwm-state.json
 
 exec bspwm
+# exec adwm
 
 # loop method to allow restarting bspwm
 # exec wm
