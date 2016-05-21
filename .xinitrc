@@ -72,17 +72,6 @@ workrave &
 # oneko -fg "#555" -bg "#000" -time 200000 -position +200+200 &
 
 
-# Start Jack for audio
-jack_control start &
-
-# Jack GUI 
-cadence --minimized &
-
-# Set Pulseaudio to send audio to Jack by default
-pacmd set-default-source jack_in &
-pacmd set-default-sink jack_out &
-
-
 # Volume system tray
 # pa-applet &
 # volti &
