@@ -51,18 +51,21 @@ URxvt.secondaryScroll: 0
 ! Perl scripts
 ! URxvt.perl-lib: /usr/lib/urxvt/perl/
 ! URxvt.perl-ext: default,matcher,searchable-scrollback,resize-font,clipboard
-URxvt.perl-ext-common: default,matcher,searchable-scrollback,font-size,clipboard
-!url-select
+URxvt.perl-ext-common: default,matcher,searchable-scrollback,font-size,clipboard,keyboard-select
 
 ! Bell
 URxvt.urgentOnBell: True
 
 ! Launch URLs
 URxvt.urlLauncher: chromium
-!URxvt.matcher.button: 1
+URxvt.matcher.button: 1
 
 URxvt.keysym.M-u:       perl:url-select:select_next
 URxvt.underlineURLs:    true
+
+! Mouseless selection of text - urxvt-perls
+URxvt.keysym.M-Escape: perl:keyboard-select:activate
+URxvt.keysym.M-s: perl:keyboard-select:search
 
 ! Alt-F11 fullscreen
 urxvt*keysym.M-F11: perl:fullscreen:switch
@@ -99,8 +102,8 @@ URxvt.font: xft:terminus:size=12
 ! URxvt.keysym.C-minus: command:\033]710;-*-dina-medium-r-normal--15-*-*-*-*-*-*-*\007
 ! URxvt.keysym.C-equal: command:\033]710;-*-dina-medium-r-normal--16-*-*-*-*-*-*-*\007
 
-! URxvt.keysym.C-plus:     perl:font-size:increase
-! URxvt.keysym.C-minus:   perl:font-size:decrease
+URxvt.keysym.C-plus:     perl:font-size:increase
+URxvt.keysym.C-S-minus:   perl:font-size:decrease
 ! URxvt.keysym.C-plus:     font-size:increase
 ! URxvt.keysym.C-minus:   font-size:decrease
 ! URxvt.keysym.C-S-plus:   font-size:incglobal
