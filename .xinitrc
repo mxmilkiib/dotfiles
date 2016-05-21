@@ -4,9 +4,6 @@
 #
 # Executed by startx (run your window manager from here)
 
-# Encrypted DNS
-dnscrypt-proxy &
-
 if [ -d /etc/X11/xinit/xinitrc.d ]; then
 	for f in /etc/X11/xinit/xinitrc.d/*; do
 		[ -x "$f" ] && . "$f"
@@ -37,9 +34,6 @@ hsetroot -solid "#000000"
 # feh --bg-max --no-xinerama /home/milk/documents/images/backgrounds/technical/git-vim-1280_and_1024.png
 # feh --bg-fill --no-xinerama /home/milk/documents/images/backgrounds/6785760453_975351e590_o.jpg -Z
 feh --bg-fill --no-xinerama ~/.wallpapers/VnXDN9J_colourised.png -Z
-
-# Panel bar w/ pager, systray, program windows, weather, time, etc.
-xfce4-panel &
 
 # Redshift - changed screen colour temp
 redshift-gtk -l 55.978301:-3.228586 -t 6000:4500 &
@@ -77,10 +71,17 @@ workrave &
 
 # oneko -fg "#555" -bg "#000" -time 200000 -position +200+200 &
 
+
 # Start Jack for audio
 jack_control start &
-# cadence-session-start --start &
+
+# Jack GUI 
 cadence --minimized &
+
+# Set Pulseaudio to send audio to Jack by default
+pacmd set-default-source jack_in &
+pacmd set-default-sink jack_out &
+
 
 # Volume system tray
 # pa-applet &
@@ -105,16 +106,30 @@ dyndns &
 # copy ctrl-xcv / shift-insert CLIPBOARD to middle mouse PRIMARY selection buffer
 autocutsel -selection PRIMARY -fork &
 
-# File sync
-syncthing-gtk &
-
 # Hotkeys
 sxhkd &
 
 export BSPWM_STATE=/tmp/bspwm-state.json
 
+# Panel bar w/ pager, systray, program windows, weather, time, etc.
+xfce4-panel &
+
+# Folder sync
+syncthing-gtk &
+
+# exec selectwm
+
+# exec xterm
+# exec urxvt 
+
 exec bspwm
 # exec adwm
+# exec startxfce4
+# exec herbstluftwm
+# exec adwm
+# exec howm
+# exec fvwm2
+# exec openbox
 
 # loop method to allow restarting bspwm
 # exec wm
