@@ -276,6 +276,12 @@ alias publicip='wget http://checkip.dyndns.org/ -O - -o /dev/null | cut -d: -f 2
 # Get shit done - temp redirect certain sites to localhost
 alias gsd='sudo /home/milk/scripts/gsd.sh/gsd.sh'
 
+#
+sshping() {
+   while sleep 0.5; do
+     nc -vv -w 1 -z ${1:-localhost} ${2:-22}
+   done
+}
 
 ### Shutdown, reboot, logout
 
@@ -286,7 +292,8 @@ alias suspend='pm-suspend' # With sudoers
 # systemd
 alias sy='systemctl '
 alias ssc='sudo systemctl '
-alias slo='systemctl restart display-manager' # Logout
+# alias slo='systemctl restart display-manager' # Logout
+alias slo='sudo killall -u `whoami`' # Logout
 
 alias sd='systemctl poweroff'
 alias sr='systemctl reboot'
@@ -372,6 +379,9 @@ alias ccp='rsync --progress -ah'
 
 
 ### Apps
+
+# with both in and out
+alias alsamixer='alsamixer -V=all'
 
 # Open a file
 alias o='xdg-open'
