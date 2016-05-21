@@ -99,8 +99,7 @@ jack_control start &
 cadence --minimized &
 
 # Set Pulseaudio to send audio to Jack by default
-pacmd set-default-source jack_in &
-pacmd set-default-sink jack_out &
+(sleep 10 && pacmd set-default-source jack_in && pacmd set-default-sink jack_out ) &
 
 
 # Hotkeys
