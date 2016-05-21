@@ -185,10 +185,17 @@ super + shift + {Left,Right}
 	bspc node -d {prev,next} -f
 
 # bubble (move) desktop left and right
-super + bracket{left,right}
-	bspc desktop focused -b {prev,next};\
-	bspc desktop -f {prev,next};\
-	~/.config/bspwm/scripts/renumber_desktops.sh
+#super + bracket{left,right}
+#	bspc desktop focused -b {prev,next};\
+#	bspc desktop -f {prev,next};\
+#	~/.config/bspwm/scripts/renumber_desktops.sh
+# eh?
+
+super + bracketleft
+  bspc desktop focused -b prev && bspc desktop -f prev
+
+super + bracketright
+  bspc desktop focused -b next && bspc desktop -f next
 
 # focus on desktop number selected
 super + {1-9,0}
