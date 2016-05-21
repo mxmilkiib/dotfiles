@@ -71,6 +71,18 @@ workrave &
 
 # oneko -fg "#555" -bg "#000" -time 200000 -position +200+200 &
 
+
+# Start Jack for audio
+jack_control start &
+
+# Jack GUI 
+cadence --minimized &
+
+# Set Pulseaudio to send audio to Jack by default
+pacmd set-default-source jack_in &
+pacmd set-default-sink jack_out &
+
+
 # Volume system tray
 # pa-applet &
 # volti &
@@ -78,6 +90,9 @@ pnmixer &
 
 # Radio streams
 radiotray &
+
+# Battery monitor
+vattery &
 
 # Update dynamic dns
 dyndns &
@@ -90,6 +105,7 @@ dyndns &
 # autocutsel -fork &
 # copy ctrl-xcv / shift-insert CLIPBOARD to middle mouse PRIMARY selection buffer
 autocutsel -selection PRIMARY -fork &
+
 
 # Start Jack for audio
 jack_control start &
@@ -119,13 +135,13 @@ syncthing-gtk &
 # exec urxvt 
 
 exec bspwm
+# exec adwm
 # exec startxfce4
 # exec herbstluftwm
 # exec adwm
 # exec howm
 # exec fvwm2
 # exec openbox
-
 
 # loop method to allow restarting bspwm
 # exec wm
