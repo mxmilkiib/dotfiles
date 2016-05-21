@@ -46,10 +46,13 @@ super + {t,shift + t,s,f}
 super + ctrl + {x,y,z}
 	bspc node -g {locked,sticky,private}
 
+# set the node layer state
+super + shift + {x,y,z}
+	bspc node -l {below,normal,above}
+
 # cycle desktop layout between monocle and tiled
 super + n
 	bspc desktop -l next
-
 
 
 ### Node management
