@@ -28,7 +28,7 @@ source $Z/completion.zsh
 
 
 # Set up some aliases and functions
-source $Z/aliases.zsh
+source $Z/aliasesfunctions.zsh
 
 # Private aliases, etc.
 if [ -e $Z/private.zsh ]; then

@@ -1,4 +1,4 @@
-# Aliases plus functions and their invocations
+ # Aliases plus functions and their invocations
 # milk <dotconfig@milkmiruku.com>
 # sourced from various including P.C. Shyamshankar <sykora@lucentbeing.com>
 
@@ -397,7 +397,7 @@ alias sn='sudo nano -c' # With line numbers
 
 # Quick sudo vim (with $EDITOR=vim)
 alias sv='sudoedit'
-# compdef sv=vim
+compdef sv=sudoedit
 
 # Vim
 alias vg='gvim '
