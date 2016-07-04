@@ -165,7 +165,8 @@ alias lu='ls -lturh'         										# long list, sort by and show access time
 alias lc='ls -ltcrh'         										# long list, sort by and show attribute change time, reversed, human readable
 alias lk='ls -lSrh'          										# long list, sort by size, reversed (largest last), human readable
 
-alias la='ls -Atr --group-directories-first'	  # show almost all (hidden files), sort by time, reversed
+alias la='ls -A --group-directories-first'      # show almost all (hidden files)
+alias lat='ls -Atr --group-directories-first'	  # show almost all (hidden files), sort by time, reversed
 alias laa='ls -lAh --color | less -RFX'				  # long, almost all, no reverse, piped to less w/ redraw (color), quit if under one screen, don't init/deinit terminal
 
 alias lr='ls -lRh | more'           						# recursive ls
@@ -260,6 +261,8 @@ alias rd='rm -rf'
 
 ### Network
 
+# Ping and traceroute combo
+alias mtr="mtr -b -z -o LSDRNABWVGJMXI"
 # List open ports and their process
 alias ports='netstat -plnt'
 
@@ -301,7 +304,7 @@ alias sr='systemctl reboot'
 
 ### Package management
 
-# Aptitude
+# Debian derived
 alias a='sudo aptitude'
 alias ai='sudo aptitude install'
 alias ar='sudo aptitude remove'
@@ -310,7 +313,7 @@ alias auu'=sudo aptitude safe-upgrade'
 alias as='apt-cache search'
 alias aw='apt-cache show'
 
-# Pacman
+# Arch Linux
 alias p='yaourt -S --noconfirm'
 alias pSu='yaourt --noconfirm $_'
 
@@ -328,6 +331,7 @@ alias pQo='yaourt -Qo'
 alias pR='sudo pacman -R'										# remove
 alias pU='sudo pacman -U'										# upgrade (local package)
 alias pL='sudo rm /var/lib/pacman/db.lck'   # remove lockfile if pacman doesn't exit gracefully
+alias pG='yaourt -G'
 alias mP='makepkg -si'
 
 # Aurget - AUR helper. notes; was intermittant
