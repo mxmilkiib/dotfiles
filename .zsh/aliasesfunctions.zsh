@@ -111,14 +111,20 @@ command_exists () {
 # Search running processes
 alias 'ps?'='ps ax | grep '
 
-# Info on machine
+# info trumps man feature-wise, new hotkeys to learn
+# alias man='info'
+
+# Basic machine details
 alias wtf='hostname && cat /etc/*-release && whoami && pwd'
 
 # Echo a list of handy commands for info
 alias system='echo $systemecho'
 
-systemecho='echo export
+systemecho='echo # here are some tools to try
 # echo global and local variables
+export
+env
+set
 history info | awk "{CMD[$2]++;count++;}END { for (a in CMD)print CMD[a] " " CMD[a]/count*100 "% " a;}" | grep -v "./" | column -c3 -s
 w
 # who is logged in on what tty, etc.
