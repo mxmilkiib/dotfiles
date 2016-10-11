@@ -68,7 +68,7 @@ super + n
 ### Node management
 
 # Close or kill window node
-super + {_,shift + }w
+super + {_,shift + }q
 	bspc node -{c,k}
 
 # Close the current window, and also remove the current desktop after closing (if possible).
