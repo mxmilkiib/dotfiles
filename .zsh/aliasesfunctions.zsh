@@ -211,6 +211,10 @@ alias cd..='cd ..'
 alias ,,='..'
 alias c.='cd $PWD'
 
+#to fox
+alias cppwd='export CPPWD=$(pwd)'
+alias gopwd='cd $CPPWD'
+
 # https://github.com/clvv/fasd
 alias a='fasd -a'        # any
 alias s='fasd -si'       # show / search / select
