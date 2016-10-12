@@ -31,6 +31,12 @@ super + p
 super + F2
   leafpad ~/documents/scratch
 
+   
+
+super + alt + space
+  {smartsplit ; bspc node -i,\
+  for i in $(bspc query -N -n .leaf.!window.local); do bspc node $i -k; done}
+
 
 ### BPSWM hotkeys
 
@@ -62,7 +68,7 @@ super + n
 ### Node management
 
 # Close or kill window node
-super + {_,shift + }w
+super + {_,shift + }q
 	bspc node -{c,k}
 
 # Close the current window, and also remove the current desktop after closing (if possible).
@@ -78,30 +84,11 @@ super + alt + {1-9,0}
   ~/.config/bspwm/scripts/remove_desktop.sh
 
 
-### Preselect
-
-# preselect section of window edge
-super + ctrl + {h,j,k,l}
-	bspc node -p {west,south,north,east}
-
-# preselect the ratio
-super + ctrl + {1-9}
-	bspc node -o 0.{1-9}
-
-# cancel preselect for window or desktop
-super + ctrl + space
-	bspc node -p cancel
-
-# cancel the preselection for the focused desktop
-super + ctrl + shift + space
-	bspc query -N -d | xargs -I id -n 1 bspc node id -p cancel
-
-
 ## Resize nodes
 
 # expand the tiled space in the given direction
-super + alt + {h,j,k,l}
-	bspc node {@west -r -10,@south -r +10,@north -r -10,@east -r +10}
+#super + alt + {h,j,k,l}
+#	bspc node {@west -r -10,@south -r +10,@north -r -10,@east -r +10}
 
 # contract the tiled space in the given direction
 super + alt + shift + {h,j,k,l}
@@ -127,21 +114,21 @@ super + {d,y}
 	bspc node -f {next.floating,next.tiled}
 
 # rotate current desktop node tree root
-super + {_,shift +} r
+super + {r,e}
 	bspc node @/ -R {90,270}
 
 # circulate the leaves of desktop tree backward or forward
 super + comma
 	bspc node @/ -C backward; \
-	bspc node -f prev
+	bspc node -f older
 
 # circulate the leaves of desktop tree backward or forward
 super + period
 	bspc node @/ -C forward; \
-	bspc node -f next
+	bspc node -f older
 
 # equalise or balance windows on current desktop
-super + {_,alt +}b
+super + {_,alt + }b
 	bspc desktop {-E,-B}
 
 # swap focused window with last focused window on any desktop
@@ -151,6 +138,34 @@ super + {_,alt +}b
 # swap focused window with largest tiled node on the same desktop
 super + m
 	bspc node -s biggest
+
+
+### Preselect
+
+# preselect section of window edge
+super + ctrl + {h,j,k,l}
+	bspc node -p {west,south,north,east}
+
+# preselect the ratio
+super + ctrl + {1-9}
+	bspc node -o 0.{1-9}
+
+# cancel preselect for window or desktop
+super + ctrl + space
+	bspc node -p cancel
+
+# cancel the preselection for the focused desktop
+super + ctrl + shift + space
+	bspc query -N -d | xargs -I id -n 1 bspc node id -p cancel
+
+# transplant to preselect
+super + ctrl + shift + {h,j,k,l}
+  bspc window -s {left,down,up,right}
+
+# split in direction
+super + alt + ctrl + {h,j,k,l}
+  bspc node -p {west,south,north,east};\
+  urxvtc
 
 
 ### Desktop management
@@ -254,20 +269,20 @@ super + alt + F10
 
 ### Mouse and pointer
 
-#~button1
-#	bspc pointer -g focus
-#
-## move, resize one size or resize two sides with mouse click and drag
-#super + button{1-3}
-#	bspc pointer -g {move,resize_side,resize_corner}
-#
-## motion
-#super + !button{1-3}
-#	bspc pointer -t %i %i
-#
-## release
-#super + @button{1-3}
-#	bspc pointer -u
-#
+~button1
+	bspc pointer -g focus
+
+# move, resize one size or resize two sides with mouse click and drag
+super + button{1-3}
+	bspc pointer -g {move,resize_side,resize_corner}
+
+# motion
+super + !button{1-3}
+	bspc pointer -t %i %i
+
+# release
+super + @button{1-3}
+	bspc pointer -u
+
 #super + button{4,5}
 #  bspc desktop -f {prev,next}
