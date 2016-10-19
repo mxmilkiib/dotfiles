@@ -2,23 +2,23 @@
 <group name="root">
     <group name="Chill">
         <bookmark name="Drone Zone" url="http://somafm.com/dronezone.pls"/>
-        <bookmark name="Deep Space One" url="http://somafm.com/deepspaceone130.pls"/><bookmark name="Mission Control" url="http://somafm.com/missioncontrol.pls"/><bookmark name="Fluid Radio" url="http://usa4-vn.mixstream.net/9270.pls"/></group>
+        <bookmark name="Deep Space One" url="http://somafm.com/deepspaceone130.pls"/><bookmark name="Mission Control" url="http://somafm.com/missioncontrol.pls"/><bookmark name="Fluid Radio" url="http://usa4-vn.mixstream.net/9270.pls"/><bookmark name="HBR1: ambient" url="http://radio.hbr1.com:19800/ambient.aac.m3u"/><bookmark name="Chromanova.de: chillout" url="http://176.31.123.212:8192/listen.pls"/><bookmark name="Schizoid: chill/ambient" url="http://schizoid.in/schizoid-chill.pls"/></group>
     <group name="Groove"><bookmark name="Groove Salad" url="http://somafm.com/groovesalad.pls"/>
         <bookmark name="Suburbs of Goa" url="http://somafm.com/suburbsofgoa130.pls"/><bookmark name="Beat Blender" url="http://somafm.com/beatblender.pls"/>
         <bookmark name="Secret Agent" url="http://somafm.com/secretagent.pls"/>
         <bookmark name="Black Rock FM" url="http://somafm.com/brfm.pls"/>
         <bookmark name="Space Station Soma" url="http://somafm.com/spacestation.pls"/>
-        </group><group name="Jazz / Latin">
+        <bookmark name="Music of the Gods" url="http://www.musicofthegods.com/musicofthegods.pls"/><bookmark name="PsyRadio.com.ua" url="http://psyradio.com.ua/PsyRadio_256kbps.m3u"/><bookmark name="Deep Mix" url="http://deepmix.ru/deepmix128.pls"/><bookmark name="Deepvibes" url="http://88.208.218.19:9106/listen.pls"/></group><group name="Techno / Rave">
+        <bookmark name="Eilo" url="http://stream.eilo.org:8000/minimal"/><bookmark name="Storm:Kraft" url="http://techno.stromkraftradio.fm:8014/listen.pls"/><bookmark name="Nautic Radio" url="http://stream.nauticradio.net:14240/listen.pls"/><bookmark name="HBR1: tech/house/prog" url="http://radio.hbr1.com:19800/tronic.aac.m3u"/><bookmark name="New Dance Radio" url="http://jbstream.net/tunein.php/blackoutworm/playlist.asx"/>
+    <bookmark name="teknoradio.nl" url="http://audio.teknoradio.nl/listen.pls"/><bookmark name="TeknoRadio" url="http://www.teknoradio.org/Listen@128.pls"/><bookmark name="BTribal: tekno" url="http://www.btribal.eu:3030/tekno.ogg"/><bookmark name="RevivalKult" url="http://www.revivalkult.de/radio/winamp.pls"/><bookmark name="Hardcoreradio.nl" url="http://www.hardcoreradio.nl/hr.m3u"/><bookmark name="Coretime.fm" url="http://listen.coretime.fm/aacplus.pls"/><bookmark name="cliqhop idm" url="http://somafm.com/cliqhop.pls"/>
+        <bookmark name="netpd" url="http://www.netpd.org/netpd.m3u"/><bookmark name="Gabber.fm" url="http://gabber.fm/players/gabberfm.m3u"/><bookmark name="Chromanova.de: dance" url="http://176.31.123.212:9000/listen.pls"/></group>
+    <group name="Breakbeat"><bookmark name="NSB Radio" url="http://nsbradio.co.uk/listen128k.pls"/><bookmark name="nubreaks.com" url="http://stream.nubreaks.com/"/><bookmark name="Jungletrain.net" url="http://jungletrain.net/128kbps.pls"/><bookmark name="BTribal: jungle" url="http://www.btribal.eu:3030/jungle.ogg"/></group><group name="Psytrance"><bookmark name="Schizoid: psytrance" url="http://schizoid.in/schizoid-psy.pls"/><bookmark name="Schizoid: prog psy" url="http://schizoid.in/schizoid-prog.pls"/><bookmark name="HBR1: psy/trance" url="http://radio.hbr1.com:19800/trance.aac.m3u"/><bookmark name="Dice Radio" url="http://fire.wavestreamer.com:4868/listen.pls?sid=1"/></group><group name="Jazz / Latin">
         <bookmark name="Illinois Street Lounge" url="http://somafm.com/illstreet.pls"/>
     <bookmark name="Smooth Jazz" url="http://smoothjazz.com/streams/smoothjazz_128.pls"/>
         <bookmark name="Sonic Universe" url="http://somafm.com/sonicuniverse.pls"/>
         <bookmark name="Onda Tropical" url="http://yp.shoutcast.com/sbin/tunein-station.pls?id=506392"/>
         <bookmark name="Top Latino Radio" url="http://online.radiodifusion.net:8020/listen.pls"/>
         </group>
-    <group name="Electronic / Techno">
-        <bookmark name="Deep Mix" url="http://deepmix.ru/deepmix128.pls"/><bookmark name="Deepvibes" url="http://88.208.218.19:9106/listen.pls"/><bookmark name="Eilo" url="http://stream.eilo.org:8000/minimal"/><bookmark name="Storm:Kraft" url="http://techno.stromkraftradio.fm:8014/listen.pls"/><bookmark name="Nautic Radio" url="http://stream.nauticradio.net:14240/listen.pls"/><bookmark name="New Dance Radio" url="http://jbstream.net/tunein.php/blackoutworm/playlist.asx"/>
-    <bookmark name="NSB Radio" url="http://nsbradio.co.uk/listen128k.pls"/><bookmark name="nubreaks.com" url="http://stream.nubreaks.com/"/><bookmark name="Jungletrain.net" url="http://jungletrain.net/128kbps.pls"/><bookmark name="teknoradio.nl" url="http://audio.teknoradio.nl/listen.pls"/><bookmark name="TeknoRadio" url="http://www.teknoradio.org/Listen@128.pls"/><bookmark name="BTribal: tekno" url="http://www.btribal.eu:3030/tekno.ogg"/><bookmark name="BTribal: jungle" url="http://www.btribal.eu:3030/jungle.ogg"/><bookmark name="RevivalKult" url="http://www.revivalkult.de/radio/winamp.pls"/><bookmark name="Hardcoreradio.nl" url="http://www.hardcoreradio.nl/hr.m3u"/><bookmark name="Coretime.fm" url="http://listen.coretime.fm/aacplus.pls"/><bookmark name="cliqhop idm" url="http://somafm.com/cliqhop.pls"/>
-        <bookmark name="netpd" url="http://www.netpd.org/netpd.m3u"/><bookmark name="Gabber.fm" url="http://gabber.fm/players/gabberfm.m3u"/></group>
     <group name="Pop / Rock">
         <bookmark name="PopTron" url="http://somafm.com/poptron.pls"/>
     <bookmark name="Radio Paradise" url="http://www.radioparadise.com/musiclinks/rp_128.m3u"/>
