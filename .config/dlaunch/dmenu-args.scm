@@ -1,0 +1,31 @@
+; Enable case insensitive search:
+"-i"
+
+; Opacity
+"-o" "0.88"
+
+; Limit number of lines
+; "-l" "20"
+; Horizontal lists. BUG: needs -b enabled
+"-l"
+
+; Make dmenu appear at the bottom of the screen:
+"-b"
+
+; "-y" "21"
+; "-x" "-16"
+
+"-p" ""
+
+; Set a nicer font:
+"-fn" "-*-terminus-medium-*-*-*-16-*-*-*-*-*-*-*"
+
+; Height
+"-h" "21"
+
+; Colours
+"-nb" "#000000" "-nf" "#c5c5c5"
+"-sb" "#4f2877" "-sf" "#ffffff"
+
+; Dim screen
+"-dim" "0.5" "-dc" "#485d00"
