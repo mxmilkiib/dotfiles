@@ -54,7 +54,7 @@ xscreensaver -nosplash &
 lightsOn 545 &
 
 # Automount USB script with smart system tray icon
-# udiskie -s &
+udiskie -s &
 
 # Composition manager
 # compton -b										# see ~/.config/compton.conf
@@ -97,33 +97,46 @@ autocutsel -selection PRIMARY -fork &
 
 
 # Start Jack for audio
-jack_control start &
+# jack_control start &
 # cadence-session-start --start &    # doesn't start jack sometimes
 
 # Jack GUI 
-cadence --minimized &
+# cadence --minimized &
 
 # Set Pulseaudio to send audio to Jack by default
-(sleep 10 && pacmd set-default-source jack_in && pacmd set-default-sink jack_out ) &
 
 
 # Hotkeys
-sxhkd &
+# sxhkd &
 
 export BSPWM_STATE=/tmp/bspwm-state.json
 
 # Panel bar w/ pager, systray, program windows, weather, time, etc.
-xfce4-panel &
+# xfce4-panel &
 
 # Folder sync
 syncthing-gtk &
 
-# exec selectwm
+# Octopi pacman update and package manager GUI
+pamac-tray &
 
+# Make sure pulseaudio out is set to jack
+(sleep 30 && pacmd set-default-source jack_in && pacmd set-default-sink jack_out ) &
+
+
+# Authentication agent
+# pkttyagent &
+/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 &
+
+
+
+# Window manager
+
+# exec selectwm
 # exec xterm
 # exec urxvt 
-
-exec bspwm
+exec i3 >> ~/.i3/.i3log 2>&1
+# exec bspwm
 # exec adwm
 # exec startxfce4
 # exec herbstluftwm
