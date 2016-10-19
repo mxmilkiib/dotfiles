@@ -22,6 +22,9 @@ export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent.socket"
 export EDITOR=vim
 export VISUAL=vim
 
+# Reduce mode key timeout to 0.1s
+export KEYTIMEOUT=1
+
 export PAGER="/usr/bin/less -RFX"
 # < pager
 export READNULLCMD=less
