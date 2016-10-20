@@ -5,15 +5,16 @@
 "-o" "0.88"
 
 ; Limit number of lines
-; "-l" "20"
+"-l" "20"
 ; Horizontal lists. BUG: needs -b enabled
-"-l"
+; "-l"
 
 ; Make dmenu appear at the bottom of the screen:
-"-b"
+; "-b"
 
-; "-y" "21"
-; "-x" "-16"
+"-y" "24"
+"-x" "2"
+"-w" "1276"
 
 "-p" ""
 
@@ -21,7 +22,7 @@
 "-fn" "-*-terminus-medium-*-*-*-16-*-*-*-*-*-*-*"
 
 ; Height
-"-h" "21"
+"-h" "22"
 
 ; Colours
 "-nb" "#000000" "-nf" "#c5c5c5"

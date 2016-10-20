@@ -92,6 +92,7 @@ bindsym $mod+q kill
 bindsym $mod+Delete kill
 bindsym $mod+c kill
 
+
 # start dmenu (a program launcher)
 bindsym $mod+space exec dlaunch --sources=exec-path
 # bindsym $mod+space exec dmenu_run.pl -h 17 -fn $font -nb '#000000' -nf '#c5c5c5' -sb '#4f2877' -sf '#ffffff' -dim 0.4 -dc '#485D00'
@@ -106,6 +107,7 @@ bindsym $mod+p exec pavucontrol
 bindsym $mod+Shift+p exec urxvtc -geometry 130x30 -e alsamixer -c0
 # bindsym $mod+Shift+p exec Cadence.py
 bindsym $mod+shift+x exec i3lock
+bindsym $mod+F2 exec leafpad ~/documents/scratch
 
 # change pulseaudio volume
 bindsym $mod+Ctrl+KP_Subtract exec "pactl set-sink-mute 0 false ; pactl set-sink-volume 0 -3%"
@@ -115,6 +117,7 @@ bindsym $mod+Ctrl+KP_Multiply exec "pactl set-sink-mute 0 toggle"
 bindsym $mod+Shift+Ctrl+minus exec "pactl set-sink-mute 0 false ; pactl set-sink-volume 0 -3%"
 bindsym $mod+Shift+Ctrl+plus exec "pactl set-sink-mute 0 false ; pactl set-sink-volume 0 +3%"
 bindsym $mod+Shift+Ctrl+apostrophe exec "pactl set-sink-mute 0 toggle"
+
 
 # change focus - using vim binds not i3 default
 bindsym $mod+h focus left
@@ -310,6 +313,7 @@ for_window [class="(?i)virtualbox"] floating enable border normal
 for_window [class="GParted"] floating enable border normal
 for_window [class="Galculator"] floating enable border pixel 2
 for_window [title="File Transfer*"] floating enable
+for_window [class="Gtkdialog"] floating enable
 
 
 # for_window [class="netctl-gui"] floating enable
