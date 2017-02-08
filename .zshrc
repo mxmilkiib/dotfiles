@@ -30,6 +30,8 @@ source $Z/completion.zsh
 # Set up some aliases and functions
 source $Z/aliasesfunctions.zsh
 
+source $Z/zbell.sh
+
 # Private aliases, etc.
 if [ -e $Z/private.zsh ]; then
   source $Z/private.zsh

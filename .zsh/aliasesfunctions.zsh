@@ -175,8 +175,8 @@ alias la='ls -A --group-directories-first'      # show almost all (hidden files)
 alias lat='ls -Atr --group-directories-first'	  # show almost all (hidden files), sort by time, reversed
 alias laa='ls -lAh --color | less -RFX'				  # long, almost all, no reverse, piped to less w/ redraw (color), quit if under one screen, don't init/deinit terminal
 
-alias lr='ls -lRh | more'           						# recursive ls
-alias lsr='tree -Csu | more '    								# alternative recursive ls
+alias lr='ls -lRh | "$PAGER"'           						# recursive ls
+alias lsr='tree -Csu | less -RFX'    								# alternative recursive ls
 
 # Graphical tree of subdir files
 #alias 'lt=tree -d'
@@ -381,6 +381,11 @@ alias -g G='| grep -Ein --color=tty'
 alias l='less -RFX'
 alias -g L='| less -RFX'     # redraw (color), quit under one page, dont init/deinit term
 # alias -g "<"='less -RFX'
+
+# for READNULLCMD in environment.zsh
+function less_rfx() {
+	less -RFX "$@"
+}
 
 # List ANSI colours
 alias colours='for code in {000..255}; do print -P -- "$code: %F{$code}Test%f"; done'
