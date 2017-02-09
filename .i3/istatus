@@ -55,6 +55,6 @@ load {
         format = "%1min"
 }
 
-disk /home/ {
-        format = "%avail"
-}
+# disk /home/ {
+#         format = "%avail"
+# }
