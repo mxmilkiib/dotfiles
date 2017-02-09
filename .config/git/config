@@ -8,7 +8,7 @@
 	default = simple
 [alias]
 	lg = log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit
-	commit = commit -v
+	commit = commit --verbose
 	dsf = "!git diff --color $@ | diff-so-fancy"
 [core]
 	pager = less
