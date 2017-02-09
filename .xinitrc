@@ -28,7 +28,7 @@ xset fp rehash
 # export LIBETC_BLACKLIST=/bin/cp:/bin/ln:/bin/ls:/bin/mv:/bin/rm:/usr/bin/find
 
 # Set X background color to black
-hsetroot -solid "#000000"
+# hsetroot -solid "#000000"
 
 # Set background image
 feh --bg-fill --no-xinerama ~/.wallpapers/VnXDN9J_colourised.png -Z
@@ -49,11 +49,13 @@ urxvtd -q -o -f &
 xscreensaver -nosplash &
 
 # Disable screensaver on media fullscreen
-lightsOn 545 &
+# lightsOn 545 &
 #doesn't work??
+caffeine &
 
 # Automount USB script with smart system tray icon
-udiskie -s &
+# udiskie -s &
+# mounts with unique path??
 
 # Composition manager
 compton -b
@@ -107,10 +109,10 @@ autocutsel -selection PRIMARY -fork &
 syncthing-gtk &
 
 # Octopi pacman update and package manager GUI
-pamac-tray &
+# pamac-tray &
 
 # Make sure pulseaudio out is set to jack
-(sleep 30 && pacmd set-default-source jack_in && pacmd set-default-sink jack_out ) &
+# (sleep 30 && pacmd set-default-source jack_in && pacmd set-default-sink jack_out ) &
 
 # Authentication agent
 # pkttyagent &

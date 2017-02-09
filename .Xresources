@@ -12,13 +12,17 @@ XTerm*scrollBar_right: true
 URxvt*shell: /bin/zsh
 
 ! Lines buffered
+Xterm*saveLines: 400000
 URxvt*saveLines: 400000
 
 ! Term name
-!XTerm*termName: xterm-256color
+XTerm*termName: xterm-256color
 !XTerm*termName: rxvt-unicode
-!Rxvt*termName: rxvt-unicode-256color
+Rxvt*termName: rxvt-unicode-256color
 
+XTerm*locale: true
+XTerm*backarrowKey: false
+XTerm*ttyModes: erase ^?
 
 ! Apperence
 ! URxvt*background: [100]black
@@ -47,6 +51,9 @@ URxvt.secondaryScroll: 0
 ! Window icon
 !URxvt*iconFile: /usr/share/icons/gnome/scalable/apps/utilities-terminal-symbolic.svg
 
+! Ctrl-Shift-c/v copy and paste CLIPBOARD buffer
+xterm*VT100.Translations: #override Ctrl Shift <Key>V: insert-selection(CLIPBOARD) \n Ctrl Shift <Key>C: copy-selection(CLIPBOARD)
+
 
 ! Perl scripts
 ! URxvt.perl-lib: /usr/lib/urxvt/perl/
@@ -54,10 +61,12 @@ URxvt.secondaryScroll: 0
 URxvt.perl-ext-common: default,matcher,searchable-scrollback,font-size,clipboard,keyboard-select
 
 ! Bell
-URxvt.urgentOnBell: True
+URxvt.urgentOnBell: true
+URxvt.visualBell: true
 
 ! Launch URLs
-URxvt.url-launcher: /usr/bin/chromium-snapshot-bin
+!URxvt.url-launcher: /usr/bin/google-chrome-stable
+URxvt.url-launcher: /usr/bin/chrome
 URxvt.matcher.button: 1
 
 URxvt.keysym.M-u:       perl:url-select:select_next
@@ -84,17 +93,20 @@ XTerm*vt100.Translations:       #override\n\
 Ctrl <KeyPress> Left   : string("\033[90~")  \n\
 Ctrl <KeyPress> Right  : string("\033[91~")  \n
 
-Xft.autohint: 0
+Xft.autohint: 1
 Xft.lcdfilter:  lcddefault
-Xft.hintstyle:  hintfull
+Xft.hintstyle:  hintslight
 Xft.hinting: 1
 Xft.antialias: 1
 Xft.rgba: rgb
 
 ! :Bind C-0, C-+ and C-= to activate small, medium, and big font size resp.     
 
+
+xterm*font:     *-terminus-medium-*-*-*-16-*
+
 ! URxvt.font: xft:terminesspowerline:pixelsize=12
-URxvt.font: xft:terminus:size=12
+URxvt.font: xft:xos4 terminus:size=16
 ! URxvt.font: xft:terminus:pixelsize=12
 ! URxvt.font: xft:terminus:pixelsize=12:antialias=false
 
