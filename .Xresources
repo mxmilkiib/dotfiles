@@ -20,6 +20,33 @@ XTerm*termName: xterm-256color
 !XTerm*termName: rxvt-unicode
 Rxvt*termName: rxvt-unicode-256color
 
+
+! ! Black + DarkGrey
+! *color0:  #000000
+! *color8:  #555753
+! ! DarkRed + Red
+! *color1:  #ff6565
+! *color9:  #ff8d8d
+! ! DarkGreen + Green
+! *color2:  #93d44f
+! *color10: #c8e7a8
+! ! DarkYellow + Yellow
+! *color3:  #eab93d
+! *color11: #ffc123
+! ! DarkBlue + Blue
+! *color4:  #204a87
+! *color12: #3465a4
+! ! DarkMagenta + Magenta
+! *color5:  #ce5c00
+! *color13: #f57900
+! !DarkCyan + Cyan (both not tango)
+! *color6:  #89b6e2
+! *color14: #46a4ff
+! ! LightGrey + White
+! *color7:  #cccccc
+! *color15: #ffffff
+
+
 XTerm*locale: true
 XTerm*backarrowKey: false
 XTerm*ttyModes: erase ^?
@@ -61,7 +88,9 @@ xterm*VT100.Translations: #override Ctrl Shift <Key>V: insert-selection(CLIPBOAR
 URxvt.perl-ext-common: default,matcher,searchable-scrollback,font-size,clipboard,keyboard-select
 
 ! Bell
+XTerm*bellIsUrgent: true
 URxvt.urgentOnBell: true
+xterm*visualBell: true
 URxvt.visualBell: true
 
 ! Launch URLs
@@ -93,20 +122,23 @@ XTerm*vt100.Translations:       #override\n\
 Ctrl <KeyPress> Left   : string("\033[90~")  \n\
 Ctrl <KeyPress> Right  : string("\033[91~")  \n
 
-Xft.autohint: 1
-Xft.lcdfilter:  lcddefault
-Xft.hintstyle:  hintslight
-Xft.hinting: 1
-Xft.antialias: 1
-Xft.rgba: rgb
+! Xft.autohint: 0
+! Xft.lcdfilter:  lcddefault
+! Xft.hintstyle:  hintslight
+! Xft.hinting: 0
+! Xft.antialias: 0
+! Xft.rgba: rgb
 
 ! :Bind C-0, C-+ and C-= to activate small, medium, and big font size resp.     
 
 
-xterm*font:     *-terminus-medium-*-*-*-16-*
+! xterm*font:     *-terminus-medium-*-*-*-16-*
+! xterm*font:     *-Fixedsys Excelsior 3.01-L2-medium-*-*-*-16-*
+xterm*font:     -*-gohufont-medium-*-*-*-14-*-*-*-*-*-*-*
 
 ! URxvt.font: xft:terminesspowerline:pixelsize=12
-URxvt.font: xft:xos4 terminus:size=16
+! URxvt.font: xft:xos4 terminus:size=16
+URxvt*font:     -*-gohufont-medium-*-*-*-14-*-*-*-*-*-*-*
 ! URxvt.font: xft:terminus:pixelsize=12
 ! URxvt.font: xft:terminus:pixelsize=12:antialias=false
 

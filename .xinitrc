@@ -43,7 +43,7 @@ unclutter --timeout 15 &
 xsetroot -cursor_name left_ptr &
 
 # Start urxvt demon, quiet, connect to $DISPLAY, fork after control socket binding
-urxvtd -q -o -f &
+# urxvtd -q -o -f &
 
 # Start xscreensaver
 xscreensaver -nosplash &
@@ -60,7 +60,7 @@ caffeine &
 # Composition manager
 compton -b
 
-# Notification daemon
+# Notification daemon. ctrl-space to close, ctrl-shift-space to close all.
 dunst &
 
 # Break timer
