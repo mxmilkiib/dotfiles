@@ -15,7 +15,8 @@ if has('vim_starting')
     set nocompatible
   endif
 
-    set runtimepath+=~/.vim/bundle/neobundle.vim/,/usr/share/vim/vim72
+    set runtimepath+=~/.vim/bundle/neobundle.vim
+" set runtimepath+=~/.vim/bundle/neobundle.vim/,/usr/share/vim/vim72
 endif
 
 call neobundle#begin(expand('~/.vim/bundle/'))
@@ -68,14 +69,19 @@ NeoBundle 'othree/html5.vim'
 
 NeoBundle 'Valloric/vim-operator-highlight'
 
-NeoBundle 'skammer/vim-css-color.git'
+" NeoBundle 'ap/vim-css-color.git'
 
-NeoBundle 'cakebaker/scss-syntax.vim'
+NeoBundle 'chrisbra/Colorizer'
+
+autocmd VimEnter * ColorToggle
+
+
+" NeoBundle 'cakebaker/scss-syntax.vim'
 " NeoBundle 'vim-scripts/Better-CSS-Syntax-for-Vim' - fuxks with scss :(
 
 NeoBundle 'pangloss/vim-javascript'
 
-NeoBundle 'StanAngeloff/php.vim'
+" NeoBundle 'StanAngeloff/php.vim'
 
 NeoBundle 'Valloric/MatchTagAlways'
 
