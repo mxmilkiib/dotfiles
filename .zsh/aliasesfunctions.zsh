@@ -227,6 +227,15 @@ alias sf='fasd -sif'     # interactive file selection
 alias z='fasd_cd -d'     # cd, same functionality as j in autojump
 alias zz='fasd_cd -d -i' # cd with interactive selection
 
+function git {
+  if [[ "$1" == "commit" ]]; then
+    shift 1
+    command git commit --verbose "$@"
+  else
+    command git "$@"
+  fi
+}
+
 # lwd - jump back to last dir of previous terminal
 # https://github.com/robbyrussell/oh-my-zsh/blob/master/plugins/last-working-dir/last-working-dir.plugin.zsh
 typeset -g ZSH_LAST_WORKING_DIRECTORY

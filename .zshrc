@@ -15,11 +15,48 @@
 Z=~/.zsh
 
 
-# Set up a working environment.
-source $Z/environment.zsh
-
 # Set some options.
 source $Z/options.zsh
+
+
+# Plugin managament
+source $Z/../.zgen/zgen.zsh
+
+# check if there's no init script
+if ! zgen saved; then
+		echo "Creating a zgen save"
+
+	zgen load unixorn/autoupdate-zgen
+
+	zgen load chrissicool/zsh-256color
+
+	zgen load djui/alias-tips
+
+	zgen load zsh-users/zsh-syntax-highlighting
+
+	zgen load olivierverdier/zsh-git-prompt
+
+	zgen load zsh-users/zsh-completions
+
+	zgen load RobSis/zsh-completion-generator
+
+	zgen load rupa/z
+
+	zgen load zsh-users/zsh-history-substring-search
+
+	zgen load skx/sysadmin-util
+
+	# fzf after zsh-autosuggestions - fzf/issues/227
+	zgen load junegunn/fzf
+
+	zgen load tarruda/zsh-autosuggestions
+
+	zgen save
+fi
+
+
+# Set up a working environment.
+source $Z/environment.zsh
 
 # Key bindings
 source $Z/bindings.zsh
@@ -27,11 +64,8 @@ source $Z/bindings.zsh
 # Initialize the completion system.
 source $Z/completion.zsh
 
-
 # Set up some aliases and functions
 source $Z/aliasesfunctions.zsh
-
-source $Z/zbell.sh
 
 # Private aliases, etc.
 if [ -e $Z/private.zsh ]; then
@@ -39,49 +73,22 @@ if [ -e $Z/private.zsh ]; then
 fi
 
 
-# Plugin managament
-source $Z/zgen.zsh
+# Bell on command completion, used for urgent flagging
+source $Z/zbell.sh
 
-# check if there's no init script
-if ! zgen saved; then
-    echo "Creating a zgen save"
-
-  zgen load unixorn/autoupdate-zgen
-
-  zgen load chrissicool/zsh-256color
-
-  zgen load djui/alias-tips
-
-  zgen load zsh-users/zsh-syntax-highlighting
-
-  zgen load olivierverdier/zsh-git-prompt
-
-  zgen load zsh-users/zsh-completions
-
-  zgen load RobSis/zsh-completion-generator
-
-  zgen load rupa/z
-
-  zgen load zsh-users/zsh-history-substring-search
-
-  zgen load skx/sysadmin-util
-
-  # fzf after zsh-autosuggestions - fzf/issues/227
-  zgen load junegunn/fzf
-
-  zgen save
-fi
-
-# type then press up/down to search history
-bindkey "$terminfo[kcuu1]" history-substring-search-up
-bindkey "$terminfo[kcud1]" history-substring-search-down
-
-# [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 # export FZF_DEFAULT_COMMAND='find .'
+export FZF_COMPLETION_TRIGGER='**'
+export FZF_COMPLETION_OPTS='+c -x'
 export FZF_DEFAULT_OPTS='--reverse'
 export FZF_TMUX='1'
-
+# Use ag instead of the default find command for listing candidates.
+# - The first argument to the function is the base path to start traversal
+# - Note that ag only lists files not directories
+# - See the source code (completion.{bash,zsh}) for the details.
+_fzf_compgen_path() {
+  ag -g "" "$1"
+}
 
 
 # https://github.com/clvv/fasd
@@ -102,13 +109,5 @@ reset-prompt-and-accept-line() {
     zle accept-line
 }
 zle -N reset-prompt-and-accept-line
-bindkey '^m' reset-prompt-and-accept-line
 
-# buggy
-# zgen load tarruda/zsh-autosuggestions
-#
-# Enable autosuggestions automatically.
-# zle-line-init() {
-# 		zle autosuggest-start
-# }
-# zle -N zle-line-init
+bindkey '^m' reset-prompt-and-accept-line
