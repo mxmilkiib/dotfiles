@@ -19,7 +19,7 @@
 "-p" ""
 
 ; Set a nicer font:
-"-fn" "-*-terminus-medium-*-*-*-16-*-*-*-*-*-*-*"
+"-fn" "-*-gohufont-medium-*-*-*-14-*-*-*-*-*-*-*"
 
 ; Height
 "-h" "22"

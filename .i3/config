@@ -62,7 +62,9 @@ bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcu
 # chose a FreeType font, such as:
 # font pango:DejaVu 8ans Mono 10
 # set $font -*-terminus-*-*-*-16-*-*-*-*-*-*-*
-font xft:xos4 terminus 16
+# font xft:xos4 terminus 16
+# font xft:Fixedsys Excelsior 3.01-L2 12
+font -*-gohufont-medium-*-*-*-14-*-*-*-*-*-*-*
 
 
 # Use Mouse+$mod to drag floating windows to their wanted position
@@ -80,16 +82,21 @@ set $terminal xterm
 # start a terminal
 # bindsym $mod+Return exec i3-sensible-terminal
 # bindsym $mod+Return exec urxvtcd
-bindsym $mod+Return exec "i3-msg exec xterm"
+bindsym $mod+Return exec "i3-msg exec $terminal"
 
 # start a floating terminal
-bindsym $mod+Shift+Return exec --no-startup-id urxvt -name "floating_urxvt"
-for_window [class="URxvt" instance="floating_urxvt$"] floating toggle
+bindsym $mod+Shift+Return exec --no-startup-id xterm -name "floating_terminal"
+for_window [class="URxvt" instance="floating_terminal$"] floating toggle
+# to fix
+
+# lanch terminal in focused current working directory
+bindsym $mod+Ctrl+Return exec "~/bin/excwd"
+
 
 # clock terminal
 bindsym $mod+shift+semicolon exec -name "floating-tty-clock" "urxvtc -geometry 35x9 -e tty-clock -s -b -c -C 2 -D"
 for_window [class="URxvt" instance="floating-tty-clock$"] floating toggle
-
+# to fix
 
 # kill focused window
 bindsym $mod+q kill
@@ -103,8 +110,11 @@ bindsym $mod+c kill
 # shipping a .desktop file. It is a wrapper around dmenu, so you need that
 # installed.
 # bindsym $mod+d exec --no-startup-id i3-dmenu-desktop
-bindsym $mod+space exec "dlaunch --sources=exec-path"
+# bindsym $mod+space exec "dlaunch --sources=exec-path"
+bindsym $mod+space exec "yegonesh -- -x -2 -y 1 -h 18 -nb '#000000' -nf '#c5c5c5' -sb '#4f2877' -sf '#ffffff' -fn '-*-gohufont-medium-*-*-*-14-*-*-*-*-*-*-*'"
 
+# launch a file manager
+bindsym $mod+m exec spacefm
 
 # launch audio apps
 bindsym $mod+p exec pavucontrol
@@ -124,7 +134,7 @@ bindsym $mod+Shift+Ctrl+apostrophe exec "pactl set-sink-mute 0 toggle"
 bindsym $mod+Shift+x exec i3lock
 
 # launch scratchpad text file
-bindsym $mod+F2 exec leafpad ~/documents/scratch
+bindsym $mod+F2 exec geany ~/documents/scratch
 
 
 # change focus - using vim equivalent binds not i3 default
@@ -294,14 +304,14 @@ bindsym $mod+Ctrl+0 move container to workspace $ws10
 bindsym $mod+Shift+slash exec "~/bin/i3/i3-nextempty.sh"
 
 
-# windows like alt tab
+# windows like alt tab with `
 set $i3t_alt_tab        ~/bin/i3/i3t.py n
 set $i3t_alt_shift_tab  ~/bin/i3/i3t.py p
-bindsym $mod+Tab exec   exec $i3t_alt_tab
-bindsym $mod+Shift+Tab  exec $i3t_alt_shift_tab
+bindsym $mod+grave exec   exec $i3t_alt_tab
+bindsym $mod+Shift+grave  exec $i3t_alt_shift_tab
 
 # jump between last two workspaces
-bindsym $mod+grave workspace back_and_forth
+bindsym $mod+Tab workspace back_and_forth
 
 
 # move between workspaces
@@ -395,22 +405,26 @@ bar {
 	separator_symbol " "
   strip_workspace_numbers yes
 
+  # disable mousewheel workspace change on bar
+	wheel_up_cmd nop
+	wheel_down_cmd nop
+
 	# colour via http://paletton.com/#uid=74y0u0km+m7devAiGqmrohGxCce
 	colors {
   	background #000000
     statusline #ffffff
     # class            border 	backgrd  text
 		focused_workspace  #4f2877  #4f2877  #ffffff
-    active_workspace   #333333 	#555555  #c5c5c5
+    active_workspace   #555555 	#555555  #ffffff
     inactive_workspace #000000 	#000000  #c5c5c5
-		urgent_workspace   #161616  #2f343a  #eeeeee
+		urgent_workspace   #900000  #900000  #ffffff
 	}
 }
 
 # class                 border  backgr. text    indicator child_border
 client.focused          #4f2877 #4f2877 #ffffff #B46AA6   #D2CA57
 client.focused_inactive #333333 #5f676a #ffffff #484e50   #5f676a
-client.unfocused        #333333 #222222 #888888 #292d2e   #222222
+client.unfocused        #333333 #222222 #c5c5c5 #292d2e   #222222
 client.urgent           #2f343a #900000 #ffffff #900000   #900000
 client.placeholder      #000000 #0c0c0c #ffffff #000000   #0c0c0c
 
@@ -420,18 +434,18 @@ client.background       #ffffff
 
 # border style; show titles or not. the border toggle feature loses the 4px
 bindsym $mod+n border normal
-bindsym $mod+Shift+n border pixel 4
+bindsym $mod+Shift+n border pixel 3
 
 # set borders and gaps
-new_window pixel 4
+new_window pixel 3
 new_float pixel 4
 
-gaps inner 3
+gaps inner 4
 gaps outer 0
 
 
 # make sure the initial desktop is the first one
-exec i3-msg workspace "1:web"
+exec i3-msg workspace "6six"
 
 # Start my defaults layouts on boot
 # exec --no-startup-id "i3-msg 'workspace 1; append_layout ~/.config/i3/workspace-1.json'"
