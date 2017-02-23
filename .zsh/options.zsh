@@ -27,6 +27,7 @@ setopt AUTO_LIST                    # Always automatically show a list of ambigu
 setopt COMPLETE_IN_WORD             # Complete items from the beginning to the cursor.
 # setopt NO_ALWAYS_LAST_PROMPT	      # Put prompt beneath potentials
 setopt COMPLETEALIASES		    			# Complete aliased commands
+setopt MENU_COMPLETE								# First tab selects first option
 
 setopt NO_BEEP                      # Never, ever, beep at me.
 

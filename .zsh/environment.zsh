@@ -12,6 +12,11 @@ path=(~/bin $path)
 typeset -U fpath
 fpath=($Z/functions $Z/zsh-completions/src $fpath)
 
+
+# https://news.ycombinator.com/item?id=13697555
+export TZ=:/etc/localtime
+
+# xdg standard
 export XDG_CONFIG_HOME=${XDG_CONFIG_HOME:-"$HOME/.config"}
 export XDG_DATA_HOME=${XDG_DATA_HOME:-"$HOME/.local/share"}
 export XDG_CACHE_HOME=${XDG_CACHE_HOME:-"$HOME/.cache"}
@@ -21,6 +26,7 @@ export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent.socket"
 # Important applications.
 export EDITOR=vim
 export VISUAL=vim
+export BROWSER=chrome
 
 # Reduce mode key timeout to 0.1s
 export KEYTIMEOUT=1
@@ -29,7 +35,6 @@ export PAGER="/usr/bin/less -RFX"
 # < pager
 export READNULLCMD=less_rfx
 
-export BROWSER="chromium-continuous-bin"
 
 # History Settings
 export SAVEHIST=50000
@@ -47,3 +52,6 @@ eval $(dircolors $Z/dircolors)
 
 # characters missing from WORDCHARS so deleting words doesn't delete a full path or a hyphen are / - =
 WORDCHARS='*?_.[]~&;!#$%^(){}<>'
+
+# QGtkStyle
+export QT_QPA_PLATFORMTHEME=gtk2

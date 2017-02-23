@@ -190,6 +190,8 @@ alias mounts='mount | column -t'
 # Human readable df default
 alias 'df=df -h'
 
+alias dfcc="dfc -q name -dTw"
+
 # better cdu
 alias du2='cdu -idh'
 
