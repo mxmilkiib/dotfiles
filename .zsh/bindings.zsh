@@ -54,8 +54,8 @@ unset k
 [[ -n "${key[Insert]}"  ]]  && bindkey  "${key[Insert]}"  overwrite-mode #broken?
 [[ -n "${key[Backspace]}" ]]  && bindkey  "${key[Backspace]}"  backward-delete-char
 [[ -n "${key[Delete]}"  ]]  && bindkey  "${key[Delete]}"  delete-char
-[[ -n "${key[Up]}"      ]]  && bindkey  "${key[Up]}"      up-line-or-history
-[[ -n "${key[Down]}"    ]]  && bindkey  "${key[Down]}"    down-line-or-history
+# [[ -n "${key[Up]}"      ]]  && bindkey  "${key[Up]}"      up-line-or-history
+# [[ -n "${key[Down]}"    ]]  && bindkey  "${key[Down]}"    down-line-or-history
 [[ -n "${key[Left]}"    ]]  && bindkey  "${key[Left]}"    backward-char
 [[ -n "${key[Right]}"   ]]  && bindkey  "${key[Right]}"   forward-char
 
@@ -66,11 +66,17 @@ unset k
 [[ -n "${key[CtrlRight]}" ]]  && bindkey  "${key[CtrlRight]}" forward-word
 
 
+# type then press up/down to search history
+bindkey "${key[Up]}" history-substring-search-up
+bindkey "${key[Down]}" history-substring-search-down
+
+
 # Ctrl-w - push line to buffer stack, 
 bindkey '^w' push-line
 
 # Ctrl-e - pop line from buffer stack
 bindkey '^e' get-line
+
 
 # Ctrl-b - Comment out line with # and execute
 bindkey '^b' pound-insert
@@ -83,16 +89,15 @@ bindkey "^k" kill-line
 # Ctrl-u - delete everything  
 bindkey "^u" kill-whole-line
 
-# clear screen (defauly anyway?)
-bindkey "^l" clear-screen
 
 # Ctrl-* - add completion item to editing buffer but don't close completion menu
 bindkey '^[*' accept-and-hold
 
+# Insert accented character
 # https://github.com/johan/zsh/blob/master/Functions/Zle/insert-composed-char
-autoload insert-composed-char
-zle -N insert-composed-char
-bindkey "^K" insert-composed-char
+# autoload insert-composed-char
+# zle -N insert-composed-char
+# bindkey "^K" insert-composed-char
 
 # bindkey "^X" execute-named-cmd
 
@@ -134,10 +139,6 @@ bindkey "" backward-delete-word
 insert_sudo () { zle beginning-of-line; zle -U "sudo " }
 zle -N insert-sudo insert_sudo
 bindkey "^[s" insert-sudo
-
-# type then press up/down to search history
-bindkey "$terminfo[kcuu1]" history-substring-search-up
-bindkey "$terminfo[kcud1]" history-substring-search-down
 
 
 # if [[ "$TERM" != emacs ]]; then

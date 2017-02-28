@@ -111,3 +111,13 @@ reset-prompt-and-accept-line() {
 zle -N reset-prompt-and-accept-line
 
 bindkey '^m' reset-prompt-and-accept-line
+
+# launch a tmux session for each terminal. if closed, session persists, and next terminal reconnects.
+# if [[ -z "$TMUX" ]] ;then
+#     ID="`tmux ls | grep -vm1 attached | cut -d: -f1`"
+#     if [[ -z "$ID" ]] ;then
+#         tmux new-session
+#     else
+#         tmux attach-session -t "$ID"
+#     fi
+# fi

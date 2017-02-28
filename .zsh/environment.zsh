@@ -50,8 +50,8 @@ export TMPDIR=/var/tmp
 C=$(tput colors)
 eval $(dircolors $Z/dircolors)
 
-# characters missing from WORDCHARS so deleting words doesn't delete a full path or a hyphen are / - =
-WORDCHARS='*?_.[]~&;!#$%^(){}<>'
+# characters missing from WORDCHARS so deleting words doesn't delete a full path or a hyphen are / =
+WORDCHARS='-*?_.[]~&;!#$%^(){}<>'
 
 # QGtkStyle
 export QT_QPA_PLATFORMTHEME=gtk2

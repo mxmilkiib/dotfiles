@@ -199,7 +199,7 @@ alias du2='cdu -idh'
 alias 'dus=du -ms * | sort -n'
 
 # Check disk usage in ncdu (arch root)
-alias 'ncduar=sudo ncdu / --exclude /home --exclude /media --exclude /run/media --exclude /boot --exclude /tmp --exclude /dev --exclude /proc --exclude /var/lib/mpd/music --exclude /run/user'
+alias 'ncduar=sudo ncdu / --exclude /home --exclude /mnt --exclude /media --exclude /run/media --exclude /boot --exclude /tmp --exclude /dev --exclude /proc --exclude /var/lib/mpd/music --exclude /run/user'
 
 
 alias ..='cd ..' 		# Automatic in ZSH (default?)
