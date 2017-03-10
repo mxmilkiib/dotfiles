@@ -1,0 +1,1 @@
+echo "i3 config key bindings:" && cat ~/.i3/config | grep '^bindsym' | sed 's/bindsym //g' | expand | column -t -c 4 | GREP_COLORS='mt=01;32' egrep --color=always '^.mod+[^ ]*' | sed 's/$mod+/mod + /g'

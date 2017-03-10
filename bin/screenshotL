@@ -1,0 +1,1 @@
+import -crop 1280x1024+0+0 -window root ~/documents/images/screenshots/screenshot_silver_$(date +%F_%H%M%S_%N).png

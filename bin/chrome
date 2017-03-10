@@ -1,0 +1,2 @@
+#!/usr/bin/bash
+GTK2_RC_FILES=~/.config/gtk-2.0/gtkrc-chrome google-chrome-stable --force-device-scale-factor=1
