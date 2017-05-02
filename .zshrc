@@ -14,6 +14,13 @@
 # Where everything is.
 Z=~/.zsh
 
+function precmd() {
+		print -Pn "\e]2;%~\a"
+}
+
+function chpwd() {
+		print -Pn "\e]2;%~\a"
+}
 
 # Set some options.
 source $Z/options.zsh
@@ -121,3 +128,14 @@ bindkey '^m' reset-prompt-and-accept-line
 #         tmux attach-session -t "$ID"
 #     fi
 # fi
+
+
+# Set terminal title to current directory on start
+function precmd() {
+		print -Pn "\e]2;%~\a"
+}
+
+# Set terminal title to current directory on directory change
+function chpwd() {
+		print -Pn "\e]2;%~\a"
+}

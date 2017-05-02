@@ -24,6 +24,59 @@ key[Right]=${terminfo[kcuf1]}
 key[PageUp]=${terminfo[kpp]}
 key[PageDown]=${terminfo[knp]}
 
+#  'BackTab'      "$terminfo[kcbt]"
+# key[Backspace]='^?'
+key[CtrlLeft]=${terminfo[kLFT5]}
+key[CtrlRight]=${terminfo[kRFT5]}
+
+
+# setup key accordingly
+[[ -n {${key[Home]}}      ]]  && bindkey  "${key[Home]}"    beginning-of-line
+[[ -n "${key[End]}"       ]]  && bindkey  "${key[End]}"     end-of-line
+[[ -n "${key[Insert]}"    ]]  && bindkey  "${key[Insert]}"  overwrite-mode #broken?
+[[ -n "${key[Backspace]}" ]]  && bindkey  "${key[Backspace]}"  backward-delete-char
+[[ -n "${key[Delete]}"    ]]  && bindkey  "${key[Delete]}"  delete-char
+# [[ -n "${key[Up]}"        ]]  && bindkey  "${key[Up]}"      up-line-or-history
+# [[ -n "${key[Down]}"      ]]  && bindkey  "${key[Down]}"    down-line-or-history
+# type then press up/down to search history
+bindkey "${key[Up]}" history-substring-search-up
+bindkey "${key[Down]}" history-substring-search-down
+[[ -n "${key[Left]}"      ]]  && bindkey  "${key[Left]}"    backward-char
+[[ -n "${key[Right]}"     ]]  && bindkey  "${key[Right]}"   forward-char
+[[ -n "${key[PageUp]}"    ]]  && bindkey  "${key[PageUp]}"  beginning-of-history
+[[ -n "${key[PageDown]}"  ]]  && bindkey  "${key[PageDown]}" end-of-history
+
+
+# [[ -n "${key[CtrlLeft]}" ]]  && bindkey  "${key[CtrlLeft]}" backward-word
+# [[ -n "${key[CtrlRight]}" ]]  && bindkey  "${key[CtrlRight]}" forward-word
+
+# ctrl-left, ctrl-right - xterm-256color specific?:
+bindkey '^[[1;5D' emacs-backward-word
+bindkey '^[[1;5C' emacs-forward-word
+bindkey "\eOd" emacs-backward-word
+bindkey "\eOc" emacs-forward-word # lands between words, not on first char
+
+# Alt-Left, Alt-Right
+bindkey '^[[1;3D' backward-word
+bindkey '^[[1;3C' forward-word
+
+# Type command then ctrl-up/ctrl-down to search history
+# bindkey "^[[1;5A" history-beginning-search-backward
+# bindkey "^[[1;5B" history-beginning-search-forward
+# bindkey "\e[A" history-beginning-search-backward
+# bindkey "\e[B" history-beginning-search-forward
+
+# bindkey "^[[A" history-beginning-search-backward
+# bindkey "^[[B" history-beginning-search-forward
+
+# bindkey "^S" history-incremental-search-forward
+# bindkey "^R" history-incremental-search-backward
+
+
+bindkey "" backward-delete-word
+# bindkey "[3^" delete-word
+
+
 key[F1]=${terminfo[kf1]}
 key[F2]=${terminfo[kf2]}
 key[F3]=${terminfo[kf3]}
@@ -37,10 +90,6 @@ key[F10]=${terminfo[kf10]}
 key[F11]=${terminfo[kf11]}
 key[F12]=${terminfo[kf12]}
 
-#  'BackTab'      "$terminfo[kcbt]"
-# key[Backspace]='^?'
-key[CtrlLeft]=${terminfo[kLFT5]}
-key[CtrlRight]=${terminfo[kRFT5]}
 
 for k in ${(k)key} ; do
     # $terminfo[] entries are weird in ncurses application mode...
@@ -48,27 +97,14 @@ for k in ${(k)key} ; do
 done
 unset k
 
-# setup key accordingly
-[[ -n {${key[Home]}}    ]]  && bindkey  "${key[Home]}"    beginning-of-line
-[[ -n "${key[End]}"     ]]  && bindkey  "${key[End]}"     end-of-line
-[[ -n "${key[Insert]}"  ]]  && bindkey  "${key[Insert]}"  overwrite-mode #broken?
-[[ -n "${key[Backspace]}" ]]  && bindkey  "${key[Backspace]}"  backward-delete-char
-[[ -n "${key[Delete]}"  ]]  && bindkey  "${key[Delete]}"  delete-char
-# [[ -n "${key[Up]}"      ]]  && bindkey  "${key[Up]}"      up-line-or-history
-# [[ -n "${key[Down]}"    ]]  && bindkey  "${key[Down]}"    down-line-or-history
-[[ -n "${key[Left]}"    ]]  && bindkey  "${key[Left]}"    backward-char
-[[ -n "${key[Right]}"   ]]  && bindkey  "${key[Right]}"   forward-char
 
-[[ -n "${key[PageUp]}"  ]]  && bindkey  "${key[PageUp]}"  beginning-of-history
-[[ -n "${key[PageDown]}" ]]  && bindkey  "${key[PageDown]}" end-of-history
+# Open man page for command in editing buffer
+bindkey $key[F1] run-help
 
-[[ -n "${key[CtrlLeft]}" ]]  && bindkey  "${key[CtrlLeft]}" backward-word
-[[ -n "${key[CtrlRight]}" ]]  && bindkey  "${key[CtrlRight]}" forward-word
+autoload edit-command-line
+zle -N edit-command-line
+bindkey $key[F2] edit-command-line
 
-
-# type then press up/down to search history
-bindkey "${key[Up]}" history-substring-search-up
-bindkey "${key[Down]}" history-substring-search-down
 
 
 # Ctrl-w - push line to buffer stack, 
@@ -90,6 +126,8 @@ bindkey "^k" kill-line
 bindkey "^u" kill-whole-line
 
 
+bindkey "\e[Z" reverse-menu-complete # Shift+Tab
+
 # Ctrl-* - add completion item to editing buffer but don't close completion menu
 bindkey '^[*' accept-and-hold
 
@@ -101,13 +139,6 @@ bindkey '^[*' accept-and-hold
 
 # bindkey "^X" execute-named-cmd
 
-# Open man page for command in editing buffer
-bindkey $key[F1] run-help
-
-autoload edit-command-line
-zle -N edit-command-line
-bindkey $key[F2] edit-command-line
-
 
 bindkey " " magic-space # do history expansion ($ !ssh ...) on space
 
@@ -117,24 +148,7 @@ bindkey " " magic-space # do history expansion ($ !ssh ...) on space
 
 # bits from https://github.com/simongmzlj/dotfiles/blob/master/zsh/zshrc
 
-bindkey "\eOc" emacs-forward-word # lands between words, not on first char
-bindkey "\eOd" emacs-backward-word
 
-bindkey "\e[Z" reverse-menu-complete # Shift+Tab
-
-# Type command then ctrl-up/ctrl-down to search history
-bindkey "\e[A" history-beginning-search-backward
-bindkey "\e[B" history-beginning-search-forward
-
-# bindkey "^[[A" history-beginning-search-backward
-# bindkey "^[[B" history-beginning-search-forward
-
-# bindkey "^S" history-incremental-search-forward
-# bindkey "^R" history-incremental-search-backward
-
-
-bindkey "" backward-delete-word
-# bindkey "[3^" delete-word
 
 insert_sudo () { zle beginning-of-line; zle -U "sudo " }
 zle -N insert-sudo insert_sudo
