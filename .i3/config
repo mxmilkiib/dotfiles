@@ -16,8 +16,8 @@
 default_orientation vertical
 
 # Switch to workspace with urgent window automatically
-for_window [urgent=latest] focus
-
+# for_window [urgent=latest] focus
+focus_on_window_activation smart
 
 # Mod4 = win (super) key
 # Mod1 = alt key
@@ -77,24 +77,31 @@ bindsym --release $mod+button3 move window to output right
 bindsym --release $mod+Ctrl+button3 kill
 
 # terminal variable
-set $terminal xterm
+# set $terminal xterm
+set $terminal urxvt
 
 # start a terminal
 # bindsym $mod+Return exec i3-sensible-terminal
 # bindsym $mod+Return exec urxvtcd
 bindsym $mod+Return exec "i3-msg exec $terminal"
 
+
 # start a floating terminal
-bindsym $mod+Shift+Return exec --no-startup-id xterm -name "floating_terminal"
-for_window [class="URxvt" instance="floating_terminal$"] floating toggle
+bindsym $mod+Shift+Return exec --no-startup-id $terminal -name "floating_terminal"
+for_window [instance="floating_terminal$"] floating toggle
+#for_window [class="URxvt" instance="floating_terminal$"] floating toggle
 # to fix
 
 # lanch terminal in focused current working directory
 bindsym $mod+Ctrl+Return exec "~/bin/excwd"
 
+# i3 config bins print
+bindsym $mod+question exec --no-startup-id $terminal -geometry 125x47 -title "i3_hotkey_help" -e ~/bin/i3/i3-hotkey-help.sh
+for_window [title="i3_hotkey_help$"] floating toggle
+
 
 # clock terminal
-bindsym $mod+shift+semicolon exec -name "floating-tty-clock" "urxvtc -geometry 35x9 -e tty-clock -s -b -c -C 2 -D"
+bindsym $mod+shift+semicolon exec -name "floating-tty-clock" "xterm -geometry 35x9 -e tty-clock -s -b -c -C 2 -D"
 for_window [class="URxvt" instance="floating-tty-clock$"] floating toggle
 # to fix
 
@@ -111,7 +118,7 @@ bindsym $mod+c kill
 # installed.
 # bindsym $mod+d exec --no-startup-id i3-dmenu-desktop
 # bindsym $mod+space exec "dlaunch --sources=exec-path"
-bindsym $mod+space exec "yegonesh -- -x -2 -y 1 -h 18 -nb '#000000' -nf '#c5c5c5' -sb '#4f2877' -sf '#ffffff' -fn '-*-gohufont-medium-*-*-*-14-*-*-*-*-*-*-*'"
+bindsym $mod+space exec "i3-msg exec ~/bin/i3/i3-applaunch.sh"
 
 # launch a file manager
 bindsym $mod+m exec spacefm
@@ -146,17 +153,23 @@ bindsym $mod+l focus right
 bindsym $mod+Down focus down
 bindsym $mod+Up focus up
 
+# page up and page down, like in Chrome
+bindsym $mod+Prior focus left
+bindsym $mod+Next focus right
+
 # move focused window
 bindsym $mod+Shift+h move left
 bindsym $mod+Shift+j move down
 bindsym $mod+Shift+k move up
 bindsym $mod+Shift+l move right
 
+bindsym $mod+Shift+Prior move left
+bindsym $mod+Shift+Next move right
+
 # alternatively, you can use the cursor keys:
-# bindsym $mod+Shift+Left move left
 bindsym $mod+Shift+Down move down
 bindsym $mod+Shift+Up move up
-# bindsym $mod+Shift+Right move right
+
 
 # new windows will be split in horizontal orientation
 # bindsym $mod+b split h
@@ -252,6 +265,18 @@ bindsym $mod+8 workspace $ws8
 bindsym $mod+9 workspace $ws9
 bindsym $mod+0 workspace $ws10
 
+# switch to workspace and start a terminal
+bindsym $mod+Alt+1 workspace $ws1;exec "i3-msg exec $terminal"
+bindsym $mod+Alt+2 workspace $ws2;exec "i3-msg exec $terminal"
+bindsym $mod+Alt+3 workspace $ws3;exec "i3-msg exec $terminal"
+bindsym $mod+Alt+4 workspace $ws4;exec "i3-msg exec $terminal"
+bindsym $mod+Alt+5 workspace $ws5;exec "i3-msg exec $terminal"
+bindsym $mod+Alt+6 workspace $ws6;exec "i3-msg exec $terminal"
+bindsym $mod+Alt+7 workspace $ws7;exec "i3-msg exec $terminal"
+bindsym $mod+Alt+8 workspace $ws8;exec "i3-msg exec $terminal"
+bindsym $mod+Alt+9 workspace $ws9;exec "i3-msg exec $terminal"
+bindsym $mod+Alt+0 workspace $ws10;exec "i3-msg exec $terminal"
+
 # # move focused container to workspace
 # bindsym $mod+Shift+1 move container to workspace $ws1
 # bindsym $mod+Shift+2 move container to workspace $ws2
@@ -303,12 +328,15 @@ bindsym $mod+Ctrl+0 move container to workspace $ws10
 # move container to next empty workspace
 bindsym $mod+Shift+slash exec "~/bin/i3/i3-nextempty.sh"
 
+# move container to next empty workspace
+bindsym $mod+Ctrl+Shift+slash exec "~/bin/i3/i3-nextemptysilent.sh"
+
 
 # windows like alt tab with `
 set $i3t_alt_tab        ~/bin/i3/i3t.py n
 set $i3t_alt_shift_tab  ~/bin/i3/i3t.py p
-bindsym $mod+grave exec   exec $i3t_alt_tab
-bindsym $mod+Shift+grave  exec $i3t_alt_shift_tab
+bindsym $mod+grave exec $i3t_alt_tab
+bindsym $mod+Shift+grave exec $i3t_alt_shift_tab
 
 # jump between last two workspaces
 bindsym $mod+Tab workspace back_and_forth
@@ -355,7 +383,7 @@ assign [class="Pavucontrol"] $ws10
 # for_window [class="octopi-notifier"] floating enable
 for_window [class="Pamac-updater"] floating enable
 for_window [class="Syncthing GTK"] floating enable
-for_window [title="alsamixer"] floating enable 
+for_window [title="alsamixer"] floating enable
 for_window [class="Vlc"] floating enable
 for_window [class="(?i)virtualbox"] floating enable border normal
 for_window [class="GParted"] floating enable border normal
@@ -395,6 +423,11 @@ mode "resize" {
 bindsym $mod+r mode "resize"
 
 
+# disable mousewheel workspace change on bar
+bindsym button4 nop
+bindsym button5 nop
+
+
 # Start i3bar to display a workspace bar (plus the system information i3status
 # finds out, if available)
 
@@ -404,10 +437,6 @@ bar {
 	position       top
 	separator_symbol " "
   strip_workspace_numbers yes
-
-  # disable mousewheel workspace change on bar
-	wheel_up_cmd nop
-	wheel_down_cmd nop
 
 	# colour via http://paletton.com/#uid=74y0u0km+m7devAiGqmrohGxCce
 	colors {
