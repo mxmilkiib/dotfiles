@@ -58,7 +58,7 @@ caffeine &
 # mounts with unique path??
 
 # Composition manager
-compton -b
+# compton -b
 
 # Notification daemon. ctrl-space to close, ctrl-shift-space to close all.
 dunst &
