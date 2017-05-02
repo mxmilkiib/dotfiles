@@ -65,6 +65,8 @@ NeoBundle 'tpope/vim-repeat'
 " Syntax
 NeoBundle 'othree/html5.vim'
 
+NeoBundle 'gmoe/vim-faust'
+ 
 " NeoBundle 'scrooloose/syntastic'
 
 NeoBundle 'Valloric/vim-operator-highlight'
