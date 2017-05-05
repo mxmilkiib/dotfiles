@@ -15,7 +15,7 @@ elif [ $2 = "rerun" ]; then
 fi
 
 START=$(date +%s)
-rsync -aAX --no-whole-file --partial --stats $SPARSEINPLACE --ignore-errors /media/MILKY\'S\ HDD/ $1 2> $1/rsync-error-log
+rsync -aAX --no-whole-file --partial --stats $SPARSEINPLACE --ignore-errors /media/MILKY\'S\ HDD2/ $1 2> $1/rsync-error-log
 FINISH=$(date +%s)
 echo "-- Total backup time: $(( ($FINISH-$START) / 60 ))m, $(( ($FINISH-$START) % 60 ))s"
 
