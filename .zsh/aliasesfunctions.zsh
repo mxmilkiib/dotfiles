@@ -92,7 +92,7 @@ function ctmux(){
 ### Admin
 
 # Make sudo expand alises
-alias sudo='command sudo '
+# alias sudo='command sudo '
 
 # Change to root with users environment
 alias se="sudo -E $SHELL"
@@ -389,7 +389,7 @@ function aurge(){
 alias -g G='| grep -Ein --color=tty'
 
 # For quick viewing of txt files
-alias l='less -RFX'
+alias l='less -RF'
 alias -g L='| less -RFX'     # redraw (color), quit under one page, dont init/deinit term
 # alias -g "<"='less -RFX'
 
