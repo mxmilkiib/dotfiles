@@ -315,7 +315,7 @@ alias suspend='pm-suspend' # With sudoers
 
 # systemd
 alias sy='systemctl '
-alias ssc='sudo systemctl '
+compdef sy=systemctl
 # alias slo='systemctl restart display-manager' # Logout
 alias slo='sudo killall -u `whoami`' # Logout
 
@@ -630,7 +630,7 @@ alias comptonrl='sudo killall compton; compton -b'
 alias bofh='nc bofh.jeffballard.us 666 | tail -n 1'
 
 # Pipes
-alias pipes='nice -n 19 /home/milk/scripts/pipes.sh -R -r 0 -p 3'
+alias pipes='nice -n 19 pipes.sh -R -r 0 -p 3'
 
 # Nyancat
 alias nyancat='telnet nyancat.dakko.us'
