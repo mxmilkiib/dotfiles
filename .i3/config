@@ -4,7 +4,7 @@
 # to start afresh, run i3-config-wizard(1).
 #
 
-# i3 config file (v4.milk)
+## i3 config file (v5.milk)
 #
 # Please see http://i3wm.org/docs/userguide.html for a complete reference!
 
@@ -24,10 +24,10 @@ focus_on_window_activation smart
 set $mod Mod4
 
 
-# reload the configuration file
+## reload the configuration file
 bindsym $mod+Shift+c reload
 
-# restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
+## restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
 bindsym $mod+Shift+r restart
 
 
@@ -49,7 +49,7 @@ mode "$mode_system" {
 	bindsym space mode "default"
 }
 
-# exit i3 (logs you out of your X session)
+## exit i3 (logs you out of your X session)
 bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -b 'Yes, exit i3' 'i3-msg exit'"
 
 
@@ -72,36 +72,36 @@ font -*-gohufont-medium-*-*-*-14-*-*-*-*-*-*-*
 # set $terminal xterm
 set $terminal urxvt
 
-# start a terminal
+## start a terminal
 # bindsym $mod+Return exec i3-sensible-terminal
 # bindsym $mod+Return exec urxvtcd
 bindsym $mod+Return exec "i3-msg exec $terminal"
 
-# lanch terminal in focused current working directory
-bindsym $mod+Ctrl+Return exec "~/bin/excwd"
+## lanch terminal in focused current working directory
+bindsym $mod+Ctrl+Return exec "urxvt -cd `xcwd`"
 
-# start a floating terminal
+## start a floating terminal
 bindsym $mod+Shift+Return exec $terminal -title floating_terminal
 for_window [title="floating_terminal$"] floating toggle
 
-# i3 config bins print
+## i3 config bins print
 bindsym $mod+question exec --no-startup-id $terminal -geometry 125x47 -title "i3_hotkey_help" -e ~/bin/i3/i3-hotkey-help.sh
 for_window [title="i3_hotkey_help$"] floating toggle
 
-# clock terminal
+## clock terminal
 bindsym $mod+semicolon exec "$terminal -name floating-tty-clock -geometry 60x9-100-100 -e tty-clock -s -b -c -C 2 -D"
 for_window [instance="floating-tty-clock$"] floating toggle
 
 
-# kill focused window
+## kill focused window
 bindsym $mod+q kill
 bindsym $mod+Delete kill
 
-# ctrl and mouse right click a window title, this kills the window
+## ctrl and mouse right click a window title, this kills the window
 bindsym --release $mod+Ctrl+button3 kill
 
 
-# start dmenu (a program launcher)
+## start dmenu (a program launcher)
 # bindsym $mod+space exec dmenu_run.pl -h 17 -fn $font -nb '#000000' -nf '#c5c5c5' -sb '#4f2877' -sf '#ffffff' -dim 0.4 -dc '#485D00'
 # There also is the (new) i3-dmenu-desktop which only displays applications
 # shipping a .desktop file. It is a wrapper around dmenu, so you need that
@@ -110,15 +110,15 @@ bindsym --release $mod+Ctrl+button3 kill
 # bindsym $mod+space exec "dlaunch --sources=exec-path"
 bindsym $mod+space exec "i3-msg exec ~/bin/i3/i3-applaunch.sh"
 
-# launch a file manager
+## launch a file manager
 bindsym $mod+m exec spacefm
 
-# launch audio apps
+## launch audio apps
 bindsym $mod+p exec "run-or-raise.sh pavucontrol"
 bindsym $mod+Shift+p exec "run-or-raise.sh cadence"
 bindsym $mod+Ctrl+p exec $terminal -geometry 130x30 -e alsamixer -c0
 
-# change pulseaudio volume
+## change pulseaudio volume
 bindsym $mod+Ctrl+KP_Subtract exec "pactl set-sink-mute 0 false ; pactl set-sink-volume 0 -3%"
 bindsym $mod+Ctrl+KP_Add exec "pactl set-sink-mute 0 false ; pactl set-sink-volume 0 +3%"
 bindsym $mod+Ctrl+KP_Multiply exec "pactl set-sink-mute 0 toggle"
@@ -127,12 +127,13 @@ bindsym $mod+Shift+Ctrl+minus exec "pactl set-sink-mute 0 false ; pactl set-sink
 bindsym $mod+Shift+Ctrl+plus exec "pactl set-sink-mute 0 false ; pactl set-sink-volume 0 +3%"
 bindsym $mod+Shift+Ctrl+apostrophe exec "pactl set-sink-mute 0 toggle"
 
-# launch screen lock
+## launch screen lock
 bindsym $mod+Shift+x exec i3lock
 
-# launch scratch notes text file
+## launch scratch notes text file
 bindsym $mod+F2 exec geany ~/documents/scratch
 bindsym $mod+F3 exec "run-or-raise.sh chrome"
+bindsym $mod+F4 exec "run-or-raise.sh pcmanfm"
 
 
 # new windows will be split in horizontal orientation
@@ -141,40 +142,40 @@ bindsym $mod+F3 exec "run-or-raise.sh chrome"
 # new windows will be split in vertical orientation
 # bindsym $mod+v split v
 
-# change container layouts
+## change container layouts
 bindsym $mod+w layout toggle split
-# toggle between horizontal/vertical splitting for new windows
+## toggle between horizontal/vertical splitting for new windows
 bindsym $mod+Shift+w split toggle
 
 bindsym $mod+s layout stacking
-# mnemonic: below w, stacking puts window titles visually below each other
+## mnemonic: below w, stacking puts window titles visually below each other
 bindsym $mod+e layout tabbed
 
 
-# focus the parent container
+## focus the parent container
 bindsym $mod+a focus parent
 
-# focus the child container
+## focus the child container
 bindsym $mod+d focus child
 
 
-# toggle tiling / floating
+## toggle tiling / floating
 bindsym $mod+z floating toggle
 
-# change focus between tiling / floating windows
+## change focus between tiling / floating windows
 bindsym $mod+Shift+z focus mode_toggle
 
-# toggle floating window to sticky or not
+## toggle floating window to sticky or not
 bindsym $mod+x sticky toggle
 
 
-# enter fullscreen mode for the focused container
+## enter fullscreen mode for the focused container
 bindsym $mod+f fullscreen
 
-# toggle bar visibility
+## toggle bar visibility
 bindsym $mod+Shift+f bar mode toggle
 
-# change focus - using vim equivalent binds not i3 default
+## change focus - using vim equivalent binds not i3 default
 bindsym $mod+h focus left
 bindsym $mod+j focus down
 bindsym $mod+k focus up
@@ -183,21 +184,21 @@ bindsym $mod+l focus right
 bindsym $mod+Down focus down
 bindsym $mod+Up focus up
 
-# page up and page down, like in Chrome
+## page up and page down, like in Chrome
 bindsym $mod+Prior focus left
 bindsym $mod+Next focus right
 
-# windows like alt-tab
+## windows like alt-tab
 set $i3t_alt_tab        ~/bin/i3/i3t.py n
 set $i3t_alt_shift_tab  ~/bin/i3/i3t.py p
 bindsym $mod+Tab exec $i3t_alt_tab
 bindsym $mod+Tab+grave exec $i3t_alt_shift_tab
 
-# jump between last two workspaces with `
+## jump between last two workspaces with `
 bindsym $mod+grave workspace back_and_forth
 
 
-# move focused window
+## move focused window
 bindsym $mod+Shift+h move left
 bindsym $mod+Shift+j move down
 bindsym $mod+Shift+k move up
@@ -206,18 +207,20 @@ bindsym $mod+Shift+l move right
 bindsym $mod+Shift+Prior move left
 bindsym $mod+Shift+Next move right
 
-# alternatively, you can use the cursor keys:
+## alternatively, you can use the cursor keys:
 bindsym $mod+Shift+Down move down
 bindsym $mod+Shift+Up move up
 
-# Use Mouse+$mod to drag floating windows to their wanted position
+## Use Mouse+$mod to drag floating windows to their wanted position
 floating_modifier $mod
 
-# right mouse button on a window title moves it to the other monitor
+## right mouse button on a window title moves it to the other monitor
 bindsym --release $mod+button3 move window to output right
 
 
-# resize a window (you can also use the mouse for that)
+## resize a window (you can also use the mouse for that)
+bindsym $mod+r mode "resize"
+
 mode "resize" {
 	# These bindings trigger as soon as you enter the resize mode
 
@@ -242,12 +245,10 @@ mode "resize" {
 	bindsym space mode "default"
 }
 
-bindsym $mod+r mode "resize"
 
-
-# move window to scratchpad
+## move window to scratchpad
 bindsym $mod+Shift+numbersign move scratchpad
-# show last window sent to scratchpad
+## show last window sent to scratchpad
 bindsym $mod+numbersign scratchpad show
 
 
@@ -290,7 +291,7 @@ set $ws10 "10ten"
 # Rename workspace with i3-input using numbers and text
 # bindsym $mod+Shift+n exec i3-input -F 'rename workspace to "%s"' -P 'New name: '
 
-# switch to workspace
+## switch to workspace
 bindsym $mod+1 workspace $ws1
 bindsym $mod+2 workspace $ws2
 bindsym $mod+3 workspace $ws3
@@ -302,7 +303,7 @@ bindsym $mod+8 workspace $ws8
 bindsym $mod+9 workspace $ws9
 bindsym $mod+0 workspace $ws10
 
-# switch to workspace and start a terminal
+## switch to workspace and start a terminal
 bindsym $mod+Alt+1 workspace $ws1;exec "i3-msg exec $terminal"
 bindsym $mod+Alt+2 workspace $ws2;exec "i3-msg exec $terminal"
 bindsym $mod+Alt+3 workspace $ws3;exec "i3-msg exec $terminal"
@@ -326,7 +327,7 @@ bindsym $mod+Alt+0 workspace $ws10;exec "i3-msg exec $terminal"
 # bindsym $mod+Shift+9 move container to workspace $ws9
 # bindsym $mod+Shift+0 move container to workspace $ws10
 
-# move focused container to workspace and follow
+## move focused container to workspace and follow
 bindsym $mod+Shift+1 move container to workspace $ws1; workspace $ws1
 bindsym $mod+Shift+2 move container to workspace $ws2; workspace $ws2
 bindsym $mod+Shift+3 move container to workspace $ws3; workspace $ws3
@@ -338,7 +339,7 @@ bindsym $mod+Shift+8 move container to workspace $ws8; workspace $ws8
 bindsym $mod+Shift+9 move container to workspace $ws9; workspace $ws9
 bindsym $mod+Shift+0 move container to workspace $ws10; workspace $ws10
 
-# num-pad workspace window move
+## num-pad workspace window move
 bindsym $mod+Shift+KP_1 move container to workspace $ws1; workspace $ws1
 bindsym $mod+Shift+KP_2 move container to workspace $ws2; workspace $ws2
 bindsym $mod+Shift+KP_3 move container to workspace $ws3; workspace $ws3
@@ -350,7 +351,7 @@ bindsym $mod+Shift+KP_8 move container to workspace $ws8; workspace $ws8
 bindsym $mod+Shift+KP_9 move container to workspace $ws9; workspace $ws9
 bindsym $mod+Shift+KP_0 move container to workspace $ws10; workspace $ws10
 
-# move focused container to workspace and don't follow
+## move focused container to workspace and don't follow
 bindsym $mod+Ctrl+1 move container to workspace $ws1
 bindsym $mod+Ctrl+2 move container to workspace $ws2
 bindsym $mod+Ctrl+3 move container to workspace $ws3
@@ -363,39 +364,39 @@ bindsym $mod+Ctrl+9 move container to workspace $ws9
 bindsym $mod+Ctrl+0 move container to workspace $ws10
 
 
-# move between workspaces
-bindsym $mod+Left workspace prev
-bindsym $mod+Right workspace next
+## move between workspaces
+bindsym $mod+Left workspace prev_on_output
+bindsym $mod+Right workspace next_on_output
 
-# move windows between workspaces and follow
-bindsym $mod+Shift+Left move workspace prev; workspace prev
-bindsym $mod+Shift+Right move workspace next; workspace next
+## move windows between workspaces and follow
+bindsym $mod+Shift+Left move workspace prev_on_output; workspace prev_on_output
+bindsym $mod+Shift+Right move workspace next_on_output; workspace next_on_output
 
-# move windows between workspaces
-bindsym $mod+Ctrl+Left move workspace prev
-bindsym $mod+Ctrl+Right move workspace next
+## move windows between workspaces
+bindsym $mod+Ctrl+Left move workspace prev_on_output
+bindsym $mod+Ctrl+Right move workspace next_on_output
 
-# move container to next empty workspace
-bindsym $mod+Shift+slash exec "~/bin/i3/i3-nextempty.sh"
+## move container to next empty workspace
+bindsym $mod+period exec "~/bin/i3/i3-nextempty.sh"
 
-# move container to next empty workspace
-bindsym $mod+Ctrl+Shift+slash exec "~/bin/i3/i3-nextemptysilent.sh"
+## move container to next empty workspace
+bindsym $mod+Ctrl+period exec "~/bin/i3/i3-nextemptysilent.sh"
 
 
-# change focus between monitor outputs
+## change focus between monitor outputs
 bindsym $mod+o focus output right
 
-# move a window between outputs and follow
+## move a window between outputs and follow
 bindsym $mod+Shift+o move window to output right; focus output right
 
-# move a window between outputs and don't follow
+## move a window between outputs and don't follow
 bindsym $mod+Ctrl+o move window to output right
 
 
-# move workspace to between outputs
+## move workspace to between outputs
 bindsym $mod+Shift+i exec "~/bin/i3/cycle-workspace.py"
 
-# swap workspaces between outputs
+## swap workspaces between outputs
 bindsym $mod+Ctrl+i exec "~/bin/i3/switch.py"
 
 
@@ -430,7 +431,7 @@ client.placeholder      #000000 #0c0c0c #ffffff #000000   #0c0c0c
 
 client.background       #ffffff
 
-# border style; show titles or not. the border toggle feature loses the 4px
+## border style; show titles or not. the border toggle feature loses the 4px
 bindsym $mod+n border normal
 bindsym $mod+Shift+n border pixel 3
 
