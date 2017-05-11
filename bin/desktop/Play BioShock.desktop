@@ -1,8 +1,0 @@
-[Desktop Entry]
-Name=Play BioShock
-Exec=env WINEPREFIX="/home/milk/.wine" /usr/bin/wine J:\\\\recovered-files\\\\Games\\\\BioShock\\\\Builds\\\\Release\\\\Bioshock.exe 
-Type=Application
-StartupNotify=true
-Comment=Play BioShock
-Path=/home/milk/.wine/dosdevices/j:/recovered-files/Games/BioShock/Builds/Release
-Icon=D26F_icon.0
