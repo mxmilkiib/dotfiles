@@ -59,9 +59,23 @@ bindkey "\eOd" emacs-backward-word
 bindkey "\eOc" emacs-forward-word # lands between words, not on first char
 
 # alt-left, alt-right - move cursor to start of previous or next word
+# same as ctrl-left/right, just fixes accidental pressing. to change to cursor location on end of jump..
 # xterm
 bindkey '^[[1;3D' backward-word
 bindkey '^[[1;3C' forward-word
+# urxvt
+bindkey '^[^[[D'  backward-word
+bindkey '^[^[[C'  forward-word
+
+# ctrl-backspace - deletes word to left of cursor
+bindkey "" backward-delete-word
+
+# ctrl-del - deletes word to right of cursor
+# xterm
+bindkey '^[[3;5~' kill-word
+# urxvt
+bindkey '^[[3^'   kill-word
+
 
 # Type command then ctrl-up/ctrl-down to search history
 # bindkey "^[[1;5A" history-beginning-search-backward
@@ -74,16 +88,6 @@ bindkey '^[[1;3C' forward-word
 
 # bindkey "^S" history-incremental-search-forward
 # bindkey "^R" history-incremental-search-backward
-
-
-# bindkey "" backward-delete-word
-# bindkey "[3^" delete-word
-
-# ctrl-del - deletes word to right of cursor
-# xterm
-bindkey '^[[3;5~' kill-word
-# urxvt
-bindkey '^[[3^'   kill-word
 
 
 key[F1]=${terminfo[kf1]}
