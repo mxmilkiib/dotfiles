@@ -224,17 +224,20 @@ alias d='fasd -d'        # directory
 alias f='fasd -f'        # file
 alias sd='fasd -sid'     # interactive directory selection
 alias sf='fasd -sif'     # interactive file selection
-alias z='fasd_cd -d'     # cd, same functionality as j in autojump
-alias zz='fasd_cd -d -i' # cd with interactive selection
 
-function git {
-  if [[ "$1" == "commit" ]]; then
-    shift 1
-    command git commit --verbose "$@"
+# function to execute built-in cd
+fasd_cd() {
+  if [ $# -le 1 ]; then
+    fasd "$@"
   else
-    command git "$@"
+    local _fasd_ret="$(fasd -e 'printf %s' "$@")"
+    [ -z "$_fasd_ret" ] && return
+    [ -d "$_fasd_ret" ] && cd "$_fasd_ret" || printf %s\n "$_fasd_ret"
   fi
 }
+alias z='fasd_cd -d'
+alias zz='fasd_cd -d -i'
+
 
 # lwd - jump back to last dir of previous terminal
 # https://github.com/robbyrussell/oh-my-zsh/blob/master/plugins/last-working-dir/last-working-dir.plugin.zsh
@@ -335,52 +338,27 @@ alias as='apt-cache search'
 alias aw='apt-cache show'
 
 # Arch Linux
-alias p='yaourt -S --noconfirm'
-alias pSu='yaourt --noconfirm $_'
+alias p='pacaur -S --noconfirm --noedit'
 
 # alias 'pu=sudo pacman -Syu'
-alias pu='yaourt -Syu --noconfirm'
+alias pu='pacaur -Syu --noconfirm --noedit'
+
 function pS(){
 	yaourt --noconfirm --color --pager $@
 }
 alias y='yaourt'
 
-alias pQi='yaourt -Qi'
-alias pQl='yaourt -Ql'
-alias pQo='yaourt -Qo'
+alias pQi='pacman -Qi'
+alias pQl='pacman -Ql'
+alias pQo='pacman -Qo'
 
 alias pR='sudo pacman -R'										# remove
 alias pU='sudo pacman -U'										# upgrade (local package)
 alias pL='sudo rm /var/lib/pacman/db.lck'   # remove lockfile if pacman doesn't exit gracefully
-alias pG='yaourt -G'
+
+# get PKGBUILD
+alias pG='pacaur -G'
 alias mP='makepkg -si'
-
-# Aurget - AUR helper. notes; was intermittant
-# alias ags='aurget -Ss'
-# alias agu='aurget -Syu --deps --noedit --noconfirm'
-# aurget was tempremental. 
-
-# Easy Aurget
-function aurge(){
-	local pretmp=$PWD
-	cd /tmp/
-	aurget -Sy "$@" --deps --noedit;
-	cd $pretmp
-}
-
-# packer - doesn't display as much info as yaourt
-# Clour pacman/packer search output. tl;dr - use yaourt
-# pS() {
-# 	local CL='\\e['
-# 	local RS='\\e[0;0m'
-# 
-# 	echo -e "$(packer -Ss "$@" | sed "
-# 		/^core/		s,.*,${CL}1;31m&${RS},
-# 		/^extra/	s,.*,${CL}0;32m&${RS},
-# 		/^community/	s,.*,${CL}1;35m&${RS},
-# 		/^[^[:space:]]/	s,.*,${CL}0;36m&${RS},
-# 	  ")"
-# }
 
 
 ### Utils
@@ -416,9 +394,6 @@ alias alsamixer='alsamixer -V=all'
 # Open a file
 alias o='xdg-open'
 
-# Quick file manager
-alias fm='thunar'
-
 # Check Awesome window manager config
 alias ak='awesome -k'
 
@@ -436,7 +411,7 @@ alias v='vim '
 # alias va='vim --remote +split'
 alias uv='urxvt -e vim'
 
-# Git
+# Git quickies
 alias gs='git status '
 alias gd='git diff --color'
 alias gdc='git diff --color --cached'
@@ -456,8 +431,18 @@ function gc(){
 	git commit -m "$*";
 }
 
+# redirect git commit to git commit verbose
+function git {
+	if [[ "$1" == "commit" ]]; then
+		shift 1
+		command git commit --verbose "$@"
+	else
+		command git "$@"
+	fi
+}
+
+
 alias cdg='cd $(git rev-parse --show-cdup)'
-# see also gitc in functions.zsh
 
 # Color diff
 diff () {
@@ -465,32 +450,6 @@ diff () {
 		colordiff "$@" | less -R
 	else
 		command diff "$@a" | less
-	fi
-}
-
-# Extract content from an archive
-ext() {
-	if [ -f $1 ] ; then
-			case $1 in
-					*.tar.bz2)   tar xvjf $1    ;;
-					*.tar.gz)    tar xvzf $1    ;;
-					*.tar.xz)    tar xvJf $1    ;;
-					*.bz2)       bunzip2 $1     ;;
-					*.rar)       unrar x $1     ;;
-					*.gz)        gunzip $1      ;;
-					*.tar)       tar xvf $1     ;;
-					*.tbz2)      tar xvjf $1    ;;
-					*.tgz)       tar xvzf $1    ;;
-					*.zip)       unzip $1       ;;
-					*.Z)         uncompress $1  ;;
-					*.7z)        7z x $1        ;;
-					*.iso)       7z x $1        ;;
-					*.xz)        unxz $1        ;;
-					*.exe)       cabextract $1  ;;
-					*)           echo "\`$1': unrecognized file compression" ;;
-			esac
-	else
-			echo "\`$1' is not a valid file"
 	fi
 }
 
@@ -513,6 +472,7 @@ function gr() { get_iplayer -g --modes=flashaacstd --pid=$1; }
 function headless(){
 	VBoxHeadless -startvm "$@" &
 }
+
 
 # A shortcut function that simplifies usage of xclip.
 # - Accepts input from either stdin (pipe), or params.

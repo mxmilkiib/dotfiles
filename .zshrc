@@ -40,16 +40,14 @@ if ! zgen saved; then
 
 	zgen load RobSis/zsh-completion-generator
 
-	zgen load rupa/z
-
 	zgen load zsh-users/zsh-history-substring-search
 
-	zgen load skx/sysadmin-util
+	zgen load tarruda/zsh-autosuggestions
 
 	# fzf after zsh-autosuggestions - fzf/issues/227
 	zgen load junegunn/fzf
-
-	zgen load tarruda/zsh-autosuggestions
+	zgen load junegunn/fzf shell/completion.zsh
+  zgen load junegunn/fzf shell/key-bindings.zsh
 
 	zgen save
 fi
@@ -92,7 +90,8 @@ _fzf_compgen_path() {
 
 
 # https://github.com/clvv/fasd
-# eval "$($Z/fasd/fasd --init auto)"
+eval "$(fasd --init auto)"
+
 
 
 # Set the prompt.
@@ -123,3 +122,5 @@ bindkey '^m' reset-prompt-and-accept-line
 # fi
 
 
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh

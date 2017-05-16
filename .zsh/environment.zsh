@@ -26,6 +26,7 @@ export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent.socket"
 # Important applications.
 export EDITOR=vim
 export VISUAL=vim
+# export BROWSER=google-chrome-stable
 export BROWSER=chrome
 
 # Reduce mode key timeout to 0.1s

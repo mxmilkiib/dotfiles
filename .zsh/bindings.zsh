@@ -50,13 +50,16 @@ bindkey "${key[Down]}" history-substring-search-down
 # [[ -n "${key[CtrlLeft]}" ]]  && bindkey  "${key[CtrlLeft]}" backward-word
 # [[ -n "${key[CtrlRight]}" ]]  && bindkey  "${key[CtrlRight]}" forward-word
 
-# ctrl-left, ctrl-right - xterm-256color specific?:
+# ctrl-left, ctrl-right - move cursor over words
+# xterm-256-color?
 bindkey '^[[1;5D' emacs-backward-word
 bindkey '^[[1;5C' emacs-forward-word
+# urxvt
 bindkey "\eOd" emacs-backward-word
 bindkey "\eOc" emacs-forward-word # lands between words, not on first char
 
-# Alt-Left, Alt-Right
+# alt-left, alt-right - move cursor to start of previous or next word
+# xterm
 bindkey '^[[1;3D' backward-word
 bindkey '^[[1;3C' forward-word
 
@@ -73,8 +76,14 @@ bindkey '^[[1;3C' forward-word
 # bindkey "^R" history-incremental-search-backward
 
 
-bindkey "" backward-delete-word
+# bindkey "" backward-delete-word
 # bindkey "[3^" delete-word
+
+# ctrl-del - deletes word to right of cursor
+# xterm
+bindkey '^[[3;5~' kill-word
+# urxvt
+bindkey '^[[3^'   kill-word
 
 
 key[F1]=${terminfo[kf1]}
@@ -128,8 +137,8 @@ bindkey "^u" kill-whole-line
 
 bindkey "\e[Z" reverse-menu-complete # Shift+Tab
 
-# Ctrl-* - add completion item to editing buffer but don't close completion menu
-bindkey '^[*' accept-and-hold
+# zsh - Ctrl-/ (also ctrl-shift-- i.e. ctrl-_) - add completion item to editing buffer but don't close completion menu
+bindkey '^_' accept-and-hold
 
 # Insert accented character
 # https://github.com/johan/zsh/blob/master/Functions/Zle/insert-composed-char
