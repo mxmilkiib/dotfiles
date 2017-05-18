@@ -40,9 +40,10 @@ Xft.rgba: rgb
 xterm*font:     -*-gohufont-medium-*-*-*-14-*-*-*-*-*-*-*
 
 ! URxvt.font: xft:terminesspowerline:pixelsize=12
-! URxvt.font: xft:xos4 terminus:size=16
+URxvt.font: xft:xos4 terminus:size=16
+
 ! URxvt*font:     -*-gohufont-medium-*-*-*-14-*-*-*-*-*-*-*
-urxvt.font: xft:Gohu GohuFont:size=14
+! urxvt.font: xft:Gohu GohuFont:size=14
 ! URxvt.font: xft:terminus:pixelsize=12
 ! URxvt.font: xft:terminus:pixelsize=12:antialias=false
 
@@ -99,12 +100,15 @@ URxvt*scrollBar_right: true
 ! Scrollbar style - rxvt (default), plain (most compact), next, or xterm
 URxvt*scrollstyle:plain
 ! do not scroll with output
-URxvt*scrollTtyOutput: true
+! URxvt*scrollTtyOutput: true
 ! scroll in relation to buffer (with mouse scroll or Shift+Page Up)
-URxvt*scrollWithBuffer: false
+! URxvt*scrollWithBuffer: false
+URxvt*scrollTtyOutput:      false
+URxvt*scrollWithBuffer:     true
+URxvt*scrollTtyKeypress:    true
 
 ! scroll back to the bottom on keypress
-URxvt*scrollTtyKeypress: true
+! URxvt*scrollTtyKeypress: true
 ! dont scroll back in less (sans -X), etc.
 URxvt.secondaryScreen: 1
 URxvt.secondaryScroll: 1
