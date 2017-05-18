@@ -197,6 +197,8 @@ bindsym $mod+Tab+grave exec $i3t_alt_shift_tab
 ## jump between last two workspaces with `
 bindsym $mod+grave workspace back_and_forth
 
+## jump to an urgent window
+bindsym $mod+Shift-x [urgent=latest] focus
 
 ## move focused window
 bindsym $mod+Shift+h move left
@@ -252,18 +254,6 @@ bindsym $mod+Shift+numbersign move scratchpad
 bindsym $mod+numbersign scratchpad show
 
 
-# assign workspace to monitor
-workspace $ws1 output DVI-I-1
-workspace $ws2 output DVI-I-1
-workspace $ws3 output DVI-I-1
-workspace $ws4 output DVI-I-1
-workspace $ws5 output DVI-I-1
-workspace $ws6 output DVI-I-0
-workspace $ws7 output DVI-I-0
-workspace $ws8 output DVI-I-0
-workspace $ws9 output DVI-I-0
-workspace $ws10 output DVI-I-0
-
 # # workspace name varilables, numerical keeps them in persistent order
 # set $ws1 "1:web"
 # set $ws2 "2:misc"
@@ -277,43 +267,65 @@ workspace $ws10 output DVI-I-0
 # set $ws10 "10:vol"
 
 # workspace name varilables, numerical keeps them in persistent order
-set $ws1 "1one"
-set $ws2 "2two"
-set $ws3 "3three"
-set $ws4 "4four"
-set $ws5 "5five"
-set $ws6 "6six"
-set $ws7 "7seven"
-set $ws8 "8eight"
-set $ws9 "9nine"
-set $ws10 "10ten"
+# set $ws1 "a1"
+# set $ws2 "a2"
+# set $ws3 "a3"
+# set $ws4 "a4"
+# set $ws5 "a5"
+# set $ws6 "a6"
+# set $ws7 "a7"
+# set $ws8 "a8"
+# set $ws9 "a9"
+# set $ws10 "10"
 
 # Rename workspace with i3-input using numbers and text
 # bindsym $mod+Shift+n exec i3-input -F 'rename workspace to "%s"' -P 'New name: '
 
+# assign workspace to monitor
+workspace 10 output DVI-I-1
+workspace 11 output DVI-I-1
+workspace 12 output DVI-I-1
+workspace 13 output DVI-I-1
+workspace 14 output DVI-I-1
+workspace 15 output DVI-I-1
+workspace 16 output DVI-I-1
+workspace 17 output DVI-I-1
+workspace 18 output DVI-I-1
+workspace 19 output DVI-I-1
+workspace 20 output DVI-I-0
+workspace 21 output DVI-I-0
+workspace 22 output DVI-I-0
+workspace 23 output DVI-I-0
+workspace 24 output DVI-I-0
+workspace 25 output DVI-I-0
+workspace 26 output DVI-I-0
+workspace 27 output DVI-I-0
+workspace 28 output DVI-I-0
+workspace 29 output DVI-I-0
+
 ## switch to workspace
-bindsym $mod+1 workspace $ws1
-bindsym $mod+2 workspace $ws2
-bindsym $mod+3 workspace $ws3
-bindsym $mod+4 workspace $ws4
-bindsym $mod+5 workspace $ws5
-bindsym $mod+6 workspace $ws6
-bindsym $mod+7 workspace $ws7
-bindsym $mod+8 workspace $ws8
-bindsym $mod+9 workspace $ws9
-bindsym $mod+0 workspace $ws10
+bindsym $mod+1 exec ~/bin/i3/i3-multimon.sh 'workspace $ws1'
+bindsym $mod+2 exec ~/bin/i3/i3-multimon.sh 'workspace $ws2'
+bindsym $mod+3 exec ~/bin/i3/i3-multimon.sh 'workspace $ws3'
+bindsym $mod+4 exec ~/bin/i3/i3-multimon.sh 'workspace $ws4'
+bindsym $mod+5 exec ~/bin/i3/i3-multimon.sh 'workspace $ws5'
+bindsym $mod+6 exec ~/bin/i3/i3-multimon.sh 'workspace $ws6'
+bindsym $mod+7 exec ~/bin/i3/i3-multimon.sh 'workspace $ws7'
+bindsym $mod+8 exec ~/bin/i3/i3-multimon.sh 'workspace $ws8'
+bindsym $mod+9 exec ~/bin/i3/i3-multimon.sh 'workspace $ws9'
+bindsym $mod+0 exec ~/bin/i3/i3-multimon.sh 'workspace $ws0'
 
 ## switch to workspace and start a terminal
-bindsym $mod+Alt+1 workspace $ws1;exec "i3-msg exec $terminal"
-bindsym $mod+Alt+2 workspace $ws2;exec "i3-msg exec $terminal"
-bindsym $mod+Alt+3 workspace $ws3;exec "i3-msg exec $terminal"
-bindsym $mod+Alt+4 workspace $ws4;exec "i3-msg exec $terminal"
-bindsym $mod+Alt+5 workspace $ws5;exec "i3-msg exec $terminal"
-bindsym $mod+Alt+6 workspace $ws6;exec "i3-msg exec $terminal"
-bindsym $mod+Alt+7 workspace $ws7;exec "i3-msg exec $terminal"
-bindsym $mod+Alt+8 workspace $ws8;exec "i3-msg exec $terminal"
-bindsym $mod+Alt+9 workspace $ws9;exec "i3-msg exec $terminal"
-bindsym $mod+Alt+0 workspace $ws10;exec "i3-msg exec $terminal"
+bindsym $mod+Mod1+1 exec "~/bin/i3/i3-multimon.sh 'workspace $ws1'; exec $TERMINAL"
+bindsym $mod+Mod1+2 exec "~/bin/i3/i3-multimon.sh 'workspace $ws2'; exec $TERMINAL"
+bindsym $mod+Mod1+3 exec "~/bin/i3/i3-multimon.sh 'workspace $ws3'; exec $TERMINAL"
+bindsym $mod+Mod1+4 exec "~/bin/i3/i3-multimon.sh 'workspace $ws4'; exec $TERMINAL"
+bindsym $mod+Mod1+5 exec "~/bin/i3/i3-multimon.sh 'workspace $ws5'; exec $TERMINAL"
+bindsym $mod+Mod1+6 exec "~/bin/i3/i3-multimon.sh 'workspace $ws6'; exec $TERMINAL"
+bindsym $mod+Mod1+7 exec "~/bin/i3/i3-multimon.sh 'workspace $ws7'; exec $TERMINAL"
+bindsym $mod+Mod1+8 exec "~/bin/i3/i3-multimon.sh 'workspace $ws8'; exec $TERMINAL"
+bindsym $mod+Mod1+9 exec "~/bin/i3/i3-multimon.sh 'workspace $ws9'; exec $TERMINAL"
+bindsym $mod+Mod1+0 exec "~/bin/i3/i3-multimon.sh 'workspace $ws10'; exec $TERMIAL"
 
 # # move focused container to workspace
 # bindsym $mod+Shift+1 move container to workspace $ws1
@@ -328,40 +340,40 @@ bindsym $mod+Alt+0 workspace $ws10;exec "i3-msg exec $terminal"
 # bindsym $mod+Shift+0 move container to workspace $ws10
 
 ## move focused container to workspace and follow
-bindsym $mod+Shift+1 move container to workspace $ws1; workspace $ws1
-bindsym $mod+Shift+2 move container to workspace $ws2; workspace $ws2
-bindsym $mod+Shift+3 move container to workspace $ws3; workspace $ws3
-bindsym $mod+Shift+4 move container to workspace $ws4; workspace $ws4
-bindsym $mod+Shift+5 move container to workspace $ws5; workspace $ws5
-bindsym $mod+Shift+6 move container to workspace $ws6; workspace $ws6
-bindsym $mod+Shift+7 move container to workspace $ws7; workspace $ws7
-bindsym $mod+Shift+8 move container to workspace $ws8; workspace $ws8
-bindsym $mod+Shift+9 move container to workspace $ws9; workspace $ws9
-bindsym $mod+Shift+0 move container to workspace $ws10; workspace $ws10
+bindsym $mod+Shift+1 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $ws1; workspace $ws1'"
+bindsym $mod+Shift+2 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $ws2; workspace $ws2'"
+bindsym $mod+Shift+3 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $ws3; workspace $ws3'"
+bindsym $mod+Shift+4 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $ws4; workspace $ws4'"
+bindsym $mod+Shift+5 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $ws5; workspace $ws5'"
+bindsym $mod+Shift+6 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $ws6; workspace $ws6'"
+bindsym $mod+Shift+7 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $ws7; workspace $ws7'"
+bindsym $mod+Shift+8 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $ws8; workspace $ws8'"
+bindsym $mod+Shift+9 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $ws9; workspace $ws9'"
+bindsym $mod+Shift+0 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $ws10; workspace $ws10'"
 
 ## num-pad workspace window move
-bindsym $mod+Shift+KP_1 move container to workspace $ws1; workspace $ws1
-bindsym $mod+Shift+KP_2 move container to workspace $ws2; workspace $ws2
-bindsym $mod+Shift+KP_3 move container to workspace $ws3; workspace $ws3
-bindsym $mod+Shift+KP_4 move container to workspace $ws4; workspace $ws4
-bindsym $mod+Shift+KP_5 move container to workspace $ws5; workspace $ws5
-bindsym $mod+Shift+KP_6 move container to workspace $ws6; workspace $ws6
-bindsym $mod+Shift+KP_7 move container to workspace $ws7; workspace $ws7
-bindsym $mod+Shift+KP_8 move container to workspace $ws8; workspace $ws8
-bindsym $mod+Shift+KP_9 move container to workspace $ws9; workspace $ws9
-bindsym $mod+Shift+KP_0 move container to workspace $ws10; workspace $ws10
+bindsym $mod+Shift+KP_1 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $ws1; workspace $ws1'"
+bindsym $mod+Shift+KP_2 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $ws2; workspace $ws2'"
+bindsym $mod+Shift+KP_3 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $ws3; workspace $ws3'"
+bindsym $mod+Shift+KP_4 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $ws4; workspace $ws4'"
+bindsym $mod+Shift+KP_5 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $ws5; workspace $ws5'"
+bindsym $mod+Shift+KP_6 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $ws6; workspace $ws6'"
+bindsym $mod+Shift+KP_7 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $ws7; workspace $ws7'"
+bindsym $mod+Shift+KP_8 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $ws8; workspace $ws8'"
+bindsym $mod+Shift+KP_9 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $ws9; workspace $ws9'"
+bindsym $mod+Shift+KP_0 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $ws10; workspace $ws10'"
 
 ## move focused container to workspace and don't follow
-bindsym $mod+Ctrl+1 move container to workspace $ws1
-bindsym $mod+Ctrl+2 move container to workspace $ws2
-bindsym $mod+Ctrl+3 move container to workspace $ws3
-bindsym $mod+Ctrl+4 move container to workspace $ws4
-bindsym $mod+Ctrl+5 move container to workspace $ws5
-bindsym $mod+Ctrl+6 move container to workspace $ws6
-bindsym $mod+Ctrl+7 move container to workspace $ws7
-bindsym $mod+Ctrl+8 move container to workspace $ws8
-bindsym $mod+Ctrl+9 move container to workspace $ws9
-bindsym $mod+Ctrl+0 move container to workspace $ws10
+bindsym $mod+Ctrl+1 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $ws1'"
+bindsym $mod+Ctrl+2 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $ws2'"
+bindsym $mod+Ctrl+3 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $ws3'"
+bindsym $mod+Ctrl+4 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $ws4'"
+bindsym $mod+Ctrl+5 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $ws5'"
+bindsym $mod+Ctrl+6 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $ws6'"
+bindsym $mod+Ctrl+7 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $ws7'"
+bindsym $mod+Ctrl+8 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $ws8'"
+bindsym $mod+Ctrl+9 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $ws9'"
+bindsym $mod+Ctrl+0 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $ws10'"
 
 
 ## move between workspaces
@@ -402,8 +414,8 @@ bindsym $mod+Ctrl+i exec "~/bin/i3/switch.py"
 
 # assign apps to default workspaces
 # assign [class="/usr/bin/chromium-snapshot-bin"] $ws1
-assign [class="Cadence.py"] $ws10
-assign [class="Pavucontrol"] $ws10
+assign [class="Cadence.py"] b9
+assign [class="Pavucontrol"] b9
 
 # auto float
 # for_window [class="Cadence.py"] floating enable
