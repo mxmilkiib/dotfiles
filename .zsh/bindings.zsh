@@ -68,7 +68,7 @@ bindkey '^[^[[D'  backward-word
 bindkey '^[^[[C'  forward-word
 
 # ctrl-backspace - deletes word to left of cursor
-bindkey "" backward-delete-word
+bindkey "" backward-kill-word
 
 # ctrl-del - deletes word to right of cursor
 # xterm

@@ -19,7 +19,7 @@ export TZ=:/etc/localtime
 # xdg standard
 export XDG_CONFIG_HOME=${XDG_CONFIG_HOME:-"$HOME/.config"}
 export XDG_DATA_HOME=${XDG_DATA_HOME:-"$HOME/.local/share"}
-export XDG_CACHE_HOME=${XDG_CACHE_HOME:-"$HOME/.cache"}
+export XDG_CACHE_HOME=${XDG_CACHE_HOME:-"/var/cache"}
 
 export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent.socket"
 
@@ -28,6 +28,7 @@ export EDITOR=vim
 export VISUAL=vim
 # export BROWSER=google-chrome-stable
 export BROWSER=chrome
+export TERMINAL=urxvt
 
 # Reduce mode key timeout to 0.1s
 export KEYTIMEOUT=1
@@ -56,3 +57,9 @@ WORDCHARS='-*?_.[]~&;!#$%^(){}<>'
 
 # QGtkStyle
 export QT_QPA_PLATFORMTHEME=gtk2
+
+# pacaur env variables
+export AURDEST=/var/cache/pacaur
+export PKGDEST=/var/cache/pkgs
+export SRCDEST=/var/cache/src
+export LOGDEST=/var/tmp/pacaur

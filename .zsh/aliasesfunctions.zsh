@@ -343,8 +343,9 @@ alias p='pacaur -S --noconfirm --noedit'
 # alias 'pu=sudo pacman -Syu'
 alias pu='pacaur -Syu --noconfirm --noedit'
 
+alias pSi='pacaur -Si'
 function pS(){
-	yaourt --noconfirm --color --pager $@
+	pacaur --noconfirm --color --pager $@
 }
 alias y='yaourt'
 
