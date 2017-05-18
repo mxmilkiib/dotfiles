@@ -24,7 +24,6 @@
 !/bin/desktop/xchat.desktop
 !/bin/dmenu_run.pl
 !/bin/duplicated_files.sh
-!/bin/dyndns
 !/bin/excwd
 !/bin/find-broken-perl-packages.sh
 !/bin/grindcraft.py
