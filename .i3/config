@@ -264,25 +264,13 @@ bindsym $mod+numbersign scratchpad show
 # set $ws7 "7:term"
 # set $ws8 "8:term"
 # set $ws9 "9:jack"
-# set $ws10 "10:vol"
+# set $wsa "10:vol"
 
-# workspace name varilables, numerical keeps them in persistent order
-# set $ws1 "a1"
-# set $ws2 "a2"
-# set $ws3 "a3"
-# set $ws4 "a4"
-# set $ws5 "a5"
-# set $ws6 "a6"
-# set $ws7 "a7"
-# set $ws8 "a8"
-# set $ws9 "a9"
-# set $ws10 "10"
 
 # Rename workspace with i3-input using numbers and text
 # bindsym $mod+Shift+n exec i3-input -F 'rename workspace to "%s"' -P 'New name: '
 
 # assign workspace to monitor
-workspace 10 output DVI-I-1
 workspace 11 output DVI-I-1
 workspace 12 output DVI-I-1
 workspace 13 output DVI-I-1
@@ -292,7 +280,7 @@ workspace 16 output DVI-I-1
 workspace 17 output DVI-I-1
 workspace 18 output DVI-I-1
 workspace 19 output DVI-I-1
-workspace 20 output DVI-I-0
+workspace 1a output DVI-I-1
 workspace 21 output DVI-I-0
 workspace 22 output DVI-I-0
 workspace 23 output DVI-I-0
@@ -302,6 +290,7 @@ workspace 26 output DVI-I-0
 workspace 27 output DVI-I-0
 workspace 28 output DVI-I-0
 workspace 29 output DVI-I-0
+workspace 2a output DVI-I-0
 
 ## switch to workspace
 bindsym $mod+1 exec ~/bin/i3/i3-multimon.sh 'workspace $ws1'
@@ -313,7 +302,7 @@ bindsym $mod+6 exec ~/bin/i3/i3-multimon.sh 'workspace $ws6'
 bindsym $mod+7 exec ~/bin/i3/i3-multimon.sh 'workspace $ws7'
 bindsym $mod+8 exec ~/bin/i3/i3-multimon.sh 'workspace $ws8'
 bindsym $mod+9 exec ~/bin/i3/i3-multimon.sh 'workspace $ws9'
-bindsym $mod+0 exec ~/bin/i3/i3-multimon.sh 'workspace $ws0'
+bindsym $mod+0 exec ~/bin/i3/i3-multimon.sh 'workspace $wsa'
 
 ## switch to workspace and start a terminal
 bindsym $mod+Mod1+1 exec "~/bin/i3/i3-multimon.sh 'workspace $ws1'; exec $TERMINAL"
@@ -325,7 +314,7 @@ bindsym $mod+Mod1+6 exec "~/bin/i3/i3-multimon.sh 'workspace $ws6'; exec $TERMIN
 bindsym $mod+Mod1+7 exec "~/bin/i3/i3-multimon.sh 'workspace $ws7'; exec $TERMINAL"
 bindsym $mod+Mod1+8 exec "~/bin/i3/i3-multimon.sh 'workspace $ws8'; exec $TERMINAL"
 bindsym $mod+Mod1+9 exec "~/bin/i3/i3-multimon.sh 'workspace $ws9'; exec $TERMINAL"
-bindsym $mod+Mod1+0 exec "~/bin/i3/i3-multimon.sh 'workspace $ws10'; exec $TERMIAL"
+bindsym $mod+Mod1+0 exec "~/bin/i3/i3-multimon.sh 'workspace $wsa'; exec $TERMIAL"
 
 # # move focused container to workspace
 # bindsym $mod+Shift+1 move container to workspace $ws1
@@ -337,7 +326,7 @@ bindsym $mod+Mod1+0 exec "~/bin/i3/i3-multimon.sh 'workspace $ws10'; exec $TERMI
 # bindsym $mod+Shift+7 move container to workspace $ws7
 # bindsym $mod+Shift+8 move container to workspace $ws8
 # bindsym $mod+Shift+9 move container to workspace $ws9
-# bindsym $mod+Shift+0 move container to workspace $ws10
+# bindsym $mod+Shift+0 move container to workspace $wsa
 
 ## move focused container to workspace and follow
 bindsym $mod+Shift+1 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $ws1; workspace $ws1'"
@@ -349,7 +338,7 @@ bindsym $mod+Shift+6 exec "~/bin/i3/i3-multimon.sh 'move container to workspace 
 bindsym $mod+Shift+7 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $ws7; workspace $ws7'"
 bindsym $mod+Shift+8 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $ws8; workspace $ws8'"
 bindsym $mod+Shift+9 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $ws9; workspace $ws9'"
-bindsym $mod+Shift+0 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $ws10; workspace $ws10'"
+bindsym $mod+Shift+0 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $wsa; workspace $wsa'"
 
 ## num-pad workspace window move
 bindsym $mod+Shift+KP_1 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $ws1; workspace $ws1'"
@@ -361,7 +350,7 @@ bindsym $mod+Shift+KP_6 exec "~/bin/i3/i3-multimon.sh 'move container to workspa
 bindsym $mod+Shift+KP_7 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $ws7; workspace $ws7'"
 bindsym $mod+Shift+KP_8 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $ws8; workspace $ws8'"
 bindsym $mod+Shift+KP_9 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $ws9; workspace $ws9'"
-bindsym $mod+Shift+KP_0 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $ws10; workspace $ws10'"
+bindsym $mod+Shift+KP_0 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $wsa; workspace $wsa'"
 
 ## move focused container to workspace and don't follow
 bindsym $mod+Ctrl+1 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $ws1'"
@@ -373,7 +362,7 @@ bindsym $mod+Ctrl+6 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $
 bindsym $mod+Ctrl+7 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $ws7'"
 bindsym $mod+Ctrl+8 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $ws8'"
 bindsym $mod+Ctrl+9 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $ws9'"
-bindsym $mod+Ctrl+0 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $ws10'"
+bindsym $mod+Ctrl+0 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $wsa'"
 
 
 ## move between workspaces
@@ -389,10 +378,10 @@ bindsym $mod+Ctrl+Left move workspace prev_on_output
 bindsym $mod+Ctrl+Right move workspace next_on_output
 
 ## move container to next empty workspace
-bindsym $mod+period exec "~/bin/i3/i3-nextempty.sh"
+bindsym $mod+period exec "~/bin/i3/i3-emptynext.sh"
 
 ## move container to next empty workspace
-bindsym $mod+Ctrl+period exec "~/bin/i3/i3-nextemptysilent.sh"
+# bindsym $mod+Ctrl+period exec "~/bin/i3/i3-nextemptysilent.sh"
 
 
 ## change focus between monitor outputs
@@ -463,7 +452,7 @@ bar {
 	status_command "py3status -c ~/.i3/istatus_$(hostname)"
 	position       top
 	separator_symbol " "
-  strip_workspace_numbers yes
+  # strip_workspace_numbers yes
 
 	# colour via http://paletton.com/#uid=74y0u0km+m7devAiGqmrohGxCce
 	colors {
