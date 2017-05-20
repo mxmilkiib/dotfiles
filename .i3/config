@@ -378,10 +378,13 @@ bindsym $mod+Ctrl+Left move workspace prev_on_output
 bindsym $mod+Ctrl+Right move workspace next_on_output
 
 ## move container to next empty workspace
-bindsym $mod+period exec "~/bin/i3/i3-emptynext.sh"
+bindsym $mod+period exec "~/bin/i3/i3-nextempty-move.sh"
 
 ## move container to next empty workspace
 # bindsym $mod+Ctrl+period exec "~/bin/i3/i3-nextemptysilent.sh"
+
+## focus on next empty workspace
+bindsym $mod+comma exec "~/bin/i3/i3-nextempty-focus.sh"
 
 
 ## change focus between monitor outputs
@@ -403,8 +406,8 @@ bindsym $mod+Ctrl+i exec "~/bin/i3/switch.py"
 
 # assign apps to default workspaces
 # assign [class="/usr/bin/chromium-snapshot-bin"] $ws1
-assign [class="Cadence.py"] b9
-assign [class="Pavucontrol"] b9
+assign [class="Cadence.py"] 29
+assign [class="Pavucontrol"] 29
 
 # auto float
 # for_window [class="Cadence.py"] floating enable
@@ -472,7 +475,7 @@ bindsym button5 nop
 
 
 # make sure the initial desktop is the first one
-exec i3-msg workspace "6six"
+exec i3-msg workspace "21"
 
 # Start my defaults layouts on boot
 # exec --no-startup-id "i3-msg 'workspace 1; append_layout ~/.config/i3/workspace-1.json'"
