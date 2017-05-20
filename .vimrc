@@ -15,8 +15,8 @@ if has('vim_starting')
     set nocompatible
   endif
 
-    set runtimepath+=~/.vim/bundle/neobundle.vim
-" set runtimepath+=~/.vim/bundle/neobundle.vim/,/usr/share/vim/vim72
+  set runtimepath+=~/.vim/bundle/neobundle.vim
+  " set runtimepath+=~/.vim/bundle/neobundle.vim/,/usr/share/vim/vim72
 endif
 
 call neobundle#begin(expand('~/.vim/bundle/'))
@@ -29,14 +29,14 @@ NeoBundle 'Shougo/neobundle.vim'
 
 " After install, turn shell ~/.vim/bundle/vimproc, (n,g)make -f your_machines_makefile
 NeoBundle 'Shougo/vimproc', {
-\ 'build' : {
-\     'windows' : 'tools\\update-dll-mingw',
-\     'cygwin' : 'make -f make_cygwin.mak',
-\     'mac' : 'make',
-\     'linux' : 'make',
-\     'unix' : 'gmake',
-\    },
-\ }
+      \ 'build' : {
+      \     'windows' : 'tools\\update-dll-mingw',
+      \     'cygwin' : 'make -f make_cygwin.mak',
+      \     'mac' : 'make',
+      \     'linux' : 'make',
+      \     'unix' : 'gmake',
+      \    },
+      \ }
 
 " :help ConqueTerm
 NeoBundle 'Flolagale/conque'
@@ -66,7 +66,7 @@ NeoBundle 'tpope/vim-repeat'
 NeoBundle 'othree/html5.vim'
 
 NeoBundle 'gmoe/vim-faust'
- 
+
 " NeoBundle 'scrooloose/syntastic'
 
 NeoBundle 'Valloric/vim-operator-highlight'
@@ -93,7 +93,7 @@ NeoBundle 'Valloric/MatchTagAlways'
 " NeoBundle 'sleistner/vim-jshint'
 NeoBundle 'wookiehangover/jshint.vim'
 
-NeoBundle 'baskerville/vim-sxhkdrc'
+" NeoBundle 'baskerville/vim-sxhkdrc'
 
 NeoBundle 'chase/nginx.vim'
 
@@ -465,6 +465,12 @@ imap <Esc>OQ /
 imap <Esc>Ol +
 imap <Esc>OS -
 
+" not working yet
+map <C-0d> B
+map <C-0c> W
+imap <C-Left> <Esc>Bi
+imap <C-Right> <Esc>W
+
 " Highlight trailing whitespace in red on non-active line
 " http://sartak.org/2011/03/end-of-line-whitespace-in-vim.html
 autocmd InsertEnter * syn clear EOLWS | syn match EOLWS excludenl /\s\+\%#\@!$/
@@ -491,6 +497,9 @@ nnoremap <silent><leader>j :set paste<CR>m`o<Esc>``:set nopaste<CR>
 nnoremap <silent><leader>k :set paste<CR>m`O<Esc>``:set nopaste<CR>`
 nnoremap <silent><leader><leader>j m`:silent +g/\m^\s*$/d<CR>``:noh<CR>
 nnoremap <silent><leader><leader>k m`:silent -g/\m^\s*$/d<CR>``:noh<CR>
+
+" :w!! to expand to sudo save of file (if it has opened as RO)
+command W silent execute 'write !sudo tee ' . shellescape(@%, 1) . ' >/dev/null'
 
 
 """ Functions
@@ -577,35 +586,35 @@ autocmd InsertLeave   * execute s:insert_leave
 
 " basic layer
 function! s:QuickInput (operator, insert_char_pre) 
-    let s:insert_char_pre = a:insert_char_pre
-    let s:insert_leave = 'call <SID>RemoveFootprint()'
-    call feedkeys(a:operator, 'n')
+  let s:insert_char_pre = a:insert_char_pre
+  let s:insert_leave = 'call <SID>RemoveFootprint()'
+  call feedkeys(a:operator, 'n')
 endfunction 
 
 function! s:RemoveFootprint() 
-    let s:insert_char_pre = ''
-    let s:insert_leave = ''
-    let s:char_count = 0
+  let s:insert_char_pre = ''
+  let s:insert_leave = ''
+  let s:char_count = 0
 endfunction 
 
 " secondary layer
 function! QuickInput_Count (operator, count) 
-    let insert_char_pre = 'call <SID>CountChars('.a:count.')'
-    call <SID>QuickInput(a:operator, insert_char_pre)
+  let insert_char_pre = 'call <SID>CountChars('.a:count.')'
+  call <SID>QuickInput(a:operator, insert_char_pre)
 endfunction 
 
 let s:char_count = 0
 function! s:CountChars (count) 
-    let s:char_count += 1
-    if s:char_count == a:count
-        call feedkeys("\<Esc>")
-    endif
+  let s:char_count += 1
+  if s:char_count == a:count
+    call feedkeys("\<Esc>")
+  endif
 endfunction 
 
 " secondary layer
 function! QuickInput_Repeat (operator, count) 
-    let insert_char_pre = 'let v:char = repeat(v:char, '.a:count.') | call feedkeys("\<Esc>")'
-    call <SID>QuickInput(a:operator, insert_char_pre)
+  let insert_char_pre = 'let v:char = repeat(v:char, '.a:count.') | call feedkeys("\<Esc>")'
+  call <SID>QuickInput(a:operator, insert_char_pre)
 endfunction 
 
 nnoremap i :<C-u>execute 'call ' v:count? 'QuickInput_Count("i", v:count)' : "feedkeys('i', 'n')"<CR>
@@ -633,113 +642,113 @@ highlight AceJumpGrey ctermfg=darkgrey guifg=lightgrey
 highlight AceJumpRed ctermfg=darkred guibg=NONE guifg=black gui=NONE
 
 function! AceJump ()
-    " store some current values for restoring later
-    let origPos = getpos('.')
-    let origSearch = @/
+  " store some current values for restoring later
+  let origPos = getpos('.')
+  let origSearch = @/
 
-    " prompt for and capture user's search character
-    echo "AceJump to words starting with letter: "
-    let letter = nr2char(getchar())
-    " return if invalid key, mouse press, etc.
-    if len(matchstr(letter, '\k')) != 1
-        echo ""
-        redraw
-        return
-    endif
-    " redraws here and there to get past 'more' prompts
-    redraw
-    " row/col positions of words beginning with user's chosen letter
-    let pos = []
-
-    " monotone all text in visible part of window (dark grey by default)
-    call matchadd('AceJumpGrey', '\%'.line('w0').'l\_.*\%'.line('w$').'l', 50)
-
-    " loop over every line on the screen (just the visible lines)
-    for row in range(line('w0'), line('w$'))
-        " find all columns on this line where a word begins with our letter
-        let col = 0
-    let matchCol = match(' '.getline(row), '.\<'.letter, col)
-    while matchCol != -1
-        " store any matching row/col positions
-        call add(pos, [row, matchCol])
-        let col = matchCol + 1
-        let matchCol = match(' '.getline(row), '.\<'.letter, col)
-    endwhile
-    endfor
-
-    if len(pos) > 1
-        " jump characters used to mark found words (user-editable)
-        let chars = 'abcdefghijlkmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789,.;"[]<>{}|\\'
-
-        if len(pos) > len(chars)
-            " TODO add groupings here if more pos matches than jump characters
-        endif
-
-        " trim found positions list; cannot be longer than jump markers list
-        let pos = pos[:len(chars)]
-
-        " jumps list to pair jump characters with found word positions
-        let jumps = {}
-        " change each found word's first letter to a jump character
-        for [r,c] in pos
-            " stop marking words if there are no more jump characters
-            if len(chars) == 0
-                break
-            endif
-            " 'pop' the next jump character from the list
-            let char = chars[0]
-            let chars = chars[1:]
-            " move cursor to the next found word
-            call setpos('.', [0,r,c+1,0])
-            " create jump character key to hold associated found word position
-            let jumps[char] = [0,r,c+1,0]
-            " replace first character in word with current jump character
-            exe 'norm r'.char
-            " change syntax on the jump character to make it highly visible
-            call matchadd('AceJumpRed', '\%'.r.'l\%'.(c+1).'c', 50)
-        endfor
-        call setpos('.', origPos)
-
-        " this redraw is critical to syntax highlighting
-        redraw
-
-        " prompt user again for the jump character to jump to
-        echo 'AceJump to words starting with "'.letter.'" '
-        let jumpChar = nr2char(getchar())
-
-        " get rid of our syntax search highlighting
-        call clearmatches()
-        " clear out the status line
-        echo ""
-        redraw
-        " restore previous search register value
-        let @/ = origSearch
-
-        " undo all the jump character letter replacement
-        norm u
-
-        " if the user input a proper jump character, jump to it
-        if has_key(jumps, jumpChar)
-            call setpos('.', jumps[jumpChar])
-        else
-            " if it didn't work out, restore original cursor position
-            call setpos('.', origPos)
-        endif
-    elseif len(pos) == 1
-        " if we only found one match, just jump to it without prompting
-        " set position to the one match
-        let [r,c] = pos[0]
-        call setpos('.', [0,r,c+1,0])
-    elseif len(pos) == 0
-        " no matches; set position back to start
-        call setpos('.', origPos)
-    endif
-    " turn off all search highlighting
-    call clearmatches()
-    " clean up the status line and return
+  " prompt for and capture user's search character
+  echo "AceJump to words starting with letter: "
+  let letter = nr2char(getchar())
+  " return if invalid key, mouse press, etc.
+  if len(matchstr(letter, '\k')) != 1
     echo ""
     redraw
     return
+  endif
+  " redraws here and there to get past 'more' prompts
+  redraw
+  " row/col positions of words beginning with user's chosen letter
+  let pos = []
+
+  " monotone all text in visible part of window (dark grey by default)
+  call matchadd('AceJumpGrey', '\%'.line('w0').'l\_.*\%'.line('w$').'l', 50)
+
+  " loop over every line on the screen (just the visible lines)
+  for row in range(line('w0'), line('w$'))
+    " find all columns on this line where a word begins with our letter
+    let col = 0
+    let matchCol = match(' '.getline(row), '.\<'.letter, col)
+    while matchCol != -1
+      " store any matching row/col positions
+      call add(pos, [row, matchCol])
+      let col = matchCol + 1
+      let matchCol = match(' '.getline(row), '.\<'.letter, col)
+    endwhile
+  endfor
+
+  if len(pos) > 1
+    " jump characters used to mark found words (user-editable)
+    let chars = 'abcdefghijlkmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789,.;"[]<>{}|\\'
+
+    if len(pos) > len(chars)
+      " TODO add groupings here if more pos matches than jump characters
+    endif
+
+    " trim found positions list; cannot be longer than jump markers list
+    let pos = pos[:len(chars)]
+
+    " jumps list to pair jump characters with found word positions
+    let jumps = {}
+    " change each found word's first letter to a jump character
+    for [r,c] in pos
+      " stop marking words if there are no more jump characters
+      if len(chars) == 0
+        break
+      endif
+      " 'pop' the next jump character from the list
+      let char = chars[0]
+      let chars = chars[1:]
+      " move cursor to the next found word
+      call setpos('.', [0,r,c+1,0])
+      " create jump character key to hold associated found word position
+      let jumps[char] = [0,r,c+1,0]
+      " replace first character in word with current jump character
+      exe 'norm r'.char
+      " change syntax on the jump character to make it highly visible
+      call matchadd('AceJumpRed', '\%'.r.'l\%'.(c+1).'c', 50)
+    endfor
+    call setpos('.', origPos)
+
+    " this redraw is critical to syntax highlighting
+    redraw
+
+    " prompt user again for the jump character to jump to
+    echo 'AceJump to words starting with "'.letter.'" '
+    let jumpChar = nr2char(getchar())
+
+    " get rid of our syntax search highlighting
+    call clearmatches()
+    " clear out the status line
+    echo ""
+    redraw
+    " restore previous search register value
+    let @/ = origSearch
+
+    " undo all the jump character letter replacement
+    norm u
+
+    " if the user input a proper jump character, jump to it
+    if has_key(jumps, jumpChar)
+      call setpos('.', jumps[jumpChar])
+    else
+      " if it didn't work out, restore original cursor position
+      call setpos('.', origPos)
+    endif
+  elseif len(pos) == 1
+    " if we only found one match, just jump to it without prompting
+    " set position to the one match
+    let [r,c] = pos[0]
+    call setpos('.', [0,r,c+1,0])
+  elseif len(pos) == 0
+    " no matches; set position back to start
+    call setpos('.', origPos)
+  endif
+  " turn off all search highlighting
+  call clearmatches()
+  " clean up the status line and return
+  echo ""
+  redraw
+  return
 endfunction
 
 nnoremap <Leader>f :call AceJump()<CR>
