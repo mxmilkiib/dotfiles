@@ -62,4 +62,4 @@ export QT_QPA_PLATFORMTHEME=gtk2
 export AURDEST=/var/cache/pacaur
 export PKGDEST=/var/cache/pkgs
 export SRCDEST=/var/cache/src
-export LOGDEST=/var/tmp/pacaur
+export LOGDEST=/var/log/pacaur

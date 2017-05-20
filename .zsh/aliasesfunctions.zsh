@@ -344,9 +344,10 @@ alias p='pacaur -S --noconfirm --noedit'
 alias pu='pacaur -Syu --noconfirm --noedit'
 
 alias pSi='pacaur -Si'
-function pS(){
-	pacaur --noconfirm --color --pager $@
-}
+alias pS='pac --noedit --noconfirm'
+# function pS(){
+# 	yaourt -Ss --noconfirm --color=auto --pager $@
+# }
 alias y='yaourt'
 
 alias pQi='pacman -Qi'
@@ -354,7 +355,8 @@ alias pQl='pacman -Ql'
 alias pQo='pacman -Qo'
 
 alias pR='sudo pacman -R'										# remove
-alias pU='sudo pacman -U'										# upgrade (local package)
+alias pRx='sudo pacman -Rcsn'								# remove, rm deps, recursive, remove config files
+alias pU='sudo pacman -U'										# install a local package file
 alias pL='sudo rm /var/lib/pacman/db.lck'   # remove lockfile if pacman doesn't exit gracefully
 
 # get PKGBUILD
