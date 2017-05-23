@@ -59,7 +59,4 @@ WORDCHARS='-*?_.[]~&;!#$%^(){}<>'
 export QT_QPA_PLATFORMTHEME=gtk2
 
 # pacaur env variables
-export AURDEST=/var/cache/pacaur
-export PKGDEST=/var/cache/pkgs
-export SRCDEST=/var/cache/src
 export LOGDEST=/var/log/pacaur

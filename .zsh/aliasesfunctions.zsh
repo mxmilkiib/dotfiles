@@ -190,7 +190,8 @@ alias mounts='mount | column -t'
 # Human readable df default
 alias 'df=df -h'
 
-alias dfcc="dfc -q name -dTw"
+# dfc with sort by type, show used size, type, wide filename, wide bar, sum usage, just ext* and tmpfs
+alias dfcc="dfc -q type -dTWws -t ext,tmpfs"
 
 # better cdu
 alias du2='cdu -idh'
@@ -339,20 +340,16 @@ alias aw='apt-cache show'
 
 # Arch Linux
 alias p='pacaur -S --noconfirm --noedit'
+alias pS='pac'
 
 # alias 'pu=sudo pacman -Syu'
 alias pu='pacaur -Syu --noconfirm --noedit'
+alias pug='pacaur -Syu --noconfirm --noedit --devel'
 
-alias pSi='pacaur -Si'
-alias pS='pac --noedit --noconfirm'
-# function pS(){
-# 	yaourt -Ss --noconfirm --color=auto --pager $@
-# }
-alias y='yaourt'
-
-alias pQi='pacman -Qi'
-alias pQl='pacman -Ql'
-alias pQo='pacman -Qo'
+alias pSi='pacaur -Si'                      # search info
+alias pQi='pacman -Qi'                      # query info
+alias pQl='pacman -Ql'                      # query contents
+alias pQo='pacman -Qo'                      # query file ownership
 
 alias pR='sudo pacman -R'										# remove
 alias pRx='sudo pacman -Rcsn'								# remove, rm deps, recursive, remove config files
@@ -362,6 +359,11 @@ alias pL='sudo rm /var/lib/pacman/db.lck'   # remove lockfile if pacman doesn't 
 # get PKGBUILD
 alias pG='pacaur -G'
 alias mP='makepkg -si'
+
+alias y='yaourt'
+# function pS(){
+# 	yaourt -Ss --noconfirm --color=auto --pager $@
+# }
 
 
 ### Utils
