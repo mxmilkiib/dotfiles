@@ -39,8 +39,8 @@ Xft.rgba: rgb
 ! xterm*font:     *-Fixedsys Excelsior 3.01-L2-medium-*-*-*-16-*
 xterm*font:     -*-gohufont-medium-*-*-*-14-*-*-*-*-*-*-*
 
-! URxvt.font: xft:terminesspowerline:pixelsize=12
-URxvt.font: xft:xos4 terminus:size=16
+URxvt.font: xft:terminesspowerline:pixelsize=12
+! URxvt.font: xft:xos4 terminus:size=16
 
 ! URxvt*font:     -*-gohufont-medium-*-*-*-14-*-*-*-*-*-*-*
 ! urxvt.font: xft:Gohu GohuFont:size=14
@@ -52,10 +52,10 @@ URxvt.letterSpace: 0
 
 ! Reset to regular 16
 ! URxvt.keysym.C-0: command:\033]710;-*-terminus-medium-*-*--16-*-*-*-*-*-*-*\007
-URxvt.keysym.C-0: command:\033]710;xft:Gohu GohuFont:size=14\007
+URxvt.keysym.C-0: command:\033]710;xft:xos4 terminus:size=14\007
 ! ! Reset to bolder 16
 ! URxvt.keysym.C-parenright: command:\033]710;-*-terminus-bold-*-*--16-*-*-*-*-*-*-*\007
-URxvt.keysym.C-parenright: command:\033]710;xft:Gohu GohuFont:bold:size=14\007
+! URxvt.keysym.C-parenright: command:\033]710;xft:Gohu GohuFont:bold:size=14\007
 
 
 ! URxvt*background: [100]black
