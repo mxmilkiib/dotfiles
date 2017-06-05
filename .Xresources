@@ -35,12 +35,12 @@ Xft.antialias: 1
 Xft.rgba: rgb
 
 
-! xterm*font:     *-terminus-medium-*-*-*-16-*
+xterm*font:     *-terminus-medium-*-*-*-14-*
 ! xterm*font:     *-Fixedsys Excelsior 3.01-L2-medium-*-*-*-16-*
-xterm*font:     -*-gohufont-medium-*-*-*-14-*-*-*-*-*-*-*
+! xterm*font:     -*-gohufont-medium-*-*-*-14-*-*-*-*-*-*-*
 
-URxvt.font: xft:terminesspowerline:pixelsize=12
-! URxvt.font: xft:xos4 terminus:size=16
+! URxvt.font: xft:terminesspowerline:pixelsize=12
+URxvt.font: xft:xos4 terminus:size=14
 
 ! URxvt*font:     -*-gohufont-medium-*-*-*-14-*-*-*-*-*-*-*
 ! urxvt.font: xft:Gohu GohuFont:size=14
@@ -141,7 +141,7 @@ Ctrl <KeyPress> Right  : string("\033[91~")  \n
 URxvt.perl-ext-common: default,searchable-scrollback,url-select,keyboard-select,resize-font,clipboard
 
 ! searchable-scrollback
-URxvt.searchable-scrollback: CM-s
+URxvt.searchable-scrollback: C-s
 
 ! matcher, using usr-select instead
 ! Launch URLs
