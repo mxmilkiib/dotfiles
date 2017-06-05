@@ -1,0 +1,90 @@
+# i3status configuration file.
+# see "man i3status" for documentation.
+
+# http://i3wm.org/docs/user-contributed/py3status.html
+
+# It is important that this file is edited as UTF-8.
+# The following line should contain a sharp s:
+# ß
+# If the above line is not correctly displayed, fix your editor first!
+
+general {
+        colors = true
+        interval = 5
+}
+
+# order += "ipv6"
+order += "disk /"
+order += "disk /var"
+order += "disk /home"
+# order += "run_watch DHCP"
+# order += "run_watch VPN"
+# order += "wireless _first_"
+order += "ethernet _first_"
+order += "whatismyip"
+# order += "battery 0"
+order += "cpu_usage"
+# order += "load"
+order += "arch_updates"
+# order += "dpms"
+order += "tztime local"
+
+disk "/" {
+				format = "/:%avail"
+}
+
+disk "/var" {
+        format = "V:%avail"
+}
+
+disk "/home" {
+				format = "H:%avail"
+}
+
+# run_watch DHCP {
+# 				pidfile = "/var/run/dhclient*.pid"
+# }
+#
+# run_watch VPN {
+# 				pidfile = "/var/run/vpnc/pid"
+# }
+
+# wireless _first_ {
+#         format_up = "W: (%quality at %essid) %ip"
+#         format_down = "W: down"
+# }
+
+ethernet _first_ {
+        # if you use %speed, i3status requires root privileges
+        format_up = "E:%ip"
+        format_down = "E:down"
+}
+
+whatismyip {
+				format = "P:{ip}"
+}
+
+battery 0 {
+        format = "%status %percentage"
+        # format = "%status %percentage %remaining"
+}
+
+cpu_usage {
+			format = "CPU:%usage"
+}
+
+# load {
+#         format = "CPU: %1min"
+# }
+
+arch_updates {
+			format = "UPD:{pacman}/{aur}"
+}
+
+# dpms {
+# 				format = "{icon}"
+# }
+
+tztime local {
+        format = " %a %d/%m/%Y %T  "
+}
