@@ -30,6 +30,9 @@ export VISUAL=vim
 export BROWSER=chrome
 export TERMINAL=urxvt
 
+# for nnn
+export NNN_COPIER="nnn_copier.sh"
+
 # Reduce mode key timeout to 0.1s
 export KEYTIMEOUT=1
 

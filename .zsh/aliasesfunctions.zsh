@@ -323,8 +323,8 @@ compdef sy=systemctl
 # alias slo='systemctl restart display-manager' # Logout
 alias slo='sudo killall -u `whoami`' # Logout
 
-alias sd='systemctl poweroff'
-alias sr='systemctl reboot'
+alias shut='systemctl poweroff'
+alias reb='systemctl reboot'
 
 
 ### Package management
@@ -417,7 +417,7 @@ alias v='vim '
 alias uv='urxvt -e vim'
 
 # Git quickies
-alias gs='git status '
+alias gis='git status '
 alias gd='git diff --color'
 alias gdc='git diff --color --cached'
 alias gh='git log --pretty=format:"%h %ad | %s%d [%an]" --graph --date=short'
@@ -584,6 +584,7 @@ alias ulm='xmodmap -e "pointer = 1 2 3"'
 
 # Reset desktops for two screen 1280x1024
 alias xrandrr="xrandr --output DVI-I-1 --mode 1280x1024 --pos 0x0 --panning 0x0+0+0 --output DVI-I-0 --mode 1280x1024 --pos 1280x0"
+alias xrandrc="xrandr --output DVI-I-1 --same-as DVI-I-0"
 
 # Reload compton
 alias comptonrl='sudo killall compton; compton -b'

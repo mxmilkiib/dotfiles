@@ -28,13 +28,15 @@ if ! zgen saved; then
 
 	zgen load unixorn/autoupdate-zgen
 
+	zgen load nojhan/liquidprompt
+
 	zgen load chrissicool/zsh-256color
 
 	zgen load djui/alias-tips
 
 	zgen load zsh-users/zsh-syntax-highlighting
 
-	zgen load olivierverdier/zsh-git-prompt
+	# zgen load olivierverdier/zsh-git-prompt
 
 	zgen load zsh-users/zsh-completions
 
