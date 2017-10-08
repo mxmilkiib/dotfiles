@@ -95,6 +95,7 @@ for_window [instance="floating-tty-clock$"] floating toggle
 
 ## kill focused window
 bindsym $mod+q kill
+bindsym --release $mod+Ctrl+q exec xkill
 bindsym $mod+Delete kill
 
 ## ctrl and mouse right click a window title, this kills the window
@@ -133,8 +134,11 @@ bindsym $mod+Shift+x exec i3lock
 ## launch scratch notes text file
 bindsym $mod+F2 exec geany ~/documents/scratch
 bindsym $mod+F3 exec "run-or-raise.sh chrome"
-bindsym $mod+F4 exec "run-or-raise.sh pcmanfm"
+# bindsym $mod+F4 exec "run-or-raise.sh pcmanfm"
+bindsym $mod+F4 exec "run-or-raise.sh dolphin"
 
+bindsym $mod+Ctrl+F5 exec "xrandr --output DVI-I-1 --mode 1280x1024 --pos 0x0 --panning 0x0+0+0 --output DVI-I-0 --mode 1280x1024 --pos 1280x0"
+bindsym $mod+Ctrl+F9 exec "xrandr --output DVI-I-1 --same-as DVI-I-0"
 
 # new windows will be split in horizontal orientation
 # bindsym $mod+b split h
@@ -386,6 +390,9 @@ bindsym $mod+period exec "~/bin/i3/i3-nextempty-move.sh"
 ## focus on next empty workspace
 bindsym $mod+comma exec "~/bin/i3/i3-nextempty-focus.sh"
 
+## focus on next empty workspace, start terminal
+bindsym $mod+Ctrl+comma exec "~/bin/i3/i3-nextempty-focus.sh; sleep 6; exec $TERMINAL"
+
 
 ## change focus between monitor outputs
 bindsym $mod+o focus output right
@@ -406,6 +413,11 @@ bindsym $mod+Ctrl+i exec "~/bin/i3/switch.py"
 
 # assign apps to default workspaces
 # assign [class="/usr/bin/chromium-snapshot-bin"] $ws1
+assign [class="Carla"] 22
+assign [class="Patchage"] 23
+assign [class="Seq64"] 24
+assign [class="shuriken"] 25
+assign [class="Radium_compressor"] 26
 assign [class="Cadence.py"] 29
 assign [class="Pavucontrol"] 29
 
@@ -423,6 +435,9 @@ for_window [class="Galculator"] floating enable border pixel 2
 for_window [title="File Transfer*"] floating enable
 for_window [class="Gtkdialog"] floating enable
 for_window [class="Radiotray"] floating enable
+# for_window [title="^Sequencer64"] floating enable
+
+
 
 
 # container/window colours
@@ -479,3 +494,5 @@ exec i3-msg workspace "21"
 
 # Start my defaults layouts on boot
 # exec --no-startup-id "i3-msg 'workspace 1; append_layout ~/.config/i3/workspace-1.json'"
+
+for_window [class=".*"] title_format " %title
