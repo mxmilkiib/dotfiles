@@ -85,6 +85,8 @@ dyndns &
 # copy ctrl-xcv / shift-insert CLIPBOARD to middle mouse PRIMARY selection buffer
 autocutsel -selection PRIMARY -fork &
 
+# infrared control
+flirc_util loadconfig ~/.config/flirc/my_flirc_config
 
 # Start Jack for audio
 # jack_control start &
