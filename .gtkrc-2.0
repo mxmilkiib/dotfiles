@@ -2,9 +2,9 @@
 # Any customization should be done in ~/.gtkrc-2.0.mine instead.
 
 include "/home/milk/.gtkrc-2.0.mine"
-gtk-theme-name="MediterraneanLightDarkest"
+gtk-theme-name="Breeze"
 gtk-icon-theme-name="elementary-xfce"
-gtk-font-name="Gohu GohuFont 14"
+gtk-font-name="Droid Sans Mono 12"
 gtk-cursor-theme-name="mate"
 gtk-cursor-theme-size=0
 gtk-toolbar-style=GTK_TOOLBAR_BOTH_HORIZ
@@ -15,5 +15,5 @@ gtk-enable-event-sounds=1
 gtk-enable-input-feedback-sounds=1
 gtk-xft-antialias=1
 gtk-xft-hinting=1
-gtk-xft-hintstyle="hintfull"
+gtk-xft-hintstyle="hintslight"
 gtk-xft-rgba="rgb"
