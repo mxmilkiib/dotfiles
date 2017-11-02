@@ -72,7 +72,7 @@ workrave &
 pnmixer &
 
 # Radio streams
-radiotray &
+radiotray-ng &
 
 # Battery monitor
 vattery &
