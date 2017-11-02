@@ -1,0 +1,651 @@
+[
+    {
+        "image": "", 
+        "group": "Ambient/drone", 
+        "stations": [
+            {
+                "url": "http://usa4-vn.mixstream.net/9270.pls", 
+                "image": "", 
+                "name": "Fluid Radio"
+            }, 
+            {
+                "url": "https://asp.radioca.st/listen.pls?sid=3", 
+                "image": "", 
+                "name": "Ambient Sleeping Pill"
+            }, 
+            {
+                "url": "http://somafm.com/dronezone.pls", 
+                "image": "", 
+                "name": "Soma.fm: Drone Zone"
+            }, 
+            {
+                "url": "http://somafm.com/missioncontrol.pls", 
+                "image": "", 
+                "name": "Soma.fm: Mission Control"
+            }
+        ]
+    }, 
+    {
+        "image": "", 
+        "group": "Chillout/groovey", 
+        "stations": [
+            {
+                "url": "http://somafm.com/spacestation.pls", 
+                "image": "", 
+                "name": "Soma.fm: Space Station Soma"
+            }, 
+            {
+                "url": "http://176.31.123.212:8192/listen.pls", 
+                "image": "", 
+                "name": "Chromanova.de: chillout"
+            }, 
+            {
+                "url": "http://radio.hbr1.com:19800/ambient.aac.m3u", 
+                "image": "", 
+                "name": "HBR1: ambient"
+            }, 
+            {
+                "url": "http://streaming.radionomy.com/blurredfm", 
+                "image": "", 
+                "name": "Blurred FM"
+            }, 
+            {
+                "url": "http://somafm.com/groovesalad.pls", 
+                "image": "", 
+                "name": "Soma.fm: Groove Salad"
+            }, 
+            {
+                "url": "http://somafm.com/secretagent.pls", 
+                "image": "", 
+                "name": "Soma.fm: Secret Agent"
+            }, 
+            {
+                "url": "http://somafm.com/suburbsofgoa130.pls", 
+                "image": "", 
+                "name": "Soma.fm: Suburbs of Goa"
+            }, 
+            {
+                "url": "http://somafm.com/brfm.pls", 
+                "image": "", 
+                "name": "Soma.fm: Black Rock FM"
+            }, 
+            {
+                "url": "https://somafm.com/fluid130.pls", 
+                "image": "", 
+                "name": "Soma.fm: Fluid"
+            }, 
+            {
+                "url": "http://176.31.123.212:8192/listen.pls", 
+                "image": "", 
+                "name": "Chromanova: chillout"
+            }, 
+            {
+                "url": "http://schizoid.in/schizoid-chill.pls", 
+                "image": "", 
+                "name": "Schizoid: chill/ambient"
+            }, 
+            {
+                "url": "https://pressureradio.com/listen.pls", 
+                "image": "", 
+                "name": "Pressure Radio"
+            }, 
+            {
+                "url": "https://dubplate.fm/pls/dubplate_fm_dance192k.pls", 
+                "image": "", 
+                "name": "dubplate.fm: urban boogie"
+            }, 
+            {
+                "url": "http://somafm.com/beatblender.pls", 
+                "image": "", 
+                "name": "Soma.fm: Beat Blender"
+            }, 
+            {
+                "url": "http://91.121.165.88:8122/sid=1", 
+                "image": "", 
+                "name": "Raw Soul Radio"
+            }, 
+            {
+                "url": "http://streaming.radio.co/s264858a04/listen", 
+                "image": "", 
+                "name": "Itch.fm"
+            }, 
+            {
+                "url": "http://192.240.102.131:9109/", 
+                "image": "", 
+                "name": "Mi-Soul"
+            }, 
+            {
+                "url": "http://de1.streamhosting.ch:8050/listen.pls", 
+                "image": "", 
+                "name": "Blastfm.ch: Ambient Chill"
+            }, 
+            {
+                "url": "http://iwayhigh.net:8000/listen.pls", 
+                "image": "", 
+                "name": "Blastfm.ch: Electro chill"
+            }
+        ]
+    }, 
+    {
+        "image": "", 
+        "group": "House/tech-house", 
+        "stations": [
+            {
+                "url": "http://deepmix.ru/deepmix128.pls", 
+                "image": "", 
+                "name": "Deep Mix"
+            }, 
+            {
+                "url": "http://88.208.218.19:9106/listen.pls", 
+                "image": "", 
+                "name": "Deepvibes"
+            }, 
+            {
+                "url": "http://78.129.228.187:8048/listen.pls", 
+                "image": "", 
+                "name": "Select Radio"
+            }, 
+            {
+                "url": "http://listen.shoutcast.com/prysmdeep", 
+                "image": "", 
+                "name": "Prysm Deep"
+            }, 
+            {
+                "url": "http://listen.shoutcast.com/prysmessentials", 
+                "image": "", 
+                "name": "Prysm Essentials"
+            }
+        ]
+    }, 
+    {
+        "image": "", 
+        "group": "Techno / Rave", 
+        "stations": [
+            {
+                "url": "http://techno.stromkraftradio.fm:8014/listen.pls", 
+                "image": "", 
+                "name": "Storm:Kraft"
+            }, 
+            {
+                "url": "http://stream.nauticradio.net:14240/listen.pls", 
+                "image": "", 
+                "name": "Nautic Radio"
+            }, 
+            {
+                "url": "http://radio.hbr1.com:19800/tronic.aac.m3u", 
+                "image": "", 
+                "name": "HBR1: tech/house/prog"
+            }, 
+            {
+                "url": "http://jbstream.net/tunein.php/blackoutworm/playlist.asx", 
+                "image": "", 
+                "name": "New Dance Radio"
+            }, 
+            {
+                "url": "http://www.avalaf.co.uk/avalaf-radio-128kbs.pls", 
+                "image": "", 
+                "name": "Avalaf Radio (part time)"
+            }, 
+            {
+                "url": "http://www.btribal.eu:3030/radio.ogg", 
+                "image": "", 
+                "name": "BTribal: techno"
+            }, 
+            {
+                "url": "http://www.btribal.eu:3030/tekno.ogg", 
+                "image": "", 
+                "name": "BTribal: tekno"
+            }, 
+            {
+                "url": "http://www.teknoradio.org/Listen@128.pls", 
+                "image": "", 
+                "name": "TeknoRadio"
+            }, 
+            {
+                "url": "https://tachyon.shoutca.st/tunein/-media/freeteknoradio.pls", 
+                "image": "", 
+                "name": "Free Tekno"
+            }, 
+            {
+                "url": "http://gabber.fm/players/gabberfm.m3u", 
+                "image": "", 
+                "name": "Gabber.fm (ad start)"
+            }, 
+            {
+                "url": "http://www.hardcoreradio.nl/hr.m3u", 
+                "image": "", 
+                "name": "Hardcoreradio.nl"
+            }, 
+            {
+                "url": "http://listen.coretime.fm/aacplus.pls", 
+                "image": "", 
+                "name": "Coretime.fm"
+            }, 
+            {
+                "url": "http://188.95.56.9:8000/hardcore.m3u", 
+                "image": "", 
+                "name": "Liquid Hardcore and Speedcore"
+            }, 
+            {
+                "url": "http://dutchcore.fm/DutchCore.FM.m3u", 
+                "image": "", 
+                "name": "DutchCoreFM"
+            }, 
+            {
+                "url": "https://www.happyhardcore.com/livestreams/hardcore.pls", 
+                "image": "", 
+                "name": "happyhardcore.com"
+            }, 
+            {
+                "url": "http://www.revivalkult.de/radio/winamp.pls", 
+                "image": "", 
+                "name": "RevivalKult"
+            }, 
+            {
+                "url": "http://listen.teatime.fm/aacplus.pls", 
+                "image": "", 
+                "name": "TeaTime.FM"
+            }, 
+            {
+                "url": "http://listen.hardbase.fm/aacplus.pls", 
+                "image": "", 
+                "name": "HardBase.FM"
+            }, 
+            {
+                "url": "http://www.kraftyradio.com/radio.pls", 
+                "image": "", 
+                "name": "Kraftyradio"
+            }, 
+            {
+                "url": "http://somafm.com/cliqhop.pls", 
+                "image": "", 
+                "name": "cliqhop idm"
+            }, 
+            {
+                "url": "http://www.netpd.org/netpd.m3u", 
+                "image": "", 
+                "name": "netpd"
+            }, 
+            {
+                "url": "http://65.23.157.233:5000/listen.pls", 
+                "image": "", 
+                "name": "Glitch.FM"
+            }, 
+            {
+                "url": "http://www.uzic.ch/tek.m3u", 
+                "image": "", 
+                "name": "Blastfm.ch: Tech house minimal"
+            }
+        ]
+    }, 
+    {
+        "image": "", 
+        "group": "Bass / Breaks", 
+        "stations": [
+            {
+                "url": "https://dubplate.fm/pls/dubplate_fm_dubstep192k.pls", 
+                "image": "", 
+                "name": "dubplate.fm: dub n bass"
+            }, 
+            {
+                "url": "http://listen.sub.fm/hi/;&type=mp3", 
+                "image": "", 
+                "name": "Sub.fm"
+            }, 
+            {
+                "url": "http://jungletrain.net/128kbps.pls", 
+                "image": "", 
+                "name": "Jungletrain.net (128k)"
+            }, 
+            {
+                "url": "http://www.btribal.eu:3030/jungle.ogg", 
+                "image": "", 
+                "name": "BTribal: jungle (low)"
+            }, 
+            {
+                "url": "https://orion.shoutca.st/tunein/futuredr.pls", 
+                "image": "", 
+                "name": "Futuredrumz"
+            }, 
+            {
+                "url": "http://brokenbeats.net/tune", 
+                "image": "", 
+                "name": "Brokenbeats.net"
+            }, 
+            {
+                "url": "http://st8.webradioworld.net:2199/tunein/dnbliquified.pls", 
+                "image": "", 
+                "name": "dnb liquified"
+            }, 
+            {
+                "url": "http://www.bassjunkees.com/m3u", 
+                "image": "", 
+                "name": "Bassjumkies.com"
+            }, 
+            {
+                "url": "https://dubplate.fm/pls/dubplate_fm_drumandbass192k.pls", 
+                "image": "", 
+                "name": "dubplate.fm: dnb"
+            }, 
+            {
+                "url": "http://bassdrive.com/bassdrive3.m3u", 
+                "image": "", 
+                "name": "BassDrive FM"
+            }, 
+            {
+                "url": "http://dnbradio.com/hi.pls", 
+                "image": "", 
+                "name": "DNBRadio.com"
+            }, 
+            {
+                "url": "http://nsbradio.co.uk/listen128k.pls", 
+                "image": "", 
+                "name": "NSB Radio"
+            }, 
+            {
+                "url": "http://stream.nubreaks.com/", 
+                "image": "", 
+                "name": "nubreaks.com"
+            }, 
+            {
+                "url": "http://s6.webradio-hosting.com:2199/tunein/globalfu.pls", 
+                "image": "", 
+                "name": "Global Funk Radio"
+            }, 
+            {
+                "url": "http://atmfm.ru/playlist.m3u", 
+                "image": "", 
+                "name": "atm.fm"
+            }, 
+            {
+                "url": "http://somafm.com/deepspaceone130.pls", 
+                "image": "", 
+                "name": "Soma.fm: Deep Space One"
+            }, 
+            {
+                "url": "http://listen.radionomy.com/dubsideradio.m3u", 
+                "image": "", 
+                "name": "Dubsideradio (start ad)"
+            }, 
+            {
+                "url": "http://radio.trap.fm/listen192.m3u", 
+                "image": "", 
+                "name": "TRAP.FM"
+            }, 
+            {
+                "url": "http://cdn.voscast.com/resources/?key=8c78f3e72f8bdf50c433e43b9ee76a8d&c=winamp", 
+                "image": "", 
+                "name": "Bass Music Radio"
+            }, 
+            {
+                "url": "http://149.255.59.162:2199/tunein/originuk.pls", 
+                "image": "", 
+                "name": "Originuk.net (128k)"
+            }, 
+            {
+                "url": "http://dirtybass.fm:8000/listen.pls", 
+                "image": "", 
+                "name": "Dirtybass"
+            }, 
+            {
+                "url": "http://ais.rastamusic.com/rastamusic.mp3.m3u", 
+                "image": "", 
+                "name": "rastamusic.com"
+            }, 
+            {
+                "url": "http://www.raggakings.net/listen.m3u", 
+                "image": "", 
+                "name": "RaggaKings"
+            }, 
+            {
+                "url": "http://iwayhigh.net:8002/listen.pls", 
+                "image": "", 
+                "name": "Blastfm.ch: Dub"
+            }, 
+            {
+                "url": "http://radio.bigupradio.com:8013/listen.pls", 
+                "image": "", 
+                "name": "BigUpRadio: Massive Dub"
+            }, 
+            {
+                "url": "http://ic2255.c471.fast-serv.com/listen.m3u", 
+                "image": "", 
+                "name": "DubTerrain.net"
+            }, 
+            {
+                "url": "http://iwayhigh.net:8000/listen.pls", 
+                "image": "", 
+                "name": "iwayigh: dub electro chill"
+            }, 
+            {
+                "url": "http://iwayhigh.net:8002/listen.pls", 
+                "image": "", 
+                "name": "The Oracle: guidance"
+            }
+        ]
+    }, 
+    {
+        "image": "", 
+        "group": "Goa / Psy", 
+        "stations": [
+            {
+                "url": "http://176.31.123.212:9000/listen.pls", 
+                "image": "", 
+                "name": "Chromanova.de: dance"
+            }, 
+            {
+                "url": "http://psyradio.com.ua/PsyRadio_256kbps.m3u", 
+                "image": "", 
+                "name": "PsyRadio.com.ua"
+            }, 
+            {
+                "url": "http://schizoid.in/schizoid-psy.pls", 
+                "image": "", 
+                "name": "Schizoid: psytrance"
+            }, 
+            {
+                "url": "http://schizoid.in/schizoid-chill.pls", 
+                "image": "", 
+                "name": "Schizoid: prog psy"
+            }, 
+            {
+                "url": "http://radio.hbr1.com:19800/trance.aac.m3u", 
+                "image": "", 
+                "name": "HBR1: psy/trance"
+            }, 
+            {
+                "url": "http://fire.wavestreamer.com:4868/listen.pls?sid=1", 
+                "image": "", 
+                "name": "Dice Radio"
+            }, 
+            {
+                "url": "http://www.musicofthegods.com/musicofthegods.pls", 
+                "image": "", 
+                "name": "Music of the Gods (ads)"
+            }
+        ]
+    }, 
+    {
+        "image": "", 
+        "group": "Hip-hop", 
+        "stations": [
+            {
+                "url": "http://2319.cloudrad.io/listen.pls", 
+                "image": "", 
+                "name": "Sonic Stream"
+            }, 
+            {
+                "url": "https://dubplate.fm/pls/dubplate_fm_hiphop192k.pls", 
+                "image": "", 
+                "name": "dubplate.fm: hip-hop"
+            }
+        ]
+    }, 
+    {
+        "image": "", 
+        "group": "Jazz / Latin", 
+        "stations": [
+            {
+                "url": "http://somafm.com/illstreet.pls", 
+                "image": "", 
+                "name": "Illinois Street Lounge"
+            }, 
+            {
+                "url": "http://smoothjazz.com/streams/smoothjazz_128.pls", 
+                "image": "", 
+                "name": "Smooth Jazz"
+            }, 
+            {
+                "url": "http://somafm.com/sonicuniverse.pls", 
+                "image": "", 
+                "name": "Sonic Universe"
+            }, 
+            {
+                "url": "http://yp.shoutcast.com/sbin/tunein-station.pls?id=506392", 
+                "image": "", 
+                "name": "Onda Tropical"
+            }, 
+            {
+                "url": "http://online.radiodifusion.net:8020/listen.pls", 
+                "image": "", 
+                "name": "Top Latino Radio"
+            }
+        ]
+    }, 
+    {
+        "image": "", 
+        "group": "Pop / Rock", 
+        "stations": [
+            {
+                "url": "http://somafm.com/poptron.pls", 
+                "image": "", 
+                "name": "PopTron"
+            }, 
+            {
+                "url": "http://www.radioparadise.com/musiclinks/rp_128.m3u", 
+                "image": "", 
+                "name": "Radio Paradise"
+            }, 
+            {
+                "url": "http://somafm.com/indiepop.pls", 
+                "image": "", 
+                "name": "Indie Pop Rocks!"
+            }, 
+            {
+                "url": "http://www.977music.com/tunein/web/classicrock.asx", 
+                "image": "", 
+                "name": ".977 Classic Rock"
+            }, 
+            {
+                "url": "http://somafm.com/covers.pls", 
+                "image": "", 
+                "name": "Covers"
+            }
+        ]
+    }, 
+    {
+        "image": "", 
+        "group": "Country", 
+        "stations": [
+            {
+                "url": "http://somafm.com/bootliquor.pls", 
+                "image": "", 
+                "name": "Boot Liquor"
+            }, 
+            {
+                "url": "http://www.country108.com/listen.pls", 
+                "image": "", 
+                "name": "Country 108"
+            }
+        ]
+    }, 
+    {
+        "image": "", 
+        "group": "Classical", 
+        "stations": [
+            {
+                "url": "http://provisioning.streamtheworld.com/pls/KDFCFM.pls", 
+                "image": "", 
+                "name": "KDFC"
+            }, 
+            {
+                "url": "http://media-ice.musicradio.com/ClassicFMMP3.m3u", 
+                "image": "", 
+                "name": "Classic FM"
+            }, 
+            {
+                "url": "http://www.ibiblio.org/wcpe/wcpe.pls", 
+                "image": "", 
+                "name": "WCPE"
+            }, 
+            {
+                "url": "http://cinemix.us/cine.asx", 
+                "image": "", 
+                "name": "CINEMIX"
+            }
+        ]
+    }, 
+    {
+        "image": "", 
+        "group": "Oldies", 
+        "stations": [
+            {
+                "url": "http://lin2.ash.fast-serv.com:9022/listen.pls", 
+                "image": "", 
+                "name": "AM 1710"
+            }, 
+            {
+                "url": "http://live.wnar-am.com:8500/listen.pls", 
+                "image": "", 
+                "name": "WNAR"
+            }
+        ]
+    }, 
+    {
+        "image": "", 
+        "group": "Dead?", 
+        "stations": [
+            {
+                "url": "http://radio.dubbase.fm/listen192.m3u", 
+                "image": "", 
+                "name": "Dubbass.FM"
+            }, 
+            {
+                "url": "http://rwd.fm/listen.pls", 
+                "image": "", 
+                "name": "RWD.FM"
+            }, 
+            {
+                "url": "http://cast2.serverhostingcenter.com/tunein.php/jassingh/playlist.pls", 
+                "image": "", 
+                "name": "People Powered"
+            }, 
+            {
+                "url": "http://audio.teknoradio.nl/listen.pls", 
+                "image": "", 
+                "name": "teknoradio.nl"
+            }, 
+            {
+                "url": "http://st8.webradioworld.net:2199/tunein/dnbliquified.pls", 
+                "image": "", 
+                "name": "DnB Liquified (192k)"
+            }, 
+            {
+                "url": "http://stream.eilo.org:8000/minimal", 
+                "image": "", 
+                "name": "Eilo"
+            }
+        ]
+    }, 
+    {
+        "image": "", 
+        "group": "sr", 
+        "stations": [
+            {
+                "url": "http://127.0.0.1:1337", 
+                "image": "", 
+                "name": "jt relay"
+            }
+        ]
+    }
+]
