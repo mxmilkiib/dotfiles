@@ -340,11 +340,11 @@ alias aw='apt-cache show'
 
 # Arch Linux
 alias p='pacaur -S --noconfirm --noedit'
-alias pS='pac'
+alias pS='pacget -Ss -c --noconfirm --noedit'
 
 # alias 'pu=sudo pacman -Syu'
-alias pu='pacaur -Syu --noconfirm --noedit'
-alias pug='pacaur -Syu --noconfirm --noedit --devel'
+alias pu='pacget -Syu --noconfirm --noedit'
+alias pug='pacget -Syuk --noconfirm --noedit'
 
 alias pSi='pacaur -Si'                      # search info
 alias pQi='pacman -Qi'                      # query info

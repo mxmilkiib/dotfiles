@@ -44,7 +44,8 @@ if ! zgen saved; then
 
 	zgen load zsh-users/zsh-history-substring-search
 
-	zgen load tarruda/zsh-autosuggestions
+	# export ZSH_AUTOSUGGEST_USE_ASYNC=1
+	# zgen load tarruda/zsh-autosuggestions
 
 	# fzf after zsh-autosuggestions - fzf/issues/227
 	zgen load junegunn/fzf
