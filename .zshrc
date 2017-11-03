@@ -34,15 +34,15 @@ if ! zgen saved; then
 
 	zgen load djui/alias-tips
 
-	zgen load zsh-users/zsh-syntax-highlighting
+	# zgen load zsh-users/zsh-syntax-highlighting
 
 	# zgen load olivierverdier/zsh-git-prompt
 
 	zgen load zsh-users/zsh-completions
 
-	zgen load RobSis/zsh-completion-generator
+	# zgen load RobSis/zsh-completion-generator
 
-	zgen load zsh-users/zsh-history-substring-search
+	# zgen load zsh-users/zsh-history-substring-search
 
 	# export ZSH_AUTOSUGGEST_USE_ASYNC=1
 	# zgen load tarruda/zsh-autosuggestions
