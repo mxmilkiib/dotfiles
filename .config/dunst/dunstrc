@@ -1,28 +1,29 @@
 [global]
     font = Gohu GohuFont 12
     allow_markup = yes
-    format = "<b>%s %p</b>\n%b"
+    format = "<b>%s %p</b>: %b"
     sort = yes
     indicate_hidden = true
     # geometry = "x5"
     idle_threshold = 0
-    geometry = "400x5-19-12"
+    # geometry = "400x5-19-12"
+    geometry = "400x1-130+2"
     alignment = center
     show_age_threshold = 20
     sticky_history = yes
     follow = keyboard
     word_wrap = yes
     separator_height = 4
-    padding = 6
+    padding = 2
     horizontal_padding = 8
     separator_color = frame
     startup_notification = false
     dmenu = "/usr/bin/dmenu -p dunst: -nb #FFFFFF -nf #000000 -sb #94DBFF -sf #000000"
-    browser = chrome
+    browser = google-chrome
 
 
 [frame]
-    width = 3
+    width = 0
     color = "#484e50"
 
 [shortcuts]
