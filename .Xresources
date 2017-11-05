@@ -119,7 +119,11 @@ URxvt.secondaryWheel: 1
 !URxvt*iconFile: /usr/share/icons/gnome/scalable/apps/utilities-terminal-symbolic.svg
 
 
-! hotkey bindings
+! Hotkey bindings
+
+! Shift-space for Esc
+! URxvt.keysym.Shift-space: command:\033]720;1\007
+
 ! Adds single line scrollback with up/down
 URxvt.keysym.Shift-Up: command:\033]720;1\007
 URxvt.keysym.Shift-Down: command:\033]721;1\007
@@ -127,12 +131,14 @@ URxvt.keysym.Shift-Down: command:\033]721;1\007
 ! Map Shift-space to an escape char for Vim
 URxvt.keysym.S-space:  \033
 
+! Alt-F11 fullscreen - using wm instead
+! urxvt*keysym.M-F11: perl:fullscreen:switch
+
+
+! Hotkey fixes
 XTerm*vt100.Translations:       #override\n\
 Ctrl <KeyPress> Left   : string("\033[90~")  \n\
 Ctrl <KeyPress> Right  : string("\033[91~")  \n
-
-! Alt-F11 fullscreen - using wm instead
-! urxvt*keysym.M-F11: perl:fullscreen:switch
 
 
 ! Perl scripts
@@ -189,10 +195,6 @@ URxvt.keysym.M-C-v: perl:clipboard:paste_escaped
 ! alt-ctrl-c/v defaults
 ! Ctrl-Shift-c/v copy and paste CLIPBOARD buffer
 xterm*VT100.Translations: #override Ctrl Shift <Key>V: insert-selection(CLIPBOARD) \n Ctrl Shift <Key>C: copy-selection(CLIPBOARD)
-
-
-! URxvt.keysym.Shift-space: command:\033]720;1\007
-
 
 
 ! xclock ---------------------------------------------------------------------

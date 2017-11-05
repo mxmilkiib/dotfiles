@@ -61,7 +61,8 @@ caffeine &
 # compton -b
 
 # Notification daemon. ctrl-space to close, ctrl-shift-space to close all.
-dunst &
+# dunst &
+twmnd &
 
 # Break timer
 workrave &
