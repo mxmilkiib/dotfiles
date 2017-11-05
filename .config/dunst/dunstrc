@@ -6,8 +6,8 @@
     indicate_hidden = true
     # geometry = "x5"
     idle_threshold = 0
-    # geometry = "400x5-19-12"
-    geometry = "400x1-130+2"
+     geometry = "400x5-19-12"
+    # geometry = "400x1-130+2"
     alignment = center
     show_age_threshold = 20
     sticky_history = yes

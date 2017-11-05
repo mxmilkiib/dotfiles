@@ -110,7 +110,7 @@ bindsym --release $mod+Ctrl+button3 kill
 # bindsym $mod+space exec "dlaunch --sources=exec-path"
 bindsym $mod+space exec "i3-msg exec ~/bin/i3/i3-applaunch.sh"
 # or just use alt gr
-bindsym ISO_Level3_Shift  exec  "i3-msg exec ~/bin/i3/i3-applaunch.sh"
+# bindsym ISO_Level3_Shift  exec  "i3-msg exec ~/bin/i3/i3-applaunch.sh"
 
 
 ## launch audio apps
@@ -171,6 +171,7 @@ bindsym $mod+Ctrl+F10 exec "xrandr --output DVI-I-1 --mode 1280x1024 --pos 0x0 -
 # screenshot
 bindsym $mod+Print exec "scrot ~/images/screenshots/silver_%Y-%m-%d-%S.png"
 bindsym $mod+Ctrl+Print exec "scrot -u ~/images/screenshots/silver_%Y-%m-%d-%S.png"
+bindsym $mod+Ctrl+F12 exec "import -crop 1280x1024+1280+0 -window root ~/images/screenshots/silver_$(date +%Y-%m-%d-%S).png"
 
 # new windows will be split in horizontal orientation
 # bindsym $mod+b split h
@@ -478,7 +479,7 @@ for_window [class="Gtkdialog"] floating enable
 for_window [class="Radiotray"] floating enable
 for_window [title="Sequencer64"] floating enable
 for_window [title="etcher-electron"] floating enable
-
+for_window [title="Magnifying Glass"] floating toggle
 
 
 
