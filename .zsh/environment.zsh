@@ -59,7 +59,7 @@ eval $(dircolors $Z/dircolors)
 WORDCHARS='-*?_.[]~&;!#$%^(){}<>'
 
 # QGtkStyle
-export QT_QPA_PLATFORMTHEME=gtk2
+# export QT_QPA_PLATFORMTHEME=breeze
 
 # pacaur env variables
 export LOGDEST=/var/log/pacaur

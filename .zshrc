@@ -30,7 +30,7 @@ if ! zgen saved; then
 
 	zgen load nojhan/liquidprompt
 
-	zgen load chrissicool/zsh-256color
+	# zgen load chrissicool/zsh-256color
 
 	zgen load djui/alias-tips
 
@@ -38,7 +38,7 @@ if ! zgen saved; then
 
 	# zgen load olivierverdier/zsh-git-prompt
 
-	zgen load zsh-users/zsh-completions
+	# zgen load zsh-users/zsh-completions
 
 	# zgen load RobSis/zsh-completion-generator
 
@@ -49,7 +49,7 @@ if ! zgen saved; then
 
 	# fzf after zsh-autosuggestions - fzf/issues/227
 	zgen load junegunn/fzf
-	zgen load junegunn/fzf shell/completion.zsh
+	# zgen load junegunn/fzf shell/completion.zsh
   zgen load junegunn/fzf shell/key-bindings.zsh
 
 	zgen save

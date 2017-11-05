@@ -431,10 +431,18 @@ alias gp='git push'
 alias gpl='git pull'
 alias gx='gitx --all'
 
-# Easy Git commit
+# Easy Git commit; $ gc this is my commit message
 function gc(){
 	git commit -m "$*";
 }
+
+# Clone and cd into repo
+function gcl(){
+  git clone $*;
+	cd `basename $*`;
+}
+
+
 
 # redirect git commit to git commit verbose
 function git {
