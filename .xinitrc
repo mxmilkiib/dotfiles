@@ -14,6 +14,8 @@ fi
 # Set Xorg keyboard layout
 setxkbmap gb
 
+xsettingsd &
+
 # Source .Xresources for this session
 [[ -f ~/.Xresources ]] && xrdb -merge ~/.Xresources
 

@@ -34,14 +34,13 @@ Xft.hinting: 1
 Xft.antialias: 1
 Xft.rgba: rgb
 
+Xft.dpi:			70.0
 
 xterm*font:     *-terminus-medium-*-*-*-14-*
 ! xterm*font:     *-Fixedsys Excelsior 3.01-L2-medium-*-*-*-16-*
 ! xterm*font:     -*-gohufont-medium-*-*-*-14-*-*-*-*-*-*-*
 
-! URxvt.font: xft:terminesspowerline:pixelsize=12
 URxvt.font: xft:xos4 terminus:size=14
-
 ! URxvt*font:     -*-gohufont-medium-*-*-*-14-*-*-*-*-*-*-*
 ! urxvt.font: xft:Gohu GohuFont:size=14
 ! URxvt.font: xft:terminus:pixelsize=12
@@ -77,8 +76,8 @@ URxvt*transparent: false
 ! ! DarkYellow + Yellow
 ! *color3:  #eab93d
 ! *color11: #ffc123
-! ! DarkBlue + Blue
-! *color4:  #204a87
+! DarkBlue + Blue
+*color4:  #204a87
 ! *color12: #3465a4
 ! ! DarkMagenta + Magenta
 ! *color5:  #ce5c00
