@@ -1,9 +1,9 @@
 {
    "bookmarks" : "/home/milk/.config/radiotray-ng/bookmarks.json",
-   "last-station" : "Soma.fm: Space Station Soma",
-   "last-station-group" : "Chillout/groovey",
+   "last-station" : "Jungletrain.net (128k)",
+   "last-station-group" : "Bass / Breaks",
    "notification-verbose" : true,
    "notifications" : true,
    "split-title" : true,
-   "volume-level" : 26
+   "volume-level" : 48
 }

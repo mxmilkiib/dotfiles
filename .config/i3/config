@@ -93,6 +93,7 @@ for_window [instance="floating-tty-clock$"] floating toggle
 ###
 ## kill focused window
 bindsym $mod+q kill
+bindsym $mod+c kill
 bindsym --release $mod+Ctrl+q exec xkill
 bindsym $mod+Delete kill
 
