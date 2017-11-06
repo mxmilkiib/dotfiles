@@ -16,7 +16,7 @@ Z=~/.zsh
 
 
 # Set some options.
-source $Z/options.zsh
+# source $Z/options.zsh
 
 
 # Plugin managament
@@ -34,22 +34,22 @@ if ! zgen saved; then
 
 	zgen load djui/alias-tips
 
-	# zgen load zsh-users/zsh-syntax-highlighting
-
 	# zgen load olivierverdier/zsh-git-prompt
 
-	# zgen load zsh-users/zsh-completions
+	zgen load zsh-users/zsh-completions
 
-	# zgen load RobSis/zsh-completion-generator
+	zgen load RobSis/zsh-completion-generator
 
-	# zgen load zsh-users/zsh-history-substring-search
+	zgen load zsh-users/zsh-history-substring-search
 
-	# export ZSH_AUTOSUGGEST_USE_ASYNC=1
-	# zgen load tarruda/zsh-autosuggestions
+	zgen load zsh-users/zsh-syntax-highlighting
+
+	zgen load zsh-users/zsh-autosuggestions
+	export ZSH_AUTOSUGGEST_USE_ASYNC=1
 
 	# fzf after zsh-autosuggestions - fzf/issues/227
 	zgen load junegunn/fzf
-	# zgen load junegunn/fzf shell/completion.zsh
+	zgen load junegunn/fzf shell/completion.zsh
   zgen load junegunn/fzf shell/key-bindings.zsh
 
 	zgen save
@@ -87,22 +87,17 @@ export FZF_TMUX='1'
 # - The first argument to the function is the base path to start traversal
 # - Note that ag only lists files not directories
 # - See the source code (completion.{bash,zsh}) for the details.
-_fzf_compgen_path() {
-  ag -g "" "$1"
+# _fzf_compgen_path() {
+#   ag -g "" "$1"
+# }
+_fzf_compgen_dir() {
+	rg --hidden --files . 2>/dev/null | awk 'function dirname(fn) { if (fn == "") return ".";  if (fn !~ "[^/]") return "/"; sub("/*$", "", fn); if (fn !~ "/") return "."; sub("/[^/]*$", "", fn); if (fn == "") fn = "/"; return fn } {$0 = dirname($0)} !a[$0]++'
 }
 
 
 # https://github.com/clvv/fasd
 eval "$(fasd --init auto)"
 
-
-
-# Set the prompt.
-if (( C == 256 )); then
-		source $Z/prompt_256.zsh
-else
-		source $Z/prompt.zsh
-fi
 
 
 # update prompt time when pressing return to launch a command
@@ -113,6 +108,7 @@ reset-prompt-and-accept-line() {
 zle -N reset-prompt-and-accept-line
 
 bindkey '^m' reset-prompt-and-accept-line
+ZSH_AUTOSUGGEST_CLEAR_WIDGETS+=reset-prompt-and-accept-line
 
 # launch a tmux session for each terminal. if closed, session persists, and next terminal reconnects.
 # if [[ -z "$TMUX" ]] ;then
