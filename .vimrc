@@ -115,6 +115,10 @@ NeoBundle 'kien/ctrlp.vim'
 " Open files and buffers
 NeoBundle 'wincent/Command-T'
 
+" :rename for save as
+NeoBundle 'danro/rename.vim'
+
+
 " File navigation
 " Jump to word using characters <leader>w (like f in vimium)
 " NeoBundle 'Lokaltog/vim-easymotion'
@@ -142,17 +146,18 @@ NeoBundle 'spolu/dwm.vim'
 " New staus line tool
 " NeoBundle 'Lokaltog/powerline'
 " set rtp+=~/.vim/bundle/powerline/powerline/bindings/vim
-NeoBundle 'bling/vim-airline'
+NeoBundle 'vim-airline/vim-airline'
+NeoBundle 'vim-airline/vim-airline-themes'
+let g:airline#extensions#tabline#enabled = 1
+let g:airline_powerline_fonts = 1
+
 
 
 " Manage multiple files with ease
 NeoBundle 'scrooloose/nerdtree'
+
 " \p - toggle nerdtree
 " nmap <silent> <leader>p :NERDTreeToggle<CR>
-" Close Vim if only NERDtree buffer is open
-" https://github.com/scrooloose/nerdtree/issues/21
-" autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | en
-
 " Open NERDTree in the directory of the current file (or /home if no file is open)
 nmap <silent> <leader>p :call NERDTreeToggleInCurDir()<cr>
 function! NERDTreeToggleInCurDir()
@@ -164,7 +169,9 @@ function! NERDTreeToggleInCurDir()
   endif
 endfunction
 
-
+" Close Vim if only NERDtree buffer is open
+" https://github.com/scrooloose/nerdtree/issues/21
+" autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | en
 
 augroup AuNERDTreeCmd
   autocmd!
@@ -181,7 +188,9 @@ NeoBundle 'jistr/vim-nerdtree-tabs'
 map <Leader>o <plug>NERDTreeTabsToggle<CR>
 
 NeoBundle 'benatkin/vim-move-between-tabs'
+" tN and tP
 NeoBundle 'maxmeyer/vim-tabreorder'
+" alt-pgup and alt-pgdown
 
 
 " Manage tab workspaces
@@ -222,12 +231,14 @@ NeoBundle 'mhinz/vim-signify'
 "NeoBundle 'git://git.wincent.com/command-t.git'
 
 
-" NeoBundle 'xolox/vim-session'
+NeoBundle 'xolox/vim-session'
 " :SaveSession, :OpenSession, :RestartVim, etc.
-" let g:session_autosave = 'no'
+let g:session_autosave = 'yes'
+let g:session_autoload = 'yes'
 
-NeoBundle 'tpope/obsession.vim'
+" NeoBundle 'tpope/vim-obsession'
 
+" :UB
 NeoBundle 'chrisbra/histwin.vim'
 
 " Display sections in sidebar
@@ -237,7 +248,10 @@ NeoBundle 'chrisbra/histwin.vim'
 " Manage buffers
 "NeoBundle 'fholgado/minibufexpl.vim'
 
-NeoBundle 'sickill/vim-pasta'
+" NeoBundle 'sickill/vim-pasta'
+NeoBundle 'ConradIrwin/vim-bracketed-paste'
+
+NeoBundle 'nathanaelkane/vim-indent-guides'
 
 " NeoBundle 'inky/tumblr'
 
@@ -499,7 +513,7 @@ nnoremap <silent><leader><leader>j m`:silent +g/\m^\s*$/d<CR>``:noh<CR>
 nnoremap <silent><leader><leader>k m`:silent -g/\m^\s*$/d<CR>``:noh<CR>
 
 " :w!! to expand to sudo save of file (if it has opened as RO)
-command W silent execute 'write !sudo tee ' . shellescape(@%, 1) . ' >/dev/null'
+" command W silent execute 'write !sudo tee ' . shellescape(@%, 1) . ' >/dev/null'
 
 
 """ Functions
