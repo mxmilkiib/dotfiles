@@ -34,13 +34,13 @@ Xft.hinting: 1
 Xft.antialias: 1
 Xft.rgba: rgb
 
-Xft.dpi:			70.0
+Xft.dpi:			95.0
 
 xterm*font:     *-terminus-medium-*-*-*-14-*
 ! xterm*font:     *-Fixedsys Excelsior 3.01-L2-medium-*-*-*-16-*
 ! xterm*font:     -*-gohufont-medium-*-*-*-14-*-*-*-*-*-*-*
 
-URxvt.font: xft:xos4 terminus:size=14
+URxvt.font: xft:xos4 terminus:size=12
 ! URxvt*font:     -*-gohufont-medium-*-*-*-14-*-*-*-*-*-*-*
 ! urxvt.font: xft:Gohu GohuFont:size=14
 ! URxvt.font: xft:terminus:pixelsize=12

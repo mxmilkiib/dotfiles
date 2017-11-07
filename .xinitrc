@@ -11,6 +11,9 @@ if [ -d /etc/X11/xinit/xinitrc.d ]; then
 	unset f
 fi
 
+# Redshift - changed screen colour temp
+redshift-gtk -l 55.978301:-3.228586 -t 6000:4500 &
+
 # Set Xorg keyboard layout
 setxkbmap gb
 
@@ -34,9 +37,6 @@ xset fp rehash
 
 # Set background image
 feh --bg-fill --no-xinerama ~/.wallpapers/VnXDN9J_colourised.png -Z
-
-# Redshift - changed screen colour temp
-redshift-gtk -l 55.978301:-3.228586 -t 6000:4500 &
 
 # Unclutter - hides the mouse cursor after 5 seconds of idle
 unclutter --timeout 15 &
@@ -78,7 +78,7 @@ pnmixer &
 radiotray-ng &
 
 # Battery monitor
-vattery &
+# vattery &
 
 # Update dynamic dns
 dyndns &
@@ -110,8 +110,8 @@ flirc_util loadconfig ~/.config/flirc/my_flirc_config
 # oneko -fg "#555" -bg "#000" -time 200000 -position +200+200 &
 
 
-# Folder sync
-syncthing-gtk &
+# Folder sync tray GUI (using web interface instead)
+# syncthing-gtk &
 
 # Octopi pacman update and package manager GUI
 # pamac-tray &
@@ -125,6 +125,9 @@ syncthing-gtk &
 # lxpolkit &
 /usr/lib/xfce-polkit/xfce-polkit &
 
+export QT_QPA_PLATFORMTHEME=qt5ct
+export QT_PLATFORMTHEME=qt5ct
+export QT_PLATFORM_PLUGIN=qt5ct
 
 
 # Window manager

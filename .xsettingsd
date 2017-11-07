@@ -4,7 +4,7 @@ Gtk/CursorThemeName "default"
 Gtk/CursorThemeSize 0
 Gtk/EnableEventSounds 0
 Gtk/EnableInputFeedbackSounds 0
-Gtk/FontName "Droid Sans Mono 12"
+Gtk/FontName "Droid Sans Mono 10"
 Gtk/IconThemeName "Breeze"
 Gtk/MenuBarAccel "F10"
 Gtk/MenuImages 1
@@ -12,7 +12,7 @@ Gtk/ToolbarIconSize 3
 Gtk/ToolbarStyle "icons"
 Net/ThemeName	"Breeze"
 Xft/Antialias 1
-Xft/DPI 70000
+Xft/DPI 97280
 Xft/Hinting 1
 Xft/HintStyle "hintslight"
 Xft/RGBA "rgb"
