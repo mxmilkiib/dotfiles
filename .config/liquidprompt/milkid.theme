@@ -83,8 +83,8 @@ LP_COLOR_USER_ALT="$BOLD"         # user but not the one who logged in
 LP_COLOR_USER_ROOT="$BOLD_YELLOW" # root
 
 # Hostname
-LP_COLOR_HOST="$PINK"            # local host
-LP_COLOR_SSH="$PURPLE"        # connected via SSH
+LP_COLOR_HOST="$PURPLE"            # local host
+LP_COLOR_SSH="$CYAN"        # connected via SSH
 LP_COLOR_SU="$BOLD_YELLOW"  # connected remotely but in new environment through su/sudo
 LP_COLOR_TELNET="$WARN_RED" # connected via telnet
 LP_COLOR_X11_ON="$GREEN"    # connected with X11 support

@@ -1,9 +1,9 @@
 {
    "bookmarks" : "/home/milk/.config/radiotray-ng/bookmarks.json",
-   "last-station" : "Jungletrain.net (128k)",
-   "last-station-group" : "Bass / Breaks",
+   "last-station" : "Schizoid: prog psy",
+   "last-station-group" : "Goa / Psy",
    "notification-verbose" : true,
    "notifications" : true,
    "split-title" : true,
-   "volume-level" : 48
+   "volume-level" : 14
 }

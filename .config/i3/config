@@ -116,18 +116,19 @@ bindsym $mod+space exec "i3-msg exec ~/bin/i3/i3-applaunch.sh"
 
 ## launch audio apps
 bindsym $mod+p exec "run-or-raise.sh pavucontrol"
+bindsym $mod+Mod1+p exec "run-or-raise.sh pulseeffects"
 bindsym $mod+Shift+p exec "run-or-raise.sh cadence"
 bindsym $mod+Ctrl+p exec $terminal -geometry 130x30 -e alsamixer -c0
 
 ## change pulseaudio volume
-bindsym $mod+Ctrl+KP_Subtract exec "pactl set-sink-mute 0 false ; pactl set-sink-volume 0 -3%"
-bindsym $mod+Ctrl+KP_Add exec "pactl set-sink-mute 0 false ; pactl set-sink-volume 0 +3%"
+bindsym $mod+Ctrl+KP_Subtract exec "volume_lower.sh"
+bindsym $mod+Ctrl+KP_Add exec "volume_higher.sh"
 
-bindsym $mod+Shift+Ctrl+minus exec "pactl set-sink-mute 0 false ; pactl set-sink-volume 0 -3%"
-bindsym $mod+Shift+Ctrl+plus exec "pactl set-sink-mute 0 false ; pactl set-sink-volume 0 +3%"
+bindsym $mod+Shift+Ctrl+minus exec "volume_lower.sh"
+bindsym $mod+Shift+Ctrl+plus exec "volume_higher.sh"
 
-bindsym XF86AudioLowerVolume exec "pactl set-sink-mute 0 false ; pactl set-sink-volume 0 -3%"
-bindsym XF86AudioRaiseVolume exec "pactl set-sink-mute 0 false ; pactl set-sink-volume 0 +3%"
+bindsym XF86AudioLowerVolume exec "volume_lower.sh"
+bindsym XF86AudioRaiseVolume exec "volume_higher.sh"
 
 
 bindsym $mod+Shift+Ctrl+apostrophe exec "pactl set-sink-mute 0 toggle"
@@ -463,10 +464,12 @@ assign [class="qBittorrent"] 28
 assign [class="Hexchat"] 28
 assign [class="Cadence.py"] 29
 assign [class="Pavucontrol"] 29
+assign [class="Pulseeffects"] 29
 
 # auto float
-# for_window [class="Cadence.py"] floating enable
-# for_window [class="Pavucontrol"] floating enable
+for_window [class="Cadence.py"] floating enable
+for_window [class="Pavucontrol"] floating enable
+for_window [class="Pulseeffects"] floating enable
 # for_window [class="octopi-notifier"] floating enable
 for_window [class="Pamac-updater"] floating enable
 for_window [class="Syncthing GTK"] floating enable
