@@ -367,34 +367,33 @@ alias y='yaourt'
 
 
 ### Utils
-# -g aliases work at the end of a line
-
-# Grep, case insentitive, line number
-alias -g G='| rg -in'
-# for piping
-alias -g GP='| rg -in --color=never'
 
 # For quick viewing of txt files
 alias l='less -RF'
-alias -g L='| less -RFX'     # redraw (color), quit under one page, dont init/deinit term
-# alias -g "<"='less -RFX'
 
 # for READNULLCMD in environment.zsh
 function less_rfx() {
 	less -RFX "$@"
 }
 
-# List ANSI colours
-alias colours='for code in {000..255}; do print -P -- "$code: %F{$code}Test%f"; done'
-
+# -g aliases work at the end of a line
+alias -g L='| less -RFX'     # redraw (color), quit under one page, dont init/deinit term
+# alias -g "<"='less -RFX'
+# Grep, case insentitive, line number
+alias -g G='| rg -in'
+# for piping
+alias -g GP='| rg -in --color=never'
 # For running an app in the background without any stdout in console
 alias -g S='&> /dev/null &'
 
-# 'Copy with progress bar'
-alias ccp='rsync --progress -ah'
-
 
 ### Apps
+
+# List ANSI colours
+alias colours='for code in {000..255}; do print -P -- "$code: %F{$code}Test%f"; done'
+
+# 'Copy with progress bar'
+alias ccp='rsync --progress -ah'
 
 # with both in and out
 alias alsamixer='alsamixer -V=all'

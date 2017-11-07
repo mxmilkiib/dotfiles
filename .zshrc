@@ -34,8 +34,6 @@ if ! zgen saved; then
 
 	zgen load djui/alias-tips
 
-	# zgen load olivierverdier/zsh-git-prompt
-
 	zgen load zsh-users/zsh-completions
 
 	zgen load RobSis/zsh-completion-generator
