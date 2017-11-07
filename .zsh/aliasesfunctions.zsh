@@ -109,7 +109,7 @@ command_exists () {
 }
 
 # Search running processes
-alias 'ps?'='ps ax | grep '
+alias 'ps?'='ps ax | rg '
 
 # info trumps man feature-wise, new hotkeys to learn
 # alias man='info'
@@ -182,7 +182,7 @@ alias lsr='tree -Csu | less -RFX'    								# alternative recursive ls
 #alias 'lt=tree -d'
 
 # Search in files
-function gcode() { grep --color=always -rnC3 -- "$@" . | /usr/bin/less -R; }
+function gcode() { rg --color=always -nC3 -- "$@" . | /usr/bin/less -R; }
 
 # Mount with coloum output
 alias mounts='mount | column -t'
@@ -367,9 +367,12 @@ alias y='yaourt'
 
 
 ### Utils
+# -g aliases work at the end of a line
 
-# Grep, extended-regexp, case insentitive, line number, strip colours control chars for pipes
-alias -g G='| grep -Ein --color=tty'
+# Grep, case insentitive, line number
+alias -g G='| rg -in'
+# for piping
+alias -g GP='| rg -in --color=never'
 
 # For quick viewing of txt files
 alias l='less -RF'
