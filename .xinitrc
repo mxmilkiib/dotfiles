@@ -39,7 +39,7 @@ xset fp rehash
 feh --bg-fill --no-xinerama ~/.wallpapers/VnXDN9J_colourised.png -Z
 
 # Unclutter - hides the mouse cursor after 5 seconds of idle
-unclutter --timeout 15 &
+unclutter --timeout 15 --keystroke &
 
 # As xmonad default to x cursor
 xsetroot -cursor_name left_ptr &
@@ -94,6 +94,7 @@ flirc_util loadconfig ~/.config/flirc/my_flirc_config
 # Start Jack for audio
 # jack_control start &
 # cadence-session-start --start &    # doesn't start jack sometimes
+cadence-session-start --system-start
 
 # Jack GUI 
 # cadence --minimized &
@@ -129,6 +130,9 @@ export QT_QPA_PLATFORMTHEME=qt5ct
 export QT_PLATFORMTHEME=qt5ct
 export QT_PLATFORM_PLUGIN=qt5ct
 
+# Use mouse button8 as left windows key
+xinput set-button-map 1 2 3 4 5 6 7 12 9 10 11 12
+button8-to-lwin.py &
 
 # Window manager
 
