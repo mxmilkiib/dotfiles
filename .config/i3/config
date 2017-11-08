@@ -18,6 +18,8 @@ default_orientation vertical
 # Switch to workspace with urgent window automatically
 # for_window [urgent=latest] focus
 focus_on_window_activation smart
+# jump to an urgent window
+# bindsym $mod+Shift+x [urgent=latest] focus
 
 # Mod4 = win (super) key
 # Mod1 = alt key
@@ -93,7 +95,7 @@ for_window [instance="floating-tty-clock$"] floating toggle
 ###
 ## kill focused window
 bindsym $mod+q kill
-bindsym $mod+c kill
+bindsym $mod+x kill
 bindsym --release $mod+Ctrl+q exec xkill
 bindsym $mod+Delete kill
 
@@ -166,6 +168,9 @@ bindsym $mod+F5 exec "run-or-raise.sh qbittorrent"
 # launch or switch to irc client
 bindsym $mod+F6 exec "run-or-raise.sh hexchat"
 
+# Launch password manager
+bindsym $mod+F7 exec "run-or-raise.sh keepassx"
+
 # switch video output between cloned or seperate desktops
 bindsym $mod+Ctrl+F9 exec "xrandr --output DVI-I-1 --same-as DVI-I-0"
 bindsym $mod+Ctrl+F10 exec "xrandr --output DVI-I-1 --mode 1280x1024 --pos 0x0 --panning 0x0+0+0 --output DVI-I-0 --mode 1280x1024 --pos 1280x0"
@@ -206,7 +211,7 @@ bindsym $mod+z floating toggle
 bindsym $mod+Shift+z focus mode_toggle
 
 ## toggle floating window to sticky or not
-bindsym $mod+x sticky toggle
+bindsym $mod+c sticky toggle
 
 
 ## enter fullscreen mode for the focused container
@@ -232,13 +237,11 @@ bindsym $mod+Next focus right
 set $i3t_alt_tab        ~/bin/i3/i3t.py n
 set $i3t_alt_shift_tab  ~/bin/i3/i3t.py p
 bindsym $mod+Tab exec $i3t_alt_tab
-bindsym $mod+Tab+grave exec $i3t_alt_shift_tab
+bindsym $mod+Shift+Tab exec $i3t_alt_shift_tab
 
 ## jump between last two workspaces with `
 bindsym $mod+grave workspace back_and_forth
 
-## jump to an urgent window
-bindsym $mod+Shift-x [urgent=latest] focus
 
 ###
 ## move focused window
@@ -346,17 +349,17 @@ bindsym $mod+8 exec ~/bin/i3/i3-multimon.sh 'workspace $ws8'
 bindsym $mod+9 exec ~/bin/i3/i3-multimon.sh 'workspace $ws9'
 bindsym $mod+0 exec ~/bin/i3/i3-multimon.sh 'workspace $wsa'
 
-## switch to workspace and start a terminal
-bindsym $mod+Alt+1 exec "~/bin/i3/i3-multimon.sh 'workspace $ws1'; i3-msg exec $TERMINAL"
-bindsym $mod+Alt+2 exec "~/bin/i3/i3-multimon.sh 'workspace $ws2'; i3-msg exec $TERMINAL"
-bindsym $mod+Alt+3 exec "~/bin/i3/i3-multimon.sh 'workspace $ws3'; i3-msg exec $TERMINAL"
-bindsym $mod+Alt+4 exec "~/bin/i3/i3-multimon.sh 'workspace $ws4'; i3-msg exec $TERMINAL"
-bindsym $mod+Alt+5 exec "~/bin/i3/i3-multimon.sh 'workspace $ws5'; i3-msg exec $TERMINAL"
-bindsym $mod+Alt+6 exec "~/bin/i3/i3-multimon.sh 'workspace $ws6'; i3-msg exec $TERMINAL"
-bindsym $mod+Alt+7 exec "~/bin/i3/i3-multimon.sh 'workspace $ws7'; i3-msg exec $TERMINAL"
-bindsym $mod+Alt+8 exec "~/bin/i3/i3-multimon.sh 'workspace $ws8'; i3-msg exec $TERMINAL"
-bindsym $mod+Alt+9 exec "~/bin/i3/i3-multimon.sh 'workspace $ws9'; i3-msg exec $TERMINAL"
-bindsym $mod+Alt+0 exec "~/bin/i3/i3-multimon.sh 'workspace $wsa'; i3-msg exec $TERMINAL"
+## mod + alt + n = switch to workspace and start a terminal
+bindsym $mod+Mod1+1 exec "~/bin/i3/i3-multimon.sh 'workspace $ws1'; i3-msg exec $TERMINAL"
+bindsym $mod+Mod1+2 exec "~/bin/i3/i3-multimon.sh 'workspace $ws2'; i3-msg exec $TERMINAL"
+bindsym $mod+Mod1+3 exec "~/bin/i3/i3-multimon.sh 'workspace $ws3'; i3-msg exec $TERMINAL"
+bindsym $mod+Mod1+4 exec "~/bin/i3/i3-multimon.sh 'workspace $ws4'; i3-msg exec $TERMINAL"
+bindsym $mod+Mod1+5 exec "~/bin/i3/i3-multimon.sh 'workspace $ws5'; i3-msg exec $TERMINAL"
+bindsym $mod+Mod1+6 exec "~/bin/i3/i3-multimon.sh 'workspace $ws6'; i3-msg exec $TERMINAL"
+bindsym $mod+Mod1+7 exec "~/bin/i3/i3-multimon.sh 'workspace $ws7'; i3-msg exec $TERMINAL"
+bindsym $mod+Mod1+8 exec "~/bin/i3/i3-multimon.sh 'workspace $ws8'; i3-msg exec $TERMINAL"
+bindsym $mod+Mod1+9 exec "~/bin/i3/i3-multimon.sh 'workspace $ws9'; i3-msg exec $TERMINAL"
+bindsym $mod+Mod1+0 exec "~/bin/i3/i3-multimon.sh 'workspace $wsa'; i3-msg exec $TERMINAL"
 
 # # move focused container to workspace
 # bindsym $mod+Shift+1 move container to workspace $ws1
@@ -410,6 +413,8 @@ bindsym $mod+Ctrl+0 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $
 ## move between workspaces
 bindsym $mod+Left workspace prev_on_output
 bindsym $mod+Right workspace next_on_output
+bindsym $mod+Ctrl+h workspace prev_on_output
+bindsym $mod+Ctrl+l workspace next_on_output
 
 ## move windows between workspaces and follow
 bindsym $mod+Shift+Left move workspace prev_on_output; workspace prev_on_output
@@ -518,8 +523,8 @@ bar {
 	position       top
 	separator_symbol " "
   # strip_workspace_numbers yes
-	wheel_up_cmd nop
-	wheel_down_cmd nop
+	bindsym button4 nop
+  bindsym button5 nop
 
 	# colour via http://paletton.com/#uid=74y0u0km+m7devAiGqmrohGxCce
 	colors {
@@ -534,8 +539,12 @@ bar {
 }
 
 # disable mousewheel workspace change on bar
-bindsym button4 nop
-bindsym button5 nop
+# bindsym button4 nop
+# bindsym button5 nop
+
+# switch workspaces on mod+mousewheel up/down
+bindsym --whole-window --border $mod+button4 workspace next_on_output
+bindsym --whole-window --border $mod+button5 workspace prev_on_output
 
 
 # make sure the initial desktop is the first one
@@ -544,4 +553,4 @@ exec i3-msg workspace "21"
 # Start my defaults layouts on boot
 # exec --no-startup-id "i3-msg 'workspace 1; append_layout ~/.config/i3/workspace-1.json'"
 
-for_window [class=".*"] title_format " %title
+# for_window [class=".*"] title_format " %title
