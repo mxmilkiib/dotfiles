@@ -4,12 +4,12 @@
 # http://linux.die.net/man/1/zshoptions
 
 # Directory Changing options
-setopt AUTO_CD                      # Automatically cd in to directories if it's not a command name.
+setopt AUTO_CD                      # Automatically cd in to directories if it is not a command name.
 setopt AUTO_PUSHD                   # Automatically push visited directories to the stack.
-setopt PUSHD_IGNORE_DUPS            # ...and don't duplicate them.
+setopt PUSHD_IGNORE_DUPS            # ...and do not duplicate them.
 
 # History Options
-setopt APPEND_HISTORY               # Don't overwrite history.
+setopt APPEND_HISTORY               # Do not overwrite history.
 setopt INC_APPEND_HISTORY						# Add entries to history directly instead of at shell exit
 setopt SHARE_HISTORY								# Share history file between zsh shell instances
 setopt HIST_VERIFY                  # Verify commands that use a history expansion.

@@ -182,7 +182,7 @@ alias lsr='tree -Csu | less -RFX'    								# alternative recursive ls
 #alias 'lt=tree -d'
 
 # Search in files
-function gcode() { rg --color=always -nC3 -- "$@" . | /usr/bin/less -R; }
+function gcode() { rg -uu --color=always -nC3 -- "$@" . | /usr/bin/less -R; }
 
 # Mount with coloum output
 alias mounts='mount | column -t'
@@ -385,6 +385,8 @@ alias -g G='| rg -in'
 alias -g GP='| rg -in --color=never'
 # For running an app in the background without any stdout in console
 alias -g S='&> /dev/null &'
+# fzf
+alias -g F='`fzf`'
 
 
 ### Apps

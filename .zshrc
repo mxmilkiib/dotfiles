@@ -16,7 +16,7 @@ Z=~/.zsh
 
 
 # Set some options.
-# source $Z/options.zsh
+source $Z/options.zsh
 
 
 # Plugin managament
@@ -48,7 +48,8 @@ if ! zgen saved; then
 	# fzf after zsh-autosuggestions - fzf/issues/227
 	zgen load junegunn/fzf
 	zgen load junegunn/fzf shell/completion.zsh
-  zgen load junegunn/fzf shell/key-bindings.zsh
+	zgen load junegunn/fzf shell/key-bindings.zsh
+  # CTRL-T (paste files/dirs), CTRL-R (history), and ALT-C (cd), alias -g F, **<tab>
 
 	zgen save
 fi
@@ -76,20 +77,24 @@ fi
 source $Z/zbell.sh
 
 
-# export FZF_DEFAULT_COMMAND='find .'
+# FZF settings
+export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'
 export FZF_COMPLETION_TRIGGER='**'
 export FZF_COMPLETION_OPTS='+c -x'
 export FZF_DEFAULT_OPTS='--reverse'
 export FZF_TMUX='1'
-# Use ag instead of the default find command for listing candidates.
-# - The first argument to the function is the base path to start traversal
-# - Note that ag only lists files not directories
+
+# Use fd (https://github.com/sharkdp/fd) instead of the default find
+# command for listing path candidates.
+# - The first argument to the function ($1) is the base path to start traversal
 # - See the source code (completion.{bash,zsh}) for the details.
-# _fzf_compgen_path() {
-#   ag -g "" "$1"
-# }
+_fzf_compgen_path() {
+  fd --hidden --follow --exclude ".git" . "$1"
+}
+
+# Use fd to generate the list for directory completion
 _fzf_compgen_dir() {
-	rg --hidden --files . 2>/dev/null | awk 'function dirname(fn) { if (fn == "") return ".";  if (fn !~ "[^/]") return "/"; sub("/*$", "", fn); if (fn !~ "/") return "."; sub("/[^/]*$", "", fn); if (fn == "") fn = "/"; return fn } {$0 = dirname($0)} !a[$0]++'
+  fd --type d --hidden --follow --exclude ".git" . "$1"
 }
 
 
