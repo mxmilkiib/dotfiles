@@ -47,7 +47,11 @@ NeoBundle 'Flolagale/conque'
 " NeoBundle 'Raimondi/delimitMate'
 
 " Add/remove comments with ease
-NeoBundle 'tomtom/tcomment_vim'
+" NeoBundle 'tomtom/tcomment_vim'
+NeoBundle 'scrooloose/nerdcommenter'
+let g:NERDSpaceDelims = 1
+let g:NERDCommentEmptyLines = 1
+"<leader>+c+<space> = toggle
 
 " Surrount objects with something
 NeoBundle 'tpope/vim-surround'
