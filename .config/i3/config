@@ -285,6 +285,18 @@ mode "resize" {
 	bindsym Up resize shrink height 10 px or 10 ppt
 	bindsym Right resize grow width 10 px or 10 ppt
 
+	# ctrl for fine
+	bindsym Ctrl+h resize shrink width 2 px or 2 ppt
+	bindsym Ctrl+j resize grow height 2 px or 2 ppt
+	bindsym Ctrl+k resize shrink height 2 px or 2 ppt
+	bindsym Ctrl+l resize grow width 2 px or 2 ppt
+
+	# same bindings, but for the arrow keys
+	bindsym Ctrl+Left resize shrink width 2 px or 2 ppt
+	bindsym Ctrl+Down resize grow height 2 px or 2 ppt
+	bindsym Ctrl+Up resize shrink height 2 px or 2 ppt
+	bindsym Ctrl+Right resize grow width 2 px or 2 ppt
+
 	# back to normal: Enter, Escape or space
 	bindsym Return mode "default"
 	bindsym Escape mode "default"
@@ -519,7 +531,7 @@ gaps outer 0
 
 bar {
 	# status_command "i3status --config ~/.config/i3/istatus"
-	status_command "py3status -c ~/.config/i3/istatus_$(hostname)"
+			 status_command "py3status -c ~/.config/i3/istatus_$(hostname)"
 	position       top
 	separator_symbol " "
   # strip_workspace_numbers yes
