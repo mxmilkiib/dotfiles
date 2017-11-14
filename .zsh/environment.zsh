@@ -36,7 +36,7 @@ export NNN_COPIER="nnn_copier.sh"
 # Reduce mode key timeout to 0.1s
 export KEYTIMEOUT=1
 
-export PAGER="/usr/bin/less -RFX"
+export PAGER="/usr/bin/less -RF"
 # < pager
 export READNULLCMD=less_rfx
 

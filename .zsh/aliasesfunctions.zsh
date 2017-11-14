@@ -1,4 +1,4 @@
- # Aliases plus functions and their invocations
+# Aliases plus functions and their invocations
 # milk <dotconfig@milkmiruku.com>
 # sourced from various including P.C. Shyamshankar <sykora@lucentbeing.com>
 
@@ -264,11 +264,14 @@ function lwd() {
 # fi
 
 # Browse path web browser like
-function up() { pushd .. > /dev/null; }
-function down() { popd > /dev/null; }
+up() { pushd .. > /dev/null; }
+down() { popd > /dev/null; }
 
-# make and change into new directory
-function md() { mkdir -p "$1" && cd "$1"; }
+# Makes parent dir if it doesn't exist (i.e. newdir/secondnewdir/third etc.)
+alias mkdir='mkdir -p'
+
+# Make and change into new directory
+md() { mkdir -p "$1" && cd "$1"; }
 
 # Follow copied and moved files to destination directory
 cpf() { cp "$@" && goto "$_"; }
@@ -276,9 +279,6 @@ mvf() { mv "$@" && goto "$_"; }
 
 # Change into directory and long list files combo
 cl() { cd "$1" && ll . ; }
-
-# Makes parent dir if it doesn't exist (i.e. newdir/secondnewdir/third etc.)
-alias mkdir='mkdir -p'
 
 # Quick remove directory
 alias rd='rm -rf'
@@ -344,15 +344,18 @@ alias pS='pacget -Ss -c --noconfirm --noedit'
 
 # alias 'pu=sudo pacman -Syu'
 alias pu='pacget -Syu --noconfirm --noedit'
-alias pug='pacget -Syuk --noconfirm --noedit'
+alias puu='pacget -Syuk --noconfirm --noedit'
 
 alias pSi='pacaur -Si'                      # search info
 alias pQi='pacman -Qi'                      # query info
 alias pQl='pacman -Ql'                      # query contents
 alias pQo='pacman -Qo'                      # query file ownership
+function pQol(){
+  pacman -Ql `pacman -Qoq $@`
+}
 
 alias pR='sudo pacman -R'										# remove
-alias pRx='sudo pacman -Rcsn'								# remove, rm deps, recursive, remove config files
+alias pRr='sudo pacman -Rcsn'								# remove, rm deps, recursive, remove config files
 alias pU='sudo pacman -U'										# install a local package file
 alias pL='sudo rm /var/lib/pacman/db.lck'   # remove lockfile if pacman doesn't exit gracefully
 
@@ -361,9 +364,6 @@ alias pG='pacaur -G'
 alias mP='makepkg -si'
 
 alias y='yaourt'
-# function pS(){
-# 	yaourt -Ss --noconfirm --color=auto --pager $@
-# }
 
 
 ### Utils
@@ -377,7 +377,8 @@ function less_rfx() {
 }
 
 # -g aliases work at the end of a line
-alias -g L='| less -RFX'     # redraw (color), quit under one page, dont init/deinit term
+alias -g L='| less -RF'      # redraw (color), quit under one page, dont init/deinit term
+alias -g Ll='| less -RFX'    # redraw (color), quit under one page, allow mousescroll
 # alias -g "<"='less -RFX'
 # Grep, case insentitive, line number
 alias -g G='| rg -in'

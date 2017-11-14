@@ -30,7 +30,7 @@ if ! zgen saved; then
 
 	zgen load nojhan/liquidprompt
 
-	# zgen load chrissicool/zsh-256color
+	zgen load chrissicool/zsh-256color
 
 	zgen load djui/alias-tips
 
