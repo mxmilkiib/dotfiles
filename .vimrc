@@ -1,6 +1,10 @@
 " Vim confiruration file
 " milk <dotconfig@milkmiruku.com>
 
+""" spaces
+" b: <tab> = buffer switch
+" sp: <tab> = new split window
+
 """ Init pathogen
 "call pathogen#runtime_append_all_bundles()
 "call pathogen#helptags()
@@ -85,7 +89,7 @@ autocmd VimEnter * ColorToggle
 " NeoBundle 'cakebaker/scss-syntax.vim'
 " NeoBundle 'vim-scripts/Better-CSS-Syntax-for-Vim' - fuxks with scss :(
 
-NeoBundle 'pangloss/vim-javascript'
+" NeoBundle 'pangloss/vim-javascript'
 
 " NeoBundle 'StanAngeloff/php.vim'
 
@@ -95,7 +99,7 @@ NeoBundle 'Valloric/MatchTagAlways'
 " NeoBundle 'joestelmach/lint.vim'
 
 " NeoBundle 'sleistner/vim-jshint'
-NeoBundle 'wookiehangover/jshint.vim'
+" NeoBundle 'wookiehangover/jshint.vim'
 
 " NeoBundle 'baskerville/vim-sxhkdrc'
 
@@ -117,7 +121,7 @@ NeoBundle 'compview'
 NeoBundle 'kien/ctrlp.vim'
 
 " Open files and buffers
-NeoBundle 'wincent/Command-T'
+" NeoBundle 'wincent/Command-T'
 
 " :rename for save as
 NeoBundle 'danro/rename.vim'
