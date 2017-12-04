@@ -288,13 +288,14 @@ alias rd='rm -rf'
 
 # Ping and traceroute combo
 alias mtr="mtr -b -z -o LSDRNABWVGJMXI"
-# List open ports and their process
-alias ports='netstat -plnt'
 
 # Quick local HTTP server
 alias server='python2 -m SimpleHTTPServer'
 alias serverphp='php -S localhost:8000'
 
+# List open ports and their process
+alias tcpports='netstat -plnt'
+alias netports='netstat --inet -pln'
 # List connections
 alias cons='lsof -i'
 
@@ -344,7 +345,7 @@ alias pS='pacget -Ss -c --noconfirm --noedit'
 
 # alias 'pu=sudo pacman -Syu'
 alias pu='pacget -Syu --noconfirm --noedit'
-alias puu='pacget -Syuk --noconfirm --noedit'
+alias puu='pacget -Syu --noconfirm --noedit --devel --needed'
 
 alias pSi='pacaur -Si'                      # search info
 alias pQi='pacman -Qi'                      # query info
@@ -354,7 +355,7 @@ function pQol(){
   pacman -Ql `pacman -Qoq $@`
 }
 
-alias pR='sudo pacman -R'										# remove
+alias pR='sudo pacman -Rs'									# remove, rm deps
 alias pRr='sudo pacman -Rcsn'								# remove, rm deps, recursive, remove config files
 alias pU='sudo pacman -U'										# install a local package file
 alias pL='sudo rm /var/lib/pacman/db.lck'   # remove lockfile if pacman doesn't exit gracefully
@@ -601,6 +602,9 @@ alias xrandrc="xrandr --output DVI-I-1 --same-as DVI-I-0"
 
 # Reload compton
 alias comptonrl='sudo killall compton; compton -b'
+
+# xev, ignoring mouse, etc. events
+alias xevk='xev -event keyboard'
 
 
 ### Misc
