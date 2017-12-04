@@ -5,27 +5,23 @@
 " b: <tab> = buffer switch
 " sp: <tab> = new split window
 
-""" Init pathogen
-"call pathogen#runtime_append_all_bundles()
-"call pathogen#helptags()
+""" movement
+" <leader>f<letter> = acejump
+" shift-{/} = jump to empty lines
 
-" Neobundle script manager
+
+""" Neobundle script manager
 filetype off                   " Required!
 filetype plugin indent off     " Required!
 
-if has('vim_starting')
-  if &compatible
-    " Use Vim defaults instead of 100% vi compatibility
-    set nocompatible
-  endif
-
-  set runtimepath+=~/.vim/bundle/neobundle.vim
-  " set runtimepath+=~/.vim/bundle/neobundle.vim/,/usr/share/vim/vim72
+if &compatible
+  " Use Vim defaults instead of 100% vi compatibility
+  set nocompatible
 endif
 
-call neobundle#begin(expand('~/.vim/bundle/'))
+set runtimepath+=~/.vim/bundle/neobundle.vim
 
-" call neobundle#end()
+call neobundle#begin(expand('~/.vim/bundle/'))
 
 " Let NeoBundle manage NeoBundle
 NeoBundle 'Shougo/neobundle.vim'
@@ -33,20 +29,20 @@ NeoBundle 'Shougo/neobundle.vim'
 
 " After install, turn shell ~/.vim/bundle/vimproc, (n,g)make -f your_machines_makefile
 NeoBundle 'Shougo/vimproc', {
-      \ 'build' : {
-      \     'windows' : 'tools\\update-dll-mingw',
-      \     'cygwin' : 'make -f make_cygwin.mak',
-      \     'mac' : 'make',
-      \     'linux' : 'make',
-      \     'unix' : 'gmake',
-      \    },
-      \ }
+    \ 'build' : {
+    \     'windows' : 'tools\\update-dll-mingw',
+    \     'cygwin' : 'make -f make_cygwin.mak',
+    \     'mac' : 'make',
+    \     'linux' : 'make',
+    \     'unix' : 'gmake',
+    \    },
+    \ }
 
 " :help ConqueTerm
-NeoBundle 'Flolagale/conque'
+" NeoBundle 'Flolagale/conque'
 
 
-" Coding
+""" Coding
 
 " NeoBundle 'Raimondi/delimitMate'
 
@@ -55,10 +51,13 @@ NeoBundle 'Flolagale/conque'
 NeoBundle 'scrooloose/nerdcommenter'
 let g:NERDSpaceDelims = 1
 let g:NERDCommentEmptyLines = 1
-"<leader>+c+<space> = toggle
+" <leader>+c+<space> = toggle
 
 " Surrount objects with something
 NeoBundle 'tpope/vim-surround'
+" cs"' = change " to '
+" cs'<q> = change ' to <q>/</q>
+" dst = delete surrounding tags
 
 " Multiline text objects
 NeoBundle 'paradigm/TextObjectify'
@@ -73,16 +72,27 @@ NeoBundle 'tpope/vim-repeat'
 " Syntax
 NeoBundle 'othree/html5.vim'
 
+" Zen coding like - see emmet.io
+" NeoBundle 'mattn/emmet-vim'
+"html:5_
+"Then type <c-y>,
+" Enable only for HTML/CSS
+let g:user_emmet_install_global = 0
+autocmd FileType html,css EmmetInstall
+
 NeoBundle 'gmoe/vim-faust'
 
 " NeoBundle 'scrooloose/syntastic'
 
+" Highlights operator characters for every language
 NeoBundle 'Valloric/vim-operator-highlight'
+
+NeoBundle 'ntpeters/vim-airline-colornum'
+let g:colors_name='default'
 
 " NeoBundle 'ap/vim-css-color.git'
 
 NeoBundle 'chrisbra/Colorizer'
-
 autocmd VimEnter * ColorToggle
 
 
@@ -93,7 +103,10 @@ autocmd VimEnter * ColorToggle
 
 " NeoBundle 'StanAngeloff/php.vim'
 
+" Visually highlight matching opening & closing tags
 NeoBundle 'Valloric/MatchTagAlways'
+" Jump to last tag
+nnoremap <leader>% :MtaJumpToOtherTag<cr>
 
 " NeoBundle 'hallettj/jslint.vim'
 " NeoBundle 'joestelmach/lint.vim'
@@ -163,40 +176,50 @@ let g:airline_powerline_fonts = 1
 
 " Manage multiple files with ease
 NeoBundle 'scrooloose/nerdtree'
+let NERDTreeHijackNetrw=1
 
 " \p - toggle nerdtree
 " nmap <silent> <leader>p :NERDTreeToggle<CR>
 " Open NERDTree in the directory of the current file (or /home if no file is open)
 nmap <silent> <leader>p :call NERDTreeToggleInCurDir()<cr>
 function! NERDTreeToggleInCurDir()
-  " If NERDTree is open in the current buffer
-  if (exists("t:NERDTreeBufName") && bufwinnr(t:NERDTreeBufName) != -1)
-    exe ":NERDTreeClose"
-  else
-    exe ":NERDTreeFind"
-  endif
+" If NERDTree is open in the current buffer
+if (exists("t:NERDTreeBufName") && bufwinnr(t:NERDTreeBufName) != -1)
+  exe ":NERDTreeClose"
+else
+  exe ":NERDTreeFind"
+endif
 endfunction
+
+" open NERDTree automatically when vim starts up on opening a directory
+autocmd StdinReadPre * let s:std_in=1
+autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists("s:std_in") | exe 'NERDTree' argv()[0] | wincmd p | ene | endif
 
 " Close Vim if only NERDtree buffer is open
 " https://github.com/scrooloose/nerdtree/issues/21
 " autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | en
 
 augroup AuNERDTreeCmd
-  autocmd!
+autocmd!
 augroup end
 
 if has('gui_running')
-  " autocmd! NERDTreeHijackNetrw 
-  autocmd! NERDTreeTabs
-  autocmd! NERDTree
+" autocmd! NERDTreeHijackNetrw
+autocmd! NERDTreeTabs
+autocmd! NERDTree
 endif
 
-" Tabs
+let g:NERDTreeDirArrowExpandable = '▸'
+let g:NERDTreeDirArrowCollapsible = '▾'
+
+
+""" Tabs
 NeoBundle 'jistr/vim-nerdtree-tabs'
 map <Leader>o <plug>NERDTreeTabsToggle<CR>
 
 NeoBundle 'benatkin/vim-move-between-tabs'
 " tN and tP
+
 NeoBundle 'maxmeyer/vim-tabreorder'
 " alt-pgup and alt-pgdown
 
@@ -207,25 +230,23 @@ NeoBundle 'maxmeyer/vim-tabreorder'
 
 " Minimal GUI
 NeoBundle 'junegunn/goyo.vim'
-" NeoBundle 'amix/vim-zenroom2'
+" :Goyo / :Goyo!
 
 
 " Doesn't work right with Awesome
+" For vim-session
 NeoBundle 'xolox/vim-misc'
 " NeoBundle 'xolox/vim-lua-inspect'
 
 
-" Zen coding like - see emmet.io
-NeoBundle 'mattn/emmet-vim'
-
-
 " Yank ring
 " NeoBundle 'vim-scripts/YankRing.vim'
-" 2p, paste sedonc last delete
+" 2p, paste second last delete
 
 
 " Git integration
 NeoBundle 'tpope/vim-fugitive'
+
 NeoBundle 'gregsexton/gitv'
 
 
@@ -239,10 +260,10 @@ NeoBundle 'mhinz/vim-signify'
 "NeoBundle 'git://git.wincent.com/command-t.git'
 
 
-NeoBundle 'xolox/vim-session'
+"NeoBundle 'xolox/vim-session'
 " :SaveSession, :OpenSession, :RestartVim, etc.
-let g:session_autosave = 'yes'
-let g:session_autoload = 'no'
+"let g:session_autosave = 'yes'
+"let g:session_autoload = 'no'
 
 " NeoBundle 'tpope/vim-obsession'
 
@@ -269,23 +290,22 @@ NeoBundle 'nathanaelkane/vim-indent-guides'
 " NeoBundle 'Valloric/YouCompleteMe'
 
 
-
 " Color theme
-NeoBundle 'BlackSea'
-colorscheme BlackSea
+" NeoBundle 'BlackSea'
+" colorscheme BlackSea
 
 call neobundle#end()
 
 " NeoBundle required
 " Basic syntax highlighting
 if has("syntax")
-  syntax on
-  filetype on
-  filetype plugin on
-  filetype indent on
+syntax on
+filetype on
+filetype plugin on
+filetype indent on
 endif
 
-" NeoBundleCheck
+NeoBundleCheck
 
 
 """ General
@@ -294,9 +314,18 @@ endif
 set ttyfast
 
 " Enable terminal mouse support
-set ttymouse=xterm2
+if has("mouse_urxvt")
+  set ttymouse=urxvt
+elseif has ("mouse_sgr")
+  set ttymouse=sgr
+else
+  set ttymouse=xterm2
+end
+
 " Enable mouse use in all modes
 set mouse=a
+" make middle click work proper
+" set mouse=v
 
 " Set bell to visual
 set visualbell
@@ -305,7 +334,7 @@ set visualbell
 set wildmenu
 set wildmode=full
 
-" Use spaces not tabs
+" Use spaces for tabs
 set expandtab
 
 " Use two spaces for tabs
@@ -334,35 +363,37 @@ set wrapscan
 set ignorecase
 set smartcase
 
-" history bugger to 1000 lines
+" history buffer to 1000 lines
 set history=1000
 
 " Set swap and backup dir
-set backupdir=~/.vim-tmp,~/.tmp,~/tmp,/var/tmp,/tmp
-set directory=~/.vim-tmp,~/.tmp,~/tmp,/var/tmp,/tmp
+set backupdir=~/tmp,/var/tmp,/tmp
+set directory=~/tmp,/var/tmp,/tmp
 
 
-
-" Cursor
+""" Cursor
 
 " Show the cursor position all the time
 set ruler
 
 " Show horizontal line that the cursor is on
-set cursorline
+" set cursorline
 
 " Change cursorline highlight from underline to colour bar
-:hi CursorLine term=bold cterm=bold guibg=Grey40
+" hi Search ctermbg=DarkGray cterm=none
+" <leader>c to toggle cursorline highlight
+" nnoremap <Leader>c :set cursorline!<CR>
 
+" Highlight search term in all buffers
+" set hlsearch
+" Toggle search term highlight
+" nmap <silent> <leader>/ :silent set invhlsearch<CR>
 
 
 " Mouse
 
 " Let pasting from middle click buffer work properly
-set paste
-
-
-
+" set paste
 
 
 " Set title to Vim for xterm systems
@@ -389,15 +420,15 @@ set viminfo='10,\"100,:20,%,n~/.viminfo
 
 " http://drupal.org/node/29325
 if has("autocmd")
-  " Drupal *.module and *.install files.
-  augroup module
-    autocmd BufRead,BufNewFile *.module set filetype=php
-    autocmd BufRead,BufNewFile *.install set filetype=php
-    autocmd BufRead,BufNewFile *.test set filetype=php
-    autocmd BufRead,BufNewFile *.inc set filetype=php
-    autocmd BufRead,BufNewFile *.profile set filetype=php
-    autocmd BufRead,BufNewFile *.view set filetype=php
-  augroup END
+" Drupal *.module and *.install files.
+augroup module
+  autocmd BufRead,BufNewFile *.module set filetype=php
+  autocmd BufRead,BufNewFile *.install set filetype=php
+  autocmd BufRead,BufNewFile *.test set filetype=php
+  autocmd BufRead,BufNewFile *.inc set filetype=php
+  autocmd BufRead,BufNewFile *.profile set filetype=php
+  autocmd BufRead,BufNewFile *.view set filetype=php
+augroup END
 endif
 
 
@@ -412,18 +443,19 @@ set backspace=eol,indent,start
 imap <S-Space> <Esc>
 imap <C-c> <Esc>
 
-" ` for : to avoid shift
+" ` for one button save
 map ` :w<CR>
 
 " Backspace in normal mode
 " (beeps on blank line due to l)
 noremap <BS> i<BS><Esc>li
 
-" Space from normal to insert with a space
-nnoremap <Space> i <Esc>
-
 " Enter in normal to add a line below and escape back to normal
-nmap <CR> o<Esc>
+nnoremap <CR> i<CR><Esc>
+
+" S pace from normal to insert with a space
+nnoremap <Space> i <Esc>l
+
 
 " Ctrl-N twice in normal mode toggles line numbers
 nmap <C-N><C-N> :set invnumber<CR>
@@ -439,14 +471,13 @@ nmap <silent> <Leader>ev :e $MYVIMRC<cr>
 nmap <silent> <Leader>sv :so $MYVIMRC<cr>
 
 
-
 " http://vim.wikia.com/wiki/Toggle_auto-indenting_for_code_paste
 nnoremap <F2> :set invpaste paste?<CR>
 set pastetoggle=<F2>
 set showmode
 
 " Turn of indentation and paste from clipboard
-noremap <leader><leader>p :set paste<CR>:put  *<CR>:set nopaste<CR>
+" noremap <leader><leader>p :set paste<CR>:put  *<CR>:set nopaste<CR>
 
 
 " Move between windows with alt-arrows "not working after a few tries
@@ -463,12 +494,18 @@ noremap <leader><leader>p :set paste<CR>:put  *<CR>:set nopaste<CR>
 map <C--> <C-W>-
 map <C-+> <C-W>+
 
+" inoremap <C-d> <Home>
+" inoremap <C-c> <End>
 
-" Highlight search term in all buffers
-" set hlsearch
-" Toggle search term highlight
-nmap <silent> <leader>/ :silent set invhlsearch<CR>
-
+" Fix Ctrl-left/right for jumping backwards/forwads a Word
+noremap <silent> <Esc>Oc W
+noremap <silent> <Esc>Od B
+inoremap <silent> <Esc>Oc <C-O>W
+inoremap <silent> <Esc>Od <C-O>B
+" noremap [5D <C-Left>
+" noremap [5C <C-Right>
+" inoremap <ESC>[5D <C-left>
+" inoremap <ESC>[5C <C-Right>
 
 " Map numpad keys to numbers
 imap <Esc>Oq 1
@@ -487,11 +524,6 @@ imap <Esc>OQ /
 imap <Esc>Ol +
 imap <Esc>OS -
 
-" not working yet
-map <C-0d> B
-map <C-0c> W
-imap <C-Left> <Esc>Bi
-imap <C-Right> <Esc>W
 
 " Highlight trailing whitespace in red on non-active line
 " http://sartak.org/2011/03/end-of-line-whitespace-in-vim.html
@@ -501,15 +533,15 @@ highlight EOLWS ctermbg=red guibg=red
 
 " Delete whitespace at end of a line in normal - <Leader><Space>
 function! <SID>StripTrailingWhitespace()
-  " Preparation: save last search, and cursor position.
-  let _s=@/
-  let l = line(".")
-  let c = col(".")
-  " Do the business:
-  %s/\s\+$//e
-  " Clean up: restore previous search history, and cursor position
-  let @/=_s
-  call cursor(l, c)
+" Preparation: save last search, and cursor position.
+let _s=@/
+let l = line(".")
+let c = col(".")
+" Do the business:
+%s/\s\+$//e
+" Clean up: restore previous search history, and cursor position
+let @/=_s
+call cursor(l, c)
 endfunction
 noremap <silent> <Leader><Space> :call <SID>StripTrailingWhitespace()<CR>
 
@@ -520,23 +552,24 @@ nnoremap <silent><leader>k :set paste<CR>m`O<Esc>``:set nopaste<CR>`
 nnoremap <silent><leader><leader>j m`:silent +g/\m^\s*$/d<CR>``:noh<CR>
 nnoremap <silent><leader><leader>k m`:silent -g/\m^\s*$/d<CR>``:noh<CR>
 
-" :w!! to expand to sudo save of file (if it has opened as RO)
+" :W to sudo save file if it has opened as RO
 " command W silent execute 'write !sudo tee ' . shellescape(@%, 1) . ' >/dev/null'
+" after, vim indicates file hasn't saved, but it has
 
 
 """ Functions
 
 " Restore cursor postion on reload
 function! ResCur()
-  if line("'\"") <= line("$")
-    normal! g`"
-    return 1
-  endif
+if line("'\"") <= line("$")
+  normal! g`"
+  return 1
+endif
 endfunction
 
 augroup resCur
-  autocmd!
-  autocmd BufWinEnter * call ResCur()
+autocmd!
+autocmd BufWinEnter * call ResCur()
 augroup END
 
 
@@ -557,14 +590,14 @@ map <TAB> za
 set foldlevel=20
 
 
-" Diff with saved file - :diffsaved, :diffoff
-
+" Diff with saved file
+" :diffsaved, :diffoff
 function! s:DiffWithSaved()
-  let filetype=&ft
-  diffthis
-  vnew | r # | normal! 1Gdd
-  diffthis
-  exe "setlocal bt=nofile bh=wipe nobl noswf ro ft=" . filetype
+let filetype=&ft
+diffthis
+vnew | r # | normal! 1Gdd
+diffthis
+exe "setlocal bt=nofile bh=wipe nobl noswf ro ft=" . filetype
 endfunction
 com! DiffSaved call s:DiffWithSaved()
 
@@ -572,34 +605,33 @@ com! DiffSaved call s:DiffWithSaved()
 " file it was loaded from, thus the changes you made.
 " Only define it when not defined already.
 if !exists(":DiffOrig")
-  command DiffOrig vert new | set bt=nofile | r ++edit # | 0d_ | diffthis
-        \ | wincmd p | diffthis
+command DiffOrig vert new | set bt=nofile | r ++edit # | 0d_ | diffthis
+      \ | wincmd p | diffthis
 endif
+
+
+" Make shift-insert work like in Xterm
+" inoremap <MiddleMouse> <S-Insert>
+" inoremap <MiddleMouse> <S-Insert> 
 
 
 """ Gvim
-
 if has('gui_running')
 
-  " Make shift-insert work like in Xterm
-  map <S-Insert> <MiddleMouse>
-  map! <S-Insert> <MiddleMouse>
-
-  set guifont=terminus\ 8
-  set guioptions-=m  "remove menu bar
-  set guioptions-=T  "remove toolbar
-  set guioptions-=r  "remove right-hand scroll bar
-  set guioptions-=L  "remove left-hand scroll bar
-  set guiheadroom=0 "make gvim not leave bottom border to gtk default background colour - doesn't work?! ARGH
+set guifont=terminus\ 8
+set guioptions-=m  "remove menu bar
+set guioptions-=T  "remove toolbar
+set guioptions-=r  "remove right-hand scroll bar
+set guioptions-=L  "remove left-hand scroll bar
+set guiheadroom=0 "make gvim not leave bottom border to gtk default background colour - doesn't work?! ARGH
 
 endif
-
 
 
 "" Alt-i, Alt-a - insert/append just one character
 "" http://vim.wikia.com/wiki/Insert_a_single_character
-" Since I have switched to Neovim in which Meta key bindings works even in the terminal, I used <M-i> and <M-a> as the shortcuts. If you are using original Vim on a terminal, you could use the trick provided by Tim Pope in his rsi.vim plugin to make the meta key work.
-
+" Since I have switched to Neovim in which Meta key bindings works even in the terminal, I used <M-i> and <M-a> as the shortcuts.
+" If you are using original Vim on a terminal, you could use the trick provided by Tim Pope in his rsi.vim plugin to make the meta key work.
 let s:insert_char_pre = ''
 let s:insert_leave = ''
 
@@ -607,37 +639,37 @@ autocmd InsertCharPre * execute s:insert_char_pre
 autocmd InsertLeave   * execute s:insert_leave
 
 " basic layer
-function! s:QuickInput (operator, insert_char_pre) 
-  let s:insert_char_pre = a:insert_char_pre
-  let s:insert_leave = 'call <SID>RemoveFootprint()'
-  call feedkeys(a:operator, 'n')
-endfunction 
+function! s:QuickInput (operator, insert_char_pre)
+let s:insert_char_pre = a:insert_char_pre
+let s:insert_leave = 'call <SID>RemoveFootprint()'
+call feedkeys(a:operator, 'n')
+endfunction
 
-function! s:RemoveFootprint() 
-  let s:insert_char_pre = ''
-  let s:insert_leave = ''
-  let s:char_count = 0
-endfunction 
+function! s:RemoveFootprint()
+let s:insert_char_pre = ''
+let s:insert_leave = ''
+let s:char_count = 0
+endfunction
 
 " secondary layer
-function! QuickInput_Count (operator, count) 
-  let insert_char_pre = 'call <SID>CountChars('.a:count.')'
-  call <SID>QuickInput(a:operator, insert_char_pre)
-endfunction 
+function! QuickInput_Count (operator, count)
+let insert_char_pre = 'call <SID>CountChars('.a:count.')'
+call <SID>QuickInput(a:operator, insert_char_pre)
+endfunction
 
 let s:char_count = 0
-function! s:CountChars (count) 
-  let s:char_count += 1
-  if s:char_count == a:count
-    call feedkeys("\<Esc>")
-  endif
-endfunction 
+function! s:CountChars (count)
+let s:char_count += 1
+if s:char_count == a:count
+  call feedkeys("\<Esc>")
+endif
+endfunction
 
 " secondary layer
-function! QuickInput_Repeat (operator, count) 
-  let insert_char_pre = 'let v:char = repeat(v:char, '.a:count.') | call feedkeys("\<Esc>")'
-  call <SID>QuickInput(a:operator, insert_char_pre)
-endfunction 
+function! QuickInput_Repeat (operator, count)
+let insert_char_pre = 'let v:char = repeat(v:char, '.a:count.') | call feedkeys("\<Esc>")'
+call <SID>QuickInput(a:operator, insert_char_pre)
+endfunction
 
 nnoremap i :<C-u>execute 'call ' v:count? 'QuickInput_Count("i", v:count)' : "feedkeys('i', 'n')"<CR>
 nnoremap a :<C-u>execute 'call ' v:count? 'QuickInput_Count("a", v:count)' : "feedkeys('a', 'n')"<CR>
@@ -645,7 +677,7 @@ nnoremap a :<C-u>execute 'call ' v:count? 'QuickInput_Count("a", v:count)' : "fe
 nnoremap <Plug>InsertAChar :<C-u>call QuickInput_Repeat('i', v:count1)<CR>
 nnoremap <Plug>AppendAChar :<C-u>call QuickInput_Repeat('a', v:count1)<CR>
 
-nmap <M-i> <Plug>InsertAChar
+nmap <A-i> <Plug>InsertAChar
 nmap <M-a> <Plug>AppendAChar
 
 
@@ -780,3 +812,20 @@ nnoremap <Leader>f :call AceJump()<CR>
 let &t_SI = "\<Esc>[6 q"
 let &t_SR = "\<Esc>[4 q"
 let &t_EI = "\<Esc>[2 q"
+
+
+" provide hjkl movements in Insert mode via the <Alt> modifier key
+" https://stackoverflow.com/questions/1737163/traversing-text-in-insert-mode
+inoremap <A-h> <C-o>h
+inoremap <A-j> <C-o>j
+inoremap <A-k> <C-o>k
+inoremap <A-l> <C-o>l
+
+" Alt-b/w for backward/forward word in Insert mode
+inoremap <A-b> <C-o>b
+inoremap <A-w> <C-o>w
+
+
+" If you select one or more lines, you can use < and > for sihifting them sidewards. Unfortunately you immediately lose the selection afterwards. You can use gv to reselect the last selection (see :h gv), thus you can work around it like this:
+xnoremap <  <gv
+xnoremap >  >gv
