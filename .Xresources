@@ -63,6 +63,10 @@ URxvt*depth: 32
 URxvt*foreground: white
 URxvt*transparent: false
 ! URxvt*shading: 18
+URxvt*fading: 15
+! URxvt*colorUL:  yellow
+URxvt*underlineColor:  yellow
+
 
 ! ! Black + DarkGrey
 ! *color0:  #000000
@@ -74,17 +78,17 @@ URxvt*transparent: false
 ! *color2:  #93d44f
 ! *color10: #c8e7a8
 ! ! DarkYellow + Yellow
-! *color3:  #eab93d
+! *color3:  #d7af87
 ! *color11: #ffc123
 ! DarkBlue + Blue
 *color4:  #204a87
 ! *color12: #3465a4
 ! ! DarkMagenta + Magenta
-! *color5:  #ce5c00
-! *color13: #f57900
+*color5:  #CD00CD
+*color13: #D787FF
 ! !DarkCyan + Cyan (both not tango)
 ! *color6:  #89b6e2
-! *color14: #46a4ff
+*color14: #87D7FF
 ! ! LightGrey + White
 ! *color7:  #cccccc
 ! *color15: #ffffff
@@ -120,19 +124,18 @@ URxvt.secondaryWheel: 1
 
 ! Hotkey bindings
 
-! Shift-space for Esc
-! URxvt.keysym.Shift-space: command:\033]720;1\007
-
 ! Adds single line scrollback with up/down
 URxvt.keysym.Shift-Up: command:\033]720;1\007
 URxvt.keysym.Shift-Down: command:\033]721;1\007
 
 ! Map Shift-space to an escape char for Vim
-URxvt.keysym.S-space:  \033
+! URxvt.keysym.S-space:  \033
+
+! Map Shift-space to page up
+URxvt.keysym.Shift-space: eval:scroll_up_pages 1
 
 ! Alt-F11 fullscreen - using wm instead
 ! urxvt*keysym.M-F11: perl:fullscreen:switch
-
 
 ! Hotkey fixes
 XTerm*vt100.Translations:       #override\n\
@@ -151,7 +154,6 @@ URxvt.searchable-scrollback: C-s
 ! matcher, using usr-select instead
 ! Launch URLs
 ! URxvt.url-launcher: /usr/bin/google-chrome-stable
-! URxvt.url-launcher: /usr/bin/chrome
 ! URxvt.matcher.button: 1
 
 ! url-select

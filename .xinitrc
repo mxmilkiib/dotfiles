@@ -94,7 +94,7 @@ flirc_util loadconfig ~/.config/flirc/my_flirc_config
 # Start Jack for audio
 # jack_control start &
 # cadence-session-start --start &    # doesn't start jack sometimes
-cadence-session-start --system-start
+# cadence-session-start --system-start
 
 # Jack GUI 
 # cadence --minimized &
@@ -136,7 +136,8 @@ button8-to-lwin.py &
 
 # Window manager
 
-exec i3 >> ~/.i3/.i3log 2>&1
+exec i3
+# exec i3 >> /var/tmp/log/i3log 2>&1
 
 # exec selectwm
 # exec xterm

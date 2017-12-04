@@ -13,6 +13,6 @@ Gtk/ToolbarStyle "icons"
 Net/ThemeName	"Breeze"
 Xft/Antialias 1
 Xft/DPI 97280
-Xft/Hinting 0
-Xft/HintStyle "hintslight"
-Xft/RGBA "rgb"
+# Xft/Hinting 0
+# Xft/HintStyle "hintslight"
+# Xft/RGBA "rgb"
