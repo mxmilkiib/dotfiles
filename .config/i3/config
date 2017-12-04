@@ -171,6 +171,10 @@ bindsym $mod+F6 exec "run-or-raise.sh hexchat"
 # Launch password manager
 bindsym $mod+F7 exec "run-or-raise.sh keepassx"
 
+# Launch gmail
+bindsym XF86Mail exec "chrome https://gmail.com && run-or-raise.sh chrome"
+
+
 # switch video output between cloned or seperate desktops
 bindsym $mod+Ctrl+F9 exec "xrandr --output DVI-I-1 --same-as DVI-I-0"
 bindsym $mod+Ctrl+F10 exec "xrandr --output DVI-I-1 --mode 1280x1024 --pos 0x0 --panning 0x0+0+0 --output DVI-I-0 --mode 1280x1024 --pos 1280x0"
@@ -179,6 +183,10 @@ bindsym $mod+Ctrl+F10 exec "xrandr --output DVI-I-1 --mode 1280x1024 --pos 0x0 -
 bindsym $mod+Print exec "scrot ~/images/screenshots/silver_%Y-%m-%d-%S.png"
 bindsym $mod+Ctrl+Print exec "scrot -u ~/images/screenshots/silver_%Y-%m-%d-%S.png"
 bindsym $mod+Ctrl+F12 exec "import -crop 1280x1024+1280+0 -window root ~/images/screenshots/silver_$(date +%Y-%m-%d-%S).png"
+
+# xev
+bindsym $mod+F8 exec "$terminal -name 'Event Tester' -geometry 60x9-100-100 -e xev -event keyboard"
+
 
 # new windows will be split in horizontal orientation
 # bindsym $mod+b split h
@@ -209,6 +217,17 @@ bindsym $mod+z floating toggle
 
 ## change focus between tiling / floating windows
 bindsym $mod+Shift+z focus mode_toggle
+
+
+## move focused floating window to top right
+bindsym $mod+y exec "xdotool getwindowfocus windowmove 600 100"
+
+## move focused floating window to mid right
+bindsym $mod+u exec "xdotool getwindowfocus windowmove 600 400"
+
+## move focused floating window to bottom right
+bindsym $mod+i exec "xdotool getwindowfocus windowmove 600 607"
+
 
 ## toggle floating window to sticky or not
 bindsym $mod+c sticky toggle
@@ -492,37 +511,39 @@ for_window [class="Pamac-updater"] floating enable
 for_window [class="Syncthing GTK"] floating enable
 for_window [title="alsamixer"] floating enable
 for_window [class="Vlc"] floating enable
+for_window [class="mpv"] floating enable
 for_window [class="(?i)virtualbox"] floating enable border normal
 for_window [class="GParted"] floating enable border normal
-for_window [class="Galculator"] floating enable border pixel 2
+for_window [class="Galculator"] floating enable
 for_window [title="File Transfer*"] floating enable
 for_window [class="Gtkdialog"] floating enable
 for_window [class="Radiotray"] floating enable
 for_window [title="Sequencer64"] floating enable
 for_window [title="etcher-electron"] floating enable
 for_window [title="Magnifying Glass"] floating toggle
+for_window [title="Event Tester"] floating toggle
 
 
 
 # container/window colours
 # class                 border  backgr. text    indicator child_border
-client.focused          #4f2877 #4f2877 #ffffff #B46AA6   #D2CA57
+client.focused          #4f2877 #4f2877 #ffffff #00ff00   #D2CA57
 client.focused_inactive #333333 #5f676a #ffffff #484e50   #5f676a
 client.unfocused        #333333 #222222 #c5c5c5 #292d2e   #222222
 client.urgent           #2f343a #900000 #ffffff #900000   #900000
 client.placeholder      #000000 #0c0c0c #ffffff #000000   #0c0c0c
 
-client.background       #ffffff
+client.background       #000000
 
 ## border style; show titles or not. the border toggle feature loses the 4px
 bindsym $mod+n border normal
-bindsym $mod+Shift+n border pixel 3
+bindsym $mod+Shift+n border pixel 1
 
 # set borders and gaps
-new_window pixel 3
-new_float pixel 4
+new_window pixel 1
+new_float pixel 1
 
-gaps inner 4
+gaps inner 0
 gaps outer 0
 
 
@@ -531,7 +552,8 @@ gaps outer 0
 
 bar {
 	# status_command "i3status --config ~/.config/i3/istatus"
-			 status_command "py3status -c ~/.config/i3/istatus_$(hostname)"
+	status_command "py3status -c ~/.config/i3/istatus_$(hostname)"
+
 	position       top
 	separator_symbol " "
   # strip_workspace_numbers yes
@@ -558,6 +580,8 @@ bar {
 bindsym --whole-window --border $mod+button4 workspace next_on_output
 bindsym --whole-window --border $mod+button5 workspace prev_on_output
 
+# revert gtk hijack of shift-insert back to PRIMARY rather than CLIPBOARD
+bindsym Shift+Insert exec "xdotool click 2"
 
 # make sure the initial desktop is the first one
 exec i3-msg workspace "21"

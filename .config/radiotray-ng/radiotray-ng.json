@@ -1,9 +1,12 @@
 {
    "bookmarks" : "/home/milk/.config/radiotray-ng/bookmarks.json",
-   "last-station" : "Jungletrain.net (128k)",
-   "last-station-group" : "Bass / Breaks",
+   "compact-menu" : false,
+   "last-station" : "Fluid Radio",
+   "last-station-group" : "Ambient/drone",
+   "max-volume-level" : 100,
    "notification-verbose" : true,
    "notifications" : true,
-   "split-title" : true,
-   "volume-level" : 52
+   "split-title" : false,
+   "volume-level" : 99,
+   "volume-step" : 3
 }
