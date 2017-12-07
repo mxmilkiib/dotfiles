@@ -3,12 +3,18 @@
 
 """ spaces
 " b: <tab> = buffer switch
+" \\b = buffers fzf
 " sp: <tab> = new split window
+" \\f = open file
 
 """ movement
 " <leader>f<letter> = acejump
 " shift-{/} = jump to empty lines
 
+""" other
+" \\f = fzf open file
+" \\c = fzf command information
+" \v = search across files, etc.
 
 """ Neobundle script manager
 filetype off                   " Required!
@@ -42,6 +48,23 @@ NeoBundle 'Shougo/vimproc', {
 " NeoBundle 'Flolagale/conque'
 
 
+" fzf
+NeoBundle 'junegunn/fzf.vim'
+noremap <Leader><Leader>f :FZF<CR>
+noremap <Leader><Leader>b :Buffers<CR>
+noremap <Leader><Leader>t :Colors<CR>
+noremap <Leader><Leader>c :Commands!<CR>
+noremap <Leader><Leader>h :History<CR>
+
+" Command finder
+" NeoBundle 'sunaku/vim-shortcut'
+" noremap <silent> <Leader><Leader> :Shortcuts<Return>
+
+" scratch pad
+NeoBundle 'mtth/scratch.vim'
+noremap <Leader>s :Scratch<CR>
+
+
 """ Coding
 
 " NeoBundle 'Raimondi/delimitMate'
@@ -68,6 +91,8 @@ NeoBundle 'vim-scripts/repmo.vim'
 " . repeat for plugin actions
 NeoBundle 'tpope/vim-repeat'
 
+" highlight yanked text
+NeoBundle 'sunaku/vim-highlightedyank'
 
 " Syntax
 NeoBundle 'othree/html5.vim'
@@ -83,6 +108,8 @@ autocmd FileType html,css EmmetInstall
 NeoBundle 'gmoe/vim-faust'
 
 " NeoBundle 'scrooloose/syntastic'
+
+NeoBundle 'sunaku/xterm-color-table.vim'
 
 " Highlights operator characters for every language
 NeoBundle 'Valloric/vim-operator-highlight'
@@ -128,10 +155,11 @@ NeoBundle 'chase/nginx.vim'
 
 " <leader>v
 " holy shit yello
+" search across files/buffers
 NeoBundle 'compview'
 
 " Find things across windows/tabs
-NeoBundle 'kien/ctrlp.vim'
+" NeoBundle 'kien/ctrlp.vim'
 
 " Open files and buffers
 " NeoBundle 'wincent/Command-T'
@@ -549,8 +577,8 @@ noremap <silent> <Leader><Space> :call <SID>StripTrailingWhitespace()<CR>
 " http://vim.wikia.com/wiki/Quickly_adding_and_deleting_empty_lines
 nnoremap <silent><leader>j :set paste<CR>m`o<Esc>``:set nopaste<CR>
 nnoremap <silent><leader>k :set paste<CR>m`O<Esc>``:set nopaste<CR>`
-nnoremap <silent><leader><leader>j m`:silent +g/\m^\s*$/d<CR>``:noh<CR>
-nnoremap <silent><leader><leader>k m`:silent -g/\m^\s*$/d<CR>``:noh<CR>
+nnoremap <silent><leader>J m`:silent +g/\m^\s*$/d<CR>``:noh<CR>
+nnoremap <silent><leader>K m`:silent -g/\m^\s*$/d<CR>``:noh<CR>
 
 " :W to sudo save file if it has opened as RO
 " command W silent execute 'write !sudo tee ' . shellescape(@%, 1) . ' >/dev/null'
