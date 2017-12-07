@@ -137,12 +137,16 @@ bindsym $mod+Shift+Ctrl+apostrophe exec "pactl set-sink-mute 0 toggle"
 bindsym $mod+Ctrl+KP_Multiply exec "pactl set-sink-mute 0 toggle"
 bindsym XF86AudioMute exec "pactl set-sink-mute 0 toggle"
 
-
+# media keys control radiotray
 bindsym XF86AudioPrev exec "qdbus com.github.radiotray_ng /com/github/radiotray_ng com.github.radiotray_ng.previous_station"
 bindsym XF86AudioNext exec "qdbus com.github.radiotray_ng /com/github/radiotray_ng com.github.radiotray_ng.next_station"
 bindsym XF86Tools exec "qdbus com.github.radiotray_ng /com/github/radiotray_ng com.github.radiotray_ng.play"
 bindsym XF86AudioStop exec "qdbus com.github.radiotray_ng /com/github/radiotray_ng com.github.radiotray_ng.stop"
 
+
+# override screensaver
+bindsym XF86Launch1 exec "caffeine -ka"
+bindsym $mod+XF86Launch1 exec "caffeine -kd"
 
 ## launch screen lock
 bindsym $mod+Shift+x exec i3lock

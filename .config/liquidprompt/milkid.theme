@@ -58,7 +58,7 @@ LP_PS1_POSTFIX=""
 # Set to a null string "" if you do not want color.
 
 # Current working directory
-LP_COLOR_PATH="$BOLD"         # as normal user
+LP_COLOR_PATH="$TRUEPINK"         # as normal user
 LP_COLOR_PATH_ROOT="$BOLD_YELLOW"   # as root
 
 # Color of the proxy mark
@@ -78,16 +78,16 @@ LP_COLOR_MARK_ROOT="$BOLD_RED"  # as root
 LP_COLOR_MARK_SUDO="$BOLD_RED"  # when sudo credentials are cached
 
 # Current user
-LP_COLOR_USER_LOGGED="$CYAN"           # user who logged in
+LP_COLOR_USER_LOGGED="$BLUE"           # user who logged in
 LP_COLOR_USER_ALT="$BOLD"         # user but not the one who logged in
-LP_COLOR_USER_ROOT="$BOLD_YELLOW" # root
+LP_COLOR_USER_ROOT="$RED" # root
 
 # Hostname
 LP_COLOR_HOST="$PURPLE"            # local host
 LP_COLOR_SSH="$CYAN"        # connected via SSH
 LP_COLOR_SU="$BOLD_YELLOW"  # connected remotely but in new environment through su/sudo
 LP_COLOR_TELNET="$WARN_RED" # connected via telnet
-LP_COLOR_X11_ON="$GREEN"    # connected with X11 support
+LP_COLOR_X11_ON="$WHITE"    # connected with X11 support
 LP_COLOR_X11_OFF="$YELLOW"  # connected without X11 support
 
 # Separation mark (aka permission in the working dir)
@@ -108,7 +108,7 @@ LP_COLOR_DISCHARGING_ABOVE="$YELLOW"  # discharging but above threshold
 LP_COLOR_DISCHARGING_UNDER="$RED"     # discharging and under threshold
 
 # Time
-LP_COLOR_TIME="$WHITE"
+LP_COLOR_TIME="$YELLOW"
 
 # Brackets inside screen/tmux
 LP_COLOR_IN_MULTIPLEXER="$BOLD_BLUE"
