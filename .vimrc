@@ -14,7 +14,9 @@
 """ other
 " \\f = fzf open file
 " \\c = fzf command information
-" \v = search across files, etc.
+" \v = search across files, etc
+" \s = toggle scratchpad buffer
+" :shell = drop terminal into shell, return to vim on exit
 
 """ Neobundle script manager
 filetype off                   " Required!
@@ -48,29 +50,41 @@ NeoBundle 'Shougo/vimproc', {
 " NeoBundle 'Flolagale/conque'
 
 
-" fzf
+" fzf - populate a menu with things and f*i*l*t*e*r live with ripgrep
 NeoBundle 'junegunn/fzf.vim'
 noremap <Leader><Leader>f :FZF<CR>
 noremap <Leader><Leader>b :Buffers<CR>
 noremap <Leader><Leader>t :Colors<CR>
 noremap <Leader><Leader>c :Commands!<CR>
 noremap <Leader><Leader>h :History<CR>
+if executable('fzf')
+  " Better command history with q:
+  command! CmdHist call fzf#vim#command_history({'right': '40'})
+  nnoremap q: :CmdHist<CR>
+  " Better search history
+  command! QHist call fzf#vim#search_history({'right': '40'})
+  nnoremap q/ :QHist<CR>
+end
 
-" Command finder
-" NeoBundle 'sunaku/vim-shortcut'
-" noremap <silent> <Leader><Leader> :Shortcuts<Return>
+" Find things easily
+" http://owen.cymru/fzf-ripgrep-navigate-with-bash-faster-than-ever-before
+let g:rg_command = '
+  \ rg --column --line-number --no-heading --fixed-strings --ignore-case --no-ignore --hidden --follow --color "always"
+  \ -g "*.{js,json,php,md,styl,jade,html,config,py,cpp,c,go,hs,rb,conf}"
+  \ -g "!{.git,node_modules,vendor}/*" '
+command! -bang -nargs=* F call fzf#vim#grep(g:rg_command .shellescape(<q-args>), 1, <bang>0)
 
 " scratch pad
 NeoBundle 'mtth/scratch.vim'
-noremap <Leader>s :Scratch<CR>
+noremap <Leader>s :ScratchPreview<CR>
 
 
 """ Coding
 
-" NeoBundle 'Raimondi/delimitMate'
+" provides insert mode auto-completion for quotes, parens, brackets, etc.
+NeoBundle 'Raimondi/delimitMate'
 
 " Add/remove comments with ease
-" NeoBundle 'tomtom/tcomment_vim'
 NeoBundle 'scrooloose/nerdcommenter'
 let g:NERDSpaceDelims = 1
 let g:NERDCommentEmptyLines = 1
@@ -91,37 +105,40 @@ NeoBundle 'vim-scripts/repmo.vim'
 " . repeat for plugin actions
 NeoBundle 'tpope/vim-repeat'
 
-" highlight yanked text
-NeoBundle 'sunaku/vim-highlightedyank'
 
-" Syntax
+
+" Visual help
+
+" highlight yanked text
+" NeoBundle 'sunaku/vim-highlightedyank'
+
+" Visually highlight matching opening & closing tags
+NeoBundle 'Valloric/MatchTagAlways'
+" Jump to last tag
+nnoremap <leader>% :MtaJumpToOtherTag<cr>
+
+" Show contents of registers on " or @
+"NeoBundle 'junegunn/vim-peekaboo'
+
+
+" Syntax highlighting
+
+" html5
 NeoBundle 'othree/html5.vim'
 
-" Zen coding like - see emmet.io
-" NeoBundle 'mattn/emmet-vim'
-"html:5_
-"Then type <c-y>,
-" Enable only for HTML/CSS
-let g:user_emmet_install_global = 0
-autocmd FileType html,css EmmetInstall
-
+" faust syntax highlighting
 NeoBundle 'gmoe/vim-faust'
 
 " NeoBundle 'scrooloose/syntastic'
 
-NeoBundle 'sunaku/xterm-color-table.vim'
-
 " Highlights operator characters for every language
 NeoBundle 'Valloric/vim-operator-highlight'
 
-NeoBundle 'ntpeters/vim-airline-colornum'
-let g:colors_name='default'
-
 " NeoBundle 'ap/vim-css-color.git'
 
+" A plugin to color colornames and codes
 NeoBundle 'chrisbra/Colorizer'
 autocmd VimEnter * ColorToggle
-
 
 " NeoBundle 'cakebaker/scss-syntax.vim'
 " NeoBundle 'vim-scripts/Better-CSS-Syntax-for-Vim' - fuxks with scss :(
@@ -129,11 +146,6 @@ autocmd VimEnter * ColorToggle
 " NeoBundle 'pangloss/vim-javascript'
 
 " NeoBundle 'StanAngeloff/php.vim'
-
-" Visually highlight matching opening & closing tags
-NeoBundle 'Valloric/MatchTagAlways'
-" Jump to last tag
-nnoremap <leader>% :MtaJumpToOtherTag<cr>
 
 " NeoBundle 'hallettj/jslint.vim'
 " NeoBundle 'joestelmach/lint.vim'
@@ -144,28 +156,6 @@ nnoremap <leader>% :MtaJumpToOtherTag<cr>
 " NeoBundle 'baskerville/vim-sxhkdrc'
 
 NeoBundle 'chase/nginx.vim'
-
-" Find things easily
-
-" NeoBundle 'FuzzyFinder'
-" NeoBundle 'L9' " required by ff
-
-" Search for text in open buffers
-" NeoBundle 'buffergrep'
-
-" <leader>v
-" holy shit yello
-" search across files/buffers
-NeoBundle 'compview'
-
-" Find things across windows/tabs
-" NeoBundle 'kien/ctrlp.vim'
-
-" Open files and buffers
-" NeoBundle 'wincent/Command-T'
-
-" :rename for save as
-NeoBundle 'danro/rename.vim'
 
 
 " File navigation
@@ -180,8 +170,11 @@ NeoBundle 'svermeulen/vim-extended-ft'
 NeoBundle 'myusuf3/numbers.vim'
 nnoremap <leader>n :NumbersToggle<CR>
 
-" Startup
+" :rename for save as
+NeoBundle 'danro/rename.vim'
 
+
+" Startup
 " NeoBundle 'mhinz/vim-startify'
 
 
@@ -192,14 +185,19 @@ nnoremap <leader>n :NumbersToggle<CR>
 NeoBundle 'spolu/dwm.vim'
 
 
-" New staus line tool
-" NeoBundle 'Lokaltog/powerline'
-" set rtp+=~/.vim/bundle/powerline/powerline/bindings/vim
+" New staus line style, a la powerline
 NeoBundle 'vim-airline/vim-airline'
 NeoBundle 'vim-airline/vim-airline-themes'
 let g:airline#extensions#tabline#enabled = 1
 let g:airline_powerline_fonts = 1
 
+" Highlight the active line
+NeoBundle 'ntpeters/vim-airline-colornum'
+let g:colors_name='default'
+
+
+" :XtermColorTable, # = yank current color, t = toggle RGB text, f = set RGB text to current color
+NeoBundle 'sunaku/xterm-color-table.vim'
 
 
 " Manage multiple files with ease
@@ -279,13 +277,11 @@ NeoBundle 'gregsexton/gitv'
 
 
 " NeoBundle 'airblade/vim-gitgutter'
+" Show a diff using Vim its sign column
 NeoBundle 'mhinz/vim-signify'
 
 
 """ to sort
-
-" Open files easily
-"NeoBundle 'git://git.wincent.com/command-t.git'
 
 
 "NeoBundle 'xolox/vim-session'
@@ -310,8 +306,6 @@ NeoBundle 'ConradIrwin/vim-bracketed-paste'
 
 NeoBundle 'nathanaelkane/vim-indent-guides'
 
-" NeoBundle 'inky/tumblr'
-
 "NeoBundle 'msanders/snipmate.vim'
 
 "NeoBundle 'Shougo/neocomplcache'
@@ -332,6 +326,8 @@ filetype on
 filetype plugin on
 filetype indent on
 endif
+" NeoBundle 'inky/tumblr'
+
 
 NeoBundleCheck
 
@@ -342,9 +338,10 @@ NeoBundleCheck
 set ttyfast
 
 " Enable terminal mouse support
-if has("mouse_urxvt")
-  set ttymouse=urxvt
-elseif has ("mouse_sgr")
+" if has("mouse_urxvt")
+  " set ttymouse=urxvt - broken in tmux
+" else
+if has ("mouse_sgr")
   set ttymouse=sgr
 else
   set ttymouse=xterm2
@@ -660,53 +657,53 @@ endif
 "" http://vim.wikia.com/wiki/Insert_a_single_character
 " Since I have switched to Neovim in which Meta key bindings works even in the terminal, I used <M-i> and <M-a> as the shortcuts.
 " If you are using original Vim on a terminal, you could use the trick provided by Tim Pope in his rsi.vim plugin to make the meta key work.
-let s:insert_char_pre = ''
-let s:insert_leave = ''
-
-autocmd InsertCharPre * execute s:insert_char_pre
-autocmd InsertLeave   * execute s:insert_leave
-
-" basic layer
-function! s:QuickInput (operator, insert_char_pre)
-let s:insert_char_pre = a:insert_char_pre
-let s:insert_leave = 'call <SID>RemoveFootprint()'
-call feedkeys(a:operator, 'n')
-endfunction
-
-function! s:RemoveFootprint()
-let s:insert_char_pre = ''
-let s:insert_leave = ''
-let s:char_count = 0
-endfunction
-
-" secondary layer
-function! QuickInput_Count (operator, count)
-let insert_char_pre = 'call <SID>CountChars('.a:count.')'
-call <SID>QuickInput(a:operator, insert_char_pre)
-endfunction
-
-let s:char_count = 0
-function! s:CountChars (count)
-let s:char_count += 1
-if s:char_count == a:count
-  call feedkeys("\<Esc>")
-endif
-endfunction
-
-" secondary layer
-function! QuickInput_Repeat (operator, count)
-let insert_char_pre = 'let v:char = repeat(v:char, '.a:count.') | call feedkeys("\<Esc>")'
-call <SID>QuickInput(a:operator, insert_char_pre)
-endfunction
-
-nnoremap i :<C-u>execute 'call ' v:count? 'QuickInput_Count("i", v:count)' : "feedkeys('i', 'n')"<CR>
-nnoremap a :<C-u>execute 'call ' v:count? 'QuickInput_Count("a", v:count)' : "feedkeys('a', 'n')"<CR>
-
-nnoremap <Plug>InsertAChar :<C-u>call QuickInput_Repeat('i', v:count1)<CR>
-nnoremap <Plug>AppendAChar :<C-u>call QuickInput_Repeat('a', v:count1)<CR>
-
-nmap <A-i> <Plug>InsertAChar
-nmap <M-a> <Plug>AppendAChar
+" let s:insert_char_pre = ''
+" let s:insert_leave = ''
+" 
+" autocmd InsertCharPre * execute s:insert_char_pre
+" autocmd InsertLeave   * execute s:insert_leave
+" 
+" " basic layer
+" function! s:QuickInput (operator, insert_char_pre)
+" let s:insert_char_pre = a:insert_char_pre
+" let s:insert_leave = 'call <SID>RemoveFootprint()'
+" call feedkeys(a:operator, 'n')
+" endfunction
+" 
+" function! s:RemoveFootprint()
+" let s:insert_char_pre = ''
+" let s:insert_leave = ''
+" let s:char_count = 0
+" endfunction
+" 
+" " secondary layer
+" function! QuickInput_Count (operator, count)
+" let insert_char_pre = 'call <SID>CountChars('.a:count.')'
+" call <SID>QuickInput(a:operator, insert_char_pre)
+" endfunction
+" 
+" let s:char_count = 0
+" function! s:CountChars (count)
+" let s:char_count += 1
+" if s:char_count == a:count
+  " call feedkeys("\<Esc>")
+" endif
+" endfunction
+" 
+" " secondary layer
+" function! QuickInput_Repeat (operator, count)
+" let insert_char_pre = 'let v:char = repeat(v:char, '.a:count.') | call feedkeys("\<Esc>")'
+" call <SID>QuickInput(a:operator, insert_char_pre)
+" endfunction
+" 
+" nnoremap i :<C-u>execute 'call ' v:count? 'QuickInput_Count("i", v:count)' : "feedkeys('i', 'n')"<CR>
+" nnoremap a :<C-u>execute 'call ' v:count? 'QuickInput_Count("a", v:count)' : "feedkeys('a', 'n')"<CR>
+" 
+" nnoremap <Plug>InsertAChar :<C-u>call QuickInput_Repeat('i', v:count1)<CR>
+" nnoremap <Plug>AppendAChar :<C-u>call QuickInput_Repeat('a', v:count1)<CR>
+" 
+" nmap <A-i> <Plug>InsertAChar
+" nmap <M-a> <Plug>AppendAChar
 
 
 
