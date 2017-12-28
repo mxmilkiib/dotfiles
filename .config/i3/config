@@ -117,7 +117,7 @@ bindsym $mod+space exec "i3-msg exec ~/bin/i3/i3-applaunch.sh"
 
 
 ## launch audio apps
-bindsym $mod+p exec "run-or-raise.sh pavucontrol"
+bindsym $mod+p exec $terminal -title 'pulsemixer' -geometry 130x30 -e pulsemixer
 bindsym $mod+Mod1+p exec "run-or-raise.sh pulseeffects"
 bindsym $mod+Shift+p exec "run-or-raise.sh cadence"
 bindsym $mod+Ctrl+p exec $terminal -geometry 130x30 -e alsamixer -c0
@@ -163,32 +163,36 @@ bindsym $mod+F3 exec "run-or-raise.sh chrome"
 bindsym XF86WWW exec "run-or-raise.sh chrome"
 # bindsym $mod+F4 exec "run-or-raise.sh pcmanfm"
 
-# launch or switch to file manager
+## launch or switch to file manager
 bindsym $mod+F4 exec "run-or-raise.sh dolphin"
 
-# launch or switch to bittorrent client
+## launch or switch to bittorrent client
 bindsym $mod+F5 exec "run-or-raise.sh qbittorrent"
 
-# launch or switch to irc client
+## launch or switch to irc client
 bindsym $mod+F6 exec "run-or-raise.sh hexchat"
 
-# Launch password manager
+## launch password manager
 bindsym $mod+F7 exec "run-or-raise.sh keepassx"
 
-# Launch gmail
+## launch gmail
 bindsym XF86Mail exec "chrome https://gmail.com && run-or-raise.sh chrome"
 
 
-# switch video output between cloned or seperate desktops
+## switch video output between cloned or seperate desktops
 bindsym $mod+Ctrl+F9 exec "xrandr --output DVI-I-1 --same-as DVI-I-0"
 bindsym $mod+Ctrl+F10 exec "xrandr --output DVI-I-1 --mode 1280x1024 --pos 0x0 --panning 0x0+0+0 --output DVI-I-0 --mode 1280x1024 --pos 1280x0"
 
-# screenshot
-bindsym $mod+Print exec "scrot ~/images/screenshots/silver_%Y-%m-%d-%S.png"
-bindsym $mod+Ctrl+Print exec "scrot -u ~/images/screenshots/silver_%Y-%m-%d-%S.png"
-bindsym $mod+Ctrl+F12 exec "import -crop 1280x1024+1280+0 -window root ~/images/screenshots/silver_$(date +%Y-%m-%d-%S).png"
+## screenshot of whole desktop
+bindsym $mod+Print exec scrot ~/images/screenshots/silver_%Y-%m-%d-%T.png
+## screenshot of active window
+bindsym --release $mod+Ctrl+Print exec "scrot -u ~/images/screenshots/silver_%Y-%m-%d-%T.png"
+## screenshot of selected region
+bindsym --release $mod+Mod1+Print exec "scrot -s ~/images/screenshots/silver_%Y-%m-%d-%T.png"
+## screenshot of right hand monitor
+bindsym $mod+Mod1+F12 exec "import -crop 1280x1024+1280+0 -window root ~/images/screenshots/silver_$(date +%Y-%m-%d-%T).png"
 
-# xev
+## xev
 bindsym $mod+F8 exec "$terminal -name 'Event Tester' -geometry 60x9-100-100 -e xev -event keyboard"
 
 
@@ -202,7 +206,7 @@ bindsym $mod+F8 exec "$terminal -name 'Event Tester' -geometry 60x9-100-100 -e x
 ## change container layouts
 bindsym $mod+w layout toggle split
 ## toggle between horizontal/vertical splitting for new windows
-bindsym $mod+Shift+w split toggle
+bindsym $mod+t split toggle
 
 bindsym $mod+s layout stacking
 ## mnemonic: below w, stacking puts window titles visually below each other
@@ -522,16 +526,17 @@ for_window [class="Galculator"] floating enable
 for_window [title="File Transfer*"] floating enable
 for_window [class="Gtkdialog"] floating enable
 for_window [class="Radiotray"] floating enable
-for_window [title="Sequencer64"] floating enable
+for_window [title="sequencer64"] floating enable
 for_window [title="etcher-electron"] floating enable
 for_window [title="Magnifying Glass"] floating toggle
 for_window [title="Event Tester"] floating toggle
+for_window [title="pulsemixer"] floating toggle
 
 
 
 # container/window colours
 # class                 border  backgr. text    indicator child_border
-client.focused          #4f2877 #4f2877 #ffffff #00ff00   #D2CA57
+client.focused          #4f2877 #4f2877 #ffffff #45FE28   #d7af87
 client.focused_inactive #333333 #5f676a #ffffff #484e50   #5f676a
 client.unfocused        #333333 #222222 #c5c5c5 #292d2e   #222222
 client.urgent           #2f343a #900000 #ffffff #900000   #900000
@@ -579,6 +584,7 @@ bar {
 # disable mousewheel workspace change on bar
 # bindsym button4 nop
 # bindsym button5 nop
+
 
 # switch workspaces on mod+mousewheel up/down
 bindsym --whole-window --border $mod+button4 workspace next_on_output

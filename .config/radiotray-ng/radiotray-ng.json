@@ -1,12 +1,12 @@
 {
    "bookmarks" : "/home/milk/.config/radiotray-ng/bookmarks.json",
    "compact-menu" : false,
-   "last-station" : "Jungletrain.net (128k)",
-   "last-station-group" : "Bass / Breaks",
+   "last-station" : "Deep Mix",
+   "last-station-group" : "House/tech-house",
    "max-volume-level" : 100,
    "notification-verbose" : true,
    "notifications" : true,
    "split-title" : false,
-   "volume-level" : 27,
+   "volume-level" : 6,
    "volume-step" : 3
 }
