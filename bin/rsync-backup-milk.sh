@@ -17,7 +17,7 @@ fi
 START=$(date +%s)
 rsync -aAX --exclude={/dev/*,/proc/*,/sys/*,/tmp/*,/run/*,/mnt/*,/media/*,/lost+found} \
 --exclude={/home/*/.gvfs,/home/*/.thumbnails,/home/*/.cache,/home/*/.cache/mozilla/*,/home/*/.cache/chromium/*} \
---exclude={/home/*/.local/share/Trash/,/home/*/.macromedia,/var/lib/mpd/*,/var/lib/pacman/sync/*,/var/tmp/*} \
+--exclude={/home/*/.local/share/Trash/,/home/*/.macromedia,/var/lib/mpd/*,/var/lib/pacman/sync/*,/var/tmp/*,/var/cache/pacaur/*,/var/cache/pacman/*} \
 --no-whole-file --partial --stats $SPARCEINPLACE --ignore-errors / $1 2> rsync-error-log
 FINISH=$(date +%s)
 echo "-- Total backup time: $(( ($FINISH-$START) / 60 ))m, $(( ($FINISH-$START) % 60 ))s"
