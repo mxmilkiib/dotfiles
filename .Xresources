@@ -71,65 +71,39 @@ URxvt*underlineColor:  yellow
 ! *.foreground:   #c5c8c6
 ! *.background:   #1d1f21
 ! *.cursorColor:  #c5c8c6
-! 
+
 ! ! black
 ! *.color0:       #282a2e
 ! *.color8:       #373b41
-! 
-! ! red
-! *.color1:       #a54242
-! *.color9:       #cc6666
-! 
-! ! green
-*.color2:       #00AE00
-*.color10:      #b5bd68
-! 
-! ! yellow
+
+! red
+*.color1:       #fe3645
+*.color9:       #FF2838
+
+! green
+*.color2:       #45FE28
+*.color10:      #22F800
+
+! yellow
 *.color3:       #d7af87
 *.color11:      #de935f
-! 
-! ! blue
+
+! blue
 *.color4:       #87d7ff
 *.color12:      #6aa9c9
-! 
-! ! magenta
+
+! magenta
 *.color5:       #d787ff
 *.color13:      #ac6ccc
-! 
-! ! cyan
+
+! cyan
 ! *.color6:       #5e8d87
 ! *.color14:      #8abeb7
-! 
-! ! white
+
+! white
 ! *.color7:       #707880
 ! *.color15:      #c5c8c6
 
-
-
-! ! Black + DarkGrey
-! *color0:  #000000
-! *color8:  #555753
-! ! DarkRed + Red
-! *color1:  #ff6565
-! *color9:  #ff8d8d
-! ! DarkGreen + Green
-! *color2:  #93d44f
-! *color10: #c8e7a8
-! ! DarkYellow + Yellow
-! *color3:  #d7af87
-! *color11: #ffc123
-! DarkBlue + Blue
-! *color4:  #204a87
-! *color12: #3465a4
-! ! DarkMagenta + Magenta
-! *color5:  #CD00CD
-! *color13: #D787FF
-! !DarkCyan + Cyan (both not tango)
-! *color6:  #89b6e2
-! *color14: #87D7FF
-! ! LightGrey + White
-! *color7:  #cccccc
-! *color15: #ffffff
 
 ! Bell
 XTerm*bellIsUrgent: true
