@@ -313,19 +313,23 @@ sshping() {
 }
 
 ### Shutdown, reboot, logout
+alias shu='systemctl poweroff'
 
+alias sre='systemctl reboot'
+
+# alias slo='systemctl restart display-manager' # Logout
+alias slo='sudo killall -u `whoami`' # Logout
+
+
+# Suspend and [hubernate to come]
 # alias slo='sudo killall -u milk'
 alias pms='sudo pm-suspend'
 alias suspend='pm-suspend' # With sudoers
 
+
 # systemd
 alias sy='systemctl '
 compdef sy=systemctl
-# alias slo='systemctl restart display-manager' # Logout
-alias slo='sudo killall -u `whoami`' # Logout
-
-alias shut='systemctl poweroff'
-alias reb='systemctl reboot'
 
 
 ### Package management
@@ -390,6 +394,12 @@ alias -g S='&> /dev/null &'
 # fzf
 alias -g F='`fzf`'
 
+# last modified file
+alias LF='ls -Art | tail -n 1'
+
+# open last modified file
+alias oLF='LF | xargs xdg-open'
+
 
 ### Apps
 
@@ -422,6 +432,9 @@ alias v='vim '
 # alias va='vim --remote +split'
 alias uv='urxvt -e vim'
 
+# required pkg: vimpager. use vim (n plugins) to view a file.
+alias vp=vimpager
+
 # Git quickies
 alias gis='git status '
 alias gd='git diff --color'
@@ -431,7 +444,7 @@ alias ga='git add '
 alias gaa='git add .'
 alias gb='git branch '
 # alias gc='git commit' # see functions.zsh for easy git commit
-alias go='git checkout '
+alias gco='git checkout '
 alias gr='git remote'
 alias gp='git push'
 alias gpl='git pull'
@@ -618,7 +631,10 @@ alias pipes='nice -n 19 pipes.sh -R -r 0 -p 3'
 # Nyancat
 alias nyancat='telnet nyancat.dakko.us'
 
+# Fish
+alias fish=asciiquarium
 
+# Go figure
 function most_useless_use_of_zsh {
 	 local lines columns colour a b p q i pnew
 	 ((columns=COLUMNS-1, lines=LINES-1, colour=0))
