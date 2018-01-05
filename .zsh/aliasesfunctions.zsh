@@ -355,6 +355,11 @@ alias pSi='pacaur -Si'                      # search info
 alias pQi='pacman -Qi'                      # query info
 alias pQl='pacman -Ql'                      # query contents
 alias pQo='pacman -Qo'                      # query file ownership
+# display info for package that contains argument file
+function pQoi(){
+  pacman -Qi `pacman -Qoq $@`
+}
+# list files owned by package that contains argument file
 function pQol(){
   pacman -Ql `pacman -Qoq $@`
 }
