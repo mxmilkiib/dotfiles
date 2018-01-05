@@ -15,6 +15,9 @@
 # tiling split direction
 default_orientation vertical
 
+# focus on mouse hover (yes) or click (no)
+focus_follows_mouse no
+
 # Switch to workspace with urgent window automatically
 # for_window [urgent=latest] focus
 focus_on_window_activation smart
@@ -23,6 +26,7 @@ focus_on_window_activation smart
 
 # Mod4 = win (super) key
 # Mod1 = alt key
+# Mod5 = altgr key
 set $mod Mod4
 
 
@@ -62,10 +66,11 @@ bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcu
 # clear in small sizes. However, if you need a lot of unicode glyphs or
 # right-to-left text rendering, you should instead use pango for rendering and
 # chose a FreeType font, such as:
-# font pango:DejaVu 8ans Mono 10
+# font pango:DejaVu Sans Mono 10
 # set $font -*-terminus-*-*-*-16-*-*-*-*-*-*-*
 # font xft:xos4 terminus 16
 # font xft:Fixedsys Excelsior 3.01-L2 12
+# font pango:Droid Sans Mono 11
 font -*-gohufont-medium-*-*-*-14-*-*-*-*-*-*-*
 
 
@@ -364,6 +369,8 @@ workspace 17 output DVI-I-1
 workspace 18 output DVI-I-1
 workspace 19 output DVI-I-1
 workspace 1a output DVI-I-1
+workspace 1 output DVI-I-1
+workspace 10 output DVI-I-1
 workspace 21 output DVI-I-0
 workspace 22 output DVI-I-0
 workspace 23 output DVI-I-0
@@ -374,6 +381,8 @@ workspace 27 output DVI-I-0
 workspace 28 output DVI-I-0
 workspace 29 output DVI-I-0
 workspace 2a output DVI-I-0
+workspace 2 output DVI-I-0
+workspace 20 output DVI-I-0
 
 ###
 ## switch to workspace
@@ -386,7 +395,9 @@ bindsym $mod+6 exec ~/bin/i3/i3-multimon.sh 'workspace $ws6'
 bindsym $mod+7 exec ~/bin/i3/i3-multimon.sh 'workspace $ws7'
 bindsym $mod+8 exec ~/bin/i3/i3-multimon.sh 'workspace $ws8'
 bindsym $mod+9 exec ~/bin/i3/i3-multimon.sh 'workspace $ws9'
-bindsym $mod+0 exec ~/bin/i3/i3-multimon.sh 'workspace $wsa'
+bindsym $mod+0 exec ~/bin/i3/i3-multimon.sh 'workspace $ws00:$ws0'
+bindsym $mod+minus exec ~/bin/i3/i3-multimon.sh 'workspace $ws000:$ws-'
+bindsym $mod+equal exec ~/bin/i3/i3-multimon.sh 'workspace $ws0000:$ws='
 
 ## mod + alt + n = switch to workspace and start a terminal
 bindsym $mod+Mod1+1 exec "~/bin/i3/i3-multimon.sh 'workspace $ws1'; i3-msg exec $TERMINAL"
@@ -398,7 +409,9 @@ bindsym $mod+Mod1+6 exec "~/bin/i3/i3-multimon.sh 'workspace $ws6'; i3-msg exec 
 bindsym $mod+Mod1+7 exec "~/bin/i3/i3-multimon.sh 'workspace $ws7'; i3-msg exec $TERMINAL"
 bindsym $mod+Mod1+8 exec "~/bin/i3/i3-multimon.sh 'workspace $ws8'; i3-msg exec $TERMINAL"
 bindsym $mod+Mod1+9 exec "~/bin/i3/i3-multimon.sh 'workspace $ws9'; i3-msg exec $TERMINAL"
-bindsym $mod+Mod1+0 exec "~/bin/i3/i3-multimon.sh 'workspace $wsa'; i3-msg exec $TERMINAL"
+bindsym $mod+Mod1+0 exec "~/bin/i3/i3-multimon.sh 'workspace $ws00:$ws0'; i3-msg exec $TERMINAL"
+bindsym $mod+Mod1+minus exec "~/bin/i3/i3-multimon.sh 'workspace $ws000:$ws-'; i3-msg exec $TERMINAL"
+bindsym $mod+Mod1+equal exec "~/bin/i3/i3-multimon.sh 'workspace $ws0000:$ws='; i3-msg exec $TERMINAL"
 
 # # move focused container to workspace
 # bindsym $mod+Shift+1 move container to workspace $ws1
@@ -422,7 +435,9 @@ bindsym $mod+Shift+6 exec "~/bin/i3/i3-multimon.sh 'move container to workspace 
 bindsym $mod+Shift+7 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $ws7; workspace $ws7'"
 bindsym $mod+Shift+8 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $ws8; workspace $ws8'"
 bindsym $mod+Shift+9 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $ws9; workspace $ws9'"
-bindsym $mod+Shift+0 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $wsa; workspace $wsa'"
+bindsym $mod+Shift+0 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $ws00:$ws0; workspace $ws00:$ws0'"
+bindsym $mod+Shift+minus exec "~/bin/i3/i3-multimon.sh 'move container to workspace $ws000:$ws-; workspace $ws000:$ws-'"
+bindsym $mod+Shift+equal exec "~/bin/i3/i3-multimon.sh 'move container to workspace $ws0000:$ws=; workspace $ws0000:$ws='"
 
 ## num-pad workspace window move
 bindsym $mod+Shift+KP_1 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $ws1; workspace $ws1'"
@@ -434,7 +449,7 @@ bindsym $mod+Shift+KP_6 exec "~/bin/i3/i3-multimon.sh 'move container to workspa
 bindsym $mod+Shift+KP_7 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $ws7; workspace $ws7'"
 bindsym $mod+Shift+KP_8 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $ws8; workspace $ws8'"
 bindsym $mod+Shift+KP_9 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $ws9; workspace $ws9'"
-bindsym $mod+Shift+KP_0 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $wsa; workspace $wsa'"
+bindsym $mod+Shift+KP_0 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $ws00:$ws0; workspace $ws00:$ws0'"
 
 ## move focused container to workspace and don't follow
 bindsym $mod+Ctrl+1 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $ws1'"
@@ -446,7 +461,9 @@ bindsym $mod+Ctrl+6 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $
 bindsym $mod+Ctrl+7 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $ws7'"
 bindsym $mod+Ctrl+8 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $ws8'"
 bindsym $mod+Ctrl+9 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $ws9'"
-bindsym $mod+Ctrl+0 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $wsa'"
+bindsym $mod+Ctrl+0 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $ws00:$ws0'"
+bindsym $mod+Ctrl+minus exec "~/bin/i3/i3-multimon.sh 'move container to workspace $ws000:$ws-'"
+bindsym $mod+Ctrl+equal exec "~/bin/i3/i3-multimon.sh 'move container to workspace $ws0000:$ws='"
 
 
 ## move between workspaces
@@ -463,17 +480,18 @@ bindsym $mod+Shift+Right move workspace next_on_output; workspace next_on_output
 bindsym $mod+Ctrl+Left move workspace prev_on_output
 bindsym $mod+Ctrl+Right move workspace next_on_output
 
-## move container to next empty workspace
-bindsym $mod+period exec "~/bin/i3/i3-nextempty-move.sh"
 
-## move container to next empty workspace
-# bindsym $mod+Ctrl+period exec "~/bin/i3/i3-nextemptysilent.sh"
-
-## focus on next empty workspace
+## focus on next empty workspace - works once
 bindsym $mod+comma exec "~/bin/i3/i3-nextempty-focus.sh"
 
-## focus on next empty workspace, start terminal
-bindsym $mod+Ctrl+comma exec "~/bin/i3/i3-nextempty-focus.sh; sleep 6; exec $TERMINAL"
+## move container to next empty workspace - BROKEN
+bindsym $mod+Shift+greater exec "~/bin/i3/i3-nextempty-move.sh"
+
+## move container to next empty workspace - BROKEN
+bindsym $mod+Ctrl+period exec "~/bin/i3/i3-nextemptysilent.sh"
+
+## focus on next empty workspace, start terminal - BROKEN
+bindsym $mod+Mod1+period exec "~/bin/i3/i3-nextempty-focus.sh; i3-msg --no-startup-id exec $TERMINAL"
 
 
 ## change focus between monitor outputs
@@ -495,25 +513,27 @@ bindsym $mod+Ctrl+i exec "~/bin/i3/switch.py"
 
 # assign apps to default workspaces
 # assign [class="/usr/bin/chromium-snapshot-bin"] $ws1
-assign [title="Google Chrome"] 21
+assign [class="Hexchat"] 2=
+assign [title="Google Chrome"] 2-
 assign [class="dolphin"] 22
-assign [class="Patchage"] 23
-assign [title="Session connection snapshot"] 23
-assign [title="sequencer64"] 24
-assign [class="Carla"] 25
+assign [class="qBittorrent"] 23
+# assign [title="Session connection snapshot"] 23
+assign [title="Sequencer64"] 26
+assign [title="sequencer64"] 27
 assign [class="shuriken"] 26
 assign [class="Radium_compressor"] 27
 assign [class="sayonara-player"] 27
-assign [class="qBittorrent"] 28
-assign [class="Hexchat"] 28
+assign [class="Carla"] 28
+assign [class="Patchage"] 28
+assign [class="Catia.py"] 28
 assign [class="Cadence.py"] 29
 assign [class="Pavucontrol"] 29
 assign [class="Pulseeffects"] 29
 
 # auto float
 for_window [class="Cadence.py"] floating enable
-for_window [class="Pavucontrol"] floating enable
-for_window [class="Pulseeffects"] floating enable
+for_window [class="Pavucontrol"] floating enable, move absolute position center
+for_window [class="Pulseeffects"] floating enable, move absolute position center
 # for_window [class="octopi-notifier"] floating enable
 for_window [class="Pamac-updater"] floating enable
 for_window [class="Syncthing GTK"] floating enable
@@ -526,7 +546,7 @@ for_window [class="Galculator"] floating enable
 for_window [title="File Transfer*"] floating enable
 for_window [class="Gtkdialog"] floating enable
 for_window [class="Radiotray"] floating enable
-for_window [title="sequencer64"] floating enable
+for_window [title="sequencer64" class="Seq64"] floating enable, move absolute position center
 for_window [title="etcher-electron"] floating enable
 for_window [title="Magnifying Glass"] floating toggle
 for_window [title="Event Tester"] floating toggle
@@ -565,9 +585,10 @@ bar {
 
 	position       top
 	separator_symbol " "
-  # strip_workspace_numbers yes
+  strip_workspace_numbers yes
 	bindsym button4 nop
   bindsym button5 nop
+  binding_mode_indicator yes
 
 	# colour via http://paletton.com/#uid=74y0u0km+m7devAiGqmrohGxCce
 	colors {

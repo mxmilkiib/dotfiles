@@ -1,12 +1,12 @@
 {
    "bookmarks" : "/home/milk/.config/radiotray-ng/bookmarks.json",
    "compact-menu" : false,
-   "last-station" : "Deep Mix",
-   "last-station-group" : "House/tech-house",
+   "last-station" : "Soma.fm: Drone Zone",
+   "last-station-group" : "Ambient/drone",
    "max-volume-level" : 100,
    "notification-verbose" : true,
    "notifications" : true,
    "split-title" : false,
-   "volume-level" : 6,
+   "volume-level" : 45,
    "volume-step" : 3
 }
