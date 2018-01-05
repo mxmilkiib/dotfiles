@@ -368,9 +368,9 @@ workspace 16 output DVI-I-1
 workspace 17 output DVI-I-1
 workspace 18 output DVI-I-1
 workspace 19 output DVI-I-1
-workspace 1a output DVI-I-1
-workspace 1 output DVI-I-1
 workspace 10 output DVI-I-1
+workspace 100 output DVI-I-1
+workspace 1000 output DVI-I-1
 workspace 21 output DVI-I-0
 workspace 22 output DVI-I-0
 workspace 23 output DVI-I-0
@@ -380,9 +380,9 @@ workspace 26 output DVI-I-0
 workspace 27 output DVI-I-0
 workspace 28 output DVI-I-0
 workspace 29 output DVI-I-0
-workspace 2a output DVI-I-0
-workspace 2 output DVI-I-0
 workspace 20 output DVI-I-0
+workspace 200 output DVI-I-0
+workspace 2000 output DVI-I-0
 
 ###
 ## switch to workspace
