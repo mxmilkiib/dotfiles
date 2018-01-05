@@ -334,6 +334,16 @@ NeoBundleCheck
 
 """ General
 
+" Keep undo history across sessions by storing it in a file
+if has('persistent_undo')
+    let myUndoDir = expand('~/.vim/undodir')
+    " Create dirs
+    call system('mkdir ~/.vim/undodir')
+    let &undodir = myUndoDir
+    set undofile
+endif
+
+
 " Send more characters for redraws
 set ttyfast
 
