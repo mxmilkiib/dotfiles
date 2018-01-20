@@ -117,12 +117,15 @@ bindsym --release $mod+Ctrl+button3 kill
 # bindsym $mod+d exec --no-startup-id i3-dmenu-desktop
 # bindsym $mod+space exec "dlaunch --sources=exec-path"
 bindsym $mod+space exec "i3-msg exec ~/bin/i3/i3-applaunch.sh"
-# or just use alt gr
-# bindsym ISO_Level3_Shift  exec  "i3-msg exec ~/bin/i3/i3-applaunch.sh"
-
+## or use Alt GR
+bindsym ISO_Level3_Shift  exec  "i3-msg exec ~/bin/i3/i3-applaunch.sh"
+## and Ctrl+Alt GR simulate Esc
+#bindsym --release Ctrl+ISO_Level3_Shift exec xdotool Escape
+bindsym --release Ctrl+ISO_Level3_Shift exec --no-startup-id xvkbd -xsendevent -text "\[Escape]"
 
 ## launch audio apps
-bindsym $mod+p exec $terminal -title 'pulsemixer' -geometry 130x30 -e pulsemixer
+bindsym $mod+p exec pavucontrol
+# bindsym $mod+p exec $terminal -title 'pulsemixer' -geometry 130x30 -e pulsemixer
 bindsym $mod+Mod1+p exec "run-or-raise.sh pulseeffects"
 bindsym $mod+Shift+p exec "run-or-raise.sh cadence"
 bindsym $mod+Ctrl+p exec $terminal -geometry 130x30 -e alsamixer -c0
@@ -183,6 +186,9 @@ bindsym $mod+F7 exec "run-or-raise.sh keepassx"
 ## launch gmail
 bindsym XF86Mail exec "chrome https://gmail.com && run-or-raise.sh chrome"
 
+## launch trello
+bindsym $mod+F8 exec google-chrome-stable --app=https://trello.com/b/AdniCH2y/to-do
+
 
 ## switch video output between cloned or seperate desktops
 bindsym $mod+Ctrl+F9 exec "xrandr --output DVI-I-1 --same-as DVI-I-0"
@@ -198,7 +204,7 @@ bindsym --release $mod+Mod1+Print exec "scrot -s ~/images/screenshots/silver_%Y-
 bindsym $mod+Mod1+F12 exec "import -crop 1280x1024+1280+0 -window root ~/images/screenshots/silver_$(date +%Y-%m-%d-%T).png"
 
 ## xev
-bindsym $mod+F8 exec "$terminal -name 'Event Tester' -geometry 60x9-100-100 -e xev -event keyboard"
+bindsym $mod+F9 exec "$terminal -name 'Event Tester' -geometry 60x9-100-100 -e xev -event keyboard"
 
 
 # new windows will be split in horizontal orientation
@@ -369,8 +375,8 @@ workspace 17 output DVI-I-1
 workspace 18 output DVI-I-1
 workspace 19 output DVI-I-1
 workspace 10 output DVI-I-1
-workspace 100 output DVI-I-1
-workspace 1000 output DVI-I-1
+workspace 100:1- output DVI-I-1
+workspace 1000:1= output DVI-I-1
 workspace 21 output DVI-I-0
 workspace 22 output DVI-I-0
 workspace 23 output DVI-I-0
@@ -381,8 +387,8 @@ workspace 27 output DVI-I-0
 workspace 28 output DVI-I-0
 workspace 29 output DVI-I-0
 workspace 20 output DVI-I-0
-workspace 200 output DVI-I-0
-workspace 2000 output DVI-I-0
+workspace 200:2- output DVI-I-0
+workspace 2000:2= output DVI-I-0
 
 
 ###
@@ -527,8 +533,8 @@ bindsym $mod+Ctrl+i exec "~/bin/i3/switch.py"
 
 # assign apps to default workspaces
 # assign [class="/usr/bin/chromium-snapshot-bin"] $o1
-assign [class="Hexchat"] 200
-assign [title="Google Chrome"] 2000
+assign [class="Hexchat"] 200:2-
+assign [title="Google Chrome"] 2000:2=
 assign [class="dolphin"] 22
 assign [class="qBittorrent"] 23
 # assign [title="Session connection snapshot"] 23
@@ -566,7 +572,8 @@ for_window [title="etcher-electron"] floating enable
 for_window [title="Magnifying Glass"] floating toggle
 for_window [title="Event Tester"] floating toggle
 for_window [title="pulsemixer"] floating toggle
-
+for_window [class="Google-chrome" instance="trello.com__b_AdniCH2y_to-do" title="To Do | Trello" window_role="pop-up"] floating toggle
+for_window [class="DNSCryptClient" instance="DNSCryptClient" title="DNSCryptClient"] floating toggle
 
 
 # container/window colours
@@ -596,7 +603,7 @@ gaps outer 0
 
 bar {
 	# status_command "i3status --config ~/.config/i3/istatus"
-	status_command "py3status -c ~/.config/i3/istatus_$(hostname)"
+  status_command "py3status -c ~/.config/i3/istatus_$(hostname)"
 
 	position       top
 	separator_symbol " "

@@ -1,8 +1,8 @@
 {
    "bookmarks" : "/home/milk/.config/radiotray-ng/bookmarks.json",
    "compact-menu" : false,
-   "last-station" : "Soma.fm: Drone Zone",
-   "last-station-group" : "Ambient/drone",
+   "last-station" : "Soma.fm: Space Station Soma",
+   "last-station-group" : "Chillout/groovey",
    "max-volume-level" : 100,
    "notification-verbose" : true,
    "notifications" : true,
