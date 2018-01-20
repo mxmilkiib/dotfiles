@@ -29,6 +29,7 @@ export VISUAL=vim
 # export BROWSER=google-chrome-stable
 export BROWSER=chrome
 export TERMINAL=urxvt
+export DIFFPROG=meld
 
 # for nnn
 export NNN_COPIER="nnn_copier.sh"

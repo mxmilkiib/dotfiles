@@ -283,6 +283,15 @@ cl() { cd "$1" && ll . ; }
 # Quick remove directory
 alias rd='rm -rf'
 
+# https://lobste.rs/s/vyfhpm/bash_aliases_are_great_so_is_dired
+spaces2underscores() {
+  # globs don't need to be wrapped in quotes, right??
+  # I couldn't make it work with the quotes..
+  for i in ${@:-*' '*}; do # if "$@" isn't set, set it to "all the files with spaces"
+    s2u_temp="${i// /_}"
+    mv -iv "$i" "${s2u_temp//_-_/-}";
+  done
+}
 
 ### Network
 
@@ -331,6 +340,9 @@ alias suspend='pm-suspend' # With sudoers
 alias sy='systemctl '
 compdef sy=systemctl
 
+# launch x
+alias sx=startx
+
 
 ### Package management
 
@@ -344,17 +356,17 @@ alias as='apt-cache search'
 alias aw='apt-cache show'
 
 # Arch Linux
-alias p='pacaur -S --noconfirm --noedit'
-alias pS='pacget -Ss -c --noconfirm --noedit'
+alias p='trizen -S --noconfirm --noedit'
+alias pS='trizen -Ss --noconfirm --noedit'
 
 # alias 'pu=sudo pacman -Syu'
-alias pu='pacget -Syu --noconfirm --noedit'
-alias puu='pacget -Syu --noconfirm --noedit --devel --needed'
+alias pu='trizen -Syu --noconfirm --noedit'
+alias puu='trizen -Syu --noconfirm --noedit --devel --needed'
 
-alias pSi='pacaur -Si'                      # search info
-alias pQi='pacman -Qi'                      # query info
-alias pQl='pacman -Ql'                      # query contents
-alias pQo='pacman -Qo'                      # query file ownership
+alias pSi='trizen -Si'                      # search info
+alias pQi='trizen -Qi'                      # query info
+alias pQl='trizen -Ql'                      # query contents
+alias pQo='trizen -Qo'                      # query file ownership
 # display info for package that contains argument file
 function pQoi(){
   pacman -Qi `pacman -Qoq $@`
@@ -370,10 +382,10 @@ alias pU='sudo pacman -U'										# install a local package file
 alias pL='sudo rm /var/lib/pacman/db.lck'   # remove lockfile if pacman doesn't exit gracefully
 
 # get PKGBUILD
-alias pG='pacaur -G'
+alias pG='trizen -G'
 alias mP='makepkg -si'
 
-alias y='yaourt'
+alias pSg='pacget -Ss --noedit --noconfirm'
 
 
 ### Utils
@@ -489,6 +501,9 @@ diff () {
 		command diff "$@a" | less
 	fi
 }
+
+# Web
+alias trello="google-chrome-stable --app=https://trello.com/b/AdniCH2y/to-do &"
 
 
 # Etymology
