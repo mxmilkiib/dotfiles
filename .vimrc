@@ -283,7 +283,6 @@ NeoBundle 'mhinz/vim-signify'
 
 """ to sort
 
-
 "NeoBundle 'xolox/vim-session'
 " :SaveSession, :OpenSession, :RestartVim, etc.
 "let g:session_autosave = 'yes'
@@ -306,7 +305,6 @@ NeoBundle 'ConradIrwin/vim-bracketed-paste'
 
 NeoBundle 'nathanaelkane/vim-indent-guides'
 
-"NeoBundle 'msanders/snipmate.vim'
 
 "NeoBundle 'Shougo/neocomplcache'
 " NeoBundle 'Valloric/YouCompleteMe'
@@ -314,7 +312,7 @@ NeoBundle 'nathanaelkane/vim-indent-guides'
 
 " Color theme
 " NeoBundle 'BlackSea'
-" colorscheme BlackSea
+colorscheme BlackSea
 
 call neobundle#end()
 
@@ -326,7 +324,6 @@ filetype on
 filetype plugin on
 filetype indent on
 endif
-" NeoBundle 'inky/tumblr'
 
 
 NeoBundleCheck
@@ -388,7 +385,7 @@ set laststatus=2
 set scrolloff=10
 
 " Incremental search - moves as you type
-set incsearch
+" set incsearch
 
 " Wrap searches
 set wrapscan
@@ -619,7 +616,8 @@ set foldmethod=manual
 " set fillchars=vert:|,fold: ,diff:-
 
 " open/close folds with tab
-map <TAB> za
+" map <TAB> za
+" interferes with <C-I> movement
 
 " folding is on by default. setting a high fold start level stops this
 set foldlevel=20
