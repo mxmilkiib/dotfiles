@@ -361,7 +361,7 @@ alias pS='trizen -Ss --noconfirm --noedit'
 
 # alias 'pu=sudo pacman -Syu'
 alias pu='trizen -Syu --noconfirm --noedit'
-alias puu='trizen -Syu --noconfirm --noedit --devel --needed'
+alias puu='trizen -Syu --noconfirm --noedit --needed'
 
 alias pSi='trizen -Si'                      # search info
 alias pQi='trizen -Qi'                      # query info
