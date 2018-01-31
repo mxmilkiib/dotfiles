@@ -71,8 +71,8 @@ workrave &
 
 # Volume system tray
 # pa-applet &
-# volti &
-pnmixer &
+volti &
+# pnmixer &
 
 # Radio streams
 radiotray-ng &
@@ -132,7 +132,7 @@ export QT_PLATFORM_PLUGIN=qt5ct
 
 # Use mouse button8 as left windows key
 # xinput set-button-map 1 2 3 4 5 6 7 12 9 10 11 12
-button8-to-lwin.py &
+# button8-to-lwin.py &
 
 # Window manager
 

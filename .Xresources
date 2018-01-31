@@ -37,9 +37,9 @@ Xft.rgba: rgb
 
 Xft.dpi:			95
 
-xterm*font:     *-terminus-medium-*-*-*-14-*
+! xterm*font:     *-terminus-medium-*-*-*-14-*
 ! xterm*font:     *-Fixedsys Excelsior 3.01-L2-medium-*-*-*-16-*
-! xterm*font:     -*-gohufont-medium-*-*-*-14-*-*-*-*-*-*-*
+xterm*font:     -*-gohufont-medium-*-*-*-14-*-*-*-*-*-*-*
 
 ! URxvt.font: xft:xos4 terminus:size=12
 ! URxvt*font:     -*-gohufont-medium-*-*-*-14-*-*-*-*-*-*-*
