@@ -1,12 +1,12 @@
 {
    "bookmarks" : "/home/milk/.config/radiotray-ng/bookmarks.json",
    "compact-menu" : false,
-   "last-station" : "Soma.fm: Space Station Soma",
-   "last-station-group" : "Chillout/groovey",
+   "last-station" : "Deepvibes",
+   "last-station-group" : "House/tech-house",
    "max-volume-level" : 100,
    "notification-verbose" : true,
    "notifications" : true,
    "split-title" : false,
-   "volume-level" : 45,
+   "volume-level" : 18,
    "volume-step" : 3
 }

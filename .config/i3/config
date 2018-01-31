@@ -105,7 +105,9 @@ bindsym --release $mod+Ctrl+q exec xkill
 bindsym $mod+Delete kill
 
 ## ctrl and mouse right click a window title, this kills the window
-bindsym --release $mod+Ctrl+button3 kill
+# bindsym --release $mod+Ctrl+button3 kill
+bindsym  --whole-window button8 kill
+bindsym  --whole-window Mod2+button8 kill
 
 
 
@@ -537,12 +539,11 @@ assign [class="Hexchat"] 200:2-
 assign [title="Google Chrome"] 2000:2=
 assign [class="dolphin"] 22
 assign [class="qBittorrent"] 23
-# assign [title="Session connection snapshot"] 23
-assign [title="Sequencer64"] 26
-assign [title="sequencer64"] 27
+assign [class="sayonara-player"] 24
+assign [title="seq64 - *"] 27
+assign [title="seq64 #*"] 27
 assign [class="shuriken"] 26
-assign [class="Radium_compressor"] 27
-assign [class="sayonara-player"] 27
+assign [class="Radium_compressor"] 25
 assign [class="Carla"] 28
 assign [class="Patchage"] 28
 assign [class="Catia.py"] 28
@@ -553,7 +554,7 @@ assign [class="Pulseeffects"] 29
 
 # auto float
 for_window [class="Cadence.py"] floating enable
-for_window [class="Pavucontrol"] floating enable, move absolute position center
+for_window [class="Pavucontrol"] floating enable
 for_window [class="Pulseeffects"] floating enable, move absolute position center
 # for_window [class="octopi-notifier"] floating enable
 for_window [class="Pamac-updater"] floating enable
@@ -567,14 +568,15 @@ for_window [class="Galculator"] floating enable
 for_window [title="File Transfer*"] floating enable
 for_window [class="Gtkdialog"] floating enable
 for_window [class="Radiotray"] floating enable
-for_window [title="sequencer64" class="Seq64"] floating enable, move absolute position center
-for_window [title="etcher-electron"] floating enable
+for_window [title="seq64 - *"] floating enable, move absolute position center
+for_window [title="Sequencer64 - *"] floating enable, move absolute position center
+for_window [title="etcher-electron"] floating enable, move absolute position center
 for_window [title="Magnifying Glass"] floating toggle
 for_window [title="Event Tester"] floating toggle
 for_window [title="pulsemixer"] floating toggle
 for_window [class="Google-chrome" instance="trello.com__b_AdniCH2y_to-do" title="To Do | Trello" window_role="pop-up"] floating toggle
 for_window [class="DNSCryptClient" instance="DNSCryptClient" title="DNSCryptClient"] floating toggle
-
+for_window [class="Envy24control" instance="envy24control"] floating toggle
 
 # container/window colours
 # class                 border  backgr. text    indicator child_border

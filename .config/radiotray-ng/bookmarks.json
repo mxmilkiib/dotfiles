@@ -22,6 +22,11 @@
             "image" : "",
             "name" : "Soma.fm: Mission Control",
             "url" : "http://somafm.com/missioncontrol.pls"
+         },
+         {
+            "image" : "",
+            "name" : "WAMCFM",
+            "url" : "http://playerservices.streamtheworld.com/pls/WAMCFM.pls"
          }
       ]
    },
