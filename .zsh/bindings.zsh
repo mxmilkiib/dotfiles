@@ -33,6 +33,9 @@ key[CtrlRight]=${terminfo[kRFT5]}
 # setup key accordingly
 [[ -n {${key[Home]}}      ]]  && bindkey  "${key[Home]}"    beginning-of-line
 [[ -n "${key[End]}"       ]]  && bindkey  "${key[End]}"     end-of-line
+bindkey '^a' beginning-of-line
+bindkey '^e' end-of-line
+
 [[ -n "${key[Insert]}"    ]]  && bindkey  "${key[Insert]}"  overwrite-mode #broken?
 [[ -n "${key[Backspace]}" ]]  && bindkey  "${key[Backspace]}"  backward-delete-char
 [[ -n "${key[Delete]}"    ]]  && bindkey  "${key[Delete]}"  delete-char
@@ -67,15 +70,19 @@ bindkey '^[[1;3C' forward-word
 bindkey '^[^[[D'  backward-word
 bindkey '^[^[[C'  forward-word
 
+bindkey '^b' backward-word
+bindkey '^f' forward-word
+
 # ctrl-backspace - deletes word to left of cursor
-bindkey "" backward-kill-word
+bindkey \" backward-kill-word
+bindkey '^h' backward-kill-word
 
 # ctrl-del - deletes word to right of cursor
 # xterm
 bindkey '^[[3;5~' kill-word
 # urxvt
 bindkey '^[[3^'   kill-word
-
+bindkey '^d'      kill-word
 
 # Type command then ctrl-up/ctrl-down to search history
 # bindkey "^[[1;5A" history-beginning-search-backward
@@ -88,6 +95,9 @@ bindkey '^[[3^'   kill-word
 
 # bindkey "^S" history-incremental-search-forward
 # bindkey "^R" history-incremental-search-backward
+
+bindkey "^p" up-line-or-search
+bindkey "^n" down-line-or-search
 
 
 key[F1]=${terminfo[kf1]}
@@ -121,14 +131,14 @@ bindkey $key[F2] edit-command-line
 
 
 # Ctrl-w - push line to buffer stack, 
-bindkey '^w' push-line
+# bindkey '^w' push-line
 
 # Ctrl-e - pop line from buffer stack
-bindkey '^e' get-line
+# bindkey '^e' get-line
 
 
 # Ctrl-b - Comment out line with # and execute
-bindkey '^b' pound-insert
+# bindkey '^b' pound-insert
 
 # bindkey "^V" quoted-insert
 
@@ -195,3 +205,6 @@ bindkey "^[s" insert-sudo
 # [[ "$terminfo[khome]" == "^[O"* ]] && bindkey -M emacs "${terminfo[khome]/O/[}" beginning-of-line
 # [[ "$terminfo[kend]" == "^[O"* ]] && bindkey -M emacs "${terminfo[kend]/O/[}" end-of-line
 # fi
+
+# simulate escape key with menu key
+bindkey '^[[29~' '^[' noop

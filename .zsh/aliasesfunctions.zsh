@@ -346,7 +346,7 @@ alias sx=startx
 
 ### Package management
 
-# Debian derived
+## Debian derived
 alias a='sudo aptitude'
 alias ai='sudo aptitude install'
 alias ar='sudo aptitude remove'
@@ -355,9 +355,14 @@ alias auu'=sudo aptitude safe-upgrade'
 alias as='apt-cache search'
 alias aw='apt-cache show'
 
-# Arch Linux
+## Arch Linux
+# install specific package
 alias p='trizen -S --noconfirm --noedit'
-alias pS='trizen -Ss --noconfirm --noedit'
+alias pP='trizen -S'
+# interactive search (pkg # + prompt) + reverse results/#s
+alias pS='trizen --noconfirm --noedit --flip-results --flip-indices'
+# interactive search with editing of PKGBUILD
+alias pSp='trizen --noconfirm --flip-results --flip-indices'
 
 # alias 'pu=sudo pacman -Syu'
 alias pu='trizen -Syu --noconfirm --noedit'
