@@ -188,8 +188,20 @@ NeoBundle 'spolu/dwm.vim'
 " New staus line style, a la powerline
 NeoBundle 'vim-airline/vim-airline'
 NeoBundle 'vim-airline/vim-airline-themes'
-let g:airline#extensions#tabline#enabled = 1
-let g:airline_powerline_fonts = 1
+" let g:airline#extensions#tabline#enabled = 1
+" let g:airline_powerline_fonts = 1
+"powerline symbols
+if !exists('g:airline_symbols')
+let g:airline_symbols = {}
+endif
+
+let g:airline_left_sep = '▶'
+let g:airline_left_alt_sep = ''
+let g:airline_right_sep = '◀'
+let g:airline_right_alt_sep = ''
+let g:airline_symbols.branch = ''
+let g:airline_symbols.readonly = ''
+let g:airline_symbols.linenr = ''
 
 " Highlight the active line
 NeoBundle 'ntpeters/vim-airline-colornum'
@@ -472,11 +484,13 @@ set backspace=eol,indent,start
 
 " Shift-space as Esc - for gvim, vim requires mapping in terminal emulator config
 " ..but doesn't work in gvim??
-imap <S-Space> <Esc>
-imap <C-c> <Esc>
+inoremap <S-Space> <Esc>
+inoremap <C-c> <Esc>
 
 " ` for one button save
 map ` :w<CR>
+" ¬ for one button save and exit
+map ¬ :wq<CR>
 
 " Backspace in normal mode
 " (beeps on blank line due to l)
