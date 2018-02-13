@@ -6,7 +6,7 @@
 # Various Paths
 # typeset -U path
 # path=(~/bin $path /usr/local/bin /var/lib/gems/1.8/bin $HOME/.gem/ruby/1.9.1/bin:/home/milk/.cabal/bin) - should be set in /etc/profile
-path=(~/bin $path) 
+path=(~/bin ~/bin/i3 $path)
 # export PATH
 
 typeset -U fpath
@@ -64,3 +64,7 @@ WORDCHARS='-*?_.[]~&;!#$%^(){}<>'
 
 # pacaur env variables
 export LOGDEST=/var/log/pacaur
+
+# npm install -g for user
+PATH="$HOME/.node_modules/bin:$PATH"
+export npm_config_prefix=~/.node_modules

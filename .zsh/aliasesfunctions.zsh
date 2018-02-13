@@ -363,6 +363,8 @@ alias pP='trizen -S'
 alias pS='trizen --noconfirm --noedit --flip-results --flip-indices'
 # interactive search with editing of PKGBUILD
 alias pSp='trizen --noconfirm --flip-results --flip-indices'
+# interactive search of AUR by popularity with confirm
+alias pSpop='trizen -a --noedit --aur-results-sort-by=popularity --flip-indices'
 
 # alias 'pu=sudo pacman -Syu'
 alias pu='trizen -Syu --noconfirm --noedit'

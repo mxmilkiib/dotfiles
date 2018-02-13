@@ -74,7 +74,7 @@ bindkey '^b' backward-word
 bindkey '^f' forward-word
 
 # ctrl-backspace - deletes word to left of cursor
-bindkey \" backward-kill-word
+# bindkey \" backward-kill-word
 bindkey '^h' backward-kill-word
 
 # ctrl-del - deletes word to right of cursor
@@ -207,4 +207,4 @@ bindkey "^[s" insert-sudo
 # fi
 
 # simulate escape key with menu key
-bindkey '^[[29~' '^[' noop
+bindkey '^[[29~' '^[' noop noop
