@@ -157,6 +157,8 @@ autocmd VimEnter * ColorToggle
 
 NeoBundle 'chase/nginx.vim'
 
+NeoBundle 'tell-k/vim-autopep8'
+
 
 " File navigation
 " Jump to word using characters <leader>w (like f in vimium)
