@@ -280,6 +280,16 @@
             "image" : "",
             "name" : "Blastfm.ch: Tech house minimal",
             "url" : "http://www.uzic.ch/tek.m3u"
+         },
+         {
+            "image" : "",
+            "name" : "Revolution Radio",
+            "url" : "http://dir.xiph.org/listen/238624/listen.m3u"
+         },
+         {
+            "image" : "",
+            "name" : "BTX Progressive",
+            "url" : "http://dir.xiph.org/listen/553722/listen.m3u"
          }
       ]
    },

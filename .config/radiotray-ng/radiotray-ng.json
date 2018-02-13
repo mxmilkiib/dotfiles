@@ -1,12 +1,12 @@
 {
    "bookmarks" : "/home/milk/.config/radiotray-ng/bookmarks.json",
    "compact-menu" : false,
-   "last-station" : "Deepvibes",
-   "last-station-group" : "House/tech-house",
+   "last-station" : "Sub.fm",
+   "last-station-group" : "Bass / Breaks",
    "max-volume-level" : 100,
    "notification-verbose" : true,
    "notifications" : true,
    "split-title" : false,
-   "volume-level" : 18,
+   "volume-level" : 0,
    "volume-step" : 3
 }

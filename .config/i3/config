@@ -96,6 +96,10 @@ for_window [title="floating_terminal$"] floating toggle
 bindsym $mod+semicolon exec "$terminal -name floating-tty-clock -geometry 60x9-100-100 -e tty-clock -s -b -c -C 2 -D"
 for_window [instance="floating-tty-clock$"] floating toggle
 
+## oblique strategy
+bindsym $mod+Shift+semicolon exec "urxvt +sb -cr black -name oblique-strategy -geometry 100x3+230+500 -hold -e /home/milk/bin/oblique-strategies"
+for_window [instance="oblique-strategy$"] floating toggle
+
 
 ###
 ## kill focused window
@@ -106,8 +110,8 @@ bindsym $mod+Delete kill
 
 ## ctrl and mouse right click a window title, this kills the window
 # bindsym --release $mod+Ctrl+button3 kill
-bindsym  --whole-window button8 kill
-bindsym  --whole-window Mod2+button8 kill
+bindsym  --whole-window button9 kill
+bindsym  --whole-window Mod2+button9 kill
 
 
 
@@ -126,6 +130,8 @@ bindsym ISO_Level3_Shift  exec  "i3-msg exec ~/bin/i3/i3-applaunch.sh"
 bindsym --release Ctrl+ISO_Level3_Shift exec --no-startup-id xvkbd -xsendevent -text "\[Escape]"
 
 ## launch audio apps
+# to replace run/raise with?:
+# bindsym $mod+2 workspace 2:web; layout tabbed; exec [ $(ps h -C vimb | wc -l) = 0 ] && /usr/bin/vimb -s
 bindsym $mod+p exec pavucontrol
 # bindsym $mod+p exec $terminal -title 'pulsemixer' -geometry 130x30 -e pulsemixer
 bindsym $mod+Mod1+p exec "run-or-raise.sh pulseeffects"
@@ -185,15 +191,18 @@ bindsym $mod+F6 exec "run-or-raise.sh hexchat"
 ## launch password manager
 bindsym $mod+F7 exec "run-or-raise.sh keepassx"
 
+## launch media player
+bindsym $mod+F8 exec "run-or-raise.sh sayonara"
+
 ## launch gmail
 bindsym XF86Mail exec "chrome https://gmail.com && run-or-raise.sh chrome"
 
 ## launch trello
-bindsym $mod+F8 exec google-chrome-stable --app=https://trello.com/b/AdniCH2y/to-do
+bindsym $mod+F12 exec google-chrome-stable --app=https://trello.com/b/AdniCH2y/to-do
 
 
 ## switch video output between cloned or seperate desktops
-bindsym $mod+Ctrl+F9 exec "xrandr --output DVI-I-1 --same-as DVI-I-0"
+bindsym $mod+Ctrl+F9 exec "xrandr --output DVI-I-0 --same-as DVI-I-1"
 bindsym $mod+Ctrl+F10 exec "xrandr --output DVI-I-1 --mode 1280x1024 --pos 0x0 --panning 0x0+0+0 --output DVI-I-0 --mode 1280x1024 --pos 1280x0"
 
 ## screenshot of whole desktop
@@ -270,8 +279,14 @@ bindsym $mod+Down focus down
 bindsym $mod+Up focus up
 
 ## page up and page down, like in Chrome
-bindsym $mod+Prior focus left
-bindsym $mod+Next focus right
+bindsym $mod+Left workspace prev_on_output
+bindsym $mod+Right workspace next_on_output
+
+bindsym $mod+Prior workspace prev_on_output
+bindsym $mod+Next workspace next_on_output
+bindsym $mod+Ctrl+h workspace prev_on_output
+bindsym $mod+Ctrl+l workspace next_on_output
+
 
 ## windows like alt-tab
 set $i3t_alt_tab        ~/bin/i3/i3t.py n
@@ -367,30 +382,30 @@ bindsym $mod+numbersign scratchpad show
 # bindsym $mod+Shift+n exec i3-input -F 'rename workspace to "%s"' -P 'New name: '
 
 # assign workspace to monitor
-workspace 11 output DVI-I-1
-workspace 12 output DVI-I-1
-workspace 13 output DVI-I-1
-workspace 14 output DVI-I-1
-workspace 15 output DVI-I-1
-workspace 16 output DVI-I-1
-workspace 17 output DVI-I-1
-workspace 18 output DVI-I-1
-workspace 19 output DVI-I-1
-workspace 10 output DVI-I-1
-workspace 100:1- output DVI-I-1
-workspace 1000:1= output DVI-I-1
-workspace 21 output DVI-I-0
-workspace 22 output DVI-I-0
-workspace 23 output DVI-I-0
-workspace 24 output DVI-I-0
-workspace 25 output DVI-I-0
-workspace 26 output DVI-I-0
-workspace 27 output DVI-I-0
-workspace 28 output DVI-I-0
-workspace 29 output DVI-I-0
-workspace 20 output DVI-I-0
-workspace 200:2- output DVI-I-0
-workspace 2000:2= output DVI-I-0
+workspace 11 output DVI-I-0
+workspace 12 output DVI-I-0
+workspace 13 output DVI-I-0
+workspace 14 output DVI-I-0
+workspace 15 output DVI-I-0
+workspace 16 output DVI-I-0
+workspace 17 output DVI-I-0
+workspace 18 output DVI-I-0
+workspace 19 output DVI-I-0
+workspace 10 output DVI-I-0
+workspace 100:1- output DVI-I-0
+workspace 1000:1= output DVI-I-0
+workspace 21 output DVI-I-1
+workspace 22 output DVI-I-1
+workspace 23 output DVI-I-1
+workspace 24 output DVI-I-1
+workspace 25 output DVI-I-1
+workspace 26 output DVI-I-1
+workspace 27 output DVI-I-1
+workspace 28 output DVI-I-1
+workspace 29 output DVI-I-1
+workspace 20 output DVI-I-1
+workspace 200:2- output DVI-I-1
+workspace 2000:2= output DVI-I-1
 
 
 ###
@@ -487,11 +502,6 @@ bindsym $mod+Mod1+minus exec "~/bin/i3/i3-multimon.sh 'workspace $o000:$o-'; i3-
 bindsym $mod+Mod1+equal exec "~/bin/i3/i3-multimon.sh 'workspace $o0000:$o='; i3-msg exec $TERMINAL"
 
 
-## move between workspaces
-bindsym $mod+Left workspace prev_on_output
-bindsym $mod+Right workspace next_on_output
-bindsym $mod+Ctrl+h workspace prev_on_output
-bindsym $mod+Ctrl+l workspace next_on_output
 
 ## move windows between workspaces and follow
 bindsym $mod+Shift+Left move workspace prev_on_output; workspace prev_on_output
@@ -535,26 +545,26 @@ bindsym $mod+Ctrl+i exec "~/bin/i3/switch.py"
 
 # assign apps to default workspaces
 # assign [class="/usr/bin/chromium-snapshot-bin"] $o1
-assign [class="Hexchat"] 200:2-
-assign [title="Google Chrome"] 2000:2=
-assign [class="dolphin"] 22
-assign [class="qBittorrent"] 23
-assign [class="sayonara-player"] 24
-assign [title="seq64 - *"] 27
-assign [title="seq64 #*"] 27
-assign [class="shuriken"] 26
-assign [class="Radium_compressor"] 25
-assign [class="Carla"] 28
-assign [class="Patchage"] 28
-assign [class="Catia.py"] 28
-assign [class="Cadence.py"] 29
-assign [class="Pavucontrol"] 29
-assign [class="Pulseeffects"] 29
+assign [class="Hexchat"] 1000:1-
+assign [title="Google Chrome"] 10000:1=
+assign [class="dolphin"] 12
+assign [class="qBittorrent"] 13
+assign [class="sayonara-player"] 14
+assign [title="seq64 - *"] 17
+assign [title="seq64 #*"] 17
+assign [class="shuriken"] 16
+assign [class="Radium_compressor"] 15
+assign [class="Carla"] 18
+assign [class="Patchage"] 18
+assign [class="Catia.py"] 18
+assign [class="Cadence.py"] 19
+assign [class="Pavucontrol"] 19
+assign [class="Pulseeffects"] 19
 
 
 # auto float
 for_window [class="Cadence.py"] floating enable
-for_window [class="Pavucontrol"] floating enable
+for_window [class="Pavucontrol"] floating enable, move absolute position center
 for_window [class="Pulseeffects"] floating enable, move absolute position center
 # for_window [class="octopi-notifier"] floating enable
 for_window [class="Pamac-updater"] floating enable
@@ -566,24 +576,26 @@ for_window [class="(?i)virtualbox"] floating enable border normal
 for_window [class="GParted"] floating enable border normal
 for_window [class="Galculator"] floating enable
 for_window [title="File Transfer*"] floating enable
-for_window [class="Gtkdialog"] floating enable
-for_window [class="Radiotray"] floating enable
+for_window [class="Gtkdialog"] floating enable, move absolute position center
+for_window [class="Radiotray"] floating enable, move absolute position center
 for_window [title="seq64 - *"] floating enable, move absolute position center
 for_window [title="Sequencer64 - *"] floating enable, move absolute position center
 for_window [title="etcher-electron"] floating enable, move absolute position center
 for_window [title="Magnifying Glass"] floating toggle
-for_window [title="Event Tester"] floating toggle
-for_window [title="pulsemixer"] floating toggle
-for_window [class="Google-chrome" instance="trello.com__b_AdniCH2y_to-do" title="To Do | Trello" window_role="pop-up"] floating toggle
-for_window [class="DNSCryptClient" instance="DNSCryptClient" title="DNSCryptClient"] floating toggle
-for_window [class="Envy24control" instance="envy24control"] floating toggle
+for_window [title="Event Tester"] floating enable
+for_window [title="pulsemixer"] floating enable, move absolute position center
+for_window [class="Google-chrome" instance="trello.com__b_AdniCH2y_to-do" title="To Do | Trello" window_role="pop-up"] floating enable
+for_window [class="DNSCryptClient" instance="DNSCryptClient" title="DNSCryptClient"] floating enable
+for_window [class="Envy24control" instance="envy24control"] floating enable
+for_window [class="Keepassx" instance="keepassx"] floating enable
+
 
 # container/window colours
 # class                 border  backgr. text    indicator child_border
 client.focused          #4f2877 #4f2877 #ffffff #45FE28   #d7af87
 client.focused_inactive #333333 #5f676a #ffffff #484e50   #5f676a
 client.unfocused        #333333 #222222 #c5c5c5 #292d2e   #222222
-client.urgent           #2f343a #900000 #ffffff #900000   #900000
+client.urgent           #2f343a #aa0000 #ffffff #aa0000   #aa0000 
 client.placeholder      #000000 #0c0c0c #ffffff #000000   #0c0c0c
 
 client.background       #000000
@@ -622,7 +634,7 @@ bar {
 		focused_workspace  #4f2877  #4f2877  #ffffff
     active_workspace   #555555 	#555555  #ffffff
     inactive_workspace #000000 	#000000  #c5c5c5
-		urgent_workspace   #900000  #900000  #ffffff
+		urgent_workspace   #aa0000  #aa0000  #ffffff
 	}
 }
 
@@ -644,4 +656,8 @@ exec i3-msg workspace "21"
 # Start my defaults layouts on boot
 # exec --no-startup-id "i3-msg 'workspace 1; append_layout ~/.config/i3/workspace-1.json'"
 
-# for_window [class=".*"] title_format " %title
+for_window [class=".*"] title_format " %title
+
+for_window [urgent=last] border pixel 3
+exec i3-onfocus.py
+force_display_urgency_hint 2000 ms
