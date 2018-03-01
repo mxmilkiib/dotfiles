@@ -1,0 +1,6 @@
+*
+!/.gitignore.d
+!/.gitignore.d/x
+!/.xinitrc
+!/.Xresources
+!/.xsession
