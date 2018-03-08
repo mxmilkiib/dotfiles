@@ -26,22 +26,22 @@ source $Z/../.zgen/zgen.zsh
 if ! zgen saved; then
 		echo "Creating a zgen save"
 
-	zgen load unixorn/autoupdate-zgen
+  zgen load unixorn/autoupdate-zgen
 
-	zgen load nojhan/liquidprompt
+  zgen load nojhan/liquidprompt
 
-	zgen load chrissicool/zsh-256color
+  zgen load chrissicool/zsh-256color
 
-	zgen load djui/alias-tips
+  zgen load djui/alias-tips
 
-	zgen load zsh-users/zsh-completions
+  zgen load zsh-users/zsh-completions
 
-	zgen load RobSis/zsh-completion-generator
+  zgen load RobSis/zsh-completion-generator
 
-	zgen load zsh-users/zsh-history-substring-search
+  zgen load zsh-users/zsh-history-substring-search
 
-	# zgen load zsh-users/zsh-syntax-highlighting
-	zgen load zdharma/fast-syntax-highlighting
+  # zgen load zsh-users/zsh-syntax-highlighting
+  zgen load zdharma/fast-syntax-highlighting
 
 	zgen load zsh-users/zsh-autosuggestions
 	export ZSH_AUTOSUGGEST_USE_ASYNC=1
@@ -76,7 +76,6 @@ fi
 
 # Bell on command completion, used for urgent flagging
 source $Z/zbell.sh
-
 
 # FZF settings
 export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'
@@ -127,31 +126,6 @@ ZSH_AUTOSUGGEST_CLEAR_WIDGETS+=reset-prompt-and-accept-line
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
-if [ "$TERM" = "linux" ]; then
-    _SEDCMD='s/.*\*color\([0-9]\{1,\}\).*#\([0-9a-fA-F]\{6\}\).*/\1 \2/p'
-    for i in $(sed -n "$_SEDCMD" $HOME/.Xresources | awk '$1 < 16 {printf "\\e]P%X%s", $1, $2}'); do
-        echo -en "$i"
-    done
-    clear
-fi
-
-fortune
-
-# MOTD
-function echo_color() {
-  printf "\033[0;90m$1\033[0m\n"
-}
-echo_color "c-f  Move forward"
-echo_color "c-b  Move backward"
-echo_color "c-p  Move up"
-echo_color "c-n  Move down"
-echo_color "c-a  Jump to beginning of line"
-echo_color "c-e  Jump to end of line"
-echo_color "c-d  Delete forward"
-echo_color "c-h  Delete backward"
-echo_color "c-k  Delete forward to end of line"
-echo_color "c-u  Delete entire line"
-
 # Modal cursor color for vi's insert/normal modes.
 # http://stackoverflow.com/questions/30985436/
 # https://bbs.archlinux.org/viewtopic.php?id=95078
@@ -194,3 +168,29 @@ zle-keymap-select () {
   #print 'did select' >/dev/pts/16
 }
 zle -N zle-keymap-select
+
+reset
+fortune
+
+# MOTD
+function echo_color() {
+  printf "\033[0;90m$1\033[0m\n"
+}
+echo_color "c-f  Move forward"
+echo_color "c-b  Move backward"
+echo_color "c-p  Move up"
+echo_color "c-n  Move down"
+echo_color "c-a  Jump to beginning of line"
+echo_color "c-e  Jump to end of line"
+echo_color "c-d  Delete forward"
+echo_color "c-h  Delete backward"
+echo_color "c-k  Delete forward to end of line"
+echo_color "c-u  Delete entire line"
+
+if [ "$TERM" = "linux" ]; then
+    _SEDCMD='s/.*\*color\([0-9]\{1,\}\).*#\([0-9a-fA-F]\{6\}\).*/\1 \2/p'
+    for i in $(sed -n "$_SEDCMD" $HOME/.Xresources | awk '$1 < 16 {printf "\\e]P%X%s", $1, $2}'); do
+        echo -en "$i"
+    done
+    clear
+fi

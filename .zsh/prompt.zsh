@@ -20,5 +20,3 @@ done
 PR_NO_COLOR="%{$terminfo[sgr0]%}"
 PROMPT="%(#~$PR_RED~$PR_CYAN)%n$PR_WHITE@$PR_MAGENTA%m$PR_NO_COLOR:$PR_RED%2c$PR_NO_COLOR %(!.#.$)$b % "
 RPROMPT="$FG[214]$PR_YELLOW%D{%H:%M}$PR_NO_COLOR"
-
-

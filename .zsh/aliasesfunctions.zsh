@@ -271,7 +271,7 @@ down() { popd > /dev/null; }
 alias mkdir='mkdir -p'
 
 # Make and change into new directory
-md() { mkdir -p "$1" && cd "$1"; }
+mkcd() { mkdir -p "$1" && cd "$1"; }
 
 # Follow copied and moved files to destination directory
 cpf() { cp "$@" && goto "$_"; }
@@ -391,6 +391,7 @@ alias pL='sudo rm /var/lib/pacman/db.lck'   # remove lockfile if pacman doesn't 
 # get PKGBUILD
 alias pG='trizen -G'
 alias mP='makepkg -si'
+alias mS='makepkg --printsrcinfo > .SRCINFO'
 
 alias pSg='pacget -Ss --noedit --noconfirm'
 
