@@ -36,15 +36,15 @@ NeoBundle 'Shougo/neobundle.vim'
 
 
 " After install, turn shell ~/.vim/bundle/vimproc, (n,g)make -f your_machines_makefile
-NeoBundle 'Shougo/vimproc', {
-    \ 'build' : {
-    \     'windows' : 'tools\\update-dll-mingw',
-    \     'cygwin' : 'make -f make_cygwin.mak',
-    \     'mac' : 'make',
-    \     'linux' : 'make',
-    \     'unix' : 'gmake',
-    \    },
-    \ }
+NeoBundle 'Shougo/vimproc.vim', {
+\ 'build' : {
+\     'windows' : 'tools\\update-dll-mingw',
+\     'cygwin' : 'make -f make_cygwin.mak',
+\     'mac' : 'make',
+\     'linux' : 'make',
+\     'unix' : 'gmake',
+\    },
+\ }
 
 " :help ConqueTerm
 " NeoBundle 'Flolagale/conque'
@@ -100,7 +100,7 @@ NeoBundle 'tpope/vim-surround'
 NeoBundle 'paradigm/TextObjectify'
 
 " Repeat movements
-NeoBundle 'vim-scripts/repmo.vim'
+" NeoBundle 'Houl/repmo-vim'
 
 " . repeat for plugin actions
 NeoBundle 'tpope/vim-repeat'
@@ -176,8 +176,11 @@ nnoremap <leader>n :NumbersToggle<CR>
 NeoBundle 'danro/rename.vim'
 
 
-" Startup
+""" Startup
 " NeoBundle 'mhinz/vim-startify'
+
+" Notification message space
+:set cmdheight=1
 
 
 " Large interface
@@ -213,49 +216,50 @@ let g:colors_name='default'
 " :XtermColorTable, # = yank current color, t = toggle RGB text, f = set RGB text to current color
 NeoBundle 'sunaku/xterm-color-table.vim'
 
+NeoBundle 'tpope/vim-vinegar'
 
 " Manage multiple files with ease
-NeoBundle 'scrooloose/nerdtree'
-let NERDTreeHijackNetrw=1
-
-" \p - toggle nerdtree
-" nmap <silent> <leader>p :NERDTreeToggle<CR>
-" Open NERDTree in the directory of the current file (or /home if no file is open)
-nmap <silent> <leader>p :call NERDTreeToggleInCurDir()<cr>
-function! NERDTreeToggleInCurDir()
-" If NERDTree is open in the current buffer
-if (exists("t:NERDTreeBufName") && bufwinnr(t:NERDTreeBufName) != -1)
-  exe ":NERDTreeClose"
-else
-  exe ":NERDTreeFind"
-endif
-endfunction
-
-" open NERDTree automatically when vim starts up on opening a directory
-autocmd StdinReadPre * let s:std_in=1
-autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists("s:std_in") | exe 'NERDTree' argv()[0] | wincmd p | ene | endif
-
-" Close Vim if only NERDtree buffer is open
-" https://github.com/scrooloose/nerdtree/issues/21
-" autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | en
-
-augroup AuNERDTreeCmd
-autocmd!
-augroup end
-
-if has('gui_running')
-" autocmd! NERDTreeHijackNetrw
-autocmd! NERDTreeTabs
-autocmd! NERDTree
-endif
-
-let g:NERDTreeDirArrowExpandable = '▸'
-let g:NERDTreeDirArrowCollapsible = '▾'
-
-
-""" Tabs
-NeoBundle 'jistr/vim-nerdtree-tabs'
-map <Leader>o <plug>NERDTreeTabsToggle<CR>
+" NeoBundle 'scrooloose/nerdtree'
+" let NERDTreeHijackNetrw=1
+" 
+" " \p - toggle nerdtree
+" " nmap <silent> <leader>p :NERDTreeToggle<CR>
+" " Open NERDTree in the directory of the current file (or /home if no file is open)
+" nmap <silent> <leader>p :call NERDTreeToggleInCurDir()<cr>
+" function! NERDTreeToggleInCurDir()
+" " If NERDTree is open in the current buffer
+" if (exists("t:NERDTreeBufName") && bufwinnr(t:NERDTreeBufName) != -1)
+  " exe ":NERDTreeClose"
+" else
+  " exe ":NERDTreeFind"
+" endif
+" endfunction
+" 
+" " open NERDTree automatically when vim starts up on opening a directory
+" autocmd StdinReadPre * let s:std_in=1
+" autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists("s:std_in") | exe 'NERDTree' argv()[0] | wincmd p | ene | endif
+" 
+" " Close Vim if only NERDtree buffer is open
+" " https://github.com/scrooloose/nerdtree/issues/21
+" " autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | en
+" 
+" augroup AuNERDTreeCmd
+" autocmd!
+" augroup end
+" 
+" if has('gui_running')
+" " autocmd! NERDTreeHijackNetrw
+" autocmd! NERDTreeTabs
+" autocmd! NERDTree
+" endif
+" 
+" let g:NERDTreeDirArrowExpandable = '▸'
+" let g:NERDTreeDirArrowCollapsible = '▾'
+" 
+" 
+" """ Tabs
+" NeoBundle 'jistr/vim-nerdtree-tabs'
+" map <Leader>o <plug>NERDTreeTabsToggle<CR>
 
 NeoBundle 'benatkin/vim-move-between-tabs'
 " tN and tP
@@ -275,9 +279,10 @@ NeoBundle 'junegunn/goyo.vim'
 
 " Doesn't work right with Awesome
 " For vim-session
-NeoBundle 'xolox/vim-misc'
+" NeoBundle 'xolox/vim-misc'
 " NeoBundle 'xolox/vim-lua-inspect'
 
+NeoBundle 'tbastos/vim-lua'
 
 " Yank ring
 " NeoBundle 'vim-scripts/YankRing.vim'
@@ -333,10 +338,10 @@ call neobundle#end()
 " NeoBundle required
 " Basic syntax highlighting
 if has("syntax")
-syntax on
-filetype on
-filetype plugin on
-filetype indent on
+  syntax on
+  filetype on
+  filetype plugin on
+  filetype indent on
 endif
 
 
