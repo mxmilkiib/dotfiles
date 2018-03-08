@@ -7,6 +7,6 @@
    "notification-verbose" : true,
    "notifications" : true,
    "split-title" : false,
-   "volume-level" : 0,
+   "volume-level" : 21,
    "volume-step" : 3
 }

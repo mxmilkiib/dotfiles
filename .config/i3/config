@@ -122,9 +122,9 @@ bindsym  --whole-window Mod2+button9 kill
 # installed.
 # bindsym $mod+d exec --no-startup-id i3-dmenu-desktop
 # bindsym $mod+space exec "dlaunch --sources=exec-path"
-bindsym $mod+space exec "i3-msg exec ~/bin/i3/i3-applaunch.sh"
+bindsym $mod+space exec "rofi -modi combi -combi-modi 'drun#run' -show combi -show-icons -width 70 -theme purple.rasi -display-combi ''"
 ## or use Alt GR
-bindsym ISO_Level3_Shift  exec  "i3-msg exec ~/bin/i3/i3-applaunch.sh"
+bindsym ISO_Level3_Shift exec "rofi -modi combi -combi-modi 'drun#run' -show combi -show-icons -width 70 -theme purple.rasi -display-combi ''"
 ## and Ctrl+Alt GR simulate Esc
 #bindsym --release Ctrl+ISO_Level3_Shift exec xdotool Escape
 bindsym --release Ctrl+ISO_Level3_Shift exec --no-startup-id xvkbd -xsendevent -text "\[Escape]"
@@ -192,7 +192,7 @@ bindsym $mod+F6 exec "run-or-raise.sh hexchat"
 bindsym $mod+F7 exec "run-or-raise.sh keepassx"
 
 ## launch media player
-bindsym $mod+F8 exec "run-or-raise.sh sayonara"
+bindsym $mod+F8 exec "run-or-raise.sh carla"
 
 ## launch gmail
 bindsym XF86Mail exec "chrome https://gmail.com && run-or-raise.sh chrome"
@@ -651,7 +651,7 @@ bindsym --whole-window --border $mod+button5 workspace prev_on_output
 bindsym Shift+Insert exec "xdotool click 2"
 
 # make sure the initial desktop is the first one
-exec i3-msg workspace "21"
+exec i3-msg workspace "10"
 
 # Start my defaults layouts on boot
 # exec --no-startup-id "i3-msg 'workspace 1; append_layout ~/.config/i3/workspace-1.json'"
