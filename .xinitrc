@@ -64,7 +64,7 @@ caffeine &
 # compton --respect-prop-shadow -bc -t -8 -l -9 -r 6 -o 0.7 &
 # compton -cCGfF -o 0.38 -O 200 -I 200 -t 0.02 -l 0.02 -r 3.2 -D2 -m 0.88 -i 0 &
 # compton -cCGfzb -o 0.8 -O 200 -I 200 -t -9 -l -9 -r 6 -D 2 -m 0.98 -e 1 -i 1 --respect-prop-shadow  --shadow-ignore-shape
-compton -b
+# compton -b
 
 # Notification daemon. ctrl-space to close, ctrl-shift-space to close all.
 # dunst &
