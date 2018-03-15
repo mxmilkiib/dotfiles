@@ -172,21 +172,13 @@ bindsym $mod+F1 exec --no-startup-id $terminal -geometry 125x56 -title "i3_hotke
 for_window [title="i3_hotkey_help$"] floating toggle
 
 ## launch or switch to scratch notes text file
-bindsym $mod+F2 exec geany ~/documents/scratch
-
-## launch or switch to browser
-bindsym $mod+F3 exec "run-or-raise.sh chrome"
-bindsym XF86WWW exec "run-or-raise.sh chrome"
-# bindsym $mod+F4 exec "run-or-raise.sh pcmanfm"
+bindsym $mod+Shift+F2 exec geany ~/documents/scratch
 
 ## launch or switch to file manager
-bindsym $mod+F4 exec "run-or-raise.sh dolphin"
+bindsym $mod+F2 exec "run-or-raise.sh dolphin"
 
 ## launch or switch to bittorrent client
-bindsym $mod+F5 exec "run-or-raise.sh qbittorrent"
-
-## launch or switch to irc client
-bindsym $mod+F6 exec "run-or-raise.sh hexchat"
+bindsym $mod+F3 exec "run-or-raise.sh qbittorrent"
 
 ## launch password manager
 bindsym $mod+F7 exec "run-or-raise.sh keepassx"
@@ -194,11 +186,19 @@ bindsym $mod+F7 exec "run-or-raise.sh keepassx"
 ## launch media player
 bindsym $mod+F8 exec "run-or-raise.sh carla"
 
-## launch gmail
-bindsym XF86Mail exec "chrome https://gmail.com && run-or-raise.sh chrome"
+## launch or switch to irc client
+bindsym $mod+F11 exec "run-or-raise.sh hexchat"
+
+## launch or switch to browser
+bindsym $mod+F12 exec "run-or-raise.sh chrome"
+bindsym XF86WWW exec "run-or-raise.sh chrome"
+# bindsym $mod+F4 exec "run-or-raise.sh pcmanfm"
 
 ## launch trello
-bindsym $mod+F12 exec google-chrome-stable --app=https://trello.com/b/AdniCH2y/to-do
+bindsym $mod+Shift+F12 exec google-chrome-stable --app=https://trello.com/b/AdniCH2y/to-do
+
+## launch gmail
+bindsym XF86Mail exec "chrome https://gmail.com && run-or-raise.sh chrome"
 
 
 ## switch video output between cloned or seperate desktops
