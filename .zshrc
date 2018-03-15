@@ -101,7 +101,8 @@ _fzf_compgen_dir() {
 # https://github.com/clvv/fasd
 eval "$(fasd --init auto)"
 
-
+# ctrl-space executes the autosuggestion
+bindkey '^ ' autosuggest-execute
 
 # update prompt time when pressing return to launch a command
 reset-prompt-and-accept-line() {
@@ -122,7 +123,6 @@ ZSH_AUTOSUGGEST_CLEAR_WIDGETS+=reset-prompt-and-accept-line
 #         tmux attach-session -t "$ID"
 #     fi
 # fi
-
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
@@ -187,10 +187,11 @@ echo_color "c-h  Delete backward"
 echo_color "c-k  Delete forward to end of line"
 echo_color "c-u  Delete entire line"
 
-if [ "$TERM" = "linux" ]; then
-    _SEDCMD='s/.*\*color\([0-9]\{1,\}\).*#\([0-9a-fA-F]\{6\}\).*/\1 \2/p'
-    for i in $(sed -n "$_SEDCMD" $HOME/.Xresources | awk '$1 < 16 {printf "\\e]P%X%s", $1, $2}'); do
-        echo -en "$i"
-    done
-    clear
-fi
+# if [ "$TERM" = "linux" ]; then
+    # _SEDCMD='s/.*\*color\([0-9]\{1,\}\).*#\([0-9a-fA-F]\{6\}\).*/\1 \2/p'
+    # for i in $(sed -n "$_SEDCMD" $HOME/.Xresources | awk '$1 < 16 {printf "\\e]P%X%s", $1, $2}'); do
+        # echo -en "$i"
+    # done
+    # clear
+# fi
+

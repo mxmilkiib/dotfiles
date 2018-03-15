@@ -46,3 +46,8 @@ zstyle ':completion:*:sudo:*' command-path /usr/local/sbin /usr/local/bin /usr/s
 # message when there are no completions
 # zstyle ':completion:*:warnings' format 'no results'
 
+zstyle ':completion:*:matches'         group 'yes'
+zstyle ':completion:*'                 group-name ''
+# completion displays directories first
+zstyle ':completion:*' list-dirs-first true
+
