@@ -294,6 +294,9 @@ NeoBundle 'tpope/vim-fugitive'
 
 NeoBundle 'gregsexton/gitv'
 
+" Create Gists
+NeoBundle 'mattn/webapi-vim'
+NeoBundle 'mattn/gist-vim'
 
 " NeoBundle 'airblade/vim-gitgutter'
 " Show a diff using Vim its sign column
