@@ -140,8 +140,8 @@ URxvt.secondaryWheel: 1
 ! Hotkey bindings
 
 ! Adds single line scrollback with up/down
-URxvt.keysym.Shift-Up: command:\033]720;1\007
-URxvt.keysym.Shift-Down: command:\033]721;1\007
+URxvt.keysym.Shift-Up: command:\033]720;1\007\033]720;1\007\033]720;1\007
+URxvt.keysym.Shift-Down: command:\033]721;1\007\033]721;1\007\033]721;1\007
 
 ! Map Shift-space to an escape char for Vim
 ! URxvt.keysym.S-space:  \033
@@ -172,22 +172,22 @@ URxvt.searchable-scrollback: C-s
 ! URxvt.matcher.button: 1
 
 ! url-select
-URxvt.keysym.M-u:       perl:url-select:select_next
-URxvt.url-select.launcher: /usr/bin/xdg-open
+URxvt.url-select.launcher:  google-chrome-stable
 URxvt.url-select.underline: true
+URxvt.keysym.M-u:           perl:url-select:select_next
 
-URxvt.underlineURLs:    true
+URxvt.underlineURLs:        true
 
 ! keyboard-select
 ! Mouseless selection of text - urxvt-perls
-! URxvt.keysym.M-Escape: perl:keyboard-select:activate
-! URxvt.keysym.M-s: perl:keyboard-select:search
+URxvt.keysym.M-Escape:      perl:keyboard-select:activate
+URxvt.keysym.M-s:           perl:keyboard-select:search
 
 ! font-size
 ! :Bind C-0, C-+ and C-= to activate small, medium, and big font size resp.     
 ! URxvt.keysym.C-equal:     font-size:increase
-! URxvt.keysym.C-minus:   font-size:decrease
-! URxvt.keysym.C-Shift-plus:   font-size:incglobal
+! URxvt.keysym.C-minus:     font-size:decrease
+! URxvt.keysym.C-Shift-plus:font-size:incglobal
 ! URxvt.keysym.C-Shift-underscore: font-size:decglobal
 
 ! Allow bindings with shift

@@ -20,7 +20,7 @@ setxkbmap gb
 xsettingsd &
 
 # Source .Xresources for this session
-[[ -f ~/.Xresources ]] && xrdb -merge ~/.Xresources
+[[ -f ~/.Xresources ]] && xrdb -merge -I$HOME ~/.Xresources
 
 # Make additional fonts available
 xset +fp /usr/share/fonts/local
@@ -92,6 +92,8 @@ dyndns &
 # autocutsel -fork &
 # copy ctrl-xcv / shift-insert CLIPBOARD to middle mouse PRIMARY selection buffer
 # autocutsel -selection PRIMARY -fork &
+
+pointerspeed.sh 0.5
 
 # infrared control
 flirc_util loadconfig ~/.config/flirc/my_flirc_config
