@@ -159,6 +159,7 @@ NeoBundle 'chase/nginx.vim'
 
 NeoBundle 'tell-k/vim-autopep8'
 
+NeoBundle 'godlygeek/tabular'
 
 " File navigation
 " Jump to word using characters <leader>w (like f in vimium)
@@ -322,8 +323,13 @@ NeoBundle 'chrisbra/histwin.vim'
 " Manage buffers
 "NeoBundle 'fholgado/minibufexpl.vim'
 
+"" Copy and paste
 " NeoBundle 'sickill/vim-pasta'
+" Work with bracketed paste content from terminals
 NeoBundle 'ConradIrwin/vim-bracketed-paste'
+" F12 to toggle mouse between vim and terminal
+NeoBundle 'vim-scripts/toggle_mouse'
+
 
 NeoBundle 'nathanaelkane/vim-indent-guides'
 
@@ -331,6 +337,9 @@ NeoBundle 'nathanaelkane/vim-indent-guides'
 "NeoBundle 'Shougo/neocomplcache'
 " NeoBundle 'Valloric/YouCompleteMe'
 
+"" mouse
+" ctrl/shift mouse click+drag over text copies/moves said text
+NeoBundle 'vim-scripts/xemacs-mouse-drag-copy'
 
 " Color theme
 " NeoBundle 'BlackSea'
@@ -610,6 +619,7 @@ nnoremap <silent><leader>K m`:silent -g/\m^\s*$/d<CR>``:noh<CR>
 
 " :W to sudo save file if it has opened as RO
 " command W silent execute 'write !sudo tee ' . shellescape(@%, 1) . ' >/dev/null'
+command WW silent execute 'w !sudo tee %'
 " after, vim indicates file hasn't saved, but it has
 
 
