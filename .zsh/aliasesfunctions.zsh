@@ -163,6 +163,7 @@ fi
 
 # Alias ls='ls --color'        									# add colors for filetype recognition
 
+alias lsd='ls --group-directories-first'
 alias ll='ls -lh --group-directories-first'     # long list, alphabetical sort (default), human readable (K, M, etc.), directories first
 alias lla='ls -lha --group-directories-first'     # long list, alphabetical sort (default), human readable (K, M, etc.), directories first
 
