@@ -652,16 +652,13 @@ alias xevk='xev -event keyboard'
 ### Misc
 
 # Bastard Oper From Hell excuse
-alias bofh='nc bofh.jeffballard.us 666 | tail -n 1'
+alias bofh='telnet bofh.jeffballard.us 666 2>/dev/null | tail -1'
 
 # Pipes
 alias pipes='nice -n 19 pipes.sh -R -r 0 -p 3'
 
 # Nyancat
 alias nyancat='telnet nyancat.dakko.us'
-
-# Fish
-alias fish=asciiquarium
 
 # Go figure
 function most_useless_use_of_zsh {
@@ -678,3 +675,7 @@ function most_useless_use_of_zsh {
 				echo
 		done
 }
+
+alias zshhelp='less ~/.zshrc'
+alias adwmhelp='less ~/.config/adwm/keysrc'
+alias i3help='less ~/.config/i3/config'
