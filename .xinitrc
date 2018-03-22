@@ -152,10 +152,9 @@ exec i3
 
 # export BSPWM_STATE=/tmp/bspwm-state.json
 # exec bspwm
-# exec adwm
+# exec adwm -f ~/.config/adwm/adwmrc
 # exec startxfce4
 # exec herbstluftwm
-# exec adwm
 # exec howm
 # exec fvwm2
 # exec openbox
