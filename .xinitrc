@@ -145,6 +145,11 @@ export QT_PLATFORM_PLUGIN=qt5ct
 
 exec i3
 # exec i3 >> /var/tmp/log/i3log 2>&1
+# exec adwm -f ~/.config/adwm/adwmrc
+# exec xde-session -desktop ADWM -startwm adwm -autostart
+# DEFAULTSESSION=xde-session
+
+# exec $1 
 
 # exec selectwm
 # exec xterm
@@ -152,7 +157,6 @@ exec i3
 
 # export BSPWM_STATE=/tmp/bspwm-state.json
 # exec bspwm
-# exec adwm -f ~/.config/adwm/adwmrc
 # exec startxfce4
 # exec herbstluftwm
 # exec howm
