@@ -363,9 +363,9 @@ alias pP='trizen -S'
 # interactive search (pkg # + prompt) + reverse results/#s
 alias pS='trizen --noconfirm --noedit --flip-results --flip-indices'
 # interactive search with editing of PKGBUILD
-alias pSp='trizen --noconfirm --flip-results --flip-indices'
+alias pSe='trizen --noconfirm --flip-results --flip-indices'
 # interactive search of AUR by popularity with confirm
-alias pSpop='trizen -a --noedit --aur-results-sort-by=popularity --flip-indices'
+alias pSp='trizen -a --noconfirm --noedit --aur-results-sort-by=popularity --flip-indices'
 
 # alias 'pu=sudo pacman -Syu'
 alias pu='trizen -Syu --noconfirm --noedit'
@@ -402,15 +402,19 @@ alias pSg='pacget -Ss --noedit --noconfirm'
 # For quick viewing of txt files
 alias l='less -RF'
 
+# quick [rip]grep
+alias g='rg'
+
 # for READNULLCMD in environment.zsh
 function less_rfx() {
 	less -RFX "$@"
 }
 
-# -g aliases work at the end of a line
+
+### -g aliases work at the end of a line
 alias -g L='| less -RF'      # redraw (color), quit under one page, dont init/deinit term
 alias -g Ll='| less -RFX'    # redraw (color), quit under one page, allow mousescroll
-# alias -g "<"='less -RFX'
+
 # Grep, case insentitive, line number
 alias -g G='| rg -in'
 # for piping
