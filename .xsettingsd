@@ -5,12 +5,12 @@ Gtk/CursorThemeSize 0
 Gtk/EnableEventSounds 0
 Gtk/EnableInputFeedbackSounds 0
 Gtk/FontName "Droid Sans Mono 10"
-Gtk/IconThemeName "Humanity-Colors-Dark-Orange"
+Gtk/IconThemeName "Oxygen"
 Gtk/MenuBarAccel "F10"
 Gtk/MenuImages 1
 Gtk/ToolbarIconSize 3
 Gtk/ToolbarStyle "icons"
-Net/ThemeName	"Adwaita"
+Net/ThemeName	"Archlinux"
 Xft/Antialias 1
 Xft/DPI 97280
 # Xft/Hinting 0

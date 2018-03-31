@@ -14,13 +14,11 @@ fi
 # Redshift - changed screen colour temp
 redshift-gtk -l 55.978301:-3.228586 -t 6000:4500 &
 
-# Set Xorg keyboard layout
-setxkbmap gb
-
-xsettingsd &
-
 # Source .Xresources for this session
 [[ -f ~/.Xresources ]] && xrdb -merge -I$HOME ~/.Xresources
+
+# xsettings daemon - informs apps what themes to usex
+xsettingsd &
 
 # Make additional fonts available
 xset +fp /usr/share/fonts/local
@@ -83,7 +81,7 @@ kmix &
 radiotray-ng &
 
 # Battery monitor
-[[ $HOST = "rose.local" ]] && vattery &
+[[ $HOST = "rose*" ]] && vattery &
 
 # Update dynamic dns
 dyndns &
@@ -97,6 +95,9 @@ pointerspeed.sh 0.5
 
 # infrared control
 flirc_util loadconfig ~/.config/flirc/my_flirc_config
+
+# Set Xorg keyboard layout
+setxkbmap gb
 
 # Start Jack for audio
 # jack_control start &
@@ -146,6 +147,9 @@ export QT_PLATFORM_PLUGIN=qt5ct
 exec i3
 # exec i3 >> /var/tmp/log/i3log 2>&1
 # exec adwm -f ~/.config/adwm/adwmrc
+
+# perlpanel &
+
 # exec xde-session -desktop ADWM -startwm adwm -autostart
 # DEFAULTSESSION=xde-session
 
