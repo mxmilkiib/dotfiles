@@ -215,8 +215,9 @@ alias cd..='cd ..'
 alias ,,='..'
 alias c.='cd $PWD'
 
+
 #to fox
-alias cppwd='export CPPWD=$(pwd)'
+alias cdpwd='export CPPWD=$(pwd)'
 alias gopwd='cd $CPPWD'
 
 # https://github.com/clvv/fasd
@@ -265,8 +266,12 @@ function lwd() {
 # fi
 
 # Browse path web browser like
-up() { pushd .. > /dev/null; }
-down() { popd > /dev/null; }
+# up() { pushd .. > /dev/null; }
+# down() { popd > /dev/null; }
+
+up() { cd $(eval printf '../'%.0s {1..$1}) && pwd; }
+#and "cd -[N]" or "cd -<TAB>" to get back
+
 
 # Makes parent dir if it doesn't exist (i.e. newdir/secondnewdir/third etc.)
 alias mkdir='mkdir -p'
@@ -369,7 +374,8 @@ alias pSp='trizen -a --noconfirm --noedit --aur-results-sort-by=popularity --fli
 
 # alias 'pu=sudo pacman -Syu'
 alias pu='trizen -Syu --noconfirm --noedit'
-alias puu='trizen -Syu --noconfirm --noedit --needed'
+alias puu='trizen -Syu --noconfirm --noedit --needed --devel'
+# buggy https://github.com/trizen/trizen/issues/68 - builds when version is the same..
 
 alias pSi='trizen -Si'                      # search info
 alias pQi='trizen -Qi'                      # query info
@@ -443,7 +449,9 @@ alias ccp='rsync --progress -ah'
 alias alsamixer='alsamixer -V=all'
 
 # Open a file
-alias o='xdg-open'
+function o(){
+	xdg-open "$@" &
+}
 
 # Check Awesome window manager config
 alias ak='awesome -k'
@@ -579,44 +587,13 @@ cb() {
 function cbf() { cat "$1" | cb; }
 # Copy SSH public key
 alias cbssh="cb ~/.ssh/id_rsa.pub"
-# Copy current working directory
-alias cbwd="pwd | cb"
+# Copy current working directory alias cbwd="pwd | cb"
 # Copy most recent command in bash history
 alias cbhs="cat $HISTFILE | tail -n 1 | cb"
 
 
+# prompt bell hook, sends an urgent signal on return to prompt, which is ignored if the terminal is active
 precmd() { [[ -t 0&&  -w 0 ]]&&  print -Pn '\e]2;%~\a' }
-
-scan() {
-	if [[ -z $1 || -z $2 ]]; then
-		echo "Usage: $0 <host> <port, ports, or port-range>"
-		return
-	fi
-
-	local host=$1
-	local ports=()
-	case $2 in
-		*-*)
-			IFS=- read start end <<< "$2"
-			for ((port=start; port <= end; port++)); do
-				ports+=($port)
-			done
-			;;
-		*,*)
-			IFS=, read -ra ports <<< "$2"
-			;;
-		*)
-			ports+=($2)
-			;;
-	esac
-
-
-	for port in "${ports[@]}"; do
-		alarm 1 "echo >/dev/tcp/$host/$port" &&
-			echo "port $port is open" ||
-			echo "port $port is closed"
-	done
-}
 
 
 # http://stackoverflow.com/a/187853
