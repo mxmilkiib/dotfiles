@@ -18,332 +18,330 @@
 " \s = toggle scratchpad buffer
 " :shell = drop terminal into shell, return to vim on exit
 
-""" Neobundle script manager
-filetype off                   " Required!
-filetype plugin indent off     " Required!
-
 if &compatible
   " Use Vim defaults instead of 100% vi compatibility
   set nocompatible
 endif
 
-set runtimepath+=~/.vim/bundle/neobundle.vim
+""" Neobundle script manager
+filetype off                   " Required!
+filetype plugin indent off     " Required!
 
+"set runtimepath+=~/.vim/bundle/neobundle.vim
 call neobundle#begin(expand('~/.vim/bundle/'))
 
-" Let NeoBundle manage NeoBundle
-NeoBundle 'Shougo/neobundle.vim'
+  " Let NeoBundle manage NeoBundle
+  "NeoBundle 'Shougo/neobundle.vim'
 
+  " After install, turn shell ~/.vim/bundle/vimproc, (n,g)make -f your_machines_makefile
+  NeoBundle 'Shougo/vimproc.vim', {
+  \ 'build' : {
+  \     'windows' : 'tools\\update-dll-mingw',
+  \     'cygwin' : 'make -f make_cygwin.mak',
+  \     'mac' : 'make',
+  \     'linux' : 'make',
+  \     'unix' : 'gmake',
+  \    },
+  \ }
 
-" After install, turn shell ~/.vim/bundle/vimproc, (n,g)make -f your_machines_makefile
-NeoBundle 'Shougo/vimproc.vim', {
-\ 'build' : {
-\     'windows' : 'tools\\update-dll-mingw',
-\     'cygwin' : 'make -f make_cygwin.mak',
-\     'mac' : 'make',
-\     'linux' : 'make',
-\     'unix' : 'gmake',
-\    },
-\ }
+  " :help ConqueTerm
+  " NeoBundle 'Flolagale/conque'
 
-" :help ConqueTerm
-" NeoBundle 'Flolagale/conque'
 
+  " fzf - populate a menu with things and f*i*l*t*e*r live with ripgrep
+  NeoBundle 'junegunn/fzf.vim'
+  noremap <Leader><Leader>f :FZF<CR>
+  noremap <Leader><Leader>b :Buffers<CR>
+  noremap <Leader><Leader>t :Colors<CR>
+  noremap <Leader><Leader>c :Commands!<CR>
+  noremap <Leader><Leader>h :History<CR>
+  if executable('fzf')
+    " Better command history with q:
+    command! CmdHist call fzf#vim#command_history({'right': '40'})
+    nnoremap q: :CmdHist<CR>
+    " Better search history
+    command! QHist call fzf#vim#search_history({'right': '40'})
+    nnoremap q/ :QHist<CR>
+  end
 
-" fzf - populate a menu with things and f*i*l*t*e*r live with ripgrep
-NeoBundle 'junegunn/fzf.vim'
-noremap <Leader><Leader>f :FZF<CR>
-noremap <Leader><Leader>b :Buffers<CR>
-noremap <Leader><Leader>t :Colors<CR>
-noremap <Leader><Leader>c :Commands!<CR>
-noremap <Leader><Leader>h :History<CR>
-if executable('fzf')
-  " Better command history with q:
-  command! CmdHist call fzf#vim#command_history({'right': '40'})
-  nnoremap q: :CmdHist<CR>
-  " Better search history
-  command! QHist call fzf#vim#search_history({'right': '40'})
-  nnoremap q/ :QHist<CR>
-end
+  " Find things easily
+  " http://owen.cymru/fzf-ripgrep-navigate-with-bash-faster-than-ever-before
+  let g:rg_command = '
+    \ rg --column --line-number --no-heading --fixed-strings --ignore-case --no-ignore --hidden --follow --color "always"
+    \ -g "*.{js,json,php,md,styl,jade,html,config,py,cpp,c,go,hs,rb,conf}"
+    \ -g "!{.git,node_modules,vendor}/*" '
+  command! -bang -nargs=* F call fzf#vim#grep(g:rg_command .shellescape(<q-args>), 1, <bang>0)
 
-" Find things easily
-" http://owen.cymru/fzf-ripgrep-navigate-with-bash-faster-than-ever-before
-let g:rg_command = '
-  \ rg --column --line-number --no-heading --fixed-strings --ignore-case --no-ignore --hidden --follow --color "always"
-  \ -g "*.{js,json,php,md,styl,jade,html,config,py,cpp,c,go,hs,rb,conf}"
-  \ -g "!{.git,node_modules,vendor}/*" '
-command! -bang -nargs=* F call fzf#vim#grep(g:rg_command .shellescape(<q-args>), 1, <bang>0)
+  " scratch pad
+  NeoBundle 'mtth/scratch.vim'
+  noremap <Leader>s :ScratchPreview<CR>
 
-" scratch pad
-NeoBundle 'mtth/scratch.vim'
-noremap <Leader>s :ScratchPreview<CR>
 
+  """ Coding
 
-""" Coding
+  " provides insert mode auto-completion for quotes, parens, brackets, etc.
+  NeoBundle 'Raimondi/delimitMate'
 
-" provides insert mode auto-completion for quotes, parens, brackets, etc.
-NeoBundle 'Raimondi/delimitMate'
+  " Add/remove comments with ease
+  NeoBundle 'scrooloose/nerdcommenter'
+  let g:NERDSpaceDelims = 1
+  let g:NERDCommentEmptyLines = 1
+  " <leader>+c+<space> = toggle
 
-" Add/remove comments with ease
-NeoBundle 'scrooloose/nerdcommenter'
-let g:NERDSpaceDelims = 1
-let g:NERDCommentEmptyLines = 1
-" <leader>+c+<space> = toggle
+  " Surrount objects with something
+  NeoBundle 'tpope/vim-surround'
+  " cs"' = change " to '
+  " cs'<q> = change ' to <q>/</q>
+  " dst = delete surrounding tags
 
-" Surrount objects with something
-NeoBundle 'tpope/vim-surround'
-" cs"' = change " to '
-" cs'<q> = change ' to <q>/</q>
-" dst = delete surrounding tags
+  " Multiline text objects
+  NeoBundle 'paradigm/TextObjectify'
 
-" Multiline text objects
-NeoBundle 'paradigm/TextObjectify'
+  " Repeat movements
+  " NeoBundle 'Houl/repmo-vim'
 
-" Repeat movements
-" NeoBundle 'Houl/repmo-vim'
+  " . repeat for plugin actions
+  NeoBundle 'tpope/vim-repeat'
 
-" . repeat for plugin actions
-NeoBundle 'tpope/vim-repeat'
 
 
+  " Visual help
 
-" Visual help
+  " highlight yanked text
+  " NeoBundle 'sunaku/vim-highlightedyank'
 
-" highlight yanked text
-" NeoBundle 'sunaku/vim-highlightedyank'
+  " Visually highlight matching opening & closing tags
+  NeoBundle 'Valloric/MatchTagAlways'
+  " Jump to last tag
+  nnoremap <leader>% :MtaJumpToOtherTag<cr>
 
-" Visually highlight matching opening & closing tags
-NeoBundle 'Valloric/MatchTagAlways'
-" Jump to last tag
-nnoremap <leader>% :MtaJumpToOtherTag<cr>
+  " Show contents of registers on " or @
+  "NeoBundle 'junegunn/vim-peekaboo'
 
-" Show contents of registers on " or @
-"NeoBundle 'junegunn/vim-peekaboo'
 
+  " Syntax highlighting
 
-" Syntax highlighting
+  " html5
+  NeoBundle 'othree/html5.vim'
 
-" html5
-NeoBundle 'othree/html5.vim'
+  " faust syntax highlighting
+  NeoBundle 'gmoe/vim-faust'
 
-" faust syntax highlighting
-NeoBundle 'gmoe/vim-faust'
+  " NeoBundle 'scrooloose/syntastic'
 
-" NeoBundle 'scrooloose/syntastic'
+  " Highlights operator characters for every language
+  NeoBundle 'Valloric/vim-operator-highlight'
 
-" Highlights operator characters for every language
-NeoBundle 'Valloric/vim-operator-highlight'
+  " NeoBundle 'ap/vim-css-color.git'
 
-" NeoBundle 'ap/vim-css-color.git'
+  " A plugin to color colornames and codes
+  NeoBundle 'chrisbra/Colorizer'
+  autocmd VimEnter * ColorToggle
 
-" A plugin to color colornames and codes
-NeoBundle 'chrisbra/Colorizer'
-autocmd VimEnter * ColorToggle
+  " NeoBundle 'cakebaker/scss-syntax.vim'
+  " NeoBundle 'vim-scripts/Better-CSS-Syntax-for-Vim' - fuxks with scss :(
 
-" NeoBundle 'cakebaker/scss-syntax.vim'
-" NeoBundle 'vim-scripts/Better-CSS-Syntax-for-Vim' - fuxks with scss :(
+  " NeoBundle 'pangloss/vim-javascript'
 
-" NeoBundle 'pangloss/vim-javascript'
+  " NeoBundle 'StanAngeloff/php.vim'
 
-" NeoBundle 'StanAngeloff/php.vim'
+  " NeoBundle 'hallettj/jslint.vim'
+  " NeoBundle 'joestelmach/lint.vim'
 
-" NeoBundle 'hallettj/jslint.vim'
-" NeoBundle 'joestelmach/lint.vim'
+  " NeoBundle 'sleistner/vim-jshint'
+  " NeoBundle 'wookiehangover/jshint.vim'
 
-" NeoBundle 'sleistner/vim-jshint'
-" NeoBundle 'wookiehangover/jshint.vim'
-
-" NeoBundle 'baskerville/vim-sxhkdrc'
-
-NeoBundle 'chase/nginx.vim'
-
-NeoBundle 'tell-k/vim-autopep8'
-
-NeoBundle 'godlygeek/tabular'
-
-" File navigation
-" Jump to word using characters <leader>w (like f in vimium)
-" NeoBundle 'Lokaltog/vim-easymotion'
-" let g:EasyMotion_leader_key = '<leader>'
-
-" NeoBundle 'https://bitbucket.org/ns9tks/vim-fuzzyfinder'
-
-NeoBundle 'svermeulen/vim-extended-ft'
-
-NeoBundle 'myusuf3/numbers.vim'
-nnoremap <leader>n :NumbersToggle<CR>
-
-" :rename for save as
-NeoBundle 'danro/rename.vim'
+  " NeoBundle 'baskerville/vim-sxhkdrc'
+
+  NeoBundle 'chase/nginx.vim'
+
+  NeoBundle 'tell-k/vim-autopep8'
+
+  NeoBundle 'godlygeek/tabular'
+
+  " File navigation
+  " Jump to word using characters <leader>w (like f in vimium)
+  " NeoBundle 'Lokaltog/vim-easymotion'
+  " let g:EasyMotion_leader_key = '<leader>'
+
+  " NeoBundle 'https://bitbucket.org/ns9tks/vim-fuzzyfinder'
+
+  NeoBundle 'svermeulen/vim-extended-ft'
+
+  NeoBundle 'myusuf3/numbers.vim'
+  nnoremap <leader>n :NumbersToggle<CR>
 
-
-""" Startup
-" NeoBundle 'mhinz/vim-startify'
+  " :rename for save as
+  NeoBundle 'danro/rename.vim'
 
-" Notification message space
-:set cmdheight=1
 
+  """ Startup
+  " NeoBundle 'mhinz/vim-startify'
 
-" Large interface
+  " Notification message space
+  :set cmdheight=1
 
-" Tiling buffer window manager
-" Ctrl-j/k/space/...
-NeoBundle 'spolu/dwm.vim'
 
+  " Large interface
 
-" New staus line style, a la powerline
-NeoBundle 'vim-airline/vim-airline'
-NeoBundle 'vim-airline/vim-airline-themes'
-" let g:airline#extensions#tabline#enabled = 1
-" let g:airline_powerline_fonts = 1
-"powerline symbols
-if !exists('g:airline_symbols')
-let g:airline_symbols = {}
-endif
+  " Tiling buffer window manager
+  " Ctrl-j/k/space/...
+  NeoBundle 'spolu/dwm.vim'
 
-let g:airline_left_sep = '▶'
-let g:airline_left_alt_sep = ''
-let g:airline_right_sep = '◀'
-let g:airline_right_alt_sep = ''
-let g:airline_symbols.branch = ''
-let g:airline_symbols.readonly = ''
-let g:airline_symbols.linenr = ''
 
-" Highlight the active line
-NeoBundle 'ntpeters/vim-airline-colornum'
-let g:colors_name='default'
+  " New staus line style, a la powerline
+  NeoBundle 'vim-airline/vim-airline'
+  NeoBundle 'vim-airline/vim-airline-themes'
+  " let g:airline#extensions#tabline#enabled = 1
+  " let g:airline_powerline_fonts = 1
+  "powerline symbols
+  if !exists('g:airline_symbols')
+  let g:airline_symbols = {}
+  endif
 
+  let g:airline_left_sep = '▶'
+  let g:airline_left_alt_sep = ''
+  let g:airline_right_sep = '◀'
+  let g:airline_right_alt_sep = ''
+  let g:airline_symbols.branch = ''
+  let g:airline_symbols.readonly = ''
+  let g:airline_symbols.linenr = ''
 
-" :XtermColorTable, # = yank current color, t = toggle RGB text, f = set RGB text to current color
-NeoBundle 'sunaku/xterm-color-table.vim'
+  " Highlight the active line
+  NeoBundle 'ntpeters/vim-airline-colornum'
+  let g:colors_name='default'
 
-NeoBundle 'tpope/vim-vinegar'
 
-" Manage multiple files with ease
-" NeoBundle 'scrooloose/nerdtree'
-" let NERDTreeHijackNetrw=1
-" 
-" " \p - toggle nerdtree
-" " nmap <silent> <leader>p :NERDTreeToggle<CR>
-" " Open NERDTree in the directory of the current file (or /home if no file is open)
-" nmap <silent> <leader>p :call NERDTreeToggleInCurDir()<cr>
-" function! NERDTreeToggleInCurDir()
-" " If NERDTree is open in the current buffer
-" if (exists("t:NERDTreeBufName") && bufwinnr(t:NERDTreeBufName) != -1)
-  " exe ":NERDTreeClose"
-" else
-  " exe ":NERDTreeFind"
-" endif
-" endfunction
-" 
-" " open NERDTree automatically when vim starts up on opening a directory
-" autocmd StdinReadPre * let s:std_in=1
-" autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists("s:std_in") | exe 'NERDTree' argv()[0] | wincmd p | ene | endif
-" 
-" " Close Vim if only NERDtree buffer is open
-" " https://github.com/scrooloose/nerdtree/issues/21
-" " autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | en
-" 
-" augroup AuNERDTreeCmd
-" autocmd!
-" augroup end
-" 
-" if has('gui_running')
-" " autocmd! NERDTreeHijackNetrw
-" autocmd! NERDTreeTabs
-" autocmd! NERDTree
-" endif
-" 
-" let g:NERDTreeDirArrowExpandable = '▸'
-" let g:NERDTreeDirArrowCollapsible = '▾'
-" 
-" 
-" """ Tabs
-" NeoBundle 'jistr/vim-nerdtree-tabs'
-" map <Leader>o <plug>NERDTreeTabsToggle<CR>
+  " :XtermColorTable, # = yank current color, t = toggle RGB text, f = set RGB text to current color
+  NeoBundle 'sunaku/xterm-color-table.vim'
 
-NeoBundle 'benatkin/vim-move-between-tabs'
-" tN and tP
+  NeoBundle 'tpope/vim-vinegar'
 
-NeoBundle 'maxmeyer/vim-tabreorder'
-" alt-pgup and alt-pgdown
+  " Manage multiple files with ease
+  " NeoBundle 'scrooloose/nerdtree'
+  " let NERDTreeHijackNetrw=1
+  " 
+  " " \p - toggle nerdtree
+  " " nmap <silent> <leader>p :NERDTreeToggle<CR>
+  " " Open NERDTree in the directory of the current file (or /home if no file is open)
+  " nmap <silent> <leader>p :call NERDTreeToggleInCurDir()<cr>
+  " function! NERDTreeToggleInCurDir()
+  " " If NERDTree is open in the current buffer
+  " if (exists("t:NERDTreeBufName") && bufwinnr(t:NERDTreeBufName) != -1)
+    " exe ":NERDTreeClose"
+  " else
+    " exe ":NERDTreeFind"
+  " endif
+  " endfunction
+  " 
+  " " open NERDTree automatically when vim starts up on opening a directory
+  " autocmd StdinReadPre * let s:std_in=1
+  " autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists("s:std_in") | exe 'NERDTree' argv()[0] | wincmd p | ene | endif
+  " 
+  " " Close Vim if only NERDtree buffer is open
+  " " https://github.com/scrooloose/nerdtree/issues/21
+  " " autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | en
+  " 
+  " augroup AuNERDTreeCmd
+  " autocmd!
+  " augroup end
+  " 
+  " if has('gui_running')
+  " " autocmd! NERDTreeHijackNetrw
+  " autocmd! NERDTreeTabs
+  " autocmd! NERDTree
+  " endif
+  " 
+  " let g:NERDTreeDirArrowExpandable = '▸'
+  " let g:NERDTreeDirArrowCollapsible = '▾'
+  " 
+  " 
+  " """ Tabs
+  " NeoBundle 'jistr/vim-nerdtree-tabs'
+  " map <Leader>o <plug>NERDTreeTabsToggle<CR>
 
+  NeoBundle 'benatkin/vim-move-between-tabs'
+  " tN and tP
 
-" Manage tab workspaces
-" NeoBundle 'sjbach/lusty'
+  NeoBundle 'maxmeyer/vim-tabreorder'
+  " alt-pgup and alt-pgdown
 
 
-" Minimal GUI
-NeoBundle 'junegunn/goyo.vim'
-" :Goyo / :Goyo!
+  " Manage tab workspaces
+  " NeoBundle 'sjbach/lusty'
 
 
-" Doesn't work right with Awesome
-" For vim-session
-" NeoBundle 'xolox/vim-misc'
-" NeoBundle 'xolox/vim-lua-inspect'
+  " Minimal GUI
+  NeoBundle 'junegunn/goyo.vim'
+  " :Goyo / :Goyo!
 
-NeoBundle 'tbastos/vim-lua'
 
-" Yank ring
-" NeoBundle 'vim-scripts/YankRing.vim'
-" 2p, paste second last delete
+  " Doesn't work right with Awesome
+  " For vim-session
+  " NeoBundle 'xolox/vim-misc'
+  " NeoBundle 'xolox/vim-lua-inspect'
 
+  NeoBundle 'tbastos/vim-lua'
 
-" Git integration
-NeoBundle 'tpope/vim-fugitive'
+  " Yank ring
+  " NeoBundle 'vim-scripts/YankRing.vim'
+  " 2p, paste second last delete
 
-NeoBundle 'gregsexton/gitv'
 
-" Create Gists
-NeoBundle 'mattn/webapi-vim'
-NeoBundle 'mattn/gist-vim'
+  " Git integration
+  NeoBundle 'tpope/vim-fugitive'
 
-" NeoBundle 'airblade/vim-gitgutter'
-" Show a diff using Vim its sign column
-NeoBundle 'mhinz/vim-signify'
+  NeoBundle 'gregsexton/gitv'
 
+  " Create Gists
+  NeoBundle 'mattn/webapi-vim'
+  NeoBundle 'mattn/gist-vim'
 
-""" to sort
+  " NeoBundle 'airblade/vim-gitgutter'
+  " Show a diff using Vim its sign column
+  NeoBundle 'mhinz/vim-signify'
 
-"NeoBundle 'xolox/vim-session'
-" :SaveSession, :OpenSession, :RestartVim, etc.
-"let g:session_autosave = 'yes'
-"let g:session_autoload = 'no'
 
-" NeoBundle 'tpope/vim-obsession'
+  """ to sort
 
-" :UB
-NeoBundle 'chrisbra/histwin.vim'
+  "NeoBundle 'xolox/vim-session'
+  " :SaveSession, :OpenSession, :RestartVim, etc.
+  "let g:session_autosave = 'yes'
+  "let g:session_autoload = 'no'
 
-" Display sections in sidebar
-" NeoBundle 'yazug/vim-taglist-plus'
-" required ctags installed
+  " NeoBundle 'tpope/vim-obsession'
 
-" Manage buffers
-"NeoBundle 'fholgado/minibufexpl.vim'
+  " :UB
+  NeoBundle 'chrisbra/histwin.vim'
 
-"" Copy and paste
-" NeoBundle 'sickill/vim-pasta'
-" Work with bracketed paste content from terminals
-NeoBundle 'ConradIrwin/vim-bracketed-paste'
-" F12 to toggle mouse between vim and terminal
-NeoBundle 'vim-scripts/toggle_mouse'
+  " Display sections in sidebar
+  " NeoBundle 'yazug/vim-taglist-plus'
+  " required ctags installed
 
+  " Manage buffers
+  "NeoBundle 'fholgado/minibufexpl.vim'
 
-NeoBundle 'nathanaelkane/vim-indent-guides'
+  "" Copy and paste
+  " NeoBundle 'sickill/vim-pasta'
+  " Work with bracketed paste content from terminals
+  NeoBundle 'ConradIrwin/vim-bracketed-paste'
+  " F12 to toggle mouse between vim and terminal
+  NeoBundle 'vim-scripts/toggle_mouse'
 
 
-"NeoBundle 'Shougo/neocomplcache'
-" NeoBundle 'Valloric/YouCompleteMe'
+  NeoBundle 'nathanaelkane/vim-indent-guides'
 
-"" mouse
-" ctrl/shift mouse click+drag over text copies/moves said text
-NeoBundle 'vim-scripts/xemacs-mouse-drag-copy'
 
-" Color theme
-" NeoBundle 'BlackSea'
-colorscheme BlackSea
+  "NeoBundle 'Shougo/neocomplcache'
+  " NeoBundle 'Valloric/YouCompleteMe'
+
+  "" mouse
+  " ctrl/shift mouse click+drag over text copies/moves said text
+  NeoBundle 'vim-scripts/xemacs-mouse-drag-copy'
+
+  " Color theme
+  " NeoBundle 'BlackSea'
+  colorscheme BlackSea
 
 call neobundle#end()
 
@@ -356,7 +354,8 @@ if has("syntax")
   filetype indent on
 endif
 
-
+" If there are uninstalled bundles found on startup,
+" this will conveniently prompt you to install them.
 NeoBundleCheck
 
 
