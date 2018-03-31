@@ -83,7 +83,7 @@ set $terminal urxvt
 ## start a terminal
 # bindsym $mod+Return exec i3-sensible-terminal
 # bindsym $mod+Return exec urxvtcd
-bindsym $mod+Return exec "i3-msg exec $terminal"
+bindsym $mod+Return exec i3-msg exec i3-sensible-terminal
 
 ## lanch terminal in focused current working directory
 bindsym $mod+Ctrl+Return exec "urxvt -cd `xcwd`"
@@ -139,26 +139,25 @@ bindsym $mod+Shift+p exec "run-or-raise.sh cadence"
 bindsym $mod+Ctrl+p exec $terminal -geometry 130x30 -e alsamixer -c0
 
 ## change pulseaudio volume
-bindsym $mod+Ctrl+KP_Subtract exec "volume_lower.sh"
-bindsym $mod+Ctrl+KP_Add exec "volume_higher.sh"
+bindsym $mod+Ctrl+KP_Subtract exec amixer -D pulse sset Master 5%-
+bindsym $mod+Ctrl+KP_Add exec amixer -D pulse sset Master 5%+
 
-bindsym $mod+Shift+Ctrl+minus exec "volume_lower.sh"
-bindsym $mod+Shift+Ctrl+plus exec "volume_higher.sh"
+bindsym XF86AudioLowerVolume exec amixer -D pulse sset Master 5%-
+bindsym XF86AudioRaiseVolume exec amixer -D pulse sset Master 5%+
 
-bindsym XF86AudioLowerVolume exec "volume_lower.sh"
-bindsym XF86AudioRaiseVolume exec "volume_higher.sh"
-
-
-bindsym $mod+Shift+Ctrl+apostrophe exec "pactl set-sink-mute 0 toggle"
-bindsym $mod+Ctrl+KP_Multiply exec "pactl set-sink-mute 0 toggle"
-bindsym XF86AudioMute exec "pactl set-sink-mute 0 toggle"
+bindsym $mod+Ctrl+KP_Multiply exec pactl set-sink-mute 0 toggle
+bindsym XF86AudioMute exec pactl set-sink-mute 0 toggle
 
 # media keys control radiotray
 bindsym XF86AudioPrev exec "qdbus com.github.radiotray_ng /com/github/radiotray_ng com.github.radiotray_ng.previous_station"
 bindsym XF86AudioNext exec "qdbus com.github.radiotray_ng /com/github/radiotray_ng com.github.radiotray_ng.next_station"
+bindsym XF86AudioPlay exec "qdbus com.github.radiotray_ng /com/github/radiotray_ng com.github.radiotray_ng.play"
 bindsym XF86Tools exec "qdbus com.github.radiotray_ng /com/github/radiotray_ng com.github.radiotray_ng.play"
 bindsym XF86AudioStop exec "qdbus com.github.radiotray_ng /com/github/radiotray_ng com.github.radiotray_ng.stop"
 
+# screen brightness
+bindsym $mod+Shift+KP_Subtract exec brightness.sh down
+bindsym $mod+Shift+KP_Add exec brightness.sh up
 
 # override screensaver
 bindsym XF86Launch1 exec "caffeine -ka"
@@ -644,8 +643,8 @@ bar {
 
 
 # switch workspaces on mod+mousewheel up/down
-bindsym --whole-window --border $mod+button4 workspace next_on_output
-bindsym --whole-window --border $mod+button5 workspace prev_on_output
+bindsym --whole-window --border $mod+button5 workspace next_on_output
+bindsym --whole-window --border $mod+button4 workspace prev_on_output
 
 # revert gtk hijack of shift-insert back to PRIMARY rather than CLIPBOARD
 bindsym Shift+Insert exec "xdotool click 2"
@@ -658,6 +657,6 @@ exec i3-msg workspace "10"
 
 for_window [class=".*"] title_format " %title
 
-for_window [urgent=last] border pixel 3
+for_window [urgent=last] border pixel 2
 exec i3-onfocus.py
 force_display_urgency_hint 2000 ms

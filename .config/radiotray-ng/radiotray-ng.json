@@ -3,10 +3,11 @@
    "compact-menu" : false,
    "last-station" : "Sub.fm",
    "last-station-group" : "Bass / Breaks",
+   "last-station-notifications" : true,
    "max-volume-level" : 100,
    "notification-verbose" : true,
    "notifications" : true,
    "split-title" : false,
-   "volume-level" : 3,
+   "volume-level" : 24,
    "volume-step" : 3
 }
