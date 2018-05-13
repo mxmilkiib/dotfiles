@@ -5,10 +5,10 @@
 # Executed by startx (run your window manager from here)
 
 if [ -d /etc/X11/xinit/xinitrc.d ]; then
-	for f in /etc/X11/xinit/xinitrc.d/*; do
-		[ -x "$f" ] && . "$f"
-	done
-	unset f
+  for f in /etc/X11/xinit/xinitrc.d/*; do
+    [ -x "$f" ] && . "$f"
+  done
+  unset f
 fi
 
 # Redshift - changed screen colour temp
@@ -34,13 +34,13 @@ xset fp rehash
 # hsetroot -solid "#000000"
 
 # Set background image
-feh --bg-fill --no-xinerama ~/.wallpapers/VnXDN9J_colourised.png -Z
+feh --bg-fill --no-xinerama ~/.wallpapers/VnXDN9J_colourised.png
 
 # Unclutter - hides the mouse cursor after 5 seconds of idle
 unclutter --timeout 15 &
 
 # As xmonad default to x cursor
-xsetroot -cursor_name left_ptr &
+# xsetroot -cursor_name left_ptr &
 
 # Start urxvt demon, quiet, connect to $DISPLAY, fork after control socket binding
 # urxvtd -q -o -f &
@@ -65,8 +65,7 @@ caffeine &
 # compton -b
 
 # Notification daemon. ctrl-space to close, ctrl-shift-space to close all.
-# dunst &
-twmnd &
+dunst &
 
 # Break timer
 workrave &
@@ -134,8 +133,8 @@ setxkbmap gb
 # lxpolkit &
 /usr/lib/xfce-polkit/xfce-polkit &
 
-export QT_QPA_PLATFORMTHEME=qt5ct
-export QT_PLATFORMTHEME=qt5ct
+export QT_QPA_PLATFORMTHEME=gtk2
+export QT_PLATFORMTHEME=gtk2
 export QT_PLATFORM_PLUGIN=qt5ct
 
 # Use mouse button8 as left windows key
@@ -145,15 +144,16 @@ export QT_PLATFORM_PLUGIN=qt5ct
 # Window manager
 
 exec i3
+# exec enlightenment_start
+# exec tdm --xstart
 # exec i3 >> /var/tmp/log/i3log 2>&1
 # exec adwm -f ~/.config/adwm/adwmrc
 
-# perlpanel &
-
-# exec xde-session -desktop ADWM -startwm adwm -autostart
+# exec adwm
 # DEFAULTSESSION=xde-session
-
-# exec $1 
+# exec xde-session -desktop ADWM -startwm start-adwm
+# exec xde-session -desktop ADWM -startwm adwm -autostart
+# perlpanel &
 
 # exec selectwm
 # exec xterm

@@ -44,6 +44,7 @@ xterm*font:     -*-gohufont-medium-*-*-*-14-*-*-*-*-*-*-*
 ! URxvt.font: xft:xos4 terminus:size=12
 ! URxvt*font:     -*-gohufont-medium-*-*-*-14-*-*-*-*-*-*-*
 URxvt*font: -Gohu-Gohufont-Medium-R-Normal--14-100-100-100-C-80-ISO10646-1
+! URxvt*font: xft:Inconsolata-dz for Powerline,xft:Symbola
 ! URxvt*font:     -*-gohup-medium-*-*-*-11-*-*-*-*-*-*-*
 ! urxvt.font: xft:Gohu GohuFont:size=14
 ! URxvt.font: xft:terminus:pixelsize=12
@@ -172,42 +173,43 @@ URxvt.searchable-scrollback: C-s
 ! URxvt.matcher.button: 1
 
 ! url-select
-URxvt.url-select.launcher:  google-chrome-stable
-URxvt.url-select.underline: true
-URxvt.keysym.M-u:           perl:url-select:select_next
+URxvt.url-select.launcher:    google-chrome-stable
+URxvt.url-select.underline:   true
+URxvt.keysym.A-C-u:           perl:url-select:select_next
 
-URxvt.underlineURLs:        true
+URxvt.underlineURLs:          true
 
 ! keyboard-select
 ! Mouseless selection of text - urxvt-perls
-URxvt.keysym.M-Escape:      perl:keyboard-select:activate
-URxvt.keysym.M-s:           perl:keyboard-select:search
+URxvt.keysym.M-Escape:        perl:keyboard-select:activate
+URxvt.keysym.M-s:             perl:keyboard-select:search
 
 ! font-size
 ! :Bind C-0, C-+ and C-= to activate small, medium, and big font size resp.     
-! URxvt.keysym.C-equal:     font-size:increase
-! URxvt.keysym.C-minus:     font-size:decrease
-! URxvt.keysym.C-Shift-plus:font-size:incglobal
+! URxvt.keysym.C-equal:         font-size:increase
+! URxvt.keysym.C-minus:         font-size:decrease
+! URxvt.keysym.C-Shift-plus:    font-size:incglobal
 ! URxvt.keysym.C-Shift-underscore: font-size:decglobal
 
 ! Allow bindings with shift
-! URxvt.iso14755: false
-! URxvt.iso14755_52: false
+! URxvt.iso14755:               false
+! URxvt.iso14755_52:            false
 
 ! resize-font
-URxvt.resize-font.smaller: C-minus
-URxvt.resize-font.bigger: C-equal
-URxvt.resize-font.reset: C-0
-! URxvt.resize-font.show: C-S-question
-! URxvt.keysym.C-S-0: perl:resize-font.reset
+URxvt.resize-font.smaller:    C-minus
+URxvt.resize-font.bigger:     C-equal
+URxvt.resize-font.reset:      C-0
+! URxvt.resize-font.show:       C-S-question
+! URxvt.keysym.C-S-0:           perl:resize-font.reset
 
 
 ! clipboard
 ! Shift ctrl-c
-! URxvt.keysym.Shift-Control-V: perl:clipboard:paste
-URxvt.keysym.M-c:   perl:clipboard:copy
-URxvt.keysym.M-v:   perl:clipboard:paste
-URxvt.keysym.M-C-v: perl:clipboard:paste_escaped
+! URxvt.keysym.Shift-Control-V:   perl:clipboard:paste
+URxvt.keysym.Alt-c:               perl:clipboard:copy
+! Alt-middle click for clipboard pasting
+URxvt.keysym.Alt-v:               perl:clipboard:paste
+URxvt.keysym.A-C-v:             perl:clipboard:paste_escaped
 ! alt-ctrl-c/v defaults
 ! Ctrl-Shift-c/v copy and paste CLIPBOARD buffer
 xterm*VT100.Translations: #override Ctrl Shift <Key>V: insert-selection(CLIPBOARD) \n Ctrl Shift <Key>C: copy-selection(CLIPBOARD)

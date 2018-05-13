@@ -4,8 +4,9 @@ Gtk/CursorThemeName "default"
 Gtk/CursorThemeSize 0
 Gtk/EnableEventSounds 0
 Gtk/EnableInputFeedbackSounds 0
-Gtk/FontName "Droid Sans Mono 10"
-Gtk/IconThemeName "Oxygen"
+Gtk/FontName "Droid Sans Mono 11"
+Gtk/IconThemeName "mate"
+Net/IconThemeName	"mate"
 Gtk/MenuBarAccel "F10"
 Gtk/MenuImages 1
 Gtk/ToolbarIconSize 3
