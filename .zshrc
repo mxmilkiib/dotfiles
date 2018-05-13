@@ -15,6 +15,10 @@
 Z=~/.zsh
 
 
+# Auto start tbsm after login on first two VTs
+# [[ $XDG_VTNR -le 2 ]] && tdm
+
+
 # Set some options.
 source $Z/options.zsh
 
@@ -169,8 +173,10 @@ zle-keymap-select () {
 }
 zle -N zle-keymap-select
 
-reset
-fortune
+if [[ $- = *i* ]]; then
+  reset
+  fortune -a
+fi
 
 # MOTD - readline/emacs/zle binds
 function echo_color() {

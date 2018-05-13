@@ -192,7 +192,7 @@ alias mounts='mount | column -t'
 alias 'df=df -h'
 
 # dfc with sort by type, show used size, type, wide filename, wide bar, sum usage, just ext* and tmpfs
-alias dfcc="dfc -q type -dTWws -t ext,tmpfs"
+alias dfcc="dfc -q type -dTWws -t ext,tmpfs,vfat"
 
 # better cdu
 alias du2='cdu -idh'
