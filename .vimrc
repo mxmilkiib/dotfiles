@@ -55,6 +55,8 @@ call neobundle#begin(expand('~/.vim/bundle/'))
   noremap <Leader><Leader>t :Colors<CR>
   noremap <Leader><Leader>c :Commands!<CR>
   noremap <Leader><Leader>h :History<CR>
+  noremap <silent> <Leader><Leader>d :Files <C-R>=expand('%:h')<CR><CR>
+
   if executable('fzf')
     " Better command history with q:
     command! CmdHist call fzf#vim#command_history({'right': '40'})
@@ -341,7 +343,7 @@ call neobundle#begin(expand('~/.vim/bundle/'))
 
   " Color theme
   " NeoBundle 'BlackSea'
-  colorscheme BlackSea
+  " colorscheme BlackSea
 
 call neobundle#end()
 
@@ -618,7 +620,7 @@ nnoremap <silent><leader>K m`:silent -g/\m^\s*$/d<CR>``:noh<CR>
 
 " :W to sudo save file if it has opened as RO
 " command W silent execute 'write !sudo tee ' . shellescape(@%, 1) . ' >/dev/null'
-command WW silent execute 'w !sudo tee %'
+command! WW silent execute 'w !sudo tee %'
 " after, vim indicates file hasn't saved, but it has
 
 
