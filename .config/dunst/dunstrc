@@ -1,12 +1,12 @@
 [global]
     font = Gohu GohuFont 12
-    allow_markup = yes
+    markup = yes
     format = "<b>%s %p</b>: %b"
     sort = yes
     indicate_hidden = true
     # geometry = "x5"
     idle_threshold = 0
-     geometry = "400x5-19-12"
+     geometry = "400x5+500-10"
     # geometry = "400x1-130+2"
     alignment = center
     show_age_threshold = 20
@@ -18,13 +18,11 @@
     horizontal_padding = 8
     separator_color = frame
     startup_notification = false
-    dmenu = "/usr/bin/dmenu -p dunst: -nb #FFFFFF -nf #000000 -sb #94DBFF -sf #000000"
+    dmenu = "/usr/bin/dmenu -p dunst: -nb #4f2877 -nf #ffffff -sb #94DBFF -sf #000000"
     browser = google-chrome
 
-
-[frame]
-    width = 0
-    color = "#484e50"
+    frame_width = 0
+    frame_color = "#484e50"
 
 [shortcuts]
     close = ctrl+space
@@ -33,8 +31,8 @@
     context = ctrl+shift+period
 
 [urgency_low]
-    background = "#ffffff"
-    foreground = "#000000"
+    background = "#4f2877"
+    foreground = "#ffffff"
     timeout = 4
 
 [urgency_normal]

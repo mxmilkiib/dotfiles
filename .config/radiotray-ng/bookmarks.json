@@ -6,7 +6,8 @@
          {
             "image" : "",
             "name" : "Fluid Radio",
-            "url" : "http://usa4-vn.mixstream.net/9270.pls"
+            "notifications" : true,
+            "url" : "http://webcast-connect.net/value/uk4/9270/listen.pls"
          },
          {
             "image" : "",

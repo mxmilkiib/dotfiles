@@ -1,13 +1,13 @@
 {
    "bookmarks" : "/home/milk/.config/radiotray-ng/bookmarks.json",
    "compact-menu" : false,
-   "last-station" : "Sub.fm",
-   "last-station-group" : "Bass / Breaks",
+   "last-station" : "Fluid Radio",
+   "last-station-group" : "Ambient/drone",
    "last-station-notifications" : true,
    "max-volume-level" : 100,
    "notification-verbose" : true,
    "notifications" : true,
    "split-title" : false,
-   "volume-level" : 24,
+   "volume-level" : 69,
    "volume-step" : 3
 }

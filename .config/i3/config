@@ -167,30 +167,31 @@ bindsym $mod+XF86Launch1 exec "caffeine -kd"
 bindsym $mod+Shift+x exec i3lock
 
 ## launch i3 config help terminal
-bindsym $mod+F1 exec --no-startup-id $terminal -geometry 125x56 -title "i3_hotkey_help" -e ~/bin/i3/i3-hotkey-help.sh
+bindsym $mod+F1 exec --no-startup-id $terminal -geometry 125x46 -title "i3_hotkey_help" -e ~/bin/i3/i3-hotkey-help.sh
 for_window [title="i3_hotkey_help$"] floating toggle
 
 ## launch or switch to scratch notes text file
 bindsym $mod+Shift+F2 exec geany ~/documents/scratch
 
 ## launch or switch to file manager
-bindsym $mod+F2 exec "run-or-raise.sh dolphin"
+bindsym $mod+F2 exec run-or-raise.sh pcmanfm
+bindsym XF86Explorer exec run-or-raise.sh pcmanfm
 
 ## launch or switch to bittorrent client
-bindsym $mod+F3 exec "run-or-raise.sh qbittorrent"
+bindsym $mod+F3 exec run-or-raise.sh qbittorrent
 
 ## launch password manager
-bindsym $mod+F7 exec "run-or-raise.sh keepassx"
+bindsym $mod+F7 exec run-or-raise.sh keepassx ~/documents/sync/safefile.kdb
 
 ## launch media player
-bindsym $mod+F8 exec "run-or-raise.sh carla"
+bindsym $mod+F8 exec run-or-raise.sh carla
 
 ## launch or switch to irc client
-bindsym $mod+F11 exec "run-or-raise.sh hexchat"
+bindsym $mod+F11 exec run-or-raise.sh hexchat
 
 ## launch or switch to browser
-bindsym $mod+F12 exec "run-or-raise.sh chrome"
-bindsym XF86WWW exec "run-or-raise.sh chrome"
+bindsym $mod+F12 exec run-or-raise.sh chrome
+bindsym XF86WWW exec run-or-raise.sh chrome
 # bindsym $mod+F4 exec "run-or-raise.sh pcmanfm"
 
 ## launch trello
@@ -205,13 +206,13 @@ bindsym $mod+Ctrl+F9 exec "xrandr --output DVI-I-0 --same-as DVI-I-1"
 bindsym $mod+Ctrl+F10 exec "xrandr --output DVI-I-1 --mode 1280x1024 --pos 0x0 --panning 0x0+0+0 --output DVI-I-0 --mode 1280x1024 --pos 1280x0"
 
 ## screenshot of whole desktop
-bindsym $mod+Print exec scrot ~/images/screenshots/silver_%Y-%m-%d-%T.png
+bindsym --release $mod+Print exec import -window root ~/images/screenshots/$(hostname --short)_$(date +%Y-%m-%d-%T).png
 ## screenshot of active window
-bindsym --release $mod+Ctrl+Print exec "scrot -u ~/images/screenshots/silver_%Y-%m-%d-%T.png"
-## screenshot of selected region
-bindsym --release $mod+Mod1+Print exec "scrot -s ~/images/screenshots/silver_%Y-%m-%d-%T.png"
+bindsym --release $mod+Ctrl+Print exec import -window `xprop -root | grep "_NET_ACTIVE_WINDOW(WINDOW)" | echo ${activeWinLine:40}` ~/images/screenshots/$(hostname --short)_$(date +%Y-%m-%d-%T).png
+## screenshot of selected window (click) or area (drag)
+bindsym --release $mod+Shift+Print exec import ~/images/screenshots/$(hostname --short)_$(date +%F_%H%M%S_%N).png
 ## screenshot of right hand monitor
-bindsym $mod+Mod1+F12 exec "import -crop 1280x1024+1280+0 -window root ~/images/screenshots/silver_$(date +%Y-%m-%d-%T).png"
+bindsym $mod+Mod1+F12 exec import -crop 1280x1024+1280+0 -window root ~/images/screenshots/$(hostname --short)_$(date +%Y-%m-%d-%T).png"
 
 ## xev
 bindsym $mod+F9 exec "$terminal -name 'Event Tester' -geometry 60x9-100-100 -e xev -event keyboard"
@@ -547,6 +548,7 @@ bindsym $mod+Ctrl+i exec "~/bin/i3/switch.py"
 assign [class="Hexchat"] 1000:1-
 assign [title="Google Chrome"] 10000:1=
 assign [class="dolphin"] 12
+assign [class="Pcmanfm"] 12
 assign [class="qBittorrent"] 13
 assign [class="sayonara-player"] 14
 assign [title="seq64 - *"] 17
@@ -591,9 +593,9 @@ for_window [class="Keepassx" instance="keepassx"] floating enable
 
 # container/window colours
 # class                 border  backgr. text    indicator child_border
-client.focused          #4f2877 #4f2877 #ffffff #45FE28   #d7af87
-client.focused_inactive #333333 #5f676a #ffffff #484e50   #5f676a
-client.unfocused        #333333 #222222 #c5c5c5 #292d2e   #222222
+client.focused          #4f2877 #4f2877 #ffffff #45FE28   #4f2877
+client.focused_inactive #000000 #000000 #ffffff #484e50   #000000
+client.unfocused        #000000 #000000 #c5c5c5 #292d2e   #000000
 client.urgent           #2f343a #aa0000 #ffffff #aa0000   #aa0000 
 client.placeholder      #000000 #0c0c0c #ffffff #000000   #0c0c0c
 
@@ -601,11 +603,11 @@ client.background       #000000
 
 ## border style; show titles or not. the border toggle feature loses the 4px
 bindsym $mod+n border normal
-bindsym $mod+Shift+n border pixel 1
+bindsym $mod+Shift+n border pixel 2
 
 # set borders and gaps
-new_window pixel 1
-new_float pixel 1
+new_window pixel 2
+new_float pixel 2
 
 gaps inner 0
 gaps outer 0
@@ -616,7 +618,7 @@ gaps outer 0
 
 bar {
 	# status_command "i3status --config ~/.config/i3/istatus"
-  status_command "py3status -c ~/.config/i3/istatus_$(hostname)"
+  status_command "py3status -c ~/.config/i3/istatus_$(hostname --short)"
 
 	position       top
 	separator_symbol " "
@@ -657,6 +659,6 @@ exec i3-msg workspace "10"
 
 for_window [class=".*"] title_format " %title
 
-for_window [urgent=last] border pixel 2
-exec i3-onfocus.py
-force_display_urgency_hint 2000 ms
+# for_window [urgent=last] border pixel 2
+# exec i3-onfocus.py
+# force_display_urgency_hint 2000 ms
