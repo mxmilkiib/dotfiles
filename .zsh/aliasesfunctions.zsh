@@ -347,7 +347,7 @@ alias sy='systemctl '
 compdef sy=systemctl
 
 # launch x
-alias sx=startx
+alias sx='ssh-agent startx'
 
 
 ### Package management
