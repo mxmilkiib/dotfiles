@@ -8,6 +8,8 @@ elif [[ $CURRENTDESKOUTPUT = LVDS* ]];
   then OUTPUTID="1";
 elif [[ $CURRENTDESKOUTPUT = "DVI-I-0" ]];
   then OUTPUTID="2";
+elif [[ $CURRENTDESKOUTPUT = "VGA1" ]];
+  then OUTPUTID="2";
 fi
 NEWARGS="${ARGS//\$o/$OUTPUTID}"
 i3-msg $NEWARGS &> /dev/null
