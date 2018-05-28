@@ -113,6 +113,8 @@ bindsym $mod+Delete kill
 bindsym  --whole-window button9 kill
 bindsym  --whole-window Mod2+button9 kill
 
+## move (floating) window to center of screen
+bindsym  --whole-window Mod4+button8 move position center
 
 
 ## start dmenu (a program launcher)
