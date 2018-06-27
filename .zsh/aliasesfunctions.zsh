@@ -363,24 +363,25 @@ alias aw='apt-cache show'
 
 ## Arch Linux
 # install specific package
-alias p='trizen -S --noconfirm --noedit'
-alias pP='trizen -S'
-# interactive search (pkg # + prompt) + reverse results/#s
-alias pS='trizen --noconfirm --noedit --flip-results --flip-indices'
+alias p='yay -S --answeredit n'
+alias pP='yay -S'
+# interactive search (pkg # + prompt)
+alias pS='yay --answeredit n'
 # interactive search with editing of PKGBUILD
-alias pSe='trizen --noconfirm --flip-results --flip-indices'
+alias pSe='yay'
 # interactive search of AUR by popularity with confirm
-alias pSp='trizen -a --noconfirm --noedit --aur-results-sort-by=popularity --flip-indices'
+alias pSp='yay --sortby popularity'
 
 # alias 'pu=sudo pacman -Syu'
-alias pu='trizen -Syu --noconfirm --noedit'
-alias puu='trizen -Syu --noconfirm --noedit --needed --devel'
-# buggy https://github.com/trizen/trizen/issues/68 - builds when version is the same..
+alias pu='yay -Syu --answeredit n --answerupgrade n --answerclean n --sudoloop'
+alias puU='yay -Syu --answeredit n --answerclean n --sudoloop'
+alias puu='yay -Syu --answeredit n --answerupgrade n --answerclean n --sudoloop --devel'
+# alias puu='yay -Syu --answeredit n --needed --devel'
 
-alias pSi='trizen -Si'                      # search info
-alias pQi='trizen -Qi'                      # query info
-alias pQl='trizen -Ql'                      # query contents
-alias pQo='trizen -Qo'                      # query file ownership
+alias pSi='yay -Si'                      # search info
+alias pQi='yay -Qi'                      # query info
+alias pQl='yay -Ql'                      # query contents
+alias pQo='yay -Qo'                      # query file ownership
 # display info for package that contains argument file
 function pQoi(){
   pacman -Qi `pacman -Qoq $@`
@@ -390,13 +391,13 @@ function pQol(){
   pacman -Ql `pacman -Qoq $@`
 }
 
-alias pR='sudo pacman -Rs'									# remove, rm deps
+alias pR='sudo pacman -R'	  								# remove, rm deps
 alias pRr='sudo pacman -Rcsn'								# remove, rm deps, recursive, remove config files
 alias pU='sudo pacman -U'										# install a local package file
 alias pL='sudo rm /var/lib/pacman/db.lck'   # remove lockfile if pacman doesn't exit gracefully
 
 # get PKGBUILD
-alias pG='trizen -G'
+alias pG='yay -G'
 alias mP='makepkg -si'
 alias mS='makepkg --printsrcinfo > .SRCINFO'
 
