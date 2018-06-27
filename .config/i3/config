@@ -185,7 +185,7 @@ bindsym $mod+F3 exec run-or-raise.sh qbittorrent
 ## launch password manager
 bindsym $mod+F7 exec run-or-raise.sh keepassx ~/documents/sync/safefile.kdb
 
-## launch media player
+## launch carla plugin host
 bindsym $mod+F8 exec run-or-raise.sh carla
 
 ## launch or switch to irc client
@@ -203,9 +203,12 @@ bindsym $mod+Shift+F12 exec google-chrome-stable --app=https://trello.com/b/Adni
 bindsym XF86Mail exec "chrome https://gmail.com && run-or-raise.sh chrome"
 
 
+## launch vlc
+bindsym $mod+Shift+v exec vlc
+
 ## switch video output between cloned or seperate desktops
-bindsym $mod+Ctrl+F9 exec "xrandr --output DVI-I-0 --same-as DVI-I-1"
-bindsym $mod+Ctrl+F10 exec "xrandr --output DVI-I-1 --mode 1280x1024 --pos 0x0 --panning 0x0+0+0 --output DVI-I-0 --mode 1280x1024 --pos 1280x0"
+#bindsym $mod+Ctrl+F9 exec "xrandr --output DVI-I-0 --same-as DVI-I-1"
+#bindsym $mod+Ctrl+F10 exec "xrandr --output DVI-I-1 --mode 1280x1024 --pos 0x0 --panning 0x0+0+0 --output DVI-I-0 --mode 1280x1024 --pos 1280x0"
 
 ## screenshot of whole desktop
 bindsym --release $mod+Print exec import -window root ~/images/screenshots/$(hostname --short)_$(date +%Y-%m-%d-%T).png
@@ -274,18 +277,18 @@ bindsym $mod+Shift+f bar mode toggle
 ## change focus - using vim equivalent binds not i3 default
 bindsym $mod+h focus left
 bindsym $mod+j focus down
+
+bindsym $mod+Prior focus left
+bindsym $mod+Next focus right
+
 bindsym $mod+k focus up
 bindsym $mod+l focus right
 
-bindsym $mod+Down focus down
 bindsym $mod+Up focus up
+bindsym $mod+Down focus down
 
-## page up and page down, like in Chrome
 bindsym $mod+Left workspace prev_on_output
 bindsym $mod+Right workspace next_on_output
-
-bindsym $mod+Prior workspace prev_on_output
-bindsym $mod+Next workspace next_on_output
 bindsym $mod+Ctrl+h workspace prev_on_output
 bindsym $mod+Ctrl+l workspace next_on_output
 
@@ -598,7 +601,7 @@ for_window [class="Keepassx" instance="keepassx"] floating enable
 client.focused          #4f2877 #4f2877 #ffffff #45FE28   #4f2877
 client.focused_inactive #000000 #000000 #ffffff #484e50   #000000
 client.unfocused        #000000 #000000 #c5c5c5 #292d2e   #000000
-client.urgent           #2f343a #aa0000 #ffffff #aa0000   #aa0000 
+client.urgent           #2f343a #aa0000 #ffffff #aa0000   #aa0000
 client.placeholder      #000000 #0c0c0c #ffffff #000000   #0c0c0c
 
 client.background       #000000
