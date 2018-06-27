@@ -106,13 +106,17 @@ setxkbmap gb
 # Jack GUI 
 # cadence --minimized &
 
-# Set Pulseaudio to send audio to Jack by default
+play-with-mpv &
 
 # Hotkeys
 # sxhkd &
 
 # Panel bar w/ pager, systray, program windows, weather, time, etc.
 # xfce4-panel &
+# xfce4-panel --disable-wm-check &
+# perlpanel &
+# xde-panel &
+
 
 # Cat
 # oneko -fg "#555" -bg "#000" -time 200000 -position +200+200 &
@@ -147,13 +151,10 @@ exec i3
 # exec enlightenment_start
 # exec tdm --xstart
 # exec i3 >> /var/tmp/log/i3log 2>&1
-# exec adwm -f ~/.config/adwm/adwmrc
 
+# exec adwm -f ~/.config/adwm/adwmrc
 # exec adwm
-# DEFAULTSESSION=xde-session
-# exec xde-session -desktop ADWM -startwm start-adwm
-# exec xde-session -desktop ADWM -startwm adwm -autostart
-# perlpanel &
+# exec xde-session choose
 
 # exec selectwm
 # exec xterm
