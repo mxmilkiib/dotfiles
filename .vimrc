@@ -431,8 +431,8 @@ set smartcase
 set history=1000
 
 " Set swap and backup dir
-set backupdir=~/tmp,/var/tmp,/tmp
-set directory=~/tmp,/var/tmp,/tmp
+set backupdir=/tmp
+set directory=/tmp
 
 
 """ Cursor
