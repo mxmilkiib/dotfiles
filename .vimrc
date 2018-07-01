@@ -156,6 +156,8 @@ call neobundle#begin(expand('~/.vim/bundle/'))
   " NeoBundle 'baskerville/vim-sxhkdrc'
 
   NeoBundle 'chase/nginx.vim'
+  
+  NeoBundle 'Firef0x/PKGBUILD.vim'
 
   NeoBundle 'tell-k/vim-autopep8'
 
@@ -272,6 +274,7 @@ call neobundle#begin(expand('~/.vim/bundle/'))
   " Manage tab workspaces
   " NeoBundle 'sjbach/lusty'
 
+  NeoBundle 'gioele/vim-autoswap'
 
   " Minimal GUI
   NeoBundle 'junegunn/goyo.vim'
@@ -363,6 +366,10 @@ NeoBundleCheck
 
 """ General
 
+" remap ; to : and : to ;
+" nnoremap ; :
+" nnoremap : ;
+
 " Keep undo history across sessions by storing it in a file
 if has('persistent_undo')
     let myUndoDir = expand('~/.vim/undodir')
@@ -413,8 +420,12 @@ set nu
 " Always show status bar
 set laststatus=2
 
-" Always 10 lines at top, excluding top and bottom
-set scrolloff=10
+" Always keep extra lines above the cursor at top, excluding ends of a file
+set scrolloff=5
+
+" Highlight 80th chatacter of a line
+highlight ColorColumn ctermbg=magenta
+call matchadd('ColorColumn', '\%81v', 100)
 
 " Incremental search - moves as you type
 " set incsearch
@@ -449,10 +460,30 @@ set ruler
 " nnoremap <Leader>c :set cursorline!<CR>
 
 " Highlight search term in all buffers
-" set hlsearch
+set hlsearch
 " Toggle search term highlight
 " nmap <silent> <leader>/ :silent set invhlsearch<CR>
 
+" highlight matches when jumping to text
+" from greg0ire/more-instantly-better-vim
+" This rewires n and N to do the highlighing...
+nnoremap <silent> n   n:call HLNext(0.4)<cr>
+nnoremap <silent> N   N:call HLNext(0.4)<cr>
+
+function! HLNext (blinktime)
+  let [bufnum, lnum, col, off] = getpos('.')
+  let matchlen = strlen(matchstr(strpart(getline('.'),col-1),@/))
+  let target_pat = '\c\%#'.@/
+  let blinks = 3
+  for n in range(1,blinks)
+    let ring = matchadd('ErrorMsg', target_pat, 101)
+    redraw
+    exec 'sleep ' . float2nr(a:blinktime / (2*blinks) * 1000) . 'm'
+    call matchdelete(ring)
+    redraw
+    exec 'sleep ' . float2nr(a:blinktime / (2*blinks) * 1000) . 'm'
+  endfor
+endfunction
 
 " Mouse
 
@@ -897,3 +928,16 @@ inoremap <A-w> <C-o>w
 " If you select one or more lines, you can use < and > for sihifting them sidewards. Unfortunately you immediately lose the selection afterwards. You can use gv to reselect the last selection (see :h gv), thus you can work around it like this:
 xnoremap <  <gv
 xnoremap >  >gv
+
+
+" make CTRL-K list diagraphs before each digraph entry
+inoremap <expr> <C-K> ShowDigraphs()
+
+function! ShowDigraphs ()
+    digraphs
+    call getchar()
+    return "\<C-K>"
+endfunction
+
+" But also consider the hudigraphs.vim and betterdigraphs.vim plugins,
+" which offer smarter and less intrusive alternatives
