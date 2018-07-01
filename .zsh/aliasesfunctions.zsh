@@ -364,18 +364,27 @@ alias aw='apt-cache show'
 ## Arch Linux
 # install specific package
 alias p='yay -S --answeredit n'
+# install specific package and allow build file editing
 alias pP='yay -S'
+
 # interactive search (pkg # + prompt)
-alias pS='yay --answeredit n'
+alias pS='yay --answeredit n --answerdiff n'
 # interactive search with editing of PKGBUILD
 alias pSe='yay'
 # interactive search of AUR by popularity with confirm
 alias pSp='yay --sortby popularity'
 
+# full upgrade
 # alias 'pu=sudo pacman -Syu'
-alias pu='yay -Syu --answeredit n --answerupgrade n --answerclean n --sudoloop'
-alias puU='yay -Syu --answeredit n --answerclean n --sudoloop'
-alias puu='yay -Syu --answeredit n --answerupgrade n --answerclean n --sudoloop --devel'
+alias pu='yay -Syu --answeredit n --answerupgrade n --answerclean n --answerdiff n --sudoloop'
+# full upgrade, don't skip which packages to ignore
+alias puU='yay -Syu --answeredit n --answerclean n --answerdiff n --sudoloop'
+
+# full upgrade with VCS packages checked
+alias puu='yay -Syu --answeredit n --answerupgrade n --answerclean n --answerdiff n --sudoloop --devel'
+# full upgrade with VCS packages checked, don't skip which packages to ignore
+alias puuU='yay -Syu --answeredit n --answerclean n --sudoloop --devel'
+
 # alias puu='yay -Syu --answeredit n --needed --devel'
 
 alias pSi='yay -Si'                      # search info
@@ -403,6 +412,10 @@ alias mS='makepkg --printsrcinfo > .SRCINFO'
 
 alias pSg='pacget -Ss --noedit --noconfirm'
 
+
+### VCSH - multiple git repos in the same folder
+alias vS='vcsh status'
+alias vU='vcsh foreach add -u && vcsh foreach commit -v && vcsh push'
 
 ### Utils
 
