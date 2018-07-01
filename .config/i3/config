@@ -569,7 +569,7 @@ assign [class="Pulseeffects"] 19
 
 
 # auto float
-for_window [class="Cadence.py"] floating enable
+for_window [class="Cadence"] floating enable
 for_window [class="Pavucontrol"] floating enable, move absolute position center
 for_window [class="Pulseeffects"] floating enable, move absolute position center
 # for_window [class="octopi-notifier"] floating enable
