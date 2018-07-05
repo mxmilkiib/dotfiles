@@ -272,6 +272,10 @@ function lwd() {
 up() { cd $(eval printf '../'%.0s {1..$1}) && pwd; }
 #and "cd -[N]" or "cd -<TAB>" to get back
 
+# Backup a file
+bak() { cp "$1" "$1".bak; }
+# Backup file and remove original
+bakd() { mv "$1" "$1".bak; }
 
 # Makes parent dir if it doesn't exist (i.e. newdir/secondnewdir/third etc.)
 alias mkdir='mkdir -p'
