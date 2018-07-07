@@ -596,6 +596,9 @@ for_window [class="DNSCryptClient" instance="DNSCryptClient" title="DNSCryptClie
 for_window [class="Envy24control" instance="envy24control"] floating enable
 for_window [class="Keepassx" instance="keepassx"] floating enable
 
+# auto resize
+for_window [title="seq64 -"] resize set 1180 712
+
 
 # container/window colours
 # class                 border  backgr. text    indicator child_border
