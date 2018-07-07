@@ -550,8 +550,6 @@ bindsym $mod+Ctrl+i exec "~/bin/i3/switch.py"
 
 # assign apps to default workspaces
 # assign [class="/usr/bin/chromium-snapshot-bin"] $o1
-assign [class="Hexchat"] 1000:1-
-assign [title="Google Chrome"] 10000:1=
 assign [class="dolphin"] 12
 assign [class="Pcmanfm"] 12
 assign [class="qBittorrent"] 13
@@ -566,7 +564,8 @@ assign [class="Catia.py"] 18
 assign [class="Cadence.py"] 19
 assign [class="Pavucontrol"] 19
 assign [class="Pulseeffects"] 19
-
+assign [title="Google Chrome"] 1000:1-
+assign [class="Hexchat"] 10000:1=
 
 # auto float
 for_window [class="Cadence"] floating enable
