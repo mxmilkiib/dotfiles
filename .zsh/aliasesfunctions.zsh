@@ -161,23 +161,24 @@ else
  alias ls='ls -F'
 fi
 
-# Alias ls='ls --color'        									# add colors for filetype recognition
+alias ls='ls --color'         									# add colors for filetype recognition
 
+alias l='ls -A --group-directories-first'       # show almost all (hidden files)
 alias lsd='ls --group-directories-first'
-alias ll='ls -lh --group-directories-first'     # long list, alphabetical sort (default), human readable (K, M, etc.), directories first
-alias lla='ls -lha --group-directories-first'     # long list, alphabetical sort (default), human readable (K, M, etc.), directories first
+alias lt='ls -Atr --group-directories-first'	  # show almost all (hidden files), sort by time, reversed
 
-alias lt='ls -ltrh'          										# long list, sort by modification time, reversed (recent last), human readable
-alias lu='ls -lturh'         										# long list, sort by and show access time, reversed, human readable
+alias ll='ls -lh --group-directories-first'     # long list, alphabetical sort (default), human readable (K, M, etc.), directories first
+alias lla='ls -lhA --group-directories-first'   # long list, alphabetical sort (default), human readable (K, M, etc.), directories first
+alias laa='ls -lAh --color | less -RFX'				  # long, almost all, no reverse, piped to less w/ redraw (color), quit if under one screen, don't init/deinit terminal
+
+alias llt='ls -ltrh'         										# long list, sort by modification time, reversed (recent last), human readable
+alias llu='ls -lturh'        										# long list, sort by and show access time, reversed, human readable
 alias lc='ls -ltcrh'         										# long list, sort by and show attribute change time, reversed, human readable
 alias lk='ls -lSrh'          										# long list, sort by size, reversed (largest last), human readable
 
-alias la='ls -A --group-directories-first'      # show almost all (hidden files)
-alias lat='ls -Atr --group-directories-first'	  # show almost all (hidden files), sort by time, reversed
-alias laa='ls -lAh --color | less -RFX'				  # long, almost all, no reverse, piped to less w/ redraw (color), quit if under one screen, don't init/deinit terminal
-
-alias lr='ls -lRh | "$PAGER"'           						# recursive ls
-alias lsr='tree -Csu | less -RFX'    								# alternative recursive ls
+alias lr='ls -lRh --color | less -r' 						# recursive ls
+alias lsr='tree -Chuf | less -RFX'    					# tree, color, human readable size, user, full path
+alias lsrd='tree -Cdf | less -RFX'          		# alternative recursive ls, directories only
 
 # Graphical tree of subdir files
 #alias 'lt=tree -d'
@@ -424,7 +425,7 @@ alias vU='vcsh foreach add -u && vcsh foreach commit -v && vcsh push'
 ### Utils
 
 # For quick viewing of txt files
-alias l='less -RF'
+# alias l='less -RF'
 
 # quick [rip]grep
 alias g='rg'
@@ -437,7 +438,7 @@ function less_rfx() {
 
 ### -g aliases work at the end of a line
 alias -g L='| less -RF'      # redraw (color), quit under one page, dont init/deinit term
-alias -g Ll='| less -RFX'    # redraw (color), quit under one page, allow mousescroll
+alias -g LL='| less -RFX'    # redraw (color), quit under one page, allow mousescroll
 
 # Grep, case insentitive, line number
 alias -g G='| rg -in'

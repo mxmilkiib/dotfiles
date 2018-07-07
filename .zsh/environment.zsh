@@ -81,3 +81,6 @@ export LOGDEST=/var/log/pacaur
 # npm install -g for user
 PATH="$HOME/.node_modules/bin:$PATH"
 export npm_config_prefix=~/.node_modules
+
+# OPAM configuration
+. /home/milk/.opam/opam-init/init.zsh > /dev/null 2> /dev/null || true
