@@ -594,6 +594,7 @@ for_window [class="Google-chrome" instance="trello.com__b_AdniCH2y_to-do" title=
 for_window [class="DNSCryptClient" instance="DNSCryptClient" title="DNSCryptClient"] floating enable
 for_window [class="Envy24control" instance="envy24control"] floating enable
 for_window [class="Keepassx" instance="keepassx"] floating enable
+for_window [title="Ray Session"] floating enable
 
 # auto resize
 for_window [title="seq64 -"] resize set 1180 712
