@@ -369,12 +369,12 @@ alias aw='apt-cache show'
 # install specific package
 alias p='yay -S --answeredit n'
 # install specific package and allow build file editing
-alias pP='yay -S'
+alias pP='yay -S --editmenu'
 
 # interactive search (pkg # + prompt)
 alias pS='yay --answeredit n --answerdiff n'
 # interactive search with editing of PKGBUILD
-alias pSe='yay'
+alias pSe='yay --editmenu'
 # interactive search of AUR by popularity with confirm
 alias pSp='yay --sortby popularity'
 
@@ -392,9 +392,9 @@ alias puuU='yay -Syu --answeredit n --answerclean n --sudoloop --devel'
 # alias puu='yay -Syu --answeredit n --needed --devel'
 
 alias pSi='yay -Si'                      # search info
-alias pQi='yay -Qi'                      # query info
-alias pQl='yay -Ql'                      # query contents
-alias pQo='yay -Qo'                      # query file ownership
+alias pQi='pacman -Qi'                      # query info
+alias pQl='pacman -Ql'                      # query contents
+alias pQo='pacman -Qo'                      # query file ownership
 # display info for package that contains argument file
 function pQoi(){
   pacman -Qi `pacman -Qoq $@`
@@ -411,10 +411,10 @@ alias pL='sudo rm /var/lib/pacman/db.lck'   # remove lockfile if pacman doesn't 
 
 # get PKGBUILD
 alias pG='yay -G'
+# make package; get deps. and install
 alias mP='makepkg -si'
+# update .SRCINFO
 alias mS='makepkg --printsrcinfo > .SRCINFO'
-
-alias pSg='pacget -Ss --noedit --noconfirm'
 
 
 ### VCSH - multiple git repos in the same folder

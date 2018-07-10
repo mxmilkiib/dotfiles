@@ -2,7 +2,8 @@
 # P.C. Shyamshankar <sykora@lucentbeing.com>
 
 # -U avoids expanding aliases, -z for zsh not ksh(?), then init all completion _files in $fpath
-autoload -Uz compinit && compinit
+# autoload -Uz compinit && compinit
+autoload -z compinit && compinit
 
 zstyle ':completion:*' verbose yes
 
@@ -12,7 +13,7 @@ zstyle ':completion:*' list-colors "${LS_COLORS}" # Complete with same colors as
 
 # Fuzzy matching of completions for when you mistype them:
 zstyle ':completion:*' completer _expand _complete _correct _approximate # Completion modifiers.
-# _files 
+# _files
 zstyle ':completion:*:match:*' original only
 zstyle ':completion:*' max-errors 1 # Be lenient to 1 errors.
 
