@@ -478,10 +478,10 @@ function! HLNext (blinktime)
   for n in range(1,blinks)
     let ring = matchadd('ErrorMsg', target_pat, 101)
     redraw
-    exec 'sleep ' . float2nr(a:blinktime / (2*blinks) * 1000) . 'm'
+    exec 'sleep ' . float2nr(a:blinktime / (2*blinks) * 700) . 'm'
     call matchdelete(ring)
     redraw
-    exec 'sleep ' . float2nr(a:blinktime / (2*blinks) * 1000) . 'm'
+    exec 'sleep ' . float2nr(a:blinktime / (2*blinks) * 700) . 'm'
   endfor
 endfunction
 
