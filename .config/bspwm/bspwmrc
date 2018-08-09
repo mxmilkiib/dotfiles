@@ -1,0 +1,68 @@
+#! /bin/sh
+
+# Layout
+bspc config top_padding         22
+bspc config border_width        3
+bspc config window_gap          3
+
+# http://paletton.com/#uid=34r0u0kgJHN6oX3bWQhkPyZoTtA
+bspc config focused_border_color "#ECBC34"
+bspc config active_border_color "#000000"
+bspc config normal_border_color "#000000"
+bspc config presel_feedback_color "#A7BF81"
+bspc config focused_locked_border_color "#C7B579"
+bspc config active_locked_border_color "#7E7F89"
+bspc config normal_locked_border_color "#3F3E3B"
+bspc config urgent_border_color "#EFA29A"
+
+bspc config focus_follows_pointer true
+bspc config borderless_monocle  false
+bspc config gapless_monocle     false
+bspc config single_monocle      false
+bspc config paddingless_monocle false
+
+bspc config initial_polarity    second_child
+
+# mod4 is windows key
+bspc config pointer_modifier mod4
+bspc config pointer_action1 move
+bspc config pointer_action2 resize_corner
+
+# cancel presel with another presel
+bspc config auto_cancel         true
+
+bspc config wm_name bspwm
+bspc config pointer_follows_monitor true
+bspc config history_aware_focus true
+
+
+# Rename initial desktop
+bspc monitor -d A1
+
+if [[ `bspc query -D | wc -l` > 1 ]]; then
+	# Switch to second monitor
+	bspc monitor -f next
+
+	# Rename and create desktops
+	bspc monitor -d B1
+
+	# Switch back to first monitor
+	bspc monitor -f next
+fi
+
+# Rules
+bspc rule -a Vlc state=floating
+bspc rule -a mpv state=floating
+bspc rule -a Chromium desktop=A1
+bspc rule -a Pidgin state=floating
+bspc rule -a Pavucontrol state=floating
+bspc rule -a Mixer state=floating
+bspc rule -a xfce4-panel state=floating
+bspc rule -a qjackctl state=floating
+bspc rule -a Cadence.py state=floating
+
+# Restore state (on reload)
+if [ -e "$BSPWM_STATE" ] ; then
+	bspc wm -l "$BSPWM_STATE"
+	rm "$BSPWM_STATE"
+fi
