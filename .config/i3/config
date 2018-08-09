@@ -189,7 +189,7 @@ bindsym $mod+F7 exec run-or-raise.sh keepassx ~/documents/sync/safefile.kdb
 bindsym $mod+F8 exec run-or-raise.sh carla
 
 ## launch or switch to irc client
-bindsym $mod+F11 exec run-or-raise.sh hexchat
+bindsym $mod+F11 exec run-or-raise.sh quasselclient
 
 ## launch or switch to browser
 bindsym $mod+F12 exec run-or-raise.sh chrome
@@ -566,6 +566,7 @@ assign [class="Pavucontrol"] 19
 assign [class="Pulseeffects"] 19
 assign [title="Google Chrome"] 1000:1-
 assign [class="Hexchat"] 10000:1=
+assign [class="quasselclient"] 10000:1=
 
 # auto float
 for_window [class="Cadence"] floating enable
