@@ -566,7 +566,7 @@ assign [class="Pavucontrol"] 19
 assign [class="Pulseeffects"] 19
 assign [title="Google Chrome"] 1000:1-
 assign [class="Hexchat"] 10000:1=
-assign [class="quasselclient"] 10000:1=
+assign [class="quassel"] 10000:1=
 
 # auto float
 for_window [class="Cadence"] floating enable
