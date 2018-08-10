@@ -173,10 +173,10 @@ zle-keymap-select () {
 }
 zle -N zle-keymap-select
 
-if [[ $- = *i* ]]; then
-  reset
-  fortune -a
-fi
+# if [[ $- = *i* ]]; then
+  # reset
+  # fortune -a
+# fi
 
 # MOTD - readline/emacs/zle binds
 function echo_color() {
