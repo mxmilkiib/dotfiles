@@ -404,8 +404,8 @@ function pQol(){
   pacman -Ql `pacman -Qoq $@`
 }
 
-alias pR='sudo pacman -R'	  								# remove, rm deps
-alias pRr='sudo pacman -Rcsn'								# remove, rm deps, recursive, remove config files
+# alias pR='sudo pacman -R'	  								# remove, rm deps
+alias pR='sudo pacman -Rcsn'								# remove, rm deps, recursive, remove config files
 alias pU='sudo pacman -U'										# install a local package file
 alias pL='sudo rm /var/lib/pacman/db.lck'   # remove lockfile if pacman doesn't exit gracefully
 
