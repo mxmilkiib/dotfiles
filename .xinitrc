@@ -108,6 +108,9 @@ setxkbmap gb
 
 play-with-mpv &
 
+# reset to primary monitor if secondary is removed (for after a use of mons -s)
+mons -a &
+
 # Hotkeys
 # sxhkd &
 
