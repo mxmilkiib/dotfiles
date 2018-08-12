@@ -163,15 +163,15 @@ fi
 
 alias l='LC_COLLATE=C ls -A --group-directories-first'       # show almost all (hidden files)
 alias lsd='ls --group-directories-first'
-alias lt='ls -Atr --group-directories-first'	  # show almost all (hidden files), sort by time, reversed
+# alias lt='ls -Atr --group-directories-first'	  # show almost all (hidden files), sort by time, reversed
 
 alias ll='ls -lh --group-directories-first'     # long list, alphabetical sort (default), human readable (K, M, etc.), directories first
 alias lla='ls -lhA --group-directories-first'   # long list, alphabetical sort (default), human readable (K, M, etc.), directories first
 alias laa='ls -lAh --color | less -RFX'				  # long, almost all, no reverse, piped to less w/ redraw (color), quit if under one screen, don't init/deinit terminal
 
-alias llt='ls -ltrh'         										# long list, sort by modification time, reversed (recent last), human readable
-alias llta='ls -ltrhA'        										# long list, sort by modification time, reversed (recent last), human readable, almost all files
-alias llu='ls -lturh'        										# long list, sort by and show access time, reversed, human readable
+alias lt='ls -ltrh'         										# long list, sort by modification time, reversed (recent last), human readable
+alias lta='ls -ltrhA'        										# long list, sort by modification time, reversed (recent last), human readable, almost all files
+alias lu='ls -lturh'        										# long list, sort by and show access time, reversed, human readable
 alias lc='ls -ltcrh'         										# long list, sort by and show attribute change time, reversed, human readable
 alias lk='ls -lSrh'          										# long list, sort by size, reversed (largest last), human readable
 
