@@ -35,6 +35,8 @@ key[CtrlRight]=${terminfo[kRFT5]}
 [[ -n "${key[End]}"       ]]  && bindkey  "${key[End]}"     end-of-line
 bindkey '^a' beginning-of-line
 bindkey '^e' end-of-line
+bindkey '^[[1~' beginning-of-line
+bindkey '^[[4~' end-of-line
 
 [[ -n "${key[Insert]}"    ]]  && bindkey  "${key[Insert]}"  overwrite-mode #broken?
 [[ -n "${key[Backspace]}" ]]  && bindkey  "${key[Backspace]}"  backward-delete-char
