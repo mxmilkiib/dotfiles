@@ -209,6 +209,8 @@ bindsym $mod+Shift+v exec vlc
 ## switch video output between cloned or seperate desktops
 #bindsym $mod+Ctrl+F9 exec "xrandr --output DVI-I-0 --same-as DVI-I-1"
 #bindsym $mod+Ctrl+F10 exec "xrandr --output DVI-I-1 --mode 1280x1024 --pos 0x0 --panning 0x0+0+0 --output DVI-I-0 --mode 1280x1024 --pos 1280x0"
+# use secondary monitor only
+bindsym $mod+Ctrl+F9 exec "mons -s"
 
 ## screenshot of whole desktop
 bindsym --release $mod+Print exec import -window root ~/images/screenshots/$(hostname --short)_$(date +%Y-%m-%d-%T).png
