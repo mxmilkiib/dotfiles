@@ -15,6 +15,17 @@
 Z=~/.zsh
 
 
+# MOTD - reminder info on readline/emacs/zle binds
+function echo_color() {
+  printf "\033[0;90m$1\033[0m\n"
+}
+echo_color "  c-b  Move backward            c-f  Move forward"
+echo_color "  c-p  Move previous (up)       c-n  Move next (down)"
+echo_color "  c-a  Jump to line beginning   c-e  Jump to line end"
+echo_color "  c-h  Delete backward          c-d  Delete forward"
+echo_color "  c-u  Delete entire line       c-k  Delete to end of line"
+
+
 # Auto start tbsm after login on first two VTs
 # [[ $XDG_VTNR -le 2 ]] && tdm
 
@@ -177,16 +188,6 @@ zle -N zle-keymap-select
   # reset
   # fortune -a
 # fi
-
-# MOTD - readline/emacs/zle binds
-function echo_color() {
-  printf "\033[0;90m$1\033[0m\n"
-}
-echo_color "  c-b  Move backward            c-f  Move forward"
-echo_color "  c-p  Move previous (up)       c-n  Move next (down)"
-echo_color "  c-a  Jump to line beginning   c-e  Jump to line end"
-echo_color "  c-h  Delete backward          c-d  Delete forward"
-echo_color "  c-u  Delete entire line       c-k  Delete to end of line"
 
 # if [ "$TERM" = "linux" ]; then
     # _SEDCMD='s/.*\*color\([0-9]\{1,\}\).*#\([0-9a-fA-F]\{6\}\).*/\1 \2/p'
