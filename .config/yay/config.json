@@ -3,6 +3,7 @@
 	"editor": "",
 	"editorflags": "",
 	"makepkgbin": "makepkg",
+	"makepkgconf": "",
 	"pacmanbin": "pacman",
 	"pacmanconf": "/etc/pacman.conf",
 	"tarbin": "bsdtar",
@@ -18,8 +19,10 @@
 	"mflags": "",
 	"sortby": "votes",
 	"gitflags": "",
+	"removemake": "ask",
 	"requestsplitn": 150,
 	"sortmode": 0,
+	"completionrefreshtime": 7,
 	"sudoloop": false,
 	"timeupdate": false,
 	"devel": false,
@@ -30,6 +33,7 @@
 	"upgrademenu": true,
 	"cleanmenu": true,
 	"diffmenu": true,
-	"editmenu": true,
+	"editmenu": false,
+	"combinedupgrade": false,
 	"useask": false
 }
