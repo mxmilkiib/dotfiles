@@ -1,13 +1,13 @@
 {
    "bookmarks" : "/home/milk/.config/radiotray-ng/bookmarks.json",
    "compact-menu" : false,
-   "last-station" : "Jungletrain.net (128k)",
+   "last-station" : "dnb liquified",
    "last-station-group" : "Bass / Breaks",
    "last-station-notifications" : true,
    "max-volume-level" : 100,
    "notification-verbose" : true,
    "notifications" : true,
    "split-title" : false,
-   "volume-level" : 3,
+   "volume-level" : 9,
    "volume-step" : 3
 }
