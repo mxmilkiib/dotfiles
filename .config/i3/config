@@ -168,6 +168,9 @@ bindsym $mod+XF86Launch1 exec "caffeine -kd"
 ## launch screen lock
 bindsym $mod+Shift+x exec i3lock
 
+## blank screen now
+bindsym --release $mod+Ctrl+x exec xset dpms force off
+
 ## launch i3 config help terminal
 bindsym $mod+F1 exec --no-startup-id $terminal -geometry 125x46 -title "i3_hotkey_help" -e ~/bin/i3/i3-hotkey-help.sh
 for_window [title="i3_hotkey_help$"] floating toggle
@@ -182,25 +185,28 @@ bindsym XF86Explorer exec run-or-raise.sh pcmanfm
 ## launch or switch to bittorrent client
 bindsym $mod+F3 exec run-or-raise.sh qbittorrent
 
-## launch password manager
-bindsym $mod+F7 exec run-or-raise.sh keepassx ~/documents/sync/safefile.kdb
-
 ## launch carla plugin host
 bindsym $mod+F8 exec run-or-raise.sh carla
+
+## launch password manager
+bindsym $mod+F10 exec run-or-raise.sh keepassxc ~/documents/sync/keepassxc-mb.kdbx
 
 ## launch or switch to irc client
 bindsym $mod+F11 exec run-or-raise.sh quasselclient
 
 ## launch or switch to browser
-bindsym $mod+F12 exec run-or-raise.sh chrome
-bindsym XF86WWW exec run-or-raise.sh chrome
+# bindsym $mod+F12 exec run-or-raise.sh chromium
+# bindsym XF86WWW exec run-or-raise.sh chromium
+bindsym $mod+F12 exec run-or-raise.sh firefox
+bindsym XF86WWW exec run-or-raise.sh firefox
 # bindsym $mod+F4 exec "run-or-raise.sh pcmanfm"
 
 ## launch trello
-bindsym $mod+Shift+F12 exec google-chrome-stable --app=https://trello.com/b/AdniCH2y/to-do
+# bindsym $mod+Shift+F12 exec chromium --app=https://trello.com/b/AdniCH2y/to-do
 
 ## launch gmail
-bindsym XF86Mail exec "chrome https://gmail.com && run-or-raise.sh chrome"
+# bindsym XF86Mail exec "chromium https://gmail.com && run-or-raise.sh chromium"
+bindsym XF86Mail exec "firefox https://gmail.com && run-or-raise.sh firefox"
 
 
 ## launch vlc
@@ -211,6 +217,7 @@ bindsym $mod+Shift+v exec vlc
 #bindsym $mod+Ctrl+F10 exec "xrandr --output DVI-I-1 --mode 1280x1024 --pos 0x0 --panning 0x0+0+0 --output DVI-I-0 --mode 1280x1024 --pos 1280x0"
 # use secondary monitor only
 bindsym $mod+Ctrl+F9 exec "mons -s"
+bindsym $mod+Ctrl+Shift+F9 exec "mons -o"
 
 ## screenshot of whole desktop
 bindsym --release $mod+Print exec import -window root ~/images/screenshots/$(hostname --short)_$(date +%Y-%m-%d-%T).png
@@ -567,6 +574,8 @@ assign [class="Cadence.py"] 19
 assign [class="Pavucontrol"] 19
 assign [class="Pulseeffects"] 19
 assign [title="Google Chrome"] 1000:1-
+assign [title="Chromium"] 1000:1-
+assign [title="Firefox"] 1000:1-
 assign [class="Hexchat"] 10000:1=
 assign [class="quassel"] 10000:1=
 
@@ -593,10 +602,10 @@ for_window [title="etcher-electron"] floating enable, move absolute position cen
 for_window [title="Magnifying Glass"] floating toggle
 for_window [title="Event Tester"] floating enable
 for_window [title="pulsemixer"] floating enable, move absolute position center
-for_window [class="Google-chrome" instance="trello.com__b_AdniCH2y_to-do" title="To Do | Trello" window_role="pop-up"] floating enable
+for_window [instance="trello.com__b_AdniCH2y_to-do" title="To Do | Trello" window_role="pop-up"] floating enable
 for_window [class="DNSCryptClient" instance="DNSCryptClient" title="DNSCryptClient"] floating enable
 for_window [class="Envy24control" instance="envy24control"] floating enable
-for_window [class="Keepassx" instance="keepassx"] floating enable
+for_window [class="keepassxc"] floating enable
 for_window [title="Ray Session"] floating enable
 
 # auto resize

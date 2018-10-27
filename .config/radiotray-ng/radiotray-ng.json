@@ -1,13 +1,13 @@
 {
    "bookmarks" : "/home/milk/.config/radiotray-ng/bookmarks.json",
    "compact-menu" : false,
-   "last-station" : "dnb liquified",
-   "last-station-group" : "Bass / Breaks",
+   "last-station" : "Deep Mix",
+   "last-station-group" : "House/tech-house",
    "last-station-notifications" : true,
    "max-volume-level" : 100,
    "notification-verbose" : true,
    "notifications" : true,
    "split-title" : false,
-   "volume-level" : 9,
+   "volume-level" : 15,
    "volume-step" : 3
 }

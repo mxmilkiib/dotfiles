@@ -23,7 +23,7 @@
 	"requestsplitn": 150,
 	"sortmode": 0,
 	"completionrefreshtime": 7,
-	"sudoloop": false,
+	"sudoloop": true,
 	"timeupdate": false,
 	"devel": false,
 	"cleanAfter": false,
@@ -32,8 +32,8 @@
 	"pgpfetch": true,
 	"upgrademenu": true,
 	"cleanmenu": true,
-	"diffmenu": true,
+	"diffmenu": false,
 	"editmenu": false,
-	"combinedupgrade": false,
+	"combinedupgrade": true,
 	"useask": false
 }

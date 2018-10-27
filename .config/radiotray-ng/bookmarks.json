@@ -11,8 +11,27 @@
          },
          {
             "image" : "",
-            "name" : "Ambient Sleeping Pill",
-            "url" : "https://asp.radioca.st/listen.pls?sid=3"
+            "name" : "Ambient Sleeping Pill (Standard)",
+            "notifications" : true,
+            "url" : "http://s.stereoscenic.com/asp-s.pls"
+         },
+         {
+            "image" : "",
+            "name" : "Ambient Sleeping Pill (High)",
+            "notifications" : true,
+            "url" : "http://s.stereoscenic.com/asp-h.pls"
+         },
+         {
+            "image" : "",
+            "name" : "AM Ambient (Standard)",
+            "notifications" : true,
+            "url" : "http://s.stereoscenic.com/ama-s.pls"
+         },
+         {
+            "image" : "",
+            "name" : "AM Ambient (High)",
+            "notifications" : true,
+            "url" : "http://s.stereoscenic.com/ama-h.pls"
          },
          {
             "image" : "",
@@ -437,6 +456,12 @@
             "image" : "",
             "name" : "The Oracle: guidance",
             "url" : "http://iwayhigh.net:8002/listen.pls"
+         },
+         {
+            "image" : "",
+            "name" : "Subcity",
+            "notifications" : true,
+            "url" : "https://cloudstream.subcity.org/subcityopus.m3u"
          }
       ]
    },
