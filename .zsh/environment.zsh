@@ -34,6 +34,9 @@ export BROWSER=chrome
 export TERMINAL=urxvt
 export DIFFPROG=meld
 
+# for pacmatic
+export pacman_program="yay"
+
 # for nnn
 export NNN_COPIER="nnn_copier.sh"
 

@@ -200,8 +200,11 @@ alias du2='cdu -idh'
 # List dir items
 alias 'dus=du -ms * | sort -n'
 
+# ncdu with color
+alias 'ncdu=ncdu --color dark'
+
 # Check disk usage in ncdu (arch root)
-alias 'ncduar=sudo ncdu / --exclude /home --exclude /mnt --exclude /media --exclude /run/media --exclude /boot --exclude /tmp --exclude /dev --exclude /proc --exclude /var --exclude /run/user'
+alias 'ncduar=sudo ncdu / --color dark --exclude /home --exclude /mnt --exclude /media --exclude /run/media --exclude /boot --exclude /tmp --exclude /dev --exclude /proc --exclude /var --exclude /run/user'
 
 
 alias ..='cd ..' 		# Automatic in ZSH (default?)
@@ -380,9 +383,9 @@ alias pSp='yay --sortby popularity'
 
 # full upgrade
 # alias 'pu=sudo pacman -Syu'
-alias pu='yay -Syu --answeredit n --answerupgrade n --answerclean n --answerdiff n --sudoloop'
+alias pu='yay -Pw && yay -Syu --answeredit n --answerupgrade n --answerclean n --answerdiff n --sudoloop --combinedupgrade && sudo DIFFPROG=meld dbus-launch pacdiff'
 # full upgrade, don't skip which packages to ignore
-alias puU='yay -Syu --answeredit n --answerclean n --answerdiff n --sudoloop'
+alias puU='yay -Syu --answeredit n --answerclean n --answerdiff n --sudoloop --combinedupgrade'
 
 # full upgrade with VCS packages checked
 alias puu='yay -Syu --answeredit n --answerupgrade n --answerclean n --answerdiff n --sudoloop --devel'
@@ -461,7 +464,7 @@ alias oLF='LF | xargs xdg-open'
 alias colours='for code in {000..255}; do print -P -- "$code: %F{$code}Test%f"; done'
 
 # 'Copy with progress bar'
-alias ccp='rsync --progress -ah'
+alias ccp='rsync -ahPr --info=progress2 --append-verify --partial-dir=.rsync-partial'
 
 # with both in and out
 alias alsamixer='alsamixer -V=all'
