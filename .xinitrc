@@ -85,6 +85,9 @@ radiotray-ng &
 # Update dynamic dns
 dyndns &
 
+# connecto to mobile
+kdeconnect-indicator &
+
 # copy middle-mouse PRIMARY selection to ctrl-xcv/shift-insert CLIPBOARD. mostly useful when without a mouse.
 # autocutsel -fork &
 # copy ctrl-xcv / shift-insert CLIPBOARD to middle mouse PRIMARY selection buffer
@@ -105,8 +108,6 @@ setxkbmap gb
 
 # Jack GUI 
 # cadence --minimized &
-
-play-with-mpv &
 
 # reset to primary monitor if secondary is removed (for after a use of mons -s)
 mons -a &
