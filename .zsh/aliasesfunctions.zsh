@@ -464,7 +464,7 @@ alias oLF='LF | xargs xdg-open'
 alias colours='for code in {000..255}; do print -P -- "$code: %F{$code}Test%f"; done'
 
 # 'Copy with progress bar'
-alias ccp='rsync -ahPr --info=progress2 --append-verify --partial-dir=.rsync-partial'
+alias ccp='rsync -ahPr --info=progress2 --partial-dir=.rsync-partial'
 
 # with both in and out
 alias alsamixer='alsamixer -V=all'

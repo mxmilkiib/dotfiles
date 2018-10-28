@@ -7,7 +7,8 @@ autoload -z compinit && compinit
 
 zstyle ':completion:*' verbose yes
 
-zstyle ':completion:*' menu select
+# zstyle ':completion:*' menu select
+zstyle ':completion:*' menu select=0 search
 
 zstyle ':completion:*' list-colors "${LS_COLORS}" # Complete with same colors as ls.
 
