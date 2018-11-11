@@ -383,7 +383,7 @@ alias pSp='yay --sortby popularity'
 
 # full upgrade
 # alias 'pu=sudo pacman -Syu'
-alias pu='yay -Pw && yay -Syu --answeredit n --answerupgrade n --answerclean n --answerdiff n --sudoloop --combinedupgrade && xhost si:localuser:root && sudo DIFFPROG="meld DISPLAY=:0 dbus-launch pacdiff && xhost -si:localuser:root'
+alias pu='yay -Pw && yay -Syu --answeredit n --answerupgrade n --answerclean n --answerdiff n --sudoloop --combinedupgrade && xhost si:localuser:root && sudo DIFFPROG="meld" DISPLAY=:0 dbus-launch pacdiff && xhost -si:localuser:root'
 # full upgrade, don't skip which packages to ignore
 alias puU='yay -Syu --answeredit n --answerclean n --answerdiff n --sudoloop --combinedupgrade'
 
