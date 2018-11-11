@@ -275,8 +275,8 @@ bindsym $mod+Shift+v exec vlc
 # use secondary monitor only
 # bindsym $mod+Ctrl+F9 exec "mons -s"
 # bindsym $mod+Ctrl+Shift+F9 exec "mons -o"
-bindsym $mod+Ctrl+F9 exec sway output VGA-1 enable && sway output LVDS-1 disable
-bindsym $mod+Ctrl+Shift+F9 exec sway output LVDS-1 enable && sway output VGA-1 disable
+bindsym $mod+Ctrl+F9 exec "sway output VGA-1 enable && sway output LVDS-1 disable"
+bindsym $mod+Ctrl+Shift+F9 exec "sway output LVDS-1 enable && sway output VGA-1 disable"
 
 ## screenshot of whole desktop
 # bindsym --release $mod+Print exec import -window root ~/images/screenshots/$(hostname --short)_$(date +%Y-%m-%d-%T).png
@@ -293,7 +293,7 @@ bindsym --release $mod+Shift+Print exec import ~/images/screenshots/$(hostname -
 bindsym $mod+Mod1+F12 exec import -crop 1280x1024+1280+0 -window root ~/images/screenshots/$(hostname --short)_$(date +%Y-%m-%d-%T).png"
 
 ## xev
-bindsym $mod+F9 exec "$terminal -name 'Event Tester' -geometry 60x9-100-100 -e xev -event keyboard"
+# bindsym $mod+F9 exec "$terminal -name 'Event Tester' -geometry 60x9-100-100 -e xev -event keyboard"
 
 
 # new windows will be split in horizontal orientation
