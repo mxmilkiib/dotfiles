@@ -126,9 +126,19 @@ unset k
 # Open man page for command in editing buffer
 bindkey $key[F1] run-help
 
+# Insert "sudo " at the beginning of the line
+function prepend-sudo {
+  if [[ $BUFFER != "sudo "* ]]; then
+    BUFFER="sudo $BUFFER"; CURSOR+=5
+  fi
+}
+zle -N prepend-sudo
+bindkey "$key[F2]" prepend-sudo
+
+
 autoload edit-command-line
 zle -N edit-command-line
-bindkey $key[F2] edit-command-line
+bindkey $key[F4] edit-command-line
 
 
 

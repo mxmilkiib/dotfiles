@@ -11,8 +11,21 @@
 # export TERM="screen-256color" # for tmux backgrond color erase (bce) to work
 # let .Xresources do it for xterm for now
 
+
 # Where everything is.
 Z=~/.zsh
+
+
+# Set up a working environment.
+source $Z/environment.zsh
+
+# If running from tty1 start sway window manager
+if [ $(tty) = "/dev/tty1" ]; then
+  export QT_QPA_PLATFORMTHEME=qt5ct
+	export XKB_DEFAULT_LAYOUT=gb
+  sway
+	exit 0
+fi
 
 
 # MOTD - reminder info on readline/emacs/zle binds
@@ -71,8 +84,6 @@ if ! zgen saved; then
 fi
 
 
-# Set up a working environment.
-source $Z/environment.zsh
 
 # Key bindings
 source $Z/bindings.zsh

@@ -201,10 +201,10 @@ alias du2='cdu -idh'
 alias 'dus=du -ms * | sort -n'
 
 # ncdu with color
-alias 'ncdu=ncdu --color dark'
+alias 'ncdu=ncdu --color dark -q'
 
 # Check disk usage in ncdu (arch root)
-alias 'ncduar=sudo ncdu / --color dark --exclude /home --exclude /mnt --exclude /media --exclude /run/media --exclude /boot --exclude /tmp --exclude /dev --exclude /proc --exclude /var --exclude /run/user'
+alias 'ncduar=sudo ncdu / --color dark -q --exclude /home --exclude /mnt --exclude /media --exclude /run/media --exclude /boot --exclude /tmp --exclude /dev --exclude /proc --exclude /var --exclude /run/user'
 
 
 alias ..='cd ..' 		# Automatic in ZSH (default?)
@@ -383,7 +383,7 @@ alias pSp='yay --sortby popularity'
 
 # full upgrade
 # alias 'pu=sudo pacman -Syu'
-alias pu='yay -Pw && yay -Syu --answeredit n --answerupgrade n --answerclean n --answerdiff n --sudoloop --combinedupgrade && sudo DIFFPROG=meld dbus-launch pacdiff'
+alias pu='yay -Pw && yay -Syu --answeredit n --answerupgrade n --answerclean n --answerdiff n --sudoloop --combinedupgrade && xhost si:localuser:root && sudo DIFFPROG="meld DISPLAY=:0 dbus-launch pacdiff && xhost -si:localuser:root'
 # full upgrade, don't skip which packages to ignore
 alias puU='yay -Syu --answeredit n --answerclean n --answerdiff n --sudoloop --combinedupgrade'
 
