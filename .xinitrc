@@ -68,7 +68,7 @@ caffeine &
 dunst &
 
 # Break timer
-workrave &
+# workrave &
 
 # Volume system tray
 # pa-applet &
@@ -153,6 +153,7 @@ export QT_PLATFORM_PLUGIN=qt5ct
 
 exec i3
 # exec enlightenment_start
+# exec audacity
 # exec tdm --xstart
 # exec i3 >> /var/tmp/log/i3log 2>&1
 
