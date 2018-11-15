@@ -22,7 +22,7 @@ exec /usr/lib/xfce-polkit/xfce-polkit
 exec mako
 
 # Redshift - changed screen colour temp
-exec redshift-gtk -l 55.978301:-3.228586 -t 6000:4500
+# exec redshift-gtk -l 55.978301:-3.228586 -t 6000:4500
 
 # Make additional fonts available
 # exec xset +fp /usr/share/fonts/local; xset fp rehash
@@ -275,8 +275,8 @@ bindsym $mod+Shift+v exec vlc
 # use secondary monitor only
 # bindsym $mod+Ctrl+F9 exec "mons -s"
 # bindsym $mod+Ctrl+Shift+F9 exec "mons -o"
-bindsym $mod+Ctrl+F9 exec "sway output VGA-1 enable && sway output LVDS-1 disable"
-bindsym $mod+Ctrl+Shift+F9 exec "sway output LVDS-1 enable && sway output VGA-1 disable"
+bindsym $mod+Ctrl+F9 exec "sway output VGA-1 enable && sleep 1 && sway output LVDS-1 disable"
+bindsym $mod+Ctrl+Shift+F9 exec "sway output LVDS-1 enable && sleep 1 && sway output VGA-1 disable"
 
 ## screenshot of whole desktop
 # bindsym --release $mod+Print exec import -window root ~/images/screenshots/$(hostname --short)_$(date +%Y-%m-%d-%T).png
@@ -284,13 +284,14 @@ bindsym --release $mod+Print exec grim ~/images/screenshots/$(hostname --short)_
 
 ## screenshot of active window
 # bindsym --release $mod+Ctrl+Print exec import -window `xprop -root | grep "_NET_ACTIVE_WINDOW(WINDOW)" | echo ${activeWinLine:40}` ~/images/screenshots/$(hostname --short)_$(date +%Y-%m-%d-%T).png
-bindsym --release $mod+Ctrl+Print exec import -window `xprop -root | grep "_NET_ACTIVE_WINDOW(WINDOW)" | echo ${activeWinLine:40}` ~/images/screenshots/$(hostname --short)_$(date +%Y-%m-%d-%T).png
+# bindsym --release $mod+Ctrl+Print exec import -window `xprop -root | grep "_NET_ACTIVE_WINDOW(WINDOW)" | echo ${activeWinLine:40}` ~/images/screenshots/$(hostname --short)_$(date +%Y-%m-%d-%T).png
 
 ## screenshot of selected window (click) or area (drag)
-bindsym --release $mod+Shift+Print exec import ~/images/screenshots/$(hostname --short)_$(date +%F_%H%M%S_%N).png
+# bindsym --release $mod+Shift+Print exec import ~/images/screenshots/$(hostname --short)_$(date +%F_%H%M%S_%N).png
+# https://github.com/emersion/slurp/issues/16
 
 ## screenshot of right hand monitor
-bindsym $mod+Mod1+F12 exec import -crop 1280x1024+1280+0 -window root ~/images/screenshots/$(hostname --short)_$(date +%Y-%m-%d-%T).png"
+# bindsym $mod+Mod1+F12 exec import -crop 1280x1024+1280+0 -window root ~/images/screenshots/$(hostname --short)_$(date +%Y-%m-%d-%T).png"
 
 ## xev
 # bindsym $mod+F9 exec "$terminal -name 'Event Tester' -geometry 60x9-100-100 -e xev -event keyboard"
