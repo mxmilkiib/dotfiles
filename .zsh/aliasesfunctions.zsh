@@ -372,14 +372,14 @@ alias aw='apt-cache show'
 # install specific package
 alias p='yay -S --answeredit n'
 # install specific package and allow build file editing
-alias pP='yay -S --editmenu'
+alias pP='yay -S --editmenu --bottomup'
 
 # interactive search (pkg # + prompt)
-alias pS='yay --answeredit n --answerdiff n'
+alias pS='yay --answeredit n --answerdiff n --bottomup'
 # interactive search with editing of PKGBUILD
-alias pSe='yay --editmenu'
+alias pSe='yay --editmenu --bottomup'
 # interactive search of AUR by popularity with confirm
-alias pSp='yay --sortby popularity'
+alias pSp='yay --sortby popularity --bottomup'
 
 # full upgrade
 # alias 'pu=sudo pacman -Syu'
