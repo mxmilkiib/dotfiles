@@ -19,7 +19,7 @@ exec xrdb ~/.Xresources
 exec /usr/lib/xfce-polkit/xfce-polkit
 
 # Graphical notifications
-exec mako
+exec sleep 10 && mako
 
 # Redshift - changed screen colour temp
 # exec redshift-gtk -l 55.978301:-3.228586 -t 6000:4500
@@ -28,28 +28,28 @@ exec mako
 # exec xset +fp /usr/share/fonts/local; xset fp rehash
 
 # Hides the mouse cursor after 5 seconds of idle
-exec hideaway 4 10000 10000 -512 -256
-
-# Launch a classic *nix screensaver
-exec xscreensaver -nosplash
-
-# Disable screensaver on media fullscreen
-exec caffeine
-
-# Volume system tray
-exec kmix
+exec sleep 20 && hideaway 4 10000 10000 -512 -256
 
 # Battery monitor
-exec bash -c "if [ $HOST != 'rose*' ]; then vattery; fi"
+# sleep 40 && exec bash -c "if [ $HOST != 'rose*' ]; then vattery; fi"
 
 # Internet radio stream player
-exec radiotray-ng
+# exec sleep 20 && radiotray-ng
 
-# Break timer
-exec workrave
+# Volume system tray
+# exec sleep 40 && kmix
 
 # Connect to mobile phone
-exec kdeconnect-indicator
+exec sleep 60 && kdeconnect-indicator
+
+# Break timer
+exec sleep 90 && workrave
+
+# Launch a classic *nix screensaver
+exec seep 120 && xscreensaver -nosplash
+
+# Disable screensaver on media fullscreen
+exec seep 180 && caffeine
 
 # infrared control
 exec flirc_util loadconfig ~/.config/flirc/my_flirc_config
@@ -61,9 +61,9 @@ input pc105 {
     xkb_options grp:alt_shift_toggle
 }
 
-output LVDS-1 bg ~/.wallpapers/VnXDN9J_colourised.png fill
-output HDMI-A-1 bg ~/.wallpapers/VnXDN9J_colourised.png fill
-output VGA-1 bg ~/.wallpapers/VnXDN9J_colourised.png fill
+output * bg ~/.wallpapers/VnXDN9J_colourised.png fill
+# output HDMI-A-1 bg ~/.wallpapers/VnXDN9J_colourised.png fill
+# output VGA-1 bg ~/.wallpapers/VnXDN9J_colourised.png fill
 
 
 ###
@@ -161,7 +161,6 @@ for_window [instance="oblique-strategy$"] floating toggle
 ###
 ## kill focused window
 bindsym $mod+q kill
-bindsym $mod+x kill
 bindsym $mod+Delete kill
 bindsym --release $mod+Ctrl+q exec xkill
 
@@ -741,7 +740,8 @@ bar {
 	# colour via http://paletton.com/#uid=74y0u0km+m7devAiGqmrohGxCce
 	colors {
   	background #000000
-    statusline #ffffff
+
+statusline #ffffff
     # class            border 	backgrd  text
 		focused_workspace  #4f2877  #4f2877  #ffffff
     active_workspace   #555555 	#555555  #ffffff
