@@ -5,7 +5,7 @@
 # Various Paths
 # typeset -U path
 # path=(~/bin $path /usr/local/bin /var/lib/gems/1.8/bin $HOME/.gem/ruby/2.5.0/bin:/home/milk/.cabal/bin) - should be set in /etc/profile
-path=(~/bin ~/bin/i3 $path)
+path=(~/bin ~/bin/i3 /home/milk/.cargo/bin $path)
 # export PATH
 
 typeset -U fpath

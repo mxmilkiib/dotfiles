@@ -91,8 +91,12 @@ function ctmux(){
 
 ### Admin
 
-# Make sudo expand alises
-# alias sudo='command sudo '
+# Make sudo expand zsh alises
+alias sudo='sudo '
+
+# Make xargs expand zsh alises
+alias xargs='xargs '
+
 
 # Change to root with users environment
 alias se="sudo -E $SHELL"
@@ -383,9 +387,9 @@ alias pSp='yay --sortby popularity --bottomup'
 
 # full upgrade
 # alias 'pu=sudo pacman -Syu'
-alias pu='yay -Pw && yay -Syu --answeredit n --answerupgrade n --answerclean n --answerdiff n --sudoloop --combinedupgrade && xhost si:localuser:root && sudo DIFFPROG="meld" DISPLAY=:0 dbus-launch pacdiff && xhost -si:localuser:root'
+alias pu='yay -Pw && echo y | yay -Syu --answeredit n --answerupgrade n --answerclean n --answerdiff n --sudoloop --combinedupgrade && xhost si:localuser:root && sudo DIFFPROG="meld" DISPLAY=:0 dbus-launch pacdiff && xhost -si:localuser:root'
 # full upgrade, don't skip which packages to ignore
-alias puU='yay -Syu --answeredit n --answerclean n --answerdiff n --sudoloop --combinedupgrade'
+alias puU='echo y | yay -Syu --answeredit n --answerclean n --answerdiff n --sudoloop --combinedupgrade'
 
 # full upgrade with VCS packages checked
 alias puu='yay -Syu --answeredit n --answerupgrade n --answerclean n --answerdiff n --sudoloop --devel'
@@ -394,7 +398,7 @@ alias puuU='yay -Syu --answeredit n --answerclean n --sudoloop --devel'
 
 # alias puu='yay -Syu --answeredit n --needed --devel'
 
-alias pSi='yay -Si'                      # search info
+alias pSi='yay -Si'                         # search info
 alias pQi='pacman -Qi'                      # query info
 alias pQl='pacman -Ql'                      # query contents
 alias pQo='pacman -Qo'                      # query file ownership
@@ -406,11 +410,15 @@ function pQoi(){
 function pQol(){
   pacman -Ql `pacman -Qoq $@`
 }
+# list packages of libraries used by a binary in path
+function pQp(){ whereis -b $1 | awk '{print $2}' | xargs ldd | awk '{print $1}' | xargs whereis | awk '{print $2}' | grep . | xargs pacman -Qo | awk '{print $5}' | sort | uniq | paste -s -d ' ' }
+
 
 # alias pR='sudo pacman -R'	  								# remove, rm deps
 alias pR='sudo pacman -Rcsn'								# remove, rm deps, recursive, remove config files
 alias pU='sudo pacman -U'										# install a local package file
 alias pL='sudo rm /var/lib/pacman/db.lck'   # remove lockfile if pacman doesn't exit gracefully
+
 
 # get PKGBUILD
 alias pG='yay -G'

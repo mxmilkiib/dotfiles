@@ -22,9 +22,9 @@ source $Z/environment.zsh
 # If running from tty1 start sway window manager
 if [ $(tty) = "/dev/tty1" ]; then
   export QT_QPA_PLATFORMTHEME=qt5ct
-	export XKB_DEFAULT_LAYOUT=gb
+  export XKB_DEFAULT_LAYOUT=gb
   sway
-	exit 0
+  exit 0
 fi
 
 
@@ -52,7 +52,7 @@ source $Z/../.zgen/zgen.zsh
 
 # check if there's no init script
 if ! zgen saved; then
-		echo "Creating a zgen save"
+  echo "Creating a zgen save"
 
   zgen load unixorn/autoupdate-zgen
 
@@ -65,22 +65,25 @@ if ! zgen saved; then
   zgen load zsh-users/zsh-completions
 
   zgen load RobSis/zsh-completion-generator
+    # gencomp ggrep
+    # source ~/.zshrc # or run `compinit'
+    # ggrep -*[TAB]* -> magic
 
   zgen load zsh-users/zsh-history-substring-search
 
   # zgen load zsh-users/zsh-syntax-highlighting
   zgen load zdharma/fast-syntax-highlighting
 
-	zgen load zsh-users/zsh-autosuggestions
-	export ZSH_AUTOSUGGEST_USE_ASYNC=1
+  zgen load zsh-users/zsh-autosuggestions
+  export ZSH_AUTOSUGGEST_USE_ASYNC=1
 
-	# fzf after zsh-autosuggestions - fzf/issues/227
-	zgen load junegunn/fzf
-	zgen load junegunn/fzf shell/completion.zsh
-	zgen load junegunn/fzf shell/key-bindings.zsh
-  # CTRL-T (paste files/dirs), CTRL-R (history), and ALT-C (cd), alias -g F, **<tab>
+  # fzf after zsh-autosuggestions - fzf/issues/227
+  zgen load junegunn/fzf
+  zgen load junegunn/fzf shell/completion.zsh
+  zgen load junegunn/fzf shell/key-bindings.zsh
+    # CTRL-T (paste files/dirs), CTRL-R (history), and ALT-C (cd), alias -g F, **<tab>
 
-	zgen save
+  zgen save
 fi
 
 
