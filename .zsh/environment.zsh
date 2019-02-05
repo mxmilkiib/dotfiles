@@ -44,7 +44,8 @@ export KEYTIMEOUT=1
 
 export PAGER="/usr/bin/less -RF"
 # < pager
-export READNULLCMD=less_rfx
+# export READNULLCMD=less_rfx
+export READNULLCMD=bat
 
 # Color for manpages in less makes manpages a little easier to read:
 export LESS_TERMCAP_mb=$'\E[01;31m'
@@ -74,7 +75,7 @@ WORDCHARS='-*?_.[]~&;!#$%^(){}<>'
 
 # QGtkStyle
 # export QT_QPA_PLATFORMTHEME=breeze
-QT_QPA_PLATFORMTHEME=gtk2
+# export QT_QPA_PLATFORMTHEME=gtk2
 
 
 # pacaur env variables

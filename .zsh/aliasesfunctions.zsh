@@ -404,7 +404,10 @@ alias pQl='pacman -Ql'                      # query contents
 alias pQo='pacman -Qo'                      # query file ownership
 # display info for package that contains argument file
 function pQoi(){
-  pacman -Qi `pacman -Qoq $@`
+  PQOtmp=`pacman -Qoq $@`
+  if ( echo $PQOtmp | rg -q '!^error.*' ) then 
+    pacman -Qi $PQOtmp
+  fi
 }
 # list files owned by package that contains argument file
 function pQol(){
@@ -445,6 +448,30 @@ function less_rfx() {
 	less -RFX "$@"
 }
 
+# add together multiple 24h time range s
+# usage: invoicesum 1915-2145 1400-2000 0915-1400
+function invoicesum() {
+  for arg
+  do
+    # datediff ${(s:-:)arg} -f%H:%0M
+    for words in $arg; do
+      # echo   arg: $arg
+      DDRANGE=$(echo ${(s:-:)arg})
+      # echo   dd: $DDRANGE
+      DDRANGE2=$(sed -e 's/./&:/7;s/./&:/2' <<< $DDRANGE)
+      # echo   dd2: $DDRANGE2
+      DDANSWER=$(echo $DDRANGE2|xargs datediff -f%S)
+      # echo   dda: $DDANSWER
+      echo "$DDRANGE:  $(date -d@$DDANSWER -u +%H)h $(date -d@$DDANSWER -u +%M)m +"
+      DDSUM=$((DDSUM + DDANSWER))
+    done
+  done
+  # echo $DDSUM
+  if [ $DDSUM -gt 86400 ]; then; DDDAYS="0$((DDSUM/86400)) days,"; fi
+  # echo ddd: $DDDAYS
+  echo "= $DDDAYS $(date +%H -d@$DDSUM) hours, $(date +%M -d@$DDSUM) minutes"
+  unset DDANSWER DDSUM DDDAYS
+}
 
 ### -g aliases work at the end of a line
 alias -g L='| less -RF'      # redraw (color), quit under one page, dont init/deinit term
@@ -503,19 +530,31 @@ alias uv='urxvt -e vim'
 alias vp=vimpager
 
 # Git quickies
+alias g='git show'
+alias gh='git show HEAD'
 alias gis='git status '
 alias gd='git diff --color'
 alias gdc='git diff --color --cached'
-alias gh='git log --pretty=format:"%h %ad | %s%d [%an]" --graph --date=short'
+alias gl='git log'
+alias gll='git log --pretty=format:"%h %ad | %s%d [%an]" --graph --date=short'
 alias ga='git add '
 alias gaa='git add .'
 alias gb='git branch '
-# alias gc='git commit' # see functions.zsh for easy git commit
+# alias gc='git commit' # see function below
 alias gco='git checkout '
 alias gr='git remote'
 alias gp='git push'
 alias gpl='git pull'
-alias gx='gitx --all'
+alias gbl='git branch -v'
+alias gri="git rebase --interactive"
+alias grc="git rebase --continue"
+alias gra="git rebase --abort"
+alias gst="git stash"
+alias gsta="git stash apply"
+alias gx="gco -- \*; git reset HEAD \*"
+alias gcp="git cherry-pick"
+alias gcpc="git cherry-pick --continue"
+alias gcpa="git cherry-pick --abort"
 
 # Easy Git commit; $ gc this is my commit message
 function gc(){
@@ -528,7 +567,13 @@ function gcl(){
 	cd `basename $*`;
 }
 
-
+# Checkout last commit before date argument, in both current and argument directory
+# gCO 2018-10-10 00:00 ../../../wlroots-git
+# function gCO(){
+  # GITCODATETIME="$1 $2"
+  # git checkout `git rev-list -n 1 --before="$GITCODATETIME" master`
+  # if [ $3 ]; then; for repodirs in $3-; do git -C $3 checkout `git -C $3 rev-list -n 1 --before="$GITCODATETIME" master`; done;
+# }
 
 # redirect git commit to git commit verbose
 function git {

@@ -20,12 +20,15 @@ Z=~/.zsh
 source $Z/environment.zsh
 
 # If running from tty1 start sway window manager
-if [ $(tty) = "/dev/tty1" ]; then
-  export QT_QPA_PLATFORMTHEME=qt5ct
+# if [ $(tty) = "/dev/tty1" ]; then
   export XKB_DEFAULT_LAYOUT=gb
-  sway
-  exit 0
-fi
+  export QT_QPA_PLATFORMTHEME=qt5ct
+  # # export QT_QPA_PLATFORM=wayland
+  export QT_STYLE_OVERRIDE=gtk2
+  # ssh-agent sway
+  # # sway -d >~/sway.log 2>&1
+# #  exit 0
+# fi
 
 
 # MOTD - reminder info on readline/emacs/zle binds
@@ -155,6 +158,7 @@ ZSH_AUTOSUGGEST_CLEAR_WIDGETS+=reset-prompt-and-accept-line
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
+
 # Modal cursor color for vi's insert/normal modes.
 # http://stackoverflow.com/questions/30985436/
 # https://bbs.archlinux.org/viewtopic.php?id=95078
@@ -198,10 +202,6 @@ zle-keymap-select () {
 }
 zle -N zle-keymap-select
 
-# if [[ $- = *i* ]]; then
-  # reset
-  # fortune -a
-# fi
 
 # if [ "$TERM" = "linux" ]; then
     # _SEDCMD='s/.*\*color\([0-9]\{1,\}\).*#\([0-9a-fA-F]\{6\}\).*/\1 \2/p'
