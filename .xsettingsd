@@ -4,14 +4,14 @@ Gtk/CursorThemeName "default"
 Gtk/CursorThemeSize 0
 Gtk/EnableEventSounds 0
 Gtk/EnableInputFeedbackSounds 0
-Gtk/FontName "Droid Sans Mono 11"
+Gtk/FontName "Droid Sans Mono 10"
 Gtk/IconThemeName "mate"
 Net/IconThemeName	"mate"
 Gtk/MenuBarAccel "F10"
 Gtk/MenuImages 1
 Gtk/ToolbarIconSize 3
 Gtk/ToolbarStyle "icons"
-Net/ThemeName	"Archlinux"
+Net/ThemeName	"flat-remix-gtk-dark"
 Xft/Antialias 1
 Xft/DPI 97280
 # Xft/Hinting 0

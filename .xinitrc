@@ -1,3 +1,4 @@
+
 #!/bin/sh
 #
 # ~/.xinitrc
@@ -150,6 +151,9 @@ export QT_PLATFORM_PLUGIN=qt5ct
 # button8-to-lwin.py &
 
 # Window manager
+
+# exec startlxde
+# exec cinnamon-session
 
 exec i3
 # exec enlightenment_start

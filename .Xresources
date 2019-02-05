@@ -51,7 +51,7 @@ URxvt*font: -Gohu-Gohufont-Medium-R-Normal--14-100-100-100-C-80-ISO10646-1
 ! URxvt.font: xft:terminus:pixelsize=12:antialias=false
 
 ! Reduce kerning by 1px
-URxvt.letterSpace: 0
+! URxvt.letterSpace: 0
 
 ! Reset to regular 16
 ! URxvt.keysym.C-0: command:\033]710;-*-terminus-medium-*-*--16-*-*-*-*-*-*-*\007
