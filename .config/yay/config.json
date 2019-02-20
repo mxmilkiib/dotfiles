@@ -33,7 +33,7 @@
 	"upgrademenu": true,
 	"cleanmenu": true,
 	"diffmenu": false,
-	"editmenu": false,
+	"editmenu": true,
 	"combinedupgrade": true,
 	"useask": false
 }

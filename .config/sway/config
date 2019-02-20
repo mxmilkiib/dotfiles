@@ -33,11 +33,18 @@ exec sleep 10 && mako --default-timeout 8000
 # Internet radio stream player
 exec sleep 20 && radiotray-ng
 
+# Korg nanoKontrol2 MIDI control of PulseAudio
+exec sleep 30 && midi2pamixer.py
+
 # Volume system tray
-# exec sleep 40 && kmix
+exec sleep 40 && kmix
+
+# Enable xsettings
+exec sleep 45 && xsettingsd
 
 # Connect to mobile phone
 exec sleep 60 && kdeconnect-indicator
+
 
 # Break timer
 # exec sleep 90 && workrave
@@ -68,14 +75,23 @@ output * bg ~/.wallpapers/danielle_at_sea_flickr.jpg fill
 # tiling split direction
 default_orientation horizontal
 
+title_align center
+
 # focus on mouse hover (yes) or click (no)
 focus_follows_mouse no
 
 # Switch to workspace with urgent window automatically
 # for_window [urgent=latest] focus
-focus_on_window_activation smart
+focus_on_window_activation urgent
 # jump to an urgent window
 # bindsym $mod+Shift+x [urgent=latest] focus
+
+# cycle wrap active focus between parent containers
+focus_wrapping yes
+
+# press a workspace bind again to go back to the previous workspace
+workspace_auto_back_and_forth yes
+
 
 # Hide mouse pointer after a time (in ms)
 seat * hide_cursor 10000
@@ -181,9 +197,9 @@ bindsym  --whole-window Mod4+button8 move position center
 # installed.
 # bindsym $mod+d exec --no-startup-id i3-dmenu-desktop
 # bindsym $mod+space exec "dlaunch --sources=exec-path"
-bindsym $mod+space exec "rofi -modi combi -combi-modi 'drun#run' -show combi -show-icons -width 70 -theme purple.rasi -display-combi ''"
+bindsym $mod+space exec "rofi -modi combi -combi-modi 'drun#run' -show combi -show-icons -width 60 -lines 25 -theme purple.rasi -display-combi ''"
 ## or use Alt GR
-bindsym ISO_Level3_Shift exec "rofi -modi combi -combi-modi 'drun#run' -show combi -show-icons -width 70 -theme purple.rasi -display-combi ''"
+bindsym ISO_Level3_Shift exec "rofi -modi combi -combi-modi 'drun#run' -show combi -show-icons -width 60 -lines 25 -theme purple.rasi -display-combi ''"
 ## and Ctrl+Alt GR simulate Esc
 #bindsym --release Ctrl+ISO_Level3_Shift exec xdotool Escape
 bindsym --release Ctrl+ISO_Level3_Shift exec --no-startup-id xvkbd -xsendevent -text "\[Escape]"
@@ -191,7 +207,7 @@ bindsym --release Ctrl+ISO_Level3_Shift exec --no-startup-id xvkbd -xsendevent -
 ## launch audio apps
 # to replace run/raise with?:
 # bindsym $mod+2 workspace 2:web; layout tabbed; exec [ $(ps h -C vimb | wc -l) = 0 ] && /usr/bin/vimb -s
-bindsym $mod+p exec pavucontrol
+bindsym $mod+p exec run-or-raise.sh pavucontrol-qt
 # bindsym $mod+p exec $terminal -title 'pulsemixer' -geometry 130x30 -e pulsemixer
 bindsym $mod+Mod1+p exec "run-or-raise.sh pulseeffects"
 bindsym $mod+Shift+p exec "run-or-raise.sh cadence"
@@ -233,14 +249,17 @@ bindsym $mod+F1 exec --no-startup-id $terminal -geometry 125x46 -title "i3_hotke
 for_window [title="i3_hotkey_help$"] floating toggle
 
 ## launch or switch to scratch notes text file
-bindsym $mod+Shift+F2 exec geany ~/documents/scratch
+bindsym $mod+Shift+F1 exec geany ~/documents/scratch
 
 ## launch or switch to file manager
 bindsym $mod+F2 exec run-or-raise.sh doublecmd
 bindsym XF86Explorer exec run-or-raise.sh doublecmd
+bindsym $mod+Shift+F2 exec run-or-raise.sh pcmanfm-qt
 
 ## launch or switch to bittorrent client
 bindsym $mod+F3 exec run-or-raise.sh qbittorrent
+## launch or switch to soulseek client
+bindsym $mod+Shift+F3 exec run-or-raise.sh soulseekqt
 
 ## launch or switch to gmusicbrowser
 bindsym $mod+F4 exec run-or-raise.sh gmusicbrowser
@@ -259,7 +278,6 @@ bindsym $mod+F11 exec run-or-raise.sh quasselclient
 # bindsym XF86WWW exec run-or-raise.sh chromium
 bindsym $mod+F12 exec run-or-raise.sh firefox
 bindsym XF86WWW exec run-or-raise.sh firefox
-# bindsym $mod+F4 exec "run-or-raise.sh pcmanfm"
 
 ## launch trello
 # bindsym $mod+Shift+F12 exec chromium --app=https://trello.com/b/AdniCH2y/to-do
@@ -272,6 +290,7 @@ bindsym XF86Mail exec "firefox https://gmail.com && run-or-raise.sh firefox"
 ## launch vlc
 bindsym $mod+Shift+v exec vlc
 
+
 ## switch video output between cloned or seperate desktops
 #bindsym $mod+Ctrl+F9 exec "xrandr --output DVI-I-0 --same-as DVI-I-1"
 #bindsym $mod+Ctrl+F10 exec "xrandr --output DVI-I-1 --mode 1280x1024 --pos 0x0 --panning 0x0+0+0 --output DVI-I-0 --mode 1280x1024 --pos 1280x0"
@@ -281,9 +300,13 @@ bindsym $mod+Shift+v exec vlc
 bindsym $mod+Ctrl+F9 exec "sway output VGA-1 enable && sleep 1 && sway output LVDS-1 disable"
 bindsym $mod+Ctrl+Shift+F9 exec "sway output LVDS-1 enable && sleep 1 && sway output VGA-1 disable"
 
+
 ## screenshot of whole desktop
 # bindsym --release $mod+Print exec import -window root ~/images/screenshots/$(hostname --short)_$(date +%Y-%m-%d-%T).png
-bindsym --release $mod+Print exec grim ~/images/screenshots/$(hostname --short)_$(date +%Y-%m-%d-%T).png
+bindsym --release $mod+Print exec grim -o $(swaymsg -t get_outputs | jq -r '.[] | select(.focused).name') ~/images/screenshots/$(hostname --short)_$(date +%Y-%m-%d-%T).png
+bindsym --release $mod+Ctrl+Print exec grim -g "$(slurp)" ~/images/screenshots/$(hostname --short)_$(date +%Y-%m-%d-%T)-region.png
+bindsym --release $mod+Mod3+Print exec grim ~/images/screenshots/$(hostname --short)_$(date +%Y-%m-%d-%T).png
+
 
 ## screenshot of active window
 # bindsym --release $mod+Ctrl+Print exec import -window `xprop -root | grep "_NET_ACTIVE_WINDOW(WINDOW)" | echo ${activeWinLine:40}` ~/images/screenshots/$(hostname --short)_$(date +%Y-%m-%d-%T).png
@@ -310,7 +333,7 @@ bindsym --release $mod+Print exec grim ~/images/screenshots/$(hostname --short)_
 ## change container layouts
 bindsym $mod+w layout toggle split
 ## toggle between horizontal/vertical splitting for new windows
-bindsym $mod+t split toggle
+bindsym $mod+numbersign split toggle
 
 bindsym $mod+s layout stacking
 ## mnemonic: below w, stacking puts window titles visually below each other
@@ -442,9 +465,9 @@ mode "resize" {
 
 
 ## move window to scratchpad
-bindsym $mod+Shift+numbersign move scratchpad
+# bindsym $mod+Shift+numbersign move scratchpad
 ## show last window sent to scratchpad
-bindsym $mod+numbersign scratchpad show
+# bindsym $mod+numbersign scratchpad show
 
 
 # # workspace name varilables, numerical keeps them in persistent order
@@ -518,119 +541,105 @@ bindsym $mod+numbersign scratchpad show
 
 ###
 ## switch to workspace
-bindsym $mod+1 exec ~/bin/i3/i3-multimon.sh 'workspace $o1'
-bindsym $mod+2 exec ~/bin/i3/i3-multimon.sh 'workspace $o2'
-bindsym $mod+3 exec ~/bin/i3/i3-multimon.sh 'workspace $o3'
-bindsym $mod+4 exec ~/bin/i3/i3-multimon.sh 'workspace $o4'
-bindsym $mod+5 exec ~/bin/i3/i3-multimon.sh 'workspace $o5'
-bindsym $mod+6 exec ~/bin/i3/i3-multimon.sh 'workspace $o6'
-bindsym $mod+7 exec ~/bin/i3/i3-multimon.sh 'workspace $o7'
-bindsym $mod+8 exec ~/bin/i3/i3-multimon.sh 'workspace $o8'
-bindsym $mod+9 exec ~/bin/i3/i3-multimon.sh 'workspace $o9'
-bindsym $mod+0 exec ~/bin/i3/i3-multimon.sh 'workspace $o00:$o0'
-bindsym $mod+minus exec ~/bin/i3/i3-multimon.sh 'workspace $o000:$o-'
-bindsym $mod+equal exec ~/bin/i3/i3-multimon.sh 'workspace $o0000:$o='
+bindsym $mod+1 workspace 1
+bindsym $mod+2 workspace 2
+bindsym $mod+3 workspace 3
+bindsym $mod+4 workspace 4
+bindsym $mod+5 workspace 5
+bindsym $mod+6 workspace 6
+bindsym $mod+7 workspace 7
+bindsym $mod+8 workspace 8
+bindsym $mod+9 workspace 9
+bindsym $mod+0 workspace 100:0
+bindsym $mod+minus workspace 1000:-
+bindsym $mod+equal workspace 10000:=
 
 ## num-pad workspace window focus
-bindsym $mod+KP_1 exec "~/bin/i3/i3-multimon.sh 'workspace $o1'"
-bindsym $mod+KP_2 exec "~/bin/i3/i3-multimon.sh 'workspace $o2'"
-bindsym $mod+KP_3 exec "~/bin/i3/i3-multimon.sh 'workspace $o3'"
-bindsym $mod+KP_4 exec "~/bin/i3/i3-multimon.sh 'workspace $o4'"
-bindsym $mod+KP_5 exec "~/bin/i3/i3-multimon.sh 'workspace $o5'"
-bindsym $mod+KP_6 exec "~/bin/i3/i3-multimon.sh 'workspace $o6'"
-bindsym $mod+KP_7 exec "~/bin/i3/i3-multimon.sh 'workspace $o7'"
-bindsym $mod+KP_8 exec "~/bin/i3/i3-multimon.sh 'workspace $o8'"
-bindsym $mod+KP_9 exec "~/bin/i3/i3-multimon.sh 'workspace $o9'"
-bindsym $mod+KP_0 exec "~/bin/i3/i3-multimon.sh 'workspace $o00:$o0'"
-
-# # move focused container to workspace
-# bindsym $mod+Shift+1 move container to workspace $o1
-# bindsym $mod+Shift+2 move container to workspace $o2
-# bindsym $mod+Shift+3 move container to workspace $o3
-# bindsym $mod+Shift+4 move container to workspace $o4
-# bindsym $mod+Shift+5 move container to workspace $o5
-# bindsym $mod+Shift+6 move container to workspace $o6
-# bindsym $mod+Shift+7 move container to workspace $o7
-# bindsym $mod+Shift+8 move container to workspace $o8
-# bindsym $mod+Shift+9 move container to workspace $o9
+bindsym $mod+KP_1 1
+bindsym $mod+KP_2 2
+bindsym $mod+KP_3 3
+bindsym $mod+KP_4 4
+bindsym $mod+KP_5 5
+bindsym $mod+KP_6 6
+bindsym $mod+KP_7 7
+bindsym $mod+KP_8 8
+bindsym $mod+KP_9 9
+bindsym $mod+KP_0 100:0
 
 ## move focused container to workspace and follow
-bindsym $mod+Shift+1 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $o1; workspace $o1'"
-bindsym $mod+Shift+2 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $o2; workspace $o2'"
-bindsym $mod+Shift+3 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $o3; workspace $o3'"
-bindsym $mod+Shift+4 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $o4; workspace $o4'"
-bindsym $mod+Shift+5 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $o5; workspace $o5'"
-bindsym $mod+Shift+6 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $o6; workspace $o6'"
-bindsym $mod+Shift+7 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $o7; workspace $o7'"
-bindsym $mod+Shift+8 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $o8; workspace $o8'"
-bindsym $mod+Shift+9 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $o9; workspace $o9'"
-bindsym $mod+Shift+0 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $o00:$o0; workspace $o00:$o0'"
-bindsym $mod+Shift+minus exec "~/bin/i3/i3-multimon.sh 'move container to workspace $o000:$o-; workspace $o000:$o-'"
-bindsym $mod+Shift+equal exec "~/bin/i3/i3-multimon.sh 'move container to workspace $o0000:$o=; workspace $o0000:$o='"
+bindsym $mod+Shift+1 move container to workspace 1; workspace 1
+bindsym $mod+Shift+2 move container to workspace 2; workspace 2
+bindsym $mod+Shift+3 move container to workspace 3; workspace 3
+bindsym $mod+Shift+4 move container to workspace 4; workspace 4
+bindsym $mod+Shift+5 move container to workspace 5; workspace 5
+bindsym $mod+Shift+6 move container to workspace 6; workspace 6
+bindsym $mod+Shift+7 move container to workspace 7; workspace 7
+bindsym $mod+Shift+8 move container to workspace 8; workspace 8
+bindsym $mod+Shift+9 move container to workspace 9; workspace 9
+bindsym $mod+Shift+0 move container to workspace 100:0; workspace 100:0
+bindsym $mod+Shift+minus move container to workspace 1000:-; workspace 1000:-
+bindsym $mod+Shift+equal move container to workspace 10000:=; workspace 10000:=
 
 ## num-pad workspace window move
-bindsym $mod+Shift+KP_1 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $o1; workspace $o1'"
-bindsym $mod+Shift+KP_2 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $o2; workspace $o2'"
-bindsym $mod+Shift+KP_3 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $o3; workspace $o3'"
-bindsym $mod+Shift+KP_4 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $o4; workspace $o4'"
-bindsym $mod+Shift+KP_5 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $o5; workspace $o5'"
-bindsym $mod+Shift+KP_6 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $o6; workspace $o6'"
-bindsym $mod+Shift+KP_7 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $o7; workspace $o7'"
-bindsym $mod+Shift+KP_8 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $o8; workspace $o8'"
-bindsym $mod+Shift+KP_9 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $o9; workspace $o9'"
-bindsym $mod+Shift+KP_0 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $o00:$o0; workspace $o00:$o0'"
+bindsym $mod+Shift+KP_1 move container to workspace 1; workspace 1
+bindsym $mod+Shift+KP_2 move container to workspace 2; workspace 2
+bindsym $mod+Shift+KP_3 move container to workspace 3; workspace 3
+bindsym $mod+Shift+KP_4 move container to workspace 4; workspace 4
+bindsym $mod+Shift+KP_5 move container to workspace 5; workspace 5
+bindsym $mod+Shift+KP_6 move container to workspace 6; workspace 6
+bindsym $mod+Shift+KP_7 move container to workspace 7; workspace 7
+bindsym $mod+Shift+KP_8 move container to workspace 8; workspace 8
+bindsym $mod+Shift+KP_9 move container to workspace 9; workspace 9
+bindsym $mod+Shift+KP_0 move container to workspace 100:0; workspace 100:0
 
 ## move focused container to workspace and don't follow
-bindsym $mod+Ctrl+1 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $o1'"
-bindsym $mod+Ctrl+2 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $o2'"
-bindsym $mod+Ctrl+3 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $o3'"
-bindsym $mod+Ctrl+4 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $o4'"
-# assign [class="/usr/bin/chromium-snapshot-bin"] $o1
-bindsym $mod+Ctrl+5 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $o5'"
-bindsym $mod+Ctrl+6 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $o6'"
-bindsym $mod+Ctrl+7 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $o7'"
-bindsym $mod+Ctrl+8 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $o8'"
-bindsym $mod+Ctrl+9 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $o9'"
-bindsym $mod+Ctrl+0 exec "~/bin/i3/i3-multimon.sh 'move container to workspace $o00:$o0'"
-bindsym $mod+Ctrl+minus exec "~/bin/i3/i3-multimon.sh 'move container to workspace $o000:$o-'"
-bindsym $mod+Ctrl+equal exec "~/bin/i3/i3-multimon.sh 'move container to workspace $o0000:$o='"
+bindsym $mod+Ctrl+1 move container to workspace 1
+bindsym $mod+Ctrl+2 move container to workspace 2
+bindsym $mod+Ctrl+3 move container to workspace 3
+bindsym $mod+Ctrl+4 move container to workspace 4
+bindsym $mod+Ctrl+5 move container to workspace 5
+bindsym $mod+Ctrl+6 move container to workspace 6
+bindsym $mod+Ctrl+7 move container to workspace 7
+bindsym $mod+Ctrl+8 move container to workspace 8
+bindsym $mod+Ctrl+9 move container to workspace 9
+bindsym $mod+Ctrl+0 move container to workspace 100:0
+bindsym $mod+Ctrl+minus move container to workspace 1000:-
+bindsym $mod+Ctrl+equal move container to workspace 10000:=
 
 ## mod + alt + n = switch to workspace and start a terminal
-bindsym $mod+Mod1+1 exec "~/bin/i3/i3-multimon.sh 'workspace $o1'; swaymsg exec $TERMINAL"
-bindsym $mod+Mod1+2 exec "~/bin/i3/i3-multimon.sh 'workspace $o2'; swaymsg exec $TERMINAL"
-bindsym $mod+Mod1+3 exec "~/bin/i3/i3-multimon.sh 'workspace $o3'; swaymsg exec $TERMINAL"
-bindsym $mod+Mod1+4 exec "~/bin/i3/i3-multimon.sh 'workspace $o4'; swaymsg exec $TERMINAL"
-bindsym $mod+Mod1+5 exec "~/bin/i3/i3-multimon.sh 'workspace $o5'; swaymsg exec $TERMINAL"
-bindsym $mod+Mod1+6 exec "~/bin/i3/i3-multimon.sh 'workspace $o6'; swaymsg exec $TERMINAL"
-bindsym $mod+Mod1+7 exec "~/bin/i3/i3-multimon.sh 'workspace $o7'; swaymsg exec $TERMINAL"
-bindsym $mod+Mod1+8 exec "~/bin/i3/i3-multimon.sh 'workspace $o8'; swaymsg exec $TERMINAL"
-bindsym $mod+Mod1+9 exec "~/bin/i3/i3-multimon.sh 'workspace $o9'; swaymsg exec $TERMINAL"
-bindsym $mod+Mod1+0 exec "~/bin/i3/i3-multimon.sh 'workspace $o00:$o0'; swaymsg exec $TERMINAL"
-bindsym $mod+Mod1+minus exec "~/bin/i3/i3-multimon.sh 'workspace $o000:$o-'; swaymsg exec $TERMINAL"
-bindsym $mod+Mod1+equal exec "~/bin/i3/i3-multimon.sh 'workspace $o0000:$o='; swaymsg exec $TERMINAL"
+bindsym $mod+Mod1+1 workspace 1; exec $TERMINAL
+bindsym $mod+Mod1+2 workspace 2; exec $TERMINAL
+bindsym $mod+Mod1+3 workspace 3; exec $TERMINAL
+bindsym $mod+Mod1+4 workspace 4; exec $TERMINAL
+bindsym $mod+Mod1+5 workspace 5; exec $TERMINAL
+bindsym $mod+Mod1+6 workspace 6; exec $TERMINAL
+bindsym $mod+Mod1+7 workspace 7; exec $TERMINAL
+bindsym $mod+Mod1+8 workspace 8; exec $TERMINAL
+bindsym $mod+Mod1+9 workspace 9; exec $TERMINAL
+bindsym $mod+Mod1+0 workspace 100:0;  exec $TERMINAL
+bindsym $mod+Mod1+minus workspace 1000:-; exec $TERMINAL
+bindsym $mod+Mod1+equal workspace 10000:=; exec $TERMINAL
 
 
 
-## move windows between workspaces and follow
-bindsym $mod+Shift+Left move workspace prev_on_output; workspace prev_on_output
-bindsym $mod+Shift+Right move workspace next_on_output; workspace next_on_output
+## move container between adjacent workspaces and follow
+bindsym $mod+Shift+Left move container to workspace prev_on_output; workspace prev_on_output
+bindsym $mod+Shift+Right move container to workspace next_on_output; workspace next_on_output
 
-## move windows between workspaces
-bindsym $mod+Ctrl+Left move workspace prev_on_output
-bindsym $mod+Ctrl+Right move workspace next_on_output
+## move container between workspaces
+bindsym $mod+Ctrl+Left move container to workspace prev_on_output
+bindsym $mod+Ctrl+Right move container to workspace next_on_output
 
 
-## focus on next empty workspace - works once
-bindsym $mod+comma exec "~/bin/i3/i3-nextempty-focus.sh"
+## focus on next empty workspace
+bindsym $mod+comma exec ~/bin/i3/i3-firstempty-focus.sh
 
-## move container to next empty workspace - BROKEN
-bindsym $mod+Shift+greater exec "~/bin/i3/i3-nextempty-move.sh"
-
-## move container to next empty workspace - BROKEN
-bindsym $mod+Ctrl+period exec "~/bin/i3/i3-nextemptysilent.sh"
+## move container to next empty workspace 
+bindsym $mod+period exec ~/bin/i3/i3-firstempty-move.sh
 
 ## focus on next empty workspace, start terminal - BROKEN
-bindsym $mod+Mod1+period exec "~/bin/i3/i3-nextempty-focus.sh; swaymsg --no-startup-id exec $TERMINAL"
+bindsym $mod+Mod1+comma exec ~/bin/i3/i3-firstempty-focus.sh; exec $TERMINAL
+# bindsym $mod+Mod1+period exec "~/bin/i3/i3-nextempty-focus.sh; swaymsg --no-startup-id exec $TERMINAL"
 
 
 ## change focus between monitor outputs
@@ -644,38 +653,41 @@ bindsym $mod+Ctrl+o move window to output right
 
 
 ## move workspace to between outputs
-bindsym $mod+Shift+i exec "~/bin/i3/cycle-workspace.py"
+bindsym $mod+Shift+i exec ~/bin/i3/cycle-workspace.py
 
 ## swap workspaces between outputs
-bindsym $mod+Ctrl+i exec "~/bin/i3/switch.py"
+bindsym $mod+Ctrl+i exec ~/bin/i3/switch.py
 
 
 
 # assign apps to default workspaces
-assign [class="dolphin"] 22
-assign [class="Pcmanfm"] 22
-assign [class="Double Commander"] 22
-assign [class="qBittorrent"] 23
-assign [class="soulseekQt"] 23
-assign [class="Gmusicbrowser"] 24
-assign [title="seq64 -"] 26
-assign [title="seq64 \#"] 27
-assign [class="shuriken"] 26
-assign [class="Radium_compressor"] 25
-assign [class="Carla"] 28
-assign [class="Patchage"] 28
-assign [class="Catia.py"] 28
-assign [class="Cadence.py"] 29
-assign [title="pavucontrol"] 29
-assign [class="Pulseeffects"] 29
-assign [title="Google Chrome"] 2000:1-
-assign [title="Chromium"] 2000:1-
-# assign [class="/usr/bin/chromium-snapshot-bin"] $o1
-assign [title="Firefox"] 2000:1-
-assign [class="Hexchat"] 20000:1=
-assign [class="quassel"] 20000:1=
+assign [class="dolphin"] 2
+assign [app_id="pcmanfm"] 2
+assign [class="Double Commander"] 2
+assign [app_id="qbittorrent"] 3
+assign [app_id="soulseekqt"] 3
+assign [class="Gmusicbrowser"] 4
+assign [title="seq64 -"] 6
+assign [title="seq64 \#"] 7
+assign [class="shuriken"] 6
+assign [class="Radium_compressor"] 5
+assign [class="Carla"] 8
+assign [class="Patchage"] 8
+assign [class="Catia.py"] 8
+assign [class="Cadence.py"] 9
+# assign [title="pavucontrol*"] 9
+assign [app_id="Pulseeffects"] 9
+assign [title="Google Chrome"] 1000:-
+assign [title="Chromium"] 1000:-
+assign [title="Firefox"] 1000:-
+assign [class="Hexchat"] 10000:=
+assign [class="quassel"] 10000:=
 
-# auto float
+# assign [app_id="pavucontrol*"] 9
+assign [app_id="quassel"] 10000:=
+
+
+# autofloat
 for_window [class="Cadence"] floating enable
 for_window [class="pavucontrol"] floating enable, move absolute position center
 for_window [class="Pulseeffects"] floating enable, move absolute position center
@@ -701,35 +713,42 @@ for_window [title="pulsemixer"] floating enable, move absolute position center
 for_window [instance="trello.com__b_AdniCH2y_to-do" title="To Do | Trello" window_role="pop-up"] floating enable
 for_window [class="DNSCryptClient" instance="DNSCryptClient" title="DNSCryptClient"] floating enable
 for_window [class="Envy24control" instance="envy24control"] floating enable
-for_window [class="keepassxc"] floating enable
 for_window [title="Ray Session"] floating enable
 for_window [title="GSmartControl"] floating enable
+
+# autofloat wayland
+for_window [app_id="pavucontrol-qt"] floating enable
+for_window [app_id="org.kde.kmix"] floating enable
+for_window [app_id="keepassxc"] floating enable
+
 
 # auto resize
 for_window [title="seq64 -"] resize set 1180 712
 
 
 # container/window colours
-# class                 border  backgr. text    indicator child_border
-client.focused          #4f2877 #4f2877 #ffffff #45FE28   #4f2877
-client.focused_inactive #000000 #000000 #ffffff #484e50   #000000
-client.unfocused        #000000 #000000 #c5c5c5 #292d2e   #000000
-client.urgent           #2f343a #aa0000 #ffffff #aa0000   #aa0000
-client.placeholder      #000000 #0c0c0c #ffffff #000000   #0c0c0c
+# class                 border    backgr.    text     indicator  child_border
+client.focused          #9a29bbaa #9a29bbaa  #ffffff  #ff79c6cc    #9a29bbaa
+client.focused_inactive #000000   #000000    #bbbbbb  #ff79c6cc    #00000000
+client.unfocused        #000000   #000000    #bbbbbb  #ff79c6cc    #00000000
+client.urgent           #2f343a   #aa0000    #ffffff  #aa0000    #aa0000
+client.placeholder      #000000   #0c0c0c    #ffffff  #000000    #0c0c0c
+#client.focused_inactive #777777   #000000    #ffffff  #bd93f9   #000000
+#client.unfocused        #777777   #000000    #c5c5c5  #472877   #000000
 
 client.background       #000000
 
 ## border style; show titles or not. the border toggle feature loses the 4px
-bindsym $mod+n border normal
-bindsym $mod+Shift+n border pixel 2
+bindsym $mod+b border toggle 4
 
 # set borders and gaps
-new_window pixel 2
-new_float pixel 2
+new_window pixel 3
+new_float pixel 3
 
-gaps inner 0
-gaps outer 0
+gaps inner 4
+gaps outer 2
 
+hide_edge_borders none
 
 # Start i3bar to display a workspace bar (plus the system information i3status
 # finds out, if available)
@@ -748,14 +767,14 @@ bar {
 
 	# colour via http://paletton.com/#uid=74y0u0km+m7devAiGqmrohGxCce
 	colors {
-  	background #000000
+  	background #000000dd
 
 statusline #ffffff
-    # class            border 	backgrd  text
-		focused_workspace  #4f2877  #4f2877  #ffffff
-    active_workspace   #555555 	#555555  #ffffff
-    inactive_workspace #000000 	#000000  #c5c5c5
-		urgent_workspace   #aa0000  #aa0000  #ffffff
+    # class            border   	backgrd    text
+		focused_workspace  #9a29bbcc  #9a29bbcc  #ffffff
+    active_workspace   #555555   	#555555    #ffffff
+    inactive_workspace #000000dd  #000000dd  #c5c5c5
+		urgent_workspace   #aa0000    #aa0000    #ffffff
 	}
 }
 
@@ -772,7 +791,9 @@ bindsym --whole-window --border $mod+button4 workspace prev_on_output
 bindsym Shift+Insert exec "xdotool click 2"
 
 # make sure the initial desktop is the first one
-exec swaymsg workspace "20"
+workspace 0
+focus output right
+
 
 # Start my defaults layouts on boot
 # exec --no-startup-id "swaymsg 'workspace 1; append_layout ~/.config/i3/workspace-1.json'"
