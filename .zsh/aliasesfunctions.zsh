@@ -374,9 +374,9 @@ alias aw='apt-cache show'
 
 ## Arch Linux
 # install specific package
-alias p='yay -S --answeredit n'
+alias p='yay -Sa --answeredit n'
 # install specific package and allow build file editing
-alias pP='yay -S --editmenu --bottomup'
+alias pP='yay -Sa --editmenu --bottomup'
 
 # interactive search (pkg # + prompt)
 alias pS='yay --answeredit n --answerdiff n --bottomup'
@@ -498,8 +498,8 @@ alias oLF='LF | xargs xdg-open'
 # List ANSI colours
 alias colours='for code in {000..255}; do print -P -- "$code: %F{$code}Test%f"; done'
 
-# 'Copy with progress bar'
-alias ccp='rsync -ahPr --info=progress2 --partial-dir=.rsync-partial'
+# 'cp' with archive, recursive, human readable, hard links, full progress, dest partial tmp dir
+alias ccp='rsync -arhHP --info=progress2 --no-i-r --partial-dir=.rsync-partial'
 
 # with both in and out
 alias alsamixer='alsamixer -V=all'
@@ -511,6 +511,10 @@ function o(){
 
 # Check Awesome window manager config
 alias ak='awesome -k'
+
+# Sway window JSON tree
+alias swaytree='swaymsg -t get_tree'
+
 
 # Quick sudo nano
 alias sn='sudo nano -c' # With line numbers
