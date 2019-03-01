@@ -5,8 +5,8 @@ Gtk/CursorThemeSize 0
 Gtk/EnableEventSounds 0
 Gtk/EnableInputFeedbackSounds 0
 Gtk/FontName "Droid Sans Mono 10"
-Gtk/IconThemeName "mate"
-Net/IconThemeName	"mate"
+Gtk/IconThemeName "Adwaita"
+Net/IconThemeName	"Adwaita"
 Gtk/MenuBarAccel "F10"
 Gtk/MenuImages 1
 Gtk/ToolbarIconSize 3
