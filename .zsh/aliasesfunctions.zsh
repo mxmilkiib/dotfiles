@@ -356,6 +356,8 @@ alias suspend='pm-suspend' # With sudoers
 # systemd
 alias sy='systemctl '
 compdef sy=systemctl
+alias susy='sudo systemctl'
+compdef susy=systemctl
 
 # launch x
 alias sx='ssh-agent startx'
@@ -374,9 +376,9 @@ alias aw='apt-cache show'
 
 ## Arch Linux
 # install specific package
-alias p='yay -Sa --answeredit n'
+alias p='yay -S --answeredit n'
 # install specific package and allow build file editing
-alias pP='yay -Sa --editmenu --bottomup'
+alias pP='yay -S --editmenu --bottomup'
 
 # interactive search (pkg # + prompt)
 alias pS='yay --answeredit n --answerdiff n --bottomup'
@@ -504,6 +506,8 @@ alias ccp='rsync -arhHP --info=progress2 --no-i-r --partial-dir=.rsync-partial'
 # with both in and out
 alias alsamixer='alsamixer -V=all'
 
+alias mpdc='ncmpcpp'
+
 # Open a file
 function o(){
 	xdg-open "$@" &
@@ -599,6 +603,12 @@ diff () {
 	else
 		command diff "$@a" | less
 	fi
+}
+
+alias mp3='youtube-dl -x --audio-format "mp3" --audio-quality 0 --add-metadata --xattrs --embed-thumbnail $*'
+
+function bbcmpv(){
+  mpv "$@" --ytdl-format="[fps<=?30]"
 }
 
 # Web

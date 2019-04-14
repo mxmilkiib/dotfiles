@@ -29,7 +29,8 @@ export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent.socket"
 export EDITOR=vim
 export VISUAL=vim
 # export BROWSER=google-chrome-stable
-export BROWSER=chrome
+# export BROWSER=chrome
+export BROWSER=firefox
 export TERMINAL=urxvt
 export DIFFPROG=meld
 
