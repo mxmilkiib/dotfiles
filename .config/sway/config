@@ -15,14 +15,15 @@ exec xrdb ~/.Xresources
 # Start security daemon
 exec /usr/lib/xfce-polkit/xfce-polkit
 
-# Turn desk USB light off
+# Turn desk USB light off by default
 exec uhubctl -l 1-1.1.1 -p 2 -a off
 
 # Graphical notifications
-exec sleep 10 && mako --default-timeout 8000
+exec sleep 10 && mako --default-timeout 8000 --width 600
 
 # Redshift - changed screen colour temp
 # exec redshift-gtk -l 55.978301:-3.228586 -t 6000:4500
+# broken on wayland atm
 
 # Make additional fonts available
 # exec xset +fp /usr/share/fonts/local; xset fp rehash
@@ -31,19 +32,19 @@ exec sleep 10 && mako --default-timeout 8000
 # sleep 40 && exec bash -c "if [ $HOST != 'rose*' ]; then vattery; fi"
 
 # Internet radio stream player
-exec sleep 20 && radiotray-ng
+# exec sleep 20 && radiotray-ng
 
 # Korg nanoKontrol2 MIDI control of PulseAudio
-exec sleep 30 && midi2pamixer.py
+# exec sleep 30 && midi2pamixer.py
 
 # Volume system tray
-exec sleep 40 && kmix
+# exec sleep 40 && kmix
 
 # Enable xsettings
-exec sleep 45 && xsettingsd
+# exec sleep 45 && xsettingsd
 
 # Connect to mobile phone
-exec sleep 60 && kdeconnect-indicator
+# exec sleep 60 && kdeconnect-indicator
 
 
 # Break timer
@@ -58,12 +59,21 @@ exec sleep 60 && kdeconnect-indicator
 # infrared control
 # exec flirc_util loadconfig ~/.config/flirc/my_flirc_config
 
+
+#https://github.com/swaywm/swayidle/blob/master/swayidle.1.scd
+# exec swayidle -w timeout 1500 'swaylock-blur' timeout 3000 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"' before-sleep 'swaylock-blur'
+exec swayidle -w timeout 3000 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"'
+
+
 # layout doesn't work?? uysing envvar instead
-input pc105 {
+input * {
     xkb_layout gb
     xkb_variant ,nodeadkeys
     xkb_options grp:alt_shift_toggle
+    xkb_options F13:swapescape
+    xkb_numlock enabled
 }
+
 
 # output * bg ~/.wallpapers/VnXDN9J_colourised.png fill
 output * bg ~/.wallpapers/danielle_at_sea_flickr.jpg fill
@@ -73,7 +83,8 @@ output * bg ~/.wallpapers/danielle_at_sea_flickr.jpg fill
 
 ###
 # tiling split direction
-default_orientation horizontal
+# default_orientation horizontal
+default_orientation vertical
 
 title_align center
 
@@ -105,7 +116,7 @@ set $mod Mod4
 ## reload the configuration file
 bindsym $mod+Shift+c reload
 
-## restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
+## restart inplace (preserves your layout/session, can be used to upgrade versions)
 bindsym $mod+Shift+r restart
 
 
@@ -133,18 +144,10 @@ bindsym $mod+Shift+e exec "sway-nagbar -t warning -m 'You pressed the exit short
 
 # Font for window titles. Will also be used by the bar unless a different font
 # is used in the bar {} block below. ISO 10646 = Unicode
-# font -misc-fixed-medium-r-normal--13-120-75-75-C-70-iso10646-1
-# The font above is very space-efficient, that is, it looks good, sharp and
-# clear in small sizes. However, if you need a lot of unicode glyphs or
-# right-to-left text rendering, you should instead use pango for rendering and
-# chose a FreeType font, such as:
 # font pango:DejaVu Sans Mono 10
-# set $font -*-terminus-*-*-*-16-*-*-*-*-*-*-*
-# font xft:xos4 terminus 16
-# font xft:Fixedsys Excelsior 3.01-L2 12
-# font pango:Droid Sans Mono 11
-# font -*-gohufont-medium-*-*-*-14-*-*-*-*-*-*-*
-font pango:Gohu GohuFont 10
+# font pango:Droid Sans Mono 10
+font pango:xos4 Terminus 10
+# font pango:Gohu GohuFont 10
 
 
 ###
@@ -163,8 +166,8 @@ bindsym $mod+Return exec urxvt
 bindsym $mod+Ctrl+Return exec "urxvt -cd `xcwd`"
 
 ## start a floating terminal
-bindsym $mod+Shift+Return exec $terminal -title floating_terminal
-for_window [title="floating_terminal$"] floating toggle
+bindsym $mod+Shift+Return exec $terminal -name floating_terminal
+for_window [instance="floating_terminal$"] floating toggle
 
 ## clock terminal
 bindsym $mod+semicolon exec "$terminal -name floating-tty-clock -geometry 60x9-100-100 -e tty-clock -s -b -c -C 2 -D"
@@ -173,6 +176,8 @@ for_window [instance="floating-tty-clock$"] floating toggle
 ## oblique strategy
 bindsym $mod+Shift+semicolon exec "urxvt +sb -cr black -name oblique-strategy -geometry 100x3+230+500 -hold -e /home/milk/bin/oblique-strategies"
 for_window [instance="oblique-strategy$"] floating toggle
+
+
 
 
 ###
@@ -197,9 +202,9 @@ bindsym  --whole-window Mod4+button8 move position center
 # installed.
 # bindsym $mod+d exec --no-startup-id i3-dmenu-desktop
 # bindsym $mod+space exec "dlaunch --sources=exec-path"
-bindsym $mod+space exec "rofi -modi combi -combi-modi 'drun#run' -show combi -show-icons -width 60 -lines 25 -theme purple.rasi -display-combi ''"
+bindsym $mod+space exec "rofi -modi combi -combi-modi 'drun#run' -show combi -show-icons -width 60 -lines 25 -theme purple.rasi -display-combi launch"
 ## or use Alt GR
-bindsym ISO_Level3_Shift exec "rofi -modi combi -combi-modi 'drun#run' -show combi -show-icons -width 60 -lines 25 -theme purple.rasi -display-combi ''"
+bindsym ISO_Level3_Shift exec "rofi -modi combi -combi-modi 'drun#run' -show combi -show-icons -width 60 -lines 25 -theme purple.rasi -display-combi launch"
 ## and Ctrl+Alt GR simulate Esc
 #bindsym --release Ctrl+ISO_Level3_Shift exec xdotool Escape
 bindsym --release Ctrl+ISO_Level3_Shift exec --no-startup-id xvkbd -xsendevent -text "\[Escape]"
@@ -209,8 +214,8 @@ bindsym --release Ctrl+ISO_Level3_Shift exec --no-startup-id xvkbd -xsendevent -
 # bindsym $mod+2 workspace 2:web; layout tabbed; exec [ $(ps h -C vimb | wc -l) = 0 ] && /usr/bin/vimb -s
 bindsym $mod+p exec run-or-raise.sh pavucontrol-qt
 # bindsym $mod+p exec $terminal -title 'pulsemixer' -geometry 130x30 -e pulsemixer
-bindsym $mod+Mod1+p exec "run-or-raise.sh pulseeffects"
-bindsym $mod+Shift+p exec "run-or-raise.sh cadence"
+bindsym $mod+Mod1+p exec run-or-raise.sh pulseeffects
+bindsym $mod+Shift+p exec run-or-raise.sh cadence
 bindsym $mod+Ctrl+p exec $terminal -geometry 130x30 -e alsamixer -c0
 
 ## change pulseaudio volume
@@ -246,7 +251,7 @@ bindsym --release $mod+Ctrl+x exec swayidle timeout 1 'swaymsg "output * dpms of
 
 ## launch i3 config help terminal
 bindsym $mod+F1 exec --no-startup-id $terminal -geometry 125x46 -title "i3_hotkey_help" -e ~/bin/i3/i3-hotkey-help.sh
-for_window [title="i3_hotkey_help$"] floating toggle
+for_window [instance="i3_hotkey_help$"] floating toggle
 
 ## launch or switch to scratch notes text file
 bindsym $mod+Shift+F1 exec geany ~/documents/scratch
@@ -261,8 +266,12 @@ bindsym $mod+F3 exec run-or-raise.sh qbittorrent
 ## launch or switch to soulseek client
 bindsym $mod+Shift+F3 exec run-or-raise.sh soulseekqt
 
-## launch or switch to gmusicbrowser
-bindsym $mod+F4 exec run-or-raise.sh gmusicbrowser
+## launch or switch to music player
+# bindsym $mod+F4 exec run-or-raise.sh gmusicbrowser
+# bindsym $mod+F4 exec run-or-raise.sh gmpc
+bindsym $mod+F4 exec $terminal -e ncmpcpp
+## launch musicbrainz picard tagger
+bindsym $mod+Shift+F4 exec run-or-raise.sh picard
 
 ## launch carla plugin host
 bindsym $mod+F8 exec run-or-raise.sh carla
@@ -299,6 +308,7 @@ bindsym $mod+Shift+v exec vlc
 # bindsym $mod+Ctrl+Shift+F9 exec "mons -o"
 bindsym $mod+Ctrl+F9 exec "sway output VGA-1 enable && sleep 1 && sway output LVDS-1 disable"
 bindsym $mod+Ctrl+Shift+F9 exec "sway output LVDS-1 enable && sleep 1 && sway output VGA-1 disable"
+bindsym $mod+Ctrl+Mod1+F9 exec "sway output LVDS-1 enable && sway output VGA-1 enable"
 
 
 ## screenshot of whole desktop
@@ -470,18 +480,6 @@ mode "resize" {
 # bindsym $mod+numbersign scratchpad show
 
 
-# # workspace name varilables, numerical keeps them in persistent order
-# set $o1 "1:web"
-# set $o2 "2:misc"
-# set $o3 "3:term"
-# set $o4 "4:misc"
-# set $o5 "5:misc"
-# set $o6 "6:app"
-# set $o7 "7:term"
-# set $o8 "8:term"
-# set $o9 "9:jack"
-# set $oa "10:vol"
-
 
 # Rename workspace with i3-input using numbers and text
 # bindsym $mod+Shift+n exec i3-input -F 'rename workspace to "%s"' -P 'New name: '
@@ -539,86 +537,112 @@ mode "resize" {
 # workspace 2000:2= output VGA-1
 
 
+## workspace name varilables, numerical keeps them in persistent order
+#misc
+set $ws1 "1:1🔣"
+#filemanager
+set $ws2 "2:2📂"
+#transfer
+set $ws3 "3:3🔃"
+#music
+set $ws4 "4:4🎶"
+#???
+set $ws5 "5:5🃏"
+#???
+set $ws6 "6:6🃏"
+#???
+set $ws7 "7:7🃏"
+#lock
+set $ws8 "8:8🔒"
+#volume
+set $ws9 "9:9🔊"
+#term
+set $ws0 "100:0🔳"
+#www
+set $ws- "1000:-🌐"
+#chat
+set $ws= "10000:=💬"
+
 ###
 ## switch to workspace
-bindsym $mod+1 workspace 1
-bindsym $mod+2 workspace 2
-bindsym $mod+3 workspace 3
-bindsym $mod+4 workspace 4
-bindsym $mod+5 workspace 5
-bindsym $mod+6 workspace 6
-bindsym $mod+7 workspace 7
-bindsym $mod+8 workspace 8
-bindsym $mod+9 workspace 9
-bindsym $mod+0 workspace 100:0
-bindsym $mod+minus workspace 1000:-
-bindsym $mod+equal workspace 10000:=
+bindsym $mod+1 workspace $ws1
+bindsym $mod+2 workspace $ws2
+bindsym $mod+3 workspace $ws3
+bindsym $mod+4 workspace $ws4
+bindsym $mod+5 workspace $ws5
+bindsym $mod+6 workspace $ws6
+bindsym $mod+7 workspace $ws7
+bindsym $mod+8 workspace $ws8
+bindsym $mod+9 workspace $ws9
+bindsym $mod+0 workspace $ws0
+bindsym $mod+minus workspace $ws-
+bindsym $mod+equal workspace $ws=
 
 ## num-pad workspace window focus
-bindsym $mod+KP_1 1
-bindsym $mod+KP_2 2
-bindsym $mod+KP_3 3
-bindsym $mod+KP_4 4
-bindsym $mod+KP_5 5
-bindsym $mod+KP_6 6
-bindsym $mod+KP_7 7
-bindsym $mod+KP_8 8
-bindsym $mod+KP_9 9
-bindsym $mod+KP_0 100:0
+bindsym $mod+KP_1 workspace $ws1
+bindsym $mod+KP_2 workspace $ws2
+bindsym $mod+KP_3 workspace $ws3
+bindsym $mod+KP_4 workspace $ws4
+bindsym $mod+KP_5 workspace $ws5
+bindsym $mod+KP_6 workspace $ws6
+bindsym $mod+KP_7 workspace $ws7
+bindsym $mod+KP_8 workspace $ws8
+bindsym $mod+KP_9 workspace $ws9
+bindsym $mod+KP_0 workspace $ws0
 
 ## move focused container to workspace and follow
-bindsym $mod+Shift+1 move container to workspace 1; workspace 1
-bindsym $mod+Shift+2 move container to workspace 2; workspace 2
-bindsym $mod+Shift+3 move container to workspace 3; workspace 3
-bindsym $mod+Shift+4 move container to workspace 4; workspace 4
-bindsym $mod+Shift+5 move container to workspace 5; workspace 5
-bindsym $mod+Shift+6 move container to workspace 6; workspace 6
-bindsym $mod+Shift+7 move container to workspace 7; workspace 7
-bindsym $mod+Shift+8 move container to workspace 8; workspace 8
-bindsym $mod+Shift+9 move container to workspace 9; workspace 9
-bindsym $mod+Shift+0 move container to workspace 100:0; workspace 100:0
-bindsym $mod+Shift+minus move container to workspace 1000:-; workspace 1000:-
-bindsym $mod+Shift+equal move container to workspace 10000:=; workspace 10000:=
+bindsym $mod+Shift+1 move container to workspace $ws1; workspace $ws1
+bindsym $mod+Shift+2 move container to workspace $ws2; workspace $ws2
+bindsym $mod+Shift+3 move container to workspace $ws3; workspace $ws3
+bindsym $mod+Shift+4 move container to workspace $ws4; workspace $ws4
+bindsym $mod+Shift+5 move container to workspace $ws5; workspace $ws5
+bindsym $mod+Shift+6 move container to workspace $ws6; workspace $ws6
+bindsym $mod+Shift+7 move container to workspace $ws7; workspace $ws7
+bindsym $mod+Shift+8 move container to workspace $ws8; workspace $ws8
+bindsym $mod+Shift+9 move container to workspace $ws9; workspace $ws9
+bindsym $mod+Shift+0 move container to workspace $ws0; workspace $ws0
+bindsym $mod+Shift+minus move container to workspace $ws-; workspace $ws-
+bindsym $mod+Shift+equal move container to workspace $ws=; workspace $ws=
 
 ## num-pad workspace window move
-bindsym $mod+Shift+KP_1 move container to workspace 1; workspace 1
-bindsym $mod+Shift+KP_2 move container to workspace 2; workspace 2
-bindsym $mod+Shift+KP_3 move container to workspace 3; workspace 3
-bindsym $mod+Shift+KP_4 move container to workspace 4; workspace 4
-bindsym $mod+Shift+KP_5 move container to workspace 5; workspace 5
-bindsym $mod+Shift+KP_6 move container to workspace 6; workspace 6
-bindsym $mod+Shift+KP_7 move container to workspace 7; workspace 7
-bindsym $mod+Shift+KP_8 move container to workspace 8; workspace 8
-bindsym $mod+Shift+KP_9 move container to workspace 9; workspace 9
-bindsym $mod+Shift+KP_0 move container to workspace 100:0; workspace 100:0
+bindsym $mod+Shift+KP_1 move container to workspace $ws1; workspace $ws1
+bindsym $mod+Shift+KP_2 move container to workspace $ws2; workspace $ws2
+bindsym $mod+Shift+KP_3 move container to workspace $ws3; workspace $ws3
+bindsym $mod+Shift+KP_4 move container to workspace $ws4; workspace $ws4
+bindsym $mod+Shift+KP_5 move container to workspace $ws5; workspace $ws5
+bindsym $mod+Shift+KP_6 move container to workspace $ws6; workspace $ws6
+bindsym $mod+Shift+KP_7 move container to workspace $ws7; workspace $ws7
+bindsym $mod+Shift+KP_8 move container to workspace $ws8; workspace $ws8
+bindsym $mod+Shift+KP_9 move container to workspace $ws9; workspace $ws9
+bindsym $mod+Shift+KP_0 move container to workspace $ws0; workspace $ws0
 
 ## move focused container to workspace and don't follow
-bindsym $mod+Ctrl+1 move container to workspace 1
-bindsym $mod+Ctrl+2 move container to workspace 2
-bindsym $mod+Ctrl+3 move container to workspace 3
-bindsym $mod+Ctrl+4 move container to workspace 4
-bindsym $mod+Ctrl+5 move container to workspace 5
-bindsym $mod+Ctrl+6 move container to workspace 6
-bindsym $mod+Ctrl+7 move container to workspace 7
-bindsym $mod+Ctrl+8 move container to workspace 8
-bindsym $mod+Ctrl+9 move container to workspace 9
-bindsym $mod+Ctrl+0 move container to workspace 100:0
-bindsym $mod+Ctrl+minus move container to workspace 1000:-
-bindsym $mod+Ctrl+equal move container to workspace 10000:=
+bindsym $mod+Ctrl+1 move container to workspace $ws1
+bindsym $mod+Ctrl+2 move container to workspace $ws2
+bindsym $mod+Ctrl+3 move container to workspace $ws3
+bindsym $mod+Ctrl+4 move container to workspace $ws4
+bindsym $mod+Ctrl+5 move container to workspace $ws5
+bindsym $mod+Ctrl+6 move container to workspace $ws6
+bindsym $mod+Ctrl+7 move container to workspace $ws7
+bindsym $mod+Ctrl+8 move container to workspace $ws8
+bindsym $mod+Ctrl+9 move container to workspace $ws9
+bindsym $mod+Ctrl+0 move container to workspace $ws0
+bindsym $mod+Ctrl+minus move container to workspace $ws-
+bindsym $mod+Ctrl+equal move container to workspace $ws=
 
 ## mod + alt + n = switch to workspace and start a terminal
-bindsym $mod+Mod1+1 workspace 1; exec $TERMINAL
-bindsym $mod+Mod1+2 workspace 2; exec $TERMINAL
-bindsym $mod+Mod1+3 workspace 3; exec $TERMINAL
-bindsym $mod+Mod1+4 workspace 4; exec $TERMINAL
-bindsym $mod+Mod1+5 workspace 5; exec $TERMINAL
-bindsym $mod+Mod1+6 workspace 6; exec $TERMINAL
-bindsym $mod+Mod1+7 workspace 7; exec $TERMINAL
-bindsym $mod+Mod1+8 workspace 8; exec $TERMINAL
-bindsym $mod+Mod1+9 workspace 9; exec $TERMINAL
-bindsym $mod+Mod1+0 workspace 100:0;  exec $TERMINAL
-bindsym $mod+Mod1+minus workspace 1000:-; exec $TERMINAL
-bindsym $mod+Mod1+equal workspace 10000:=; exec $TERMINAL
+bindsym $mod+Mod1+1 workspace $ws1; exec $TERMINAL
+bindsym $mod+Mod1+2 workspace $ws2; exec $TERMINAL
+bindsym $mod+Mod1+3 workspace $ws3; exec $TERMINAL
+bindsym $mod+Mod1+4 workspace $ws4; exec $TERMINAL
+bindsym $mod+Mod1+5 workspace $ws5; exec $TERMINAL
+bindsym $mod+Mod1+6 workspace $ws6; exec $TERMINAL
+bindsym $mod+Mod1+7 workspace $ws7; exec $TERMINAL
+bindsym $mod+Mod1+8 workspace $ws8; exec $TERMINAL
+bindsym $mod+Mod1+9 workspace $ws9; exec $TERMINAL
+bindsym $mod+Mod1+0 workspace $ws0;  exec $TERMINAL
+bindsym $mod+Mod1+minus workspace $ws-; exec $TERMINAL
+bindsym $mod+Mod1+equal workspace $ws=; exec $TERMINAL
 
 
 
@@ -659,82 +683,87 @@ bindsym $mod+Shift+i exec ~/bin/i3/cycle-workspace.py
 bindsym $mod+Ctrl+i exec ~/bin/i3/switch.py
 
 
-
 # assign apps to default workspaces
-assign [class="dolphin"] 2
-assign [app_id="pcmanfm"] 2
-assign [class="Double Commander"] 2
-assign [app_id="qbittorrent"] 3
-assign [app_id="soulseekqt"] 3
-assign [class="Gmusicbrowser"] 4
-assign [title="seq64 -"] 6
-assign [title="seq64 \#"] 7
-assign [class="shuriken"] 6
-assign [class="Radium_compressor"] 5
-assign [class="Carla"] 8
-assign [class="Patchage"] 8
-assign [class="Catia.py"] 8
-assign [class="Cadence.py"] 9
-# assign [title="pavucontrol*"] 9
-assign [app_id="Pulseeffects"] 9
-assign [title="Google Chrome"] 1000:-
-assign [title="Chromium"] 1000:-
-assign [title="Firefox"] 1000:-
-assign [class="Hexchat"] 10000:=
-assign [class="quassel"] 10000:=
-
-# assign [app_id="pavucontrol*"] 9
-assign [app_id="quassel"] 10000:=
+assign [app_id="dolphin"] $ws2
+assign [app_id="pcmanfm"] $ws2
+assign [class="Doublecmd"] $ws2
+assign [app_id="Double Commander"] $ws2
+assign [app_id="qbittorrent"] $ws3
+assign [class="soulseekqt"] $ws3
+assign [app_id="soulseekqt"] $ws3
+assign [app_id="Gmusicbrowser"] $ws4
+assign [app_id="cantata"] $ws4
+assign [title="GMPC"] $ws4
+assign [title="ncmpcpp*"] $ws4
+assign [title="MusicBrainz Picard"] $ws4
+assign [app_id="seq64 -"] $ws6
+assign [app_id="seq64 \#"] $ws7
+assign [app_id="shuriken"] $ws6
+assign [app_id="Radium_compressor"] $ws7
+assign [title="Carla"] $ws7
+assign [app_id="Patchage"] $ws7
+assign [app_id="keepassxc"] $ws8
+assign [title="Cadence"] $ws9
+assign [app_id="Catia.py"] $ws9
+assign [app_id="pavucontrol*"] $ws9
+# assign [app_id="Pulseeffects"] $ws9
+assign [app_id="Google Chrome"] $ws0
+assign [app_id="Chromium"] $ws-
+assign [class="Firefox"] $ws-
+assign [app_id="firefox"] $ws=
+assign [app_id="Hexchat"] $ws=
+assign [app_id="quassel"] $ws=
 
 
 # autofloat
-for_window [class="Cadence"] floating enable
-for_window [class="pavucontrol"] floating enable, move absolute position center
-for_window [class="Pulseeffects"] floating enable, move absolute position center
-# for_window [class="octopi-notifier"] floating enable
-for_window [class="Pamac-updater"] floating enable
-for_window [class="Syncthing GTK"] floating enable
-for_window [title="alsamixer"] floating enable
-for_window [class="Vlc"] floating enable
-for_window [class="mpv"] floating enable
-for_window [class="(?i)virtualbox"] floating enable border normal
-for_window [class="GParted"] floating enable border normal
-for_window [class="Galculator"] floating enable
-for_window [title="File Transfer*"] floating enable
-for_window [class="Gtkdialog"] floating enable, move absolute position center
-for_window [class="Radiotray"] floating enable, move absolute position center
-for_window [title="seq64 - *"] floating enable, move absolute position center
-for_window [title="Sequencer64 - *"] floating enable, move absolute position center
-for_window [class="Vmpk"] floating enable, move absolute position center
-for_window [title="etcher-electron"] floating enable, move absolute position center
-for_window [title="Magnifying Glass"] floating toggle
-for_window [title="Event Tester"] floating enable
-for_window [title="pulsemixer"] floating enable, move absolute position center
-for_window [instance="trello.com__b_AdniCH2y_to-do" title="To Do | Trello" window_role="pop-up"] floating enable
-for_window [class="DNSCryptClient" instance="DNSCryptClient" title="DNSCryptClient"] floating enable
-for_window [class="Envy24control" instance="envy24control"] floating enable
-for_window [title="Ray Session"] floating enable
-for_window [title="GSmartControl"] floating enable
+for_window [title="Cadence"] floating enable
+# for_window [app_id="pavucontrol"] floating enable, move absolute position center
+# for_window [app_id="pavucontrol-qt"] floating enable
+for_window [app_id="Pulseeffects"] floating enable, move absolute position center
+# for_window [app_id="octopi-notifier"] floating enable
+for_window [app_id="Pamac-updater"] floating enable
+for_window [app_id="Syncthing GTK"] floating enable
+for_window [app_id="alsamixer"] floating enable
+for_window [app_id="Vlc"] floating enable
+for_window [app_id="mpv"] floating enable
+for_window [app_id="(?i)virtualbox"] floating enable border normal
+for_window [app_id="GParted"] floating enable border normal
+for_window [app_id="Galculator"] floating enable
+for_window [title="Double Commander$"] floating enable
+for_window [app_id="File Transfer*"] floating enable
+for_window [app_id="Gtkdialog"] floating enable, move absolute position center
+for_window [app_id="Radiotray"] floating enable, move absolute position center
+for_window [app_id="seq64 - *"] floating enable, move absolute position center
+for_window [app_id="Sequencer64 - *"] floating enable, move absolute position center
+for_window [app_id="Vmpk"] floating enable, move absolute position center
+for_window [app_id="etcher-electron"] floating enable, move absolute position center
+for_window [app_id="Magnifying Glass"] floating toggle
+for_window [app_id="Event Tester"] floating enable
+for_window [app_id="pulsemixer"] floating enable, move absolute position center
+for_window [instance="trello.com__b_AdniCH2y_to-do" app_id="To Do | Trello" window_role="pop-up"] floating enable
+for_window [app_id="DNSCryptClient" instance="DNSCryptClient" app_id="DNSCryptClient"] floating enable
+for_window [app_id="Envy24control" instance="envy24control"] floating enable
+for_window [app_id="Ray Session"] floating enable
+for_window [app_id="GSmartControl"] floating enable
 
 # autofloat wayland
-for_window [app_id="pavucontrol-qt"] floating enable
 for_window [app_id="org.kde.kmix"] floating enable
 for_window [app_id="keepassxc"] floating enable
 
 
 # auto resize
-for_window [title="seq64 -"] resize set 1180 712
+for_window [app_id="seq64 -"] resize set 1180 712
 
-
+#9a29bbaa 
 # container/window colours
 # class                 border    backgr.    text     indicator  child_border
-client.focused          #9a29bbaa #9a29bbaa  #ffffff  #ff79c6cc    #9a29bbaa
-client.focused_inactive #000000   #000000    #bbbbbb  #ff79c6cc    #00000000
-client.unfocused        #000000   #000000    #bbbbbb  #ff79c6cc    #00000000
+client.focused          #9a29bbaa #9a29bbaa  #ffffff  #ff79c6cc  #00ff00
+client.focused_inactive #000000   #000000    #bbbbbb  #ff79c6cc  #00000000
+client.unfocused        #000000   #000000    #bbbbbb  #ff79c6cc  #00000000
 client.urgent           #2f343a   #aa0000    #ffffff  #aa0000    #aa0000
 client.placeholder      #000000   #0c0c0c    #ffffff  #000000    #0c0c0c
-#client.focused_inactive #777777   #000000    #ffffff  #bd93f9   #000000
-#client.unfocused        #777777   #000000    #c5c5c5  #472877   #000000
+#client.focused_inactive #777777   #000000    #ffffff  #bd93f9    #000000
+#client.unfocused        #777777   #000000    #c5c5c5  #472877    #000000
 
 client.background       #000000
 
@@ -746,9 +775,10 @@ new_window pixel 3
 new_float pixel 3
 
 gaps inner 4
-gaps outer 2
+gaps outer 0
 
-hide_edge_borders none
+hide_edge_borders smart
+
 
 # Start i3bar to display a workspace bar (plus the system information i3status
 # finds out, if available)
@@ -756,13 +786,14 @@ hide_edge_borders none
 bar {
   # status_command "i3status --config ~/.config/i3/istatus"
   # status_command "py3status --config ~/.config/i3/istatus"
+  # status_command "py3status -c ~/.config/i3/istatus_$(hostname --short) --include ~/.config/sway/py3status"
   status_command "py3status -c ~/.config/i3/istatus_$(hostname --short)"
 
 	position       top
 	separator_symbol " "
   strip_workspace_numbers yes
-	bindsym button4 nop
-  bindsym button5 nop
+	# bindsym button4 nop
+  # bindsym button5 nop
   binding_mode_indicator yes
 
 	# colour via http://paletton.com/#uid=74y0u0km+m7devAiGqmrohGxCce
@@ -791,14 +822,14 @@ bindsym --whole-window --border $mod+button4 workspace prev_on_output
 bindsym Shift+Insert exec "xdotool click 2"
 
 # make sure the initial desktop is the first one
-workspace 0
-focus output right
+# workspace $ws0
+# focus output right
 
 
 # Start my defaults layouts on boot
 # exec --no-startup-id "swaymsg 'workspace 1; append_layout ~/.config/i3/workspace-1.json'"
 
-for_window [class=".*"] title_format " %title
+# for_window [class=".*"] title_format " %title
 
 # for_window [urgent=last] border pixel 2
 # exec i3-onfocus.py
