@@ -1,72 +1,72 @@
-" Vim confiruration file
-" milk <dotconfig@milkmiruku.com>
+" Vim configuration file
+" Milk Brewster
 
-""" spaces
+
+""" Spaces
 " b: <tab> = buffer switch
 " \\b = buffers fzf
 " sp: <tab> = new split window
 " \\f = open file
 
-""" movement
-" <leader>f<letter> = acejump
+""" Movement
+" \f<letter> = acejump
 " shift-{/} = jump to empty lines
+" \% = jump to matching symbol
+" Ctrl-o = jump cursor back to previous location
+" Ctrl-i = jump cursor forward to recent location
 
-""" other
+""" Other
 " \\f = fzf open file
 " \\c = fzf command information
 " \v = search across files, etc
+" \n = toggle relative/absolute line numbers
+" \\n = toggle on/off line numbers
+" \/ = toggle search term highlight
 " \s = toggle scratchpad buffer
 " :shell = drop terminal into shell, return to vim on exit
+" Ctrl-k = insert diagraph
+
 
 if &compatible
   " Use Vim defaults instead of 100% vi compatibility
   set nocompatible
 endif
 
-""" Neobundle script manager
-filetype off                   " Required!
-filetype plugin indent off     " Required!
 
-"set runtimepath+=~/.vim/bundle/neobundle.vim
-call neobundle#begin(expand('~/.vim/bundle/'))
+""" VimScript Manager
+call plug#begin('~/.vim/plugged')
 
-  " Let NeoBundle manage NeoBundle
-  "NeoBundle 'Shougo/neobundle.vim'
-
-  " After install, turn shell ~/.vim/bundle/vimproc, (n,g)make -f your_machines_makefile
-  NeoBundle 'Shougo/vimproc.vim', {
-  \ 'build' : {
-  \     'windows' : 'tools\\update-dll-mingw',
-  \     'cygwin' : 'make -f make_cygwin.mak',
-  \     'mac' : 'make',
-  \     'linux' : 'make',
-  \     'unix' : 'gmake',
-  \    },
-  \ }
-
-  " :help ConqueTerm
-  " NeoBundle 'Flolagale/conque'
+  """ Startup
+  " Plug 'mhinz/vim-startify'
 
 
+  """ Find things easily
   " fzf - populate a menu with things and f*i*l*t*e*r live with ripgrep
-  NeoBundle 'junegunn/fzf.vim'
+  Plug 'junegunn/fzf.vim'
   noremap <Leader><Leader>f :FZF<CR>
   noremap <Leader><Leader>b :Buffers<CR>
   noremap <Leader><Leader>t :Colors<CR>
   noremap <Leader><Leader>c :Commands!<CR>
   noremap <Leader><Leader>h :History<CR>
-  noremap <silent> <Leader><Leader>d :Files <C-R>=expand('%:h')<CR><CR>
+  noremap <silent><Leader><Leader>d :Files <C-R>=expand('%:h')<CR><CR>
+  noremap <Leader><Leader>l :BLines<CR>
+  noremap <Leader><Leader>L :Lines<CR>
+  noremap <Leader><Leader>' :Marks<CR>
+  noremap <Leader><Leader>H :Helptags<CR>
+  noremap <Leader><Leader>M :Maps<CR>
+  noremap <Leader><Leader>F :Filetypes<CR>
+  " noremap <Leader><Leader>/ :History/<CR>
+  noremap <Leader><Leader>A :Ag<CR>
 
   if executable('fzf')
-    " Better command history with q:
-    command! CmdHist call fzf#vim#command_history({'right': '40'})
-    nnoremap q: :CmdHist<CR>
     " Better search history
     command! QHist call fzf#vim#search_history({'right': '40'})
     nnoremap q/ :QHist<CR>
+    " Better command history with q:
+    command! CmdHist call fzf#vim#command_history({'right': '40'})
+    nnoremap q: :CmdHist<CR>
   end
 
-  " Find things easily
   " http://owen.cymru/fzf-ripgrep-navigate-with-bash-faster-than-ever-before
   let g:rg_command = '
     \ rg --column --line-number --no-heading --fixed-strings --ignore-case --no-ignore --hidden --follow --color "always"
@@ -74,128 +74,147 @@ call neobundle#begin(expand('~/.vim/bundle/'))
     \ -g "!{.git,node_modules,vendor}/*" '
   command! -bang -nargs=* F call fzf#vim#grep(g:rg_command .shellescape(<q-args>), 1, <bang>0)
 
-  " scratch pad
-  NeoBundle 'mtth/scratch.vim'
-  noremap <Leader>s :ScratchPreview<CR>
+
+  " Multiline f/t search
+  Plug 'svermeulen/vim-extended-ft'
+
+  " File navigation
+  " Jump to word using characters <leader>w (like f in vimium)
+  " Plug 'Lokaltog/vim-easymotion'
+  " let g:EasyMotion_leader_key = '<leader>'
+
+  " Plug 'https://bitbucket.org/ns9tks/vim-fuzzyfinder'
 
 
   """ Coding
 
-  " provides insert mode auto-completion for quotes, parens, brackets, etc.
-  NeoBundle 'Raimondi/delimitMate'
+  " Provide insert mode auto-completion for quotes, parens, brackets, etc.
+  " Plug 'Raimondi/delimitMate'
+  " Plug 'jiangmiao/auto-pairs'
 
   " Add/remove comments with ease
-  NeoBundle 'scrooloose/nerdcommenter'
+  Plug 'scrooloose/nerdcommenter'
   let g:NERDSpaceDelims = 1
   let g:NERDCommentEmptyLines = 1
   " <leader>+c+<space> = toggle
 
-  " Surrount objects with something
-  NeoBundle 'tpope/vim-surround'
+  " Surround objects with something
+  Plug 'tpope/vim-surround'
   " cs"' = change " to '
   " cs'<q> = change ' to <q>/</q>
   " dst = delete surrounding tags
 
   " Multiline text objects
-  NeoBundle 'paradigm/TextObjectify'
+  Plug 'paradigm/TextObjectify'
 
   " Repeat movements
-  " NeoBundle 'Houl/repmo-vim'
+  " Plug 'Houl/repmo-vim'
 
-  " . repeat for plugin actions
-  NeoBundle 'tpope/vim-repeat'
+  " . repeat for some plugin actions
+  Plug 'tpope/vim-repeat'
 
+  " Text alignment
+  " Plug 'godlygeek/tabular'
+
+
+  " Display sections in sidebar
+  " Plug 'yazug/vim-taglist-plus'
+  " required ctags installed
+
+
+  " Enhanced autocompletion
+  "Plug 'Shougo/neocomplcache'
+  Plug 'Valloric/YouCompleteMe', { 'do': './install.py' }
 
 
   " Visual help
 
-  " highlight yanked text
-  " NeoBundle 'sunaku/vim-highlightedyank'
+  " Highlight yanked text
+  " Plug 'sunaku/vim-highlightedyank'
 
   " Visually highlight matching opening & closing tags
-  NeoBundle 'Valloric/MatchTagAlways'
+  Plug 'Valloric/MatchTagAlways'
   " Jump to last tag
   nnoremap <leader>% :MtaJumpToOtherTag<cr>
 
-  " Show contents of registers on " or @
-  "NeoBundle 'junegunn/vim-peekaboo'
+  " Search index/total
+  Plug 'henrik/vim-indexed-search'
+
+  "Show contents of registers on " or @
+  "doesnae work! todo: troubleshoot incompatability
+  "Plug 'junegunn/vim-peekaboo'
+
+  Plug 'myusuf3/numbers.vim'
+  nnoremap <leader>n :NumbersToggle<CR>
+  nnoremap <leader><leader>n :NumbersOff<CR>
+
+  " Visual guide to indentation level
+  " <leader>ig
+  " Plug 'nathanaelkane/vim-indent-guides'
+  "let g:indent_guides_enable_on_vim_startup = 1
+  Plug 'Yggdroot/indentLine'
 
 
-  " Syntax highlighting
+  " Syntax highlighting and help
 
-  " html5
-  NeoBundle 'othree/html5.vim'
+  " HTML5
+  Plug 'othree/html5.vim'
 
-  " faust syntax highlighting
-  NeoBundle 'gmoe/vim-faust'
+  " Faust syntax highlighting
+  " Plug 'gmoe/vim-faust'
 
-  " NeoBundle 'scrooloose/syntastic'
+  " Plug 'scrooloose/syntastic'
 
   " Highlights operator characters for every language
-  NeoBundle 'Valloric/vim-operator-highlight'
+  Plug 'Valloric/vim-operator-highlight'
 
-  " NeoBundle 'ap/vim-css-color.git'
+  " Plug 'ap/vim-css-color.git'
 
   " A plugin to color colornames and codes
-  NeoBundle 'chrisbra/Colorizer'
+  Plug 'chrisbra/Colorizer'
   autocmd VimEnter * ColorToggle
 
-  " NeoBundle 'cakebaker/scss-syntax.vim'
-  " NeoBundle 'vim-scripts/Better-CSS-Syntax-for-Vim' - fuxks with scss :(
+  " Plug 'cakebaker/scss-syntax.vim'
 
-  " NeoBundle 'pangloss/vim-javascript'
+  " Plug 'pangloss/vim-javascript'
 
-  " NeoBundle 'StanAngeloff/php.vim'
+  " Plug 'StanAngeloff/php.vim'
 
-  " NeoBundle 'hallettj/jslint.vim'
-  " NeoBundle 'joestelmach/lint.vim'
+  " Plug 'hallettj/jslint.vim'
+  " Plug 'joestelmach/lint.vim'
 
-  " NeoBundle 'sleistner/vim-jshint'
-  " NeoBundle 'wookiehangover/jshint.vim'
+  " Plug 'sleistner/vim-jshint'
+  " Plug 'wookiehangover/jshint.vim'
 
-  " NeoBundle 'baskerville/vim-sxhkdrc'
+  " Synax for the sxhkd hotkey daemon
+  " Plug 'baskerville/vim-sxhkdrc'
 
-  NeoBundle 'chase/nginx.vim'
-  
-  NeoBundle 'Firef0x/PKGBUILD.vim'
+  Plug 'chase/nginx.vim'
 
-  NeoBundle 'tell-k/vim-autopep8'
+  " Arch Linux package definition file
+  Plug 'Firef0x/PKGBUILD.vim'
 
-  NeoBundle 'godlygeek/tabular'
+  " Python coding style formatting
+  " Plug 'tell-k/vim-autopep8'
 
-  " File navigation
-  " Jump to word using characters <leader>w (like f in vimium)
-  " NeoBundle 'Lokaltog/vim-easymotion'
-  " let g:EasyMotion_leader_key = '<leader>'
+  " Doesn't work right with Awesome
+  " For vim-session
+  " Plug 'xolox/vim-misc'
+  " Plug 'xolox/vim-lua-inspect'
 
-  " NeoBundle 'https://bitbucket.org/ns9tks/vim-fuzzyfinder'
-
-  NeoBundle 'svermeulen/vim-extended-ft'
-
-  NeoBundle 'myusuf3/numbers.vim'
-  nnoremap <leader>n :NumbersToggle<CR>
-
-  " :rename for save as
-  NeoBundle 'danro/rename.vim'
+  Plug 'tbastos/vim-lua'
 
 
-  """ Startup
-  " NeoBundle 'mhinz/vim-startify'
-
-  " Notification message space
-  :set cmdheight=1
-
-
-  " Large interface
+  """ Large interface
 
   " Tiling buffer window manager
   " Ctrl-j/k/space/...
-  NeoBundle 'spolu/dwm.vim'
+  Plug 'spolu/dwm.vim'
 
 
   " New staus line style, a la powerline
-  NeoBundle 'vim-airline/vim-airline'
-  NeoBundle 'vim-airline/vim-airline-themes'
+  Plug 'vim-airline/vim-airline'
+  Plug 'vim-airline/vim-airline-themes'
   " let g:airline#extensions#tabline#enabled = 1
   " let g:airline_powerline_fonts = 1
   "powerline symbols
@@ -212,19 +231,17 @@ call neobundle#begin(expand('~/.vim/bundle/'))
   let g:airline_symbols.linenr = ''
 
   " Highlight the active line
-  NeoBundle 'ntpeters/vim-airline-colornum'
+  Plug 'ntpeters/vim-airline-colornum'
   let g:colors_name='default'
 
 
-  " :XtermColorTable, # = yank current color, t = toggle RGB text, f = set RGB text to current color
-  NeoBundle 'sunaku/xterm-color-table.vim'
-
-  NeoBundle 'tpope/vim-vinegar'
+  " Better NetRW file navigation
+  Plug 'tpope/vim-vinegar'
 
   " Manage multiple files with ease
-  " NeoBundle 'scrooloose/nerdtree'
+  " Plug 'scrooloose/nerdtree'
   " let NERDTreeHijackNetrw=1
-  " 
+  "
   " " \p - toggle nerdtree
   " " nmap <silent> <leader>p :NERDTreeToggle<CR>
   " " Open NERDTree in the directory of the current file (or /home if no file is open)
@@ -237,120 +254,125 @@ call neobundle#begin(expand('~/.vim/bundle/'))
     " exe ":NERDTreeFind"
   " endif
   " endfunction
-  " 
+  "
   " " open NERDTree automatically when vim starts up on opening a directory
   " autocmd StdinReadPre * let s:std_in=1
   " autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists("s:std_in") | exe 'NERDTree' argv()[0] | wincmd p | ene | endif
-  " 
+  "
   " " Close Vim if only NERDtree buffer is open
   " " https://github.com/scrooloose/nerdtree/issues/21
   " " autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | en
-  " 
+  "
   " augroup AuNERDTreeCmd
   " autocmd!
   " augroup end
-  " 
+  "
   " if has('gui_running')
   " " autocmd! NERDTreeHijackNetrw
   " autocmd! NERDTreeTabs
   " autocmd! NERDTree
   " endif
-  " 
+  "
   " let g:NERDTreeDirArrowExpandable = '▸'
   " let g:NERDTreeDirArrowCollapsible = '▾'
-  " 
-  " 
-  " """ Tabs
-  " NeoBundle 'jistr/vim-nerdtree-tabs'
-  " map <Leader>o <plug>NERDTreeTabsToggle<CR>
-
-  NeoBundle 'benatkin/vim-move-between-tabs'
-  " tN and tP
-
-  NeoBundle 'maxmeyer/vim-tabreorder'
-  " alt-pgup and alt-pgdown
-
-
-  " Manage tab workspaces
-  " NeoBundle 'sjbach/lusty'
-
-  NeoBundle 'gioele/vim-autoswap'
+  "
 
   " Minimal GUI
-  NeoBundle 'junegunn/goyo.vim'
+  Plug 'junegunn/goyo.vim'
   " :Goyo / :Goyo!
 
 
-  " Doesn't work right with Awesome
-  " For vim-session
-  " NeoBundle 'xolox/vim-misc'
-  " NeoBundle 'xolox/vim-lua-inspect'
+  " :XtermColorTable, # = yank current color, t = toggle RGB text, f = set RGB text to current color
+  " Plug 'sunaku/xterm-color-table.vim'
 
-  NeoBundle 'tbastos/vim-lua'
 
-  " Yank ring
-  " NeoBundle 'vim-scripts/YankRing.vim'
+  """ File management
+
+  " :rename for save as
+  Plug 'danro/rename.vim'
+
+
+  " If file is already open, switch to that window
+  Plug 'gioele/vim-autoswap'
+
+
+  """ Buffers
+  "Plug 'fholgado/minibufexpl.vim'
+
+  " Scratch pad buffer
+  Plug 'mtth/scratch.vim'
+  noremap <Leader>s :ScratchPreview<CR>
+
+
+  """ Tabs
+  " Plug 'jistr/vim-nerdtree-tabs'
+  " map <Leader>o <plug>NERDTreeTabsToggle<CR>
+
+  Plug 'benatkin/vim-move-between-tabs'
+  " tN and tP
+
+  Plug 'maxmeyer/vim-tabreorder'
+  " alt-pgup and alt-pgdown
+
+  " Manage tab workspaces
+  " Plug 'sjbach/lusty'
+
+
+  """ Registers
+  " Plug 'vim-scripts/YankRing.vim'
   " 2p, paste second last delete
 
+  """ Undo history
+  " :UB
+  Plug 'chrisbra/histwin.vim'
 
-  " Git integration
-  NeoBundle 'tpope/vim-fugitive'
 
-  NeoBundle 'gregsexton/gitv'
+  """ Pasting
+  " Plug 'sickill/vim-pasta'
+  " Work with bracketed paste content from terminals
+  Plug 'ConradIrwin/vim-bracketed-paste'
+
+
+  """ Git integration
+  Plug 'tpope/vim-fugitive'
+
+  Plug 'gregsexton/gitv'
+
+  " Plug 'airblade/vim-gitgutter'
+  " Show a diff using Vim its sign column
+  Plug 'mhinz/vim-signify'
+
 
   " Create Gists
-  NeoBundle 'mattn/webapi-vim'
-  NeoBundle 'mattn/gist-vim'
-
-  " NeoBundle 'airblade/vim-gitgutter'
-  " Show a diff using Vim its sign column
-  NeoBundle 'mhinz/vim-signify'
+  Plug 'mattn/webapi-vim'
+  Plug 'mattn/gist-vim'
 
 
-  """ to sort
+  """ Sessions
 
-  "NeoBundle 'xolox/vim-session'
+  "Plug 'xolox/vim-session'
   " :SaveSession, :OpenSession, :RestartVim, etc.
   "let g:session_autosave = 'yes'
   "let g:session_autoload = 'no'
 
-  " NeoBundle 'tpope/vim-obsession'
+  " Plug 'tpope/vim-obsession'
 
-  " :UB
-  NeoBundle 'chrisbra/histwin.vim'
 
-  " Display sections in sidebar
-  " NeoBundle 'yazug/vim-taglist-plus'
-  " required ctags installed
-
-  " Manage buffers
-  "NeoBundle 'fholgado/minibufexpl.vim'
-
-  "" Copy and paste
-  " NeoBundle 'sickill/vim-pasta'
-  " Work with bracketed paste content from terminals
-  NeoBundle 'ConradIrwin/vim-bracketed-paste'
+  """ Mouse support
   " F12 to toggle mouse between vim and terminal
-  NeoBundle 'vim-scripts/toggle_mouse'
+  Plug 'vim-scripts/toggle_mouse'
 
-
-  NeoBundle 'nathanaelkane/vim-indent-guides'
-
-
-  "NeoBundle 'Shougo/neocomplcache'
-  " NeoBundle 'Valloric/YouCompleteMe'
-
-  "" mouse
   " ctrl/shift mouse click+drag over text copies/moves said text
-  NeoBundle 'vim-scripts/xemacs-mouse-drag-copy'
+  Plug 'vim-scripts/xemacs-mouse-drag-copy'
 
-  " Color theme
-  " NeoBundle 'BlackSea'
+
+  """ Colour theme
+  " Plug 'BlackSea'
   " colorscheme BlackSea
 
-call neobundle#end()
+call plug#end()
 
-" NeoBundle required
+
 " Basic syntax highlighting
 if has("syntax")
   syntax on
@@ -359,16 +381,8 @@ if has("syntax")
   filetype indent on
 endif
 
-" If there are uninstalled bundles found on startup,
-" this will conveniently prompt you to install them.
-NeoBundleCheck
 
-
-""" General
-
-" remap ; to : and : to ;
-" nnoremap ; :
-" nnoremap : ;
+""" General settings
 
 " Keep undo history across sessions by storing it in a file
 if has('persistent_undo')
@@ -393,9 +407,9 @@ else
   set ttymouse=xterm2
 end
 
-" Enable mouse use in all modes
+" Enable mouse use in all modes. Use shift+middle-click to paste
 set mouse=a
-" make middle click work proper
+" Or make middle-click work proper
 " set mouse=v
 
 " Set bell to visual
@@ -419,6 +433,9 @@ set nu
 
 " Always show status bar
 set laststatus=2
+
+" Notification message space
+set cmdheight=1
 
 " Always keep extra lines above the cursor at top, excluding ends of a file
 set scrolloff=5
@@ -462,28 +479,28 @@ set ruler
 " Highlight search term in all buffers
 set hlsearch
 " Toggle search term highlight
-" nmap <silent> <leader>/ :silent set invhlsearch<CR>
+nmap <silent> <leader>/ :silent set invhlsearch<CR>
 
 " highlight matches when jumping to text
 " from greg0ire/more-instantly-better-vim
 " This rewires n and N to do the highlighing...
-nnoremap <silent> n   n:call HLNext(0.4)<cr>
-nnoremap <silent> N   N:call HLNext(0.4)<cr>
-
-function! HLNext (blinktime)
-  let [bufnum, lnum, col, off] = getpos('.')
-  let matchlen = strlen(matchstr(strpart(getline('.'),col-1),@/))
-  let target_pat = '\c\%#'.@/
-  let blinks = 3
-  for n in range(1,blinks)
-    let ring = matchadd('ErrorMsg', target_pat, 101)
-    redraw
-    exec 'sleep ' . float2nr(a:blinktime / (2*blinks) * 700) . 'm'
-    call matchdelete(ring)
-    redraw
-    exec 'sleep ' . float2nr(a:blinktime / (2*blinks) * 700) . 'm'
-  endfor
-endfunction
+" nnoremap <silent> n   n:call HLNext(0.4)<cr>
+" nnoremap <silent> N   N:call HLNext(0.4)<cr>
+"
+" function! HLNext (blinktime)
+  " let [bufnum, lnum, col, off] = getpos('.')
+  " let matchlen = strlen(matchstr(strpart(getline('.'),col-1),@/))
+  " let target_pat = '\c\%#'.@/
+  " let blinks = 3
+  " for n in range(1,blinks)
+    " let ring = matchadd('ErrorMsg', target_pat, 101)
+    " redraw
+    " exec 'sleep ' . float2nr(a:blinktime / (2*blinks) * 700) . 'm'
+    " call matchdelete(ring)
+    " redraw
+    " exec 'sleep ' . float2nr(a:blinktime / (2*blinks) * 700) . 'm'
+  " endfor
+" endfunction
 
 " Mouse
 
@@ -501,7 +518,6 @@ set suffixes=.bak,~,.swp,.o,.info,.aux,.log,.dvi,.bbl,.blg,.brf,.cb,.ind,.idx,.i
 set wildchar=<Tab> wildmenu wildmode=full
 
 
-
 "Tell vim to remember certain things when we exit
 "  '10  :  marks will be remembered for up to 10 previously edited files
 "  "100 :  will save up to 100 lines for each register
@@ -513,22 +529,12 @@ set wildchar=<Tab> wildmenu wildmode=full
 set viminfo='10,\"100,:20,%,n~/.viminfo
 
 
-" http://drupal.org/node/29325
-if has("autocmd")
-" Drupal *.module and *.install files.
-augroup module
-  autocmd BufRead,BufNewFile *.module set filetype=php
-  autocmd BufRead,BufNewFile *.install set filetype=php
-  autocmd BufRead,BufNewFile *.test set filetype=php
-  autocmd BufRead,BufNewFile *.inc set filetype=php
-  autocmd BufRead,BufNewFile *.profile set filetype=php
-  autocmd BufRead,BufNewFile *.view set filetype=php
-augroup END
-endif
-
-
 """ Key settings and bindings
 " N.b. I have urxvt pass shift-space as an esc
+
+" remap ; to : and : to ;
+" nnoremap ; :
+" nnoremap : ;
 
 " Make backspace work like most other apps
 set backspace=eol,indent,start
@@ -649,10 +655,11 @@ nnoremap <silent><leader>k :set paste<CR>m`O<Esc>``:set nopaste<CR>`
 nnoremap <silent><leader>J m`:silent +g/\m^\s*$/d<CR>``:noh<CR>
 nnoremap <silent><leader>K m`:silent -g/\m^\s*$/d<CR>``:noh<CR>
 
-" :W to sudo save file if it has opened as RO
+" :WW to sudo save file if it has opened as RO
 " command W silent execute 'write !sudo tee ' . shellescape(@%, 1) . ' >/dev/null'
 command! WW silent execute 'w !sudo tee %'
-" after, vim indicates file hasn't saved, but it has
+" after, vim indicates file hasn't saved and wants to reload
+" but it has saved so you're safe to reload
 
 
 """ Functions
@@ -711,7 +718,7 @@ endif
 
 " Make shift-insert work like in Xterm
 " inoremap <MiddleMouse> <S-Insert>
-" inoremap <MiddleMouse> <S-Insert> 
+" inoremap <MiddleMouse> <S-Insert>
 
 
 """ Gvim
@@ -733,29 +740,29 @@ endif
 " If you are using original Vim on a terminal, you could use the trick provided by Tim Pope in his rsi.vim plugin to make the meta key work.
 " let s:insert_char_pre = ''
 " let s:insert_leave = ''
-" 
+"
 " autocmd InsertCharPre * execute s:insert_char_pre
 " autocmd InsertLeave   * execute s:insert_leave
-" 
+"
 " " basic layer
 " function! s:QuickInput (operator, insert_char_pre)
 " let s:insert_char_pre = a:insert_char_pre
 " let s:insert_leave = 'call <SID>RemoveFootprint()'
 " call feedkeys(a:operator, 'n')
 " endfunction
-" 
+"
 " function! s:RemoveFootprint()
 " let s:insert_char_pre = ''
 " let s:insert_leave = ''
 " let s:char_count = 0
 " endfunction
-" 
+"
 " " secondary layer
 " function! QuickInput_Count (operator, count)
 " let insert_char_pre = 'call <SID>CountChars('.a:count.')'
 " call <SID>QuickInput(a:operator, insert_char_pre)
 " endfunction
-" 
+"
 " let s:char_count = 0
 " function! s:CountChars (count)
 " let s:char_count += 1
@@ -763,19 +770,19 @@ endif
   " call feedkeys("\<Esc>")
 " endif
 " endfunction
-" 
+"
 " " secondary layer
 " function! QuickInput_Repeat (operator, count)
 " let insert_char_pre = 'let v:char = repeat(v:char, '.a:count.') | call feedkeys("\<Esc>")'
 " call <SID>QuickInput(a:operator, insert_char_pre)
 " endfunction
-" 
+"
 " nnoremap i :<C-u>execute 'call ' v:count? 'QuickInput_Count("i", v:count)' : "feedkeys('i', 'n')"<CR>
 " nnoremap a :<C-u>execute 'call ' v:count? 'QuickInput_Count("a", v:count)' : "feedkeys('a', 'n')"<CR>
-" 
+"
 " nnoremap <Plug>InsertAChar :<C-u>call QuickInput_Repeat('i', v:count1)<CR>
 " nnoremap <Plug>AppendAChar :<C-u>call QuickInput_Repeat('a', v:count1)<CR>
-" 
+"
 " nmap <A-i> <Plug>InsertAChar
 " nmap <M-a> <Plug>AppendAChar
 
@@ -925,7 +932,7 @@ inoremap <A-b> <C-o>b
 inoremap <A-w> <C-o>w
 
 
-" If you select one or more lines, you can use < and > for sihifting them sidewards. Unfortunately you immediately lose the selection afterwards. You can use gv to reselect the last selection (see :h gv), thus you can work around it like this:
+" If you select one or more lines, you can use < and > for shifting them sidewards. Unfortunately you immediately lose the selection afterwards. You can use gv to reselect the last selection (see :h gv), thus you can work around it like this:
 xnoremap <  <gv
 xnoremap >  >gv
 
