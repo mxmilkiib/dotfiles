@@ -157,13 +157,50 @@ call plug#begin('~/.vim/plugged')
 
   " Syntax highlighting and help
 
+  Plug 'luochen1990/rainbow'
+  let g:rainbow_active = 1
+  let g:rainbow_conf = {
+	\	'guifgs': ['royalblue3', 'darkorange3', 'seagreen3', 'firebrick'],
+	\	'ctermfgs': ['lightblue', 'lightyellow', 'lightcyan', 'lightmagenta'],
+	\	'operators': '_,_',
+	\	'parentheses': ['start=/(/ end=/)/ fold', 'start=/\[/ end=/\]/ fold', 'start=/{/ end=/}/ fold'],
+	\	'separately': {
+	\		'*': {},
+	\		'tex': {
+	\			'parentheses': ['start=/(/ end=/)/', 'start=/\[/ end=/\]/'],
+	\		},
+	\		'lisp': {
+	\			'guifgs': ['royalblue3', 'darkorange3', 'seagreen3', 'firebrick', 'darkorchid3'],
+	\		},
+	\		'vim': {
+	\			'parentheses': ['start=/(/ end=/)/', 'start=/\[/ end=/\]/', 'start=/{/ end=/}/ fold', 'start=/(/ end=/)/ containedin=vimFuncBody', 'start=/\[/ end=/\]/ containedin=vimFuncBody', 'start=/{/ end=/}/ fold containedin=vimFuncBody'],
+	\		},
+	\		'html': {
+	\			'parentheses': ['start=/\v\<((area|base|br|col|embed|hr|img|input|keygen|link|menuitem|meta|param|source|track|wbr)[ >])@!\z([-_:a-zA-Z0-9]+)(\s+[-_:a-zA-Z0-9]+(\=("[^"]*"|'."'".'[^'."'".']*'."'".'|[^ '."'".'"><=`]*))?)*\>/ end=#</\z1># fold'],
+	\		},
+	\		'css': 0,
+	\	}
+	\}
+
   " HTML5
   Plug 'othree/html5.vim'
 
   " Faust syntax highlighting
   " Plug 'gmoe/vim-faust'
 
-  " Plug 'scrooloose/syntastic'
+  " Plug 'vim-syntastic/syntastic'
+  " set statusline+=%#warningmsg#
+  " set statusline+=%{SyntasticStatuslineFlag()}
+  " set statusline+=%*
+" 
+  " let g:syntastic_always_populate_loc_list = 1
+  " let g:syntastic_auto_loc_list = 1
+  " let g:syntastic_check_on_open = 1
+  " let g:syntastic_check_on_wq = 0
+
+  Plug 'w0rp/ale'
+  let g:airline#extensions#ale#enabled = 1
+  let g:ale_completion_enabled = 1
 
   " Highlights operator characters for every language
   Plug 'Valloric/vim-operator-highlight'
@@ -176,15 +213,16 @@ call plug#begin('~/.vim/plugged')
 
   " Plug 'cakebaker/scss-syntax.vim'
 
-  " Plug 'pangloss/vim-javascript'
+  Plug 'pangloss/vim-javascript'
+
+  Plug 'mxw/vim-jsx'
+
+  " TypeScript
+  Plug 'HerringtonDarkholme/yats.vim'
+
+  Plug 'jparise/vim-graphql'
 
   " Plug 'StanAngeloff/php.vim'
-
-  " Plug 'hallettj/jslint.vim'
-  " Plug 'joestelmach/lint.vim'
-
-  " Plug 'sleistner/vim-jshint'
-  " Plug 'wookiehangover/jshint.vim'
 
   " Synax for the sxhkd hotkey daemon
   " Plug 'baskerville/vim-sxhkdrc'
@@ -204,6 +242,15 @@ call plug#begin('~/.vim/plugged')
 
   Plug 'tbastos/vim-lua'
 
+  " Generate snippets
+  " Plug 'mattn/emmet-vim'
+  " let g:user_emmet_leader_key='<leader><Tab>'
+  " let g:user_emmet_settings = {
+    " \  'javascript.jsx' : {
+      " \      'extends' : 'jsx',
+      " \  },
+    " \}
+
 
   """ Large interface
 
@@ -217,6 +264,7 @@ call plug#begin('~/.vim/plugged')
   Plug 'vim-airline/vim-airline-themes'
   " let g:airline#extensions#tabline#enabled = 1
   " let g:airline_powerline_fonts = 1
+
   "powerline symbols
   if !exists('g:airline_symbols')
   let g:airline_symbols = {}
