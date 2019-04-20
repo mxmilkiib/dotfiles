@@ -430,9 +430,9 @@ alias pG='yay -G'
 # make package; get deps. and install
 alias mP='makepkg -si'
 # update .SRCINFO
-# alias mS='makepkg --printsrcinfo > .SRCINFO'
+alias mS='makepkg --printsrcinfo > .SRCINFO'
 # update .SRCINFO, git add+commit+push
-function mS(){ makepkg --printsrcinfo > .SRCINFO && git add PKGBUILD .SRCINFO && git commit -m "$*" $$ git push }
+function mSs(){ [ ! $* ] && return;  makepkg --printsrcinfo > .SRCINFO && git add PKGBUILD .SRCINFO && git commit -m "$@" && git push }
 
 
 ### VCSH - multiple git repos in the same folder
