@@ -155,8 +155,9 @@ export QT_PLATFORM_PLUGIN=qt5ct
 # exec startlxde
 # exec cinnamon-session
 
-exec i3
-# exec enlightenment_start
+# exec awesome
+# exec i3
+exec enlightenment_start
 # exec audacity
 # exec tdm --xstart
 # exec i3 >> /var/tmp/log/i3log 2>&1
