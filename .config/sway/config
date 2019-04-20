@@ -19,7 +19,7 @@ exec /usr/lib/xfce-polkit/xfce-polkit
 exec uhubctl -l 1-1.1.1 -p 2 -a off
 
 # Graphical notifications
-exec sleep 10 && mako --default-timeout 8000 --width 600
+exec sleep 10 && mako --default-timeout 8000 --width 600 --anchor top-center --background-color "#472877" --border-color "#ffffffaa"⇧
 
 # Redshift - changed screen colour temp
 # exec redshift-gtk -l 55.978301:-3.228586 -t 6000:4500
@@ -145,8 +145,8 @@ bindsym $mod+Shift+e exec "sway-nagbar -t warning -m 'You pressed the exit short
 # Font for window titles. Will also be used by the bar unless a different font
 # is used in the bar {} block below. ISO 10646 = Unicode
 # font pango:DejaVu Sans Mono 10
-# font pango:Droid Sans Mono 10
-font pango:xos4 Terminus 10
+font pango:Droid Sans Mono 10
+# font pango:xos4 Terminus 10
 # font pango:Gohu GohuFont 10
 
 
@@ -757,7 +757,7 @@ for_window [app_id="seq64 -"] resize set 1180 712
 #9a29bbaa 
 # container/window colours
 # class                 border    backgr.    text     indicator  child_border
-client.focused          #9a29bbaa #9a29bbaa  #ffffff  #ff79c6cc  #00ff00
+client.focused          #9a29bbaa #9a29bbaa  #ffffff  #ff79c6cc  #22F828
 client.focused_inactive #000000   #000000    #bbbbbb  #ff79c6cc  #00000000
 client.unfocused        #000000   #000000    #bbbbbb  #ff79c6cc  #00000000
 client.urgent           #2f343a   #aa0000    #ffffff  #aa0000    #aa0000
