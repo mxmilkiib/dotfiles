@@ -60,11 +60,6 @@ exec sleep 10 && mako --default-timeout 8000 --width 600 --anchor top-center --b
 # exec flirc_util loadconfig ~/.config/flirc/my_flirc_config
 
 
-#https://github.com/swaywm/swayidle/blob/master/swayidle.1.scd
-# exec swayidle -w timeout 1500 'swaylock-blur' timeout 3000 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"' before-sleep 'swaylock-blur'
-exec swayidle -w timeout 3000 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"'
-
-
 # layout doesn't work?? uysing envvar instead
 input * {
     xkb_layout gb
@@ -73,39 +68,6 @@ input * {
     xkb_options F13:swapescape
     xkb_numlock enabled
 }
-
-
-# output * bg ~/.wallpapers/VnXDN9J_colourised.png fill
-output * bg ~/.wallpapers/danielle_at_sea_flickr.jpg fill
-# output HDMI-A-1 bg ~/.wallpapers/VnXDN9J_colourised.png fill
-# output VGA-1 bg ~/.wallpapers/VnXDN9J_colourised.png fill
-
-
-###
-# tiling split direction
-# default_orientation horizontal
-default_orientation vertical
-
-title_align center
-
-# focus on mouse hover (yes) or click (no)
-focus_follows_mouse no
-
-# Switch to workspace with urgent window automatically
-# for_window [urgent=latest] focus
-focus_on_window_activation urgent
-# jump to an urgent window
-# bindsym $mod+Shift+x [urgent=latest] focus
-
-# cycle wrap active focus between parent containers
-focus_wrapping yes
-
-# press a workspace bind again to go back to the previous workspace
-workspace_auto_back_and_forth yes
-
-
-# Hide mouse pointer after a time (in ms)
-seat * hide_cursor 10000
 
 # Mod4 = win (super) key
 # Mod1 = alt key
@@ -142,6 +104,63 @@ mode "$mode_system" {
 bindsym $mod+Shift+e exec "sway-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -b 'Yes, exit i3' 'swaymsg exit'"
 
 
+# output * bg ~/.wallpapers/VnXDN9J_colourised.png fill
+output * bg ~/.wallpapers/danielle_at_sea_flickr.jpg fill
+# output HDMI-A-1 bg ~/.wallpapers/VnXDN9J_colourised.png fill
+# output VGA-1 bg ~/.wallpapers/VnXDN9J_colourised.png fill
+
+
+#https://github.com/swaywm/swayidle/blob/master/swayidle.1.scd
+# exec swayidle -w timeout 1500 'swaylock-blur' timeout 3000 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"' before-sleep 'swaylock-blur'
+exec swayidle -w timeout 3000 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"'
+
+
+output LVDS-1 pos 0 0 res 1366x768
+output VGA-1 disable
+# output VGA-1 pos 1366 0 res 1920x1080
+# output VGA-1 pos -1280 0 res 1280x1024 ?
+
+## blank screen now until mouse or keyboard action
+bindsym --release $mod+Ctrl+b exec swayidle timeout 1 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"; pkill -n swayidle'
+
+## switch video output between cloned or seperate desktops
+#bindsym $mod+Ctrl+F9 exec "xrandr --output DVI-I-0 --same-as DVI-I-1"
+#bindsym $mod+Ctrl+F10 exec "xrandr --output DVI-I-1 --mode 1280x1024 --pos 0x0 --panning 0x0+0+0 --output DVI-I-0 --mode 1280x1024 --pos 1280x0"
+# use secondary monitor only
+# bindsym $mod+Ctrl+F9 exec "mons -s"
+# bindsym $mod+Ctrl+Shift+F9 exec "mons -o"
+bindsym $mod+Ctrl+F9 exec "sway output VGA-1 enable && sleep 1 && sway output LVDS-1 disable"
+bindsym $mod+Ctrl+Shift+F9 exec "sway output LVDS-1 enable && sleep 1 && sway output VGA-1 disable"
+bindsym $mod+Ctrl+Mod1+F9 exec "sway output LVDS-1 enable && sway output VGA-1 enable"
+
+
+###
+# tiling split direction
+# default_orientation horizontal
+default_orientation vertical
+
+title_align center
+
+# focus on mouse hover (yes) or click (no)
+focus_follows_mouse no
+
+# Switch to workspace with urgent window automatically
+# for_window [urgent=latest] focus
+focus_on_window_activation urgent
+# jump to an urgent window
+# bindsym $mod+Shift+x [urgent=latest] focus
+
+# cycle wrap active focus between parent containers
+focus_wrapping yes
+
+# press a workspace bind again to go back to the previous workspace
+workspace_auto_back_and_forth yes
+
+
+# Hide mouse pointer after a time (in ms)
+seat * hide_cursor 10000
+
+
 # Font for window titles. Will also be used by the bar unless a different font
 # is used in the bar {} block below. ISO 10646 = Unicode
 # font pango:DejaVu Sans Mono 10
@@ -150,9 +169,7 @@ font pango:Droid Sans Mono 10
 # font pango:Gohu GohuFont 10
 
 
-###
-
-# terminal variable
+## Terminal application variable
 # set $terminal xterm
 set $terminal urxvt
 # set $terminal termite
@@ -176,8 +193,6 @@ for_window [instance="floating-tty-clock$"] floating toggle
 ## oblique strategy
 bindsym $mod+Shift+semicolon exec "urxvt +sb -cr black -name oblique-strategy -geometry 100x3+230+500 -hold -e /home/milk/bin/oblique-strategies"
 for_window [instance="oblique-strategy$"] floating toggle
-
-
 
 
 ###
@@ -246,9 +261,6 @@ bindsym $mod+XF86Launch1 exec "caffeine -kd"
 ## launch screen lock
 bindsym $mod+Shift+x exec swaylock-blur
 
-## blank screen now until mouse or keyboard action
-bindsym --release $mod+Ctrl+x exec swayidle timeout 1 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"; pkill -n swayidle'
-
 ## launch i3 config help terminal
 bindsym $mod+F1 exec --no-startup-id $terminal -geometry 125x46 -title "i3_hotkey_help" -e ~/bin/i3/i3-hotkey-help.sh
 for_window [instance="i3_hotkey_help$"] floating toggle
@@ -300,16 +312,6 @@ bindsym XF86Mail exec "firefox https://gmail.com && run-or-raise.sh firefox"
 bindsym $mod+Shift+v exec vlc
 
 
-## switch video output between cloned or seperate desktops
-#bindsym $mod+Ctrl+F9 exec "xrandr --output DVI-I-0 --same-as DVI-I-1"
-#bindsym $mod+Ctrl+F10 exec "xrandr --output DVI-I-1 --mode 1280x1024 --pos 0x0 --panning 0x0+0+0 --output DVI-I-0 --mode 1280x1024 --pos 1280x0"
-# use secondary monitor only
-# bindsym $mod+Ctrl+F9 exec "mons -s"
-# bindsym $mod+Ctrl+Shift+F9 exec "mons -o"
-bindsym $mod+Ctrl+F9 exec "sway output VGA-1 enable && sleep 1 && sway output LVDS-1 disable"
-bindsym $mod+Ctrl+Shift+F9 exec "sway output LVDS-1 enable && sleep 1 && sway output VGA-1 disable"
-bindsym $mod+Ctrl+Mod1+F9 exec "sway output LVDS-1 enable && sway output VGA-1 enable"
-
 
 ## screenshot of whole desktop
 # bindsym --release $mod+Print exec import -window root ~/images/screenshots/$(hostname --short)_$(date +%Y-%m-%d-%T).png
@@ -333,17 +335,16 @@ bindsym --release $mod+Mod3+Print exec grim ~/images/screenshots/$(hostname --sh
 # bindsym $mod+F9 exec "$terminal -name 'Event Tester' -geometry 60x9-100-100 -e xev -event keyboard"
 
 
-# new windows will be split in horizontal orientation
-# bindsym $mod+b split h
-# mnemonic b as in just below h
-# new windows will be split in vertical orientation
-# bindsym $mod+v split v
+# new window layout will be split in horizontal orientation
+bindsym $mod+b split horizontal
+# mnemonic b as in just below h, as using the vim motion keys instead of i3/sway default
+# new window layout will be split in vertical orientation
+bindsym $mod+v split v
 
-###
 ## change container layouts
 bindsym $mod+w layout toggle split
 ## toggle between horizontal/vertical splitting for new windows
-bindsym $mod+numbersign split toggle
+bindsym $mod+slash split toggle
 
 bindsym $mod+s layout stacking
 ## mnemonic: below w, stacking puts window titles visually below each other
@@ -358,10 +359,10 @@ bindsym $mod+d focus child
 
 
 ## toggle tiling / floating
-bindsym $mod+z floating toggle
+bindsym $mod+m floating toggle
 
 ## change focus between tiling / floating windows
-bindsym $mod+Shift+z focus mode_toggle
+bindsym $mod+Shift+m focus mode_toggle
 
 
 ## move focused floating window to top right
@@ -754,12 +755,13 @@ for_window [app_id="keepassxc"] floating enable
 # auto resize
 for_window [app_id="seq64 -"] resize set 1180 712
 
-#9a29bbaa 
+#9a29bbaa
+#ff79c6cc
 # container/window colours
 # class                 border    backgr.    text     indicator  child_border
-client.focused          #9a29bbaa #9a29bbaa  #ffffff  #ff79c6cc  #22F828
-client.focused_inactive #000000   #000000    #bbbbbb  #ff79c6cc  #00000000
-client.unfocused        #000000   #000000    #bbbbbb  #ff79c6cc  #00000000
+client.focused          #9a29bbaa #9a29bbaa  #ffffff  #ff0000cc  #22F828
+client.focused_inactive #000000   #000000    #bbbbbb  #ff0000cc  #00000000
+client.unfocused        #000000   #000000    #bbbbbb  #ff0000cc  #00000000
 client.urgent           #2f343a   #aa0000    #ffffff  #aa0000    #aa0000
 client.placeholder      #000000   #0c0c0c    #ffffff  #000000    #0c0c0c
 #client.focused_inactive #777777   #000000    #ffffff  #bd93f9    #000000
@@ -768,16 +770,16 @@ client.placeholder      #000000   #0c0c0c    #ffffff  #000000    #0c0c0c
 client.background       #000000
 
 ## border style; show titles or not. the border toggle feature loses the 4px
-bindsym $mod+b border toggle 4
+bindsym $mod+Shift+b border toggle 2
 
 # set borders and gaps
-default_border pixel 3
-default_floating_border pixel 3
+default_border pixel 2
+default_floating_border pixel 2
 
 gaps inner 4
 gaps outer 0
 
-hide_edge_borders smart
+# hide_edge_borders smart
 
 
 # Start i3bar to display a workspace bar (plus the system information i3status
