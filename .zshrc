@@ -25,7 +25,7 @@ source $Z/environment.zsh
   # export QT_QPA_PLATFORMTHEME=qt5ct
   export QT_QPA_PLATFORM=wayland
   export QT_WAYLAND_DISABLE_WINDOWDECORATION="1"
-  export QT_STYLE_OVERRIDE=gtk2
+  export QT_STYLE_OVERRIDE="adwaita-dark"
   # ssh-agent sway
   # # sway -d >~/sway.log 2>&1
 # #  exit 0
