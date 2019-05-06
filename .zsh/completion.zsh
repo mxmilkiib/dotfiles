@@ -1,5 +1,7 @@
 # completion.zsh: Directives for the Z-Shell completion system.
-# P.C. Shyamshankar <sykora@lucentbeing.com>
+# Original: P.C. Shyamshankar <sykora@lucentbeing.com>
+# Changes: Milk Brewster
+# http://zsh.sourceforge.net/Doc/Release/Completion-System.html
 
 # -U avoids expanding aliases, -z for zsh not ksh(?), then init all completion _files in $fpath
 # autoload -Uz compinit && compinit
@@ -7,8 +9,13 @@ autoload -z compinit && compinit
 
 zstyle ':completion:*' verbose yes
 
+
 # zstyle ':completion:*' menu select
 zstyle ':completion:*' menu select=0 search
+
+# order files by modification time
+zstyle ':completion:*' file-sort modification
+
 
 zstyle ':completion:*' list-colors "${LS_COLORS}" # Complete with same colors as ls.
 
