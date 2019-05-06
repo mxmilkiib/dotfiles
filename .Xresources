@@ -1,3 +1,4 @@
+
 ! Settings for X client programs
 ! Settings need to be reversed/cleared before behaviour reverts (tbc)
 
@@ -50,7 +51,8 @@ xterm.font: xft:Droid Sans Mono:pixelsize=13:Regular.
 ! urxvt.font: xft:Gohu GohuFont:size=14
 ! URxvt.font: xft:terminus:pixelsize=12
 ! URxvt.font: xft:terminus:pixelsize=12:antialias=false
-URxvt.font: xft:Droid Sans Mono:pixelsize=13:Regular.
+! URxvt.font: xft:Droid Sans Mono:pixelsize=13:Regular.
+URxvt.font: xft:DroidSansMonoForPowerline Nerd Font:pixelsize=13:Regular.
 
 ! Reduce kerning by 1px
 ! URxvt.letterSpace: 0
