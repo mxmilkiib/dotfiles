@@ -262,21 +262,22 @@ call plug#begin('~/.vim/plugged')
   " New staus line style, a la powerline
   Plug 'vim-airline/vim-airline'
   Plug 'vim-airline/vim-airline-themes'
-  " let g:airline#extensions#tabline#enabled = 1
-  " let g:airline_powerline_fonts = 1
+  let g:airline#extensions#tabline#enabled = 1
+  let g:airline_powerline_fonts = 1
 
   "powerline symbols
   if !exists('g:airline_symbols')
   let g:airline_symbols = {}
   endif
 
-  let g:airline_left_sep = '▶'
-  let g:airline_left_alt_sep = ''
-  let g:airline_right_sep = '◀'
-  let g:airline_right_alt_sep = ''
-  let g:airline_symbols.branch = ''
-  let g:airline_symbols.readonly = ''
-  let g:airline_symbols.linenr = ''
+  " let g:airline_left_sep = '▶'
+  " let g:airline_left_alt_sep = ''
+  " let g:airline_right_sep = '◀'
+  " let g:airline_right_alt_sep = ''
+  " let g:airline_symbols.branch = ''
+  " let g:airline_symbols.readonly = ''
+  " let g:airline_symbols.linenr = ''
+  let g:airline_statusline_ontop=0
 
   " Highlight the active line
   Plug 'ntpeters/vim-airline-colornum'
