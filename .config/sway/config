@@ -19,7 +19,7 @@ exec /usr/lib/xfce-polkit/xfce-polkit
 exec uhubctl -l 1-1.1.1 -p 2 -a off
 
 # Graphical notifications
-exec sleep 10 && mako --default-timeout 8000 --width 600 --anchor top-center --background-color "#472877" --border-color "#ffffffaa"⇧
+exec "sleep 15 && mako --default-timeout 8000 --width 600 --anchor top-center --background-color '#472877' --border-color '#ffffffaa'"
 
 # Redshift - changed screen colour temp
 # exec redshift-gtk -l 55.978301:-3.228586 -t 6000:4500
@@ -29,13 +29,13 @@ exec sleep 10 && mako --default-timeout 8000 --width 600 --anchor top-center --b
 # exec xset +fp /usr/share/fonts/local; xset fp rehash
 
 # Battery monitor
-# sleep 40 && exec bash -c "if [ $HOST != 'rose*' ]; then vattery; fi"
+# sleep 30 && exec bash -c "if [ $HOST != 'rose*' ]; then vattery; fi"
 
 # Internet radio stream player
-# exec sleep 20 && radiotray-ng
+# exec sleep 40 && radiotray-ng
 
 # Korg nanoKontrol2 MIDI control of PulseAudio
-# exec sleep 30 && midi2pamixer.py
+exec sleep 30 && midi2pamixer.py
 
 # Volume system tray
 # exec sleep 40 && kmix
@@ -45,7 +45,6 @@ exec sleep 10 && mako --default-timeout 8000 --width 600 --anchor top-center --b
 
 # Connect to mobile phone
 # exec sleep 60 && kdeconnect-indicator
-
 
 # Break timer
 # exec sleep 90 && workrave
@@ -132,6 +131,11 @@ bindsym --release $mod+Ctrl+b exec swayidle timeout 1 'swaymsg "output * dpms of
 bindsym $mod+Ctrl+F9 exec "sway output VGA-1 enable && sleep 1 && sway output LVDS-1 disable"
 bindsym $mod+Ctrl+Shift+F9 exec "sway output LVDS-1 enable && sleep 1 && sway output VGA-1 disable"
 bindsym $mod+Ctrl+Mod1+F9 exec "sway output LVDS-1 enable && sway output VGA-1 enable"
+
+# position external output on left of main output 
+bindsym $mod+Ctrl+F10 exec "sway output VGA-1 pos 1366 0 res 1280x1024"
+# position external output on right of main output 
+bindsym $mod+Ctrl+Shift+F10 exec "sway output VGA-1 pos -1280 0 res 1280x1024"
 
 
 ###
@@ -297,8 +301,8 @@ bindsym $mod+F11 exec run-or-raise.sh quasselclient
 ## launch or switch to browser
 # bindsym $mod+F12 exec run-or-raise.sh chromium
 # bindsym XF86WWW exec run-or-raise.sh chromium
-bindsym $mod+F12 exec run-or-raise.sh firefox
-bindsym XF86WWW exec run-or-raise.sh firefox
+bindsym $mod+F12 exec run-or-raise.sh firefox-beta
+bindsym XF86WWW exec run-or-raise.sh firefox-beta
 
 ## launch trello
 # bindsym $mod+Shift+F12 exec chromium --app=https://trello.com/b/AdniCH2y/to-do
@@ -359,20 +363,20 @@ bindsym $mod+d focus child
 
 
 ## toggle tiling / floating
-bindsym $mod+m floating toggle
+bindsym $mod+z floating toggle
 
 ## change focus between tiling / floating windows
-bindsym $mod+Shift+m focus mode_toggle
+bindsym $mod+Ctrl+m focus mode_toggle
 
 
 ## move focused floating window to top right
-bindsym $mod+y exec "xdotool getwindowfocus windowmove 600 100"
+bindsym $mod+y exec "ydotool getwindowfocus windowmove 600 100"
 
 ## move focused floating window to mid right
-bindsym $mod+u exec "xdotool getwindowfocus windowmove 600 400"
+bindsym $mod+u exec "ydotool getwindowfocus windowmove 600 400"
 
 ## move focused floating window to bottom right
-bindsym $mod+i exec "xdotool getwindowfocus windowmove 600 607"
+bindsym $mod+i exec "ydotool getwindowfocus windowmove 600 607"
 
 
 ## toggle floating window to sticky or not
@@ -381,6 +385,7 @@ bindsym $mod+c sticky toggle
 
 ## enter fullscreen mode for the focused container
 bindsym $mod+f fullscreen
+bindsym $mod+x fullscreen
 
 ## toggle bar visibility
 bindsym $mod+Shift+f bar mode toggle
@@ -539,8 +544,8 @@ mode "resize" {
 
 
 ## workspace name varilables, numerical keeps them in persistent order
-#misc
-set $ws1 "1:1🔣"
+#ssh/misc term
+set $ws1 "1:1🔳"
 #filemanager
 set $ws2 "2:2📂"
 #transfer
