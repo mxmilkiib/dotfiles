@@ -23,9 +23,11 @@ source $Z/environment.zsh
 if [ $(tty) = "/dev/tty1" ]; then
   export XKB_DEFAULT_LAYOUT=gb
   # export QT_QPA_PLATFORMTHEME=qt5ct
-  export QT_QPA_PLATFORM=wayland
+  export QT_QPA_PLATFORM=wayland-egl
   export QT_WAYLAND_DISABLE_WINDOWDECORATION="1"
   export QT_STYLE_OVERRIDE="adwaita-dark"
+  CLUTTER_BACKEND=wayland
+  SDL_VIDEODRIVER=wayland
   ssh-agent sway
   # # sway -d >~/sway.log 2>&1
  exit 0
