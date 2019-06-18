@@ -284,6 +284,9 @@ bak() { cp "$1" "$1".bak; }
 # Backup file and remove original
 bakd() { mv "$1" "$1".bak; }
 
+# replace spaces with underscores in filename
+alias renamens="perl-rename -E 's/ /_/g' -E 's/(/_/g' -E 's/)/_/g'"
+
 # Makes parent dir if it doesn't exist (i.e. newdir/secondnewdir/third etc.)
 alias mkdir='mkdir -p'
 
