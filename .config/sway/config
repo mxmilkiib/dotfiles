@@ -119,23 +119,25 @@ output VGA-1 disable
 # output VGA-1 pos 1366 0 res 1920x1080
 # output VGA-1 pos -1280 0 res 1280x1024 ?
 
-## blank screen now until mouse or keyboard action
-bindsym --release $mod+Ctrl+b exec swayidle timeout 1 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"; pkill -n swayidle'
-
 ## switch video output between cloned or seperate desktops
 #bindsym $mod+Ctrl+F9 exec "xrandr --output DVI-I-0 --same-as DVI-I-1"
 #bindsym $mod+Ctrl+F10 exec "xrandr --output DVI-I-1 --mode 1280x1024 --pos 0x0 --panning 0x0+0+0 --output DVI-I-0 --mode 1280x1024 --pos 1280x0"
 # use secondary monitor only
 # bindsym $mod+Ctrl+F9 exec "mons -s"
 # bindsym $mod+Ctrl+Shift+F9 exec "mons -o"
-bindsym $mod+Ctrl+F9 exec "sway output VGA-1 enable && sleep 1 && sway output LVDS-1 disable"
-bindsym $mod+Ctrl+Shift+F9 exec "sway output LVDS-1 enable && sleep 1 && sway output VGA-1 disable"
-bindsym $mod+Ctrl+Mod1+F9 exec "sway output LVDS-1 enable && sway output VGA-1 enable"
+bindsym $mod+Shift+F9 exec "swaymsg output VGA-1 enable && sleep 1 && swaymsg output LVDS-1 disable"
+bindsym $mod+Ctrl+F9 exec "swaymsg output LVDS-1 enable && sleep 1 && swaymsg output VGA-1 disable"
+bindsym $mod+Ctrl+Shift+F9 exec "swaymsg output LVDS-1 enable && swaymsg output VGA-1 enable"
 
 # position external output on left of main output 
-bindsym $mod+Ctrl+F10 exec "sway output VGA-1 pos 1366 0 res 1280x1024"
+# bindsym $mod+Ctrl+F10 exec "sway output VGA-1 pos 1366 0 res 1280x1024"
 # position external output on right of main output 
-bindsym $mod+Ctrl+Shift+F10 exec "sway output VGA-1 pos -1280 0 res 1280x1024"
+# bindsym $mod+Ctrl+Shift+F10 exec "sway output VGA-1 pos -1280 0 res 1280x1024"
+bindsym $mod+Ctrl+F10 exec "swaymsg 'output VGA-1 pos -1920 0 res 1920x1080'"
+bindsym $mod+Shift+F10 exec "swaymsg 'output VGA-1 pos 1920 0 res 1920x1080'"
+
+## blank screen now until mouse or keyboard action
+bindsym --release $mod+Ctrl+b exec swayidle timeout 1 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"; pkill -n swayidle'
 
 
 ###
