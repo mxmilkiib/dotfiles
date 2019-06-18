@@ -22,7 +22,7 @@ exec uhubctl -l 1-1.1.1 -p 2 -a off
 exec "sleep 15 && mako --default-timeout 8000 --width 600 --anchor top-center --background-color '#472877' --border-color '#ffffffaa'"
 
 # Redshift - changed screen colour temp
-# exec redshift-gtk -l 55.978301:-3.228586 -t 6000:4500
+exec redshift-gtk -l 55.978301:-3.228586 -t 6000:4500
 # broken on wayland atm
 
 # Make additional fonts available
@@ -125,9 +125,15 @@ output VGA-1 disable
 # use secondary monitor only
 # bindsym $mod+Ctrl+F9 exec "mons -s"
 # bindsym $mod+Ctrl+Shift+F9 exec "mons -o"
-bindsym $mod+Shift+F9 exec "swaymsg output VGA-1 enable && sleep 1 && swaymsg output LVDS-1 disable"
-bindsym $mod+Ctrl+F9 exec "swaymsg output LVDS-1 enable && sleep 1 && swaymsg output VGA-1 disable"
-bindsym $mod+Ctrl+Shift+F9 exec "swaymsg output LVDS-1 enable && swaymsg output VGA-1 enable"
+# bindsym $mod+Shift+F9 exec      "swaymsg output LVDS-1 disable && swaymsg output HDMI-A-1 disable && swaymsg output VGA-1    enable"
+# bindsym $mod+Ctrl+F9 exec       "swaymsg output VGA-1  disable && swaymsg output HDMI-A-1 disable && swaymsg output LVDS-1   enable"
+# bindsym $mod+Ctrl+Shift+F9 exec "swaymsg output VGA-1  disable && swaymsg output LVDS-1   enable  && swaymsg output HDMI-A-1 enable"
+# bindsym $mod+Shift+Mod1+F9 exec "swaymsg output LVDS-1 disable && swaymsg output VGA-1    enable  && swaymsg output HDMI-A-1 enable"
+
+bindsym $mod+Shift+F9 exec      "swaymsg output LVDS-1   disable && sleep 1 && swaymsg output HDMI-A-1 disable && sleep 1 && swaymsg output VGA-1    enable"
+bindsym $mod+Ctrl+F9 exec       "swaymsg output VGA-1    disable && sleep 1 && swaymsg output HDMI-A-1 disable && sleep 1 && swaymsg output LVDS-1   enable"
+bindsym $mod+Ctrl+Shift+F9 exec "swaymsg output HDMI-A-1 disable && sleep 1 && swaymsg output LVDS-1   enable  && sleep 1 && swaymsg output VGA-1    enable"
+bindsym $mod+Shift+Mod1+F9 exec "swaymsg output LVDS-1   disable && sleep 1 && swaymsg output VGA-1    enable  && sleep 1 && swaymsg output HDMI-A-1 enable"
 
 # position external output on left of main output 
 # bindsym $mod+Ctrl+F10 exec "sway output VGA-1 pos 1366 0 res 1280x1024"
@@ -144,6 +150,9 @@ bindsym --release $mod+Ctrl+b exec swayidle timeout 1 'swaymsg "output * dpms of
 # tiling split direction
 # default_orientation horizontal
 default_orientation vertical
+
+# switch split direction on new window to emulate automatic spiral layout management
+for_window [app_id=".*"] split toggle
 
 title_align center
 
