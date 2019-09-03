@@ -60,13 +60,13 @@ exec sleep 30 && midi2pamixer.py
 
 
 # layout doesn't work?? uysing envvar instead
-input * {
-    xkb_layout gb
-    xkb_variant ,nodeadkeys
-    xkb_options grp:alt_shift_toggle
-    xkb_options F13:swapescape
-    xkb_numlock enabled
-}
+# input * 
+    # xkb_layout gb
+    # xkb_variant ,nodeadkeys
+    # xkb_options grp:alt_shift_toggle
+    # xkb_options F13:swapescape
+    # xkb_numlock enabled
+# }
 
 # Mod4 = win (super) key
 # Mod1 = alt key
@@ -129,18 +129,17 @@ output VGA-1 disable
 # bindsym $mod+Ctrl+F9 exec       "swaymsg output VGA-1  disable && swaymsg output HDMI-A-1 disable && swaymsg output LVDS-1   enable"
 # bindsym $mod+Ctrl+Shift+F9 exec "swaymsg output VGA-1  disable && swaymsg output LVDS-1   enable  && swaymsg output HDMI-A-1 enable"
 # bindsym $mod+Shift+Mod1+F9 exec "swaymsg output LVDS-1 disable && swaymsg output VGA-1    enable  && swaymsg output HDMI-A-1 enable"
-
-bindsym $mod+Shift+F9 exec      "swaymsg output LVDS-1   disable && sleep 1 && swaymsg output HDMI-A-1 disable && sleep 1 && swaymsg output VGA-1    enable"
-bindsym $mod+Ctrl+F9 exec       "swaymsg output VGA-1    disable && sleep 1 && swaymsg output HDMI-A-1 disable && sleep 1 && swaymsg output LVDS-1   enable"
-bindsym $mod+Ctrl+Shift+F9 exec "swaymsg output HDMI-A-1 disable && sleep 1 && swaymsg output LVDS-1   enable  && sleep 1 && swaymsg output VGA-1    enable"
-bindsym $mod+Shift+Mod1+F9 exec "swaymsg output LVDS-1   disable && sleep 1 && swaymsg output VGA-1    enable  && sleep 1 && swaymsg output HDMI-A-1 enable"
+bindsym $mod+Shift+F9       output LVDS-1  disable, output VGA-1    disable, output HDMI-A-1 enable
+bindsym $mod+Ctrl+F9        output VGA-1   enable,  output HDMI-A-1 disable, output LVDS-1   disable
+bindsym $mod+Ctrl+Shift+F9  output VGA-1   enable,  output LVDS-1   disable, output HDMI-A-1 enable
+bindsym $mod+Shift+space+F9 output LVDS-1  disable, output VGA-1    enable,  output HDMI-A-1 enable
 
 # position external output on left of main output 
 # bindsym $mod+Ctrl+F10 exec "sway output VGA-1 pos 1366 0 res 1280x1024"
 # position external output on right of main output 
 # bindsym $mod+Ctrl+Shift+F10 exec "sway output VGA-1 pos -1280 0 res 1280x1024"
-bindsym $mod+Ctrl+F10 exec "swaymsg 'output VGA-1 pos -1920 0 res 1920x1080'"
-bindsym $mod+Shift+F10 exec "swaymsg 'output VGA-1 pos 1920 0 res 1920x1080'"
+bindsym $mod+Ctrl+F10  output VGA-1 pos -1920 0 res 1920x1080
+bindsym $mod+Shift+F10 output VGA-1 pos 1920 0 res 1920x1080
 
 ## blank screen now until mouse or keyboard action
 bindsym --release $mod+Ctrl+b exec swayidle timeout 1 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"; pkill -n swayidle'
@@ -152,7 +151,9 @@ bindsym --release $mod+Ctrl+b exec swayidle timeout 1 'swaymsg "output * dpms of
 default_orientation vertical
 
 # switch split direction on new window to emulate automatic spiral layout management
-for_window [app_id=".*"] split toggle
+# for_window [class=".*"] split toggle
+# for_window [app_id=".*"] split toggle
+# for_window [^floating] split toggle
 
 title_align center
 
@@ -301,10 +302,10 @@ bindsym $mod+F4 exec $terminal -e ncmpcpp
 bindsym $mod+Shift+F4 exec run-or-raise.sh picard
 
 ## launch carla plugin host
-bindsym $mod+F8 exec run-or-raise.sh carla
+bindsym $mod+F7 exec run-or-raise.sh carla
 
 ## launch password manager
-bindsym $mod+F10 exec run-or-raise.sh keepassxc ~/documents/sync/keepassxc-mb.kdbx
+bindsym $mod+F8 exec run-or-raise.sh keepassxc ~/sync/keepassxc-mb.kdbx
 
 ## launch or switch to irc client
 bindsym $mod+F11 exec run-or-raise.sh quasselclient
@@ -312,8 +313,8 @@ bindsym $mod+F11 exec run-or-raise.sh quasselclient
 ## launch or switch to browser
 # bindsym $mod+F12 exec run-or-raise.sh chromium
 # bindsym XF86WWW exec run-or-raise.sh chromium
-bindsym $mod+F12 exec run-or-raise.sh firefox-beta
-bindsym XF86WWW exec run-or-raise.sh firefox-beta
+bindsym $mod+F12 exec run-or-raise.sh firefox
+bindsym XF86WWW exec run-or-raise.sh firefox
 
 ## launch trello
 # bindsym $mod+Shift+F12 exec chromium --app=https://trello.com/b/AdniCH2y/to-do
@@ -322,17 +323,15 @@ bindsym XF86WWW exec run-or-raise.sh firefox-beta
 # bindsym XF86Mail exec "chromium https://gmail.com && run-or-raise.sh chromium"
 bindsym XF86Mail exec "firefox https://gmail.com && run-or-raise.sh firefox"
 
-
 ## launch vlc
-bindsym $mod+Shift+v exec vlc
-
+# bindsym $mod+Shift+v exec vlc
 
 
 ## screenshot of whole desktop
 # bindsym --release $mod+Print exec import -window root ~/images/screenshots/$(hostname --short)_$(date +%Y-%m-%d-%T).png
-bindsym --release $mod+Print exec grim -o $(swaymsg -t get_outputs | jq -r '.[] | select(.focused).name') ~/images/screenshots/$(hostname --short)_$(date +%Y-%m-%d-%T).png
-bindsym --release $mod+Ctrl+Print exec grim -g "$(slurp)" ~/images/screenshots/$(hostname --short)_$(date +%Y-%m-%d-%T)-region.png
-bindsym --release $mod+Mod3+Print exec grim ~/images/screenshots/$(hostname --short)_$(date +%Y-%m-%d-%T).png
+bindsym --release $mod+Print exec grim -o $(swaymsg -t get_outputs | jq -r '.[] | select(.focused).name') ~/images/screenshots/$(hostname --short)_$(date +%Y-%m-%d-%H%M%S).png
+bindsym --release $mod+Ctrl+Print exec grim -g "$(slurp)" ~/images/screenshots/$(hostname --short)_$(date +%Y-%m-%d-%H%M%S)-region.png
+bindsym --release $mod+Mod3+Print exec grim ~/images/screenshots/$(hostname --short)_$(date +%Y-%m-%d-%H%M%S).png
 
 
 ## screenshot of active window
@@ -723,11 +722,11 @@ assign [app_id="keepassxc"] $ws8
 assign [title="Cadence"] $ws9
 assign [app_id="Catia.py"] $ws9
 assign [app_id="pavucontrol*"] $ws9
-# assign [app_id="Pulseeffects"] $ws9
-assign [app_id="Google Chrome"] $ws0
+assign [app_id="Pulseeffects"] $ws9
+assign [app_id="Google Chrome"] $ws-
 assign [app_id="Chromium"] $ws-
 assign [class="Firefox"] $ws-
-assign [app_id="firefox"] $ws=
+assign [app_id="firefox"] $ws-
 assign [app_id="Hexchat"] $ws=
 assign [app_id="quassel"] $ws=
 
@@ -807,6 +806,7 @@ bar {
   # status_command "py3status -c ~/.config/i3/istatus_$(hostname --short) --include ~/.config/sway/py3status"
   status_command "py3status -c ~/.config/i3/istatus_$(hostname --short)"
 
+  height 22
 	position       top
 	separator_symbol " "
   strip_workspace_numbers yes
@@ -818,7 +818,7 @@ bar {
 	colors {
   	background #000000dd
 
-statusline #ffffff
+    statusline #ffffff
     # class            border   	backgrd    text
 		focused_workspace  #9a29bbcc  #9a29bbcc  #ffffff
     active_workspace   #555555   	#555555    #ffffff

@@ -1,210 +1,269 @@
-### Application hotkeys
+### sxhkd config
+### for bspwm etc
+### by milky
 
-super + Return
-  urxvtcd
+# @ means it happens on key release
 
-# Guake like, see Arch Wiki Rxvt-unicode/Tips_and_tricks
-super + alt + Return
-  urxvtq
-
-# open a urxvtc terminal window in a specific direction
-#super + Return
-#	if [ $(bspc query -N -n next) ]; then urxvtc; else bspc rule -a \* --one-shot split_dir=down; urxvtc; fi 
-
-# open a floating terminal window
-super + ctrl + Return
-	bspc rule -a \* --one-shot state=floating | urxvtc
-
-# open dmenu launcher
-super + space
-	dmenu_run.pl -h 22
 
 # make sxhkd reload its configuration files:
-super + Escape  
+super + Escape
 	pkill -USR1 -x sxhkd
-
-# volume control
-super + p
-	pavucontrol
-
-# scratchpad
-super + F2
-  leafpad ~/documents/scratch
-
-   
-
-super + alt + space
-  {smartsplit ; bspc node -i,\
-  for i in $(bspc query -N -n .leaf.!window.local); do bspc node $i -k; done}
 
 
 ### BPSWM hotkeys
-
-# quit bspwm or save layout and quit. bspwm loop is broken atm.
+# Quit bspwm or save layout and quit. bspwm loop is broken atm.
+# todo; broken?
 super + alt + {_,shift + }Escape
 	{bspc wm -d > "$BSPWM_STATE" && bspc quit, \
 	 bspc quit 1}
 
 
-### Node state/flags
+### Terminal hotkeys
+# Launch a terminal
+super + Return
+  urxvt
 
-# set the window state
-super + {t,shift + t,s,f}
+# Launch a terminal in the current working directory of the focused window
+super + ctrl + Return
+  urxvt -cd `xcwd`
+
+# Open a floating terminal window
+super + shift + Return
+	bspc rule -a \* --one-shot state=floating | urxvt
+
+# Open a floating clock window
+super + semicolon
+ 	bspc rule -a \* --one-shot state=pseudo_tiled | urxvt -e sh -c "tty-clock -s -b -c -C 3 -D"
+
+
+### Application hotkeys
+# Capture a screenshot
+super + Print
+  import -window root ~/images/screenshots/$(hostname --short)_$(date +%Y-%m-%d-%T).png
+
+# Open an application launcher
+super + @space
+  rofi -modi combi -combi-modi 'drun#run' -show combi -show-icons -width 60 -lines 25 -theme purple.rasi -display-combi launch
+
+
+# Pulseaudio application volume mixer
+super + p
+	xdo activate -n pavucontrol
+
+
+# Various apps in order of assigned desktop
+super + F1
+  xdo activate -n geany ~/documents/scratch
+super + F2
+  xdo activate -n doublecmd || doublecmd
+super + shift + F2
+  xdo activate -n pcmanfm-qt || pcmanfm-qt
+super + F3
+  xdo activate -n qbittorrent || qbittorrent
+super + shift + F3
+  xdo activate -n soulseekqt || soulseekqt
+super + F4
+  xdo activate -n urxvt -e sh -c ncmpcpp
+super + shift + F4
+  xdo activate -n picard || picard
+super + F5
+  xdo activate -n cadence || cadence
+super + shift + F5
+  xdo activate -n carla || carla
+super + F6
+  xdo activate -n qseq64 || qseq64
+super + F8
+  xdo activate -n keepassxc || keepassxc ~/sync/keepassxc-mb.kdbx
+super + F11
+  xdo activate -n quasselclient || quasselclient
+super + F12
+  xdo activate -n Navigator || firefox
+
+
+
+# Simulate an "x" keypress to close tabs using Vimium in Firefox
+# broken!
+ctrl + button8
+  xdo key_press -k 53; xdo key_release -k 53
+
+
+### Node state/flags
+# Cycle desktop layout between monocle and tiled
+super + m
+	bspc desktop -l next
+
+# Set the window state
+super + {t,shift + z,z,f}
 	bspc node -t {tiled,pseudo_tiled,floating,fullscreen}
 
-# set the node flags
+# Set the node flags
 super + ctrl + {x,y,z}
 	bspc node -g {locked,sticky,private}
 
-# set the node layer state
+# Set the node z-layer state
 super + shift + {x,y,z}
 	bspc node -l {below,normal,above}
 
-# cycle desktop layout between monocle and tiled
-super + n
-	bspc desktop -l next
-
 
 ### Node management
-
 # Close or kill window node
 super + {_,shift + }q
 	bspc node -{c,k}
 
-# Close the current window, and also remove the current desktop after closing (if possible).
-super + apostrophe 
-  bspc node -f -c;\
-  sleep 0.1;\
-  ~/.config/bspwm/scripts/remove_desktop.sh
+# Close or kill a window under the pointer with a mouse button
+button9 + {_,shift}
+  xdo button_press button1; sleep 0.2; xdo button_release button1; bspc node -{c,k} 
 
-
-# Move a window to a desktop, and remove the current desktop after closing (if possible).
-super + alt + {1-9,0}
-  bspc node --to-desktop ^{1-9,10};\
-  ~/.config/bspwm/scripts/remove_desktop.sh
+## Close the current window, and also remove the current desktop after closing (if possible).
+#super + apostrophe
+#  bspc node -f -c;\
+#  sleep 0.1;\
+#  ~/.config/bspwm/scripts/remove_desktop.sh
+#
+#
+## Move a window to a desktop, and remove the current desktop after closing (if possible).
+#super + alt + {1-9,0}
+#  bspc node --to-desktop ^{1-9,10};\
+#  ~/.config/bspwm/scripts/remove_desktop.sh
 
 
 ## Resize nodes
-
 # expand the tiled space in the given direction
-#super + alt + {h,j,k,l}
-#	bspc node {@west -r -10,@south -r +10,@north -r -10,@east -r +10}
+super + ctrl + {h,j,k,l}
+	bspc node {@west -r -10,@south -r +10,@north -r -10,@east -r +10}
 
 # contract the tiled space in the given direction
-super + alt + shift + {h,j,k,l}
+super + alt + {h,j,k,l}
 	bspc node {@east -r -10,@north -r +10,@south -r -10,@west -r +10}
-
-# move a floating window
-super + ctrl + {Left,Down,Up,Right}
-	xdo move {-x -20,-y +20,-y -20,-x +20}
 
 
 ### Focus/swap/move
-
 # focus to or swap window with direction given
 super + {_,shift + }{h,j,k,l}
 	bspc node -{f,s} {west,south,north,east}
 
-# switch focus between last window with tab, or desktop with `
+# Switch focus between last window with tab, or desktop with `
 super + {Tab,grave}
 	bspc {node,desktop} -f last
 
-# focus on next floating or next tiled window 
-super + {d,y}
+# Focus on next floating or next tiled window
+super + {w,a}
 	bspc node -f {next.floating,next.tiled}
 
-# rotate current desktop node tree root
-super + {r,e}
+
+# Rotate current desktop node tree root
+super + {e,s}
 	bspc node @/ -R {90,270}
 
-# circulate the leaves of desktop tree backward or forward
-super + comma
-	bspc node @/ -C backward; \
+# Circulate the leaves of desktop tree backward or forward
+super + {comma,period}
+	bspc node @/ -C {backward,forward}; \
 	bspc node -f older
 
-# circulate the leaves of desktop tree backward or forward
-super + period
-	bspc node @/ -C forward; \
-	bspc node -f older
 
-# equalise or balance windows on current desktop
+# Swap focused window with largest tiled node on the same desktop
+super + n
+	bspc node -s biggest.local
+
+# Equalise or balance windows on current desktop
 super + {_,alt + }b
 	bspc desktop {-E,-B}
 
-# swap focused window with last focused window on any desktop
-#super + apostrophe
-#	bspc node -s last
-
-# swap focused window with largest tiled node on the same desktop
-super + m
-	bspc node -s biggest
+# Swap focused window with last focused window on any desktop
+super + apostrophe
+	bspc node -s last
 
 
-### Preselect
+# move a floating window
+#super + ctrl + {Left,Down,Up,Right}
+#	xdo move {-x -20,-y +20,-y -20,-x +20}
 
-# preselect section of window edge
-super + ctrl + {h,j,k,l}
+
+### Preselect (for adding a new window)
+# Preselect section of window edge
+super + ctrl + alt + {h,j,k,l}
 	bspc node -p {west,south,north,east}
 
-# preselect the ratio
+# Preselect the ratio
 super + ctrl + {1-9}
 	bspc node -o 0.{1-9}
 
-# cancel preselect for window or desktop
+# Cancel preselect for window or desktop
 super + ctrl + space
 	bspc node -p cancel
 
-# cancel the preselection for the focused desktop
+# Cancel the preselection for the focused desktop
 super + ctrl + shift + space
 	bspc query -N -d | xargs -I id -n 1 bspc node id -p cancel
 
-# transplant to preselect
-super + ctrl + shift + {h,j,k,l}
-  bspc window -s {left,down,up,right}
+# Transplant to preselect
+#super + ctrl + shift + {h,j,k,l}
+#  bspc window -s {left,down,up,right}
 
-# split in direction
-super + alt + ctrl + {h,j,k,l}
+# Preselect in a direction and launch terminal
+super + alt + shift + {h,j,k,l}
   bspc node -p {west,south,north,east};\
-  urxvtc
+  urxvt
 
 
 ### Desktop management
 # https://github.com/lietk12/dotfiles/tree/master/.config
-
-# Make a new desktop and switch to it
-super + numbersign
-	~/.config/bspwm/scripts/add_desktop.sh;\
-	bspc desktop --focus next.!occupied
-
-super + ctrl + numbersign
-	~/.config/bspwm/scripts/add_desktop.sh;\
-	bspc desktop --focus next.!occupied;\
-	urxvtc
-
-# Move the current window onto a new desktop in the background
-super + alt + numbersign
-	~/.config/bspwm/scripts/add_desktop.sh;\
-	bspc node --to-desktop next.!occupied
-
-# Move the current window onto a new desktop and switch to it
-super + shift + numbersign
-	~/.config/bspwm/scripts/add_desktop.sh;\
-	bspc node --to-desktop next.!occupied;\
-	bspc node --focus last
-
-
-
-# focus on previous or next desktop
+# Focus on previous or next desktop
 super + {Left,Right}
-	bspc desktop -f {prev,next}
+	bspc desktop focused -f {prev,next}
 
-# move window to previous or next desktop
-super + alt + {Left,Right}
+# Move window to the previous or next desktop
+super + ctrl + {Left,Right}
 	bspc node -d {prev,next}
 
-# move window to previous or next desktop and follow with focus
+# Move window to the previous or next desktop and follow with focus
 super + shift + {Left,Right}
 	bspc node -d {prev,next} -f
+
+
+# Focus on a desktop
+super + {1-9,0,minus,equal}
+  bspc desktop -f ^{2-9,10,11,12,13}
+
+# Move window to a desktop number and follow
+super + shift + {1-9,0,minus,equal}
+	bspc node -d ^{1-9,10,11,12} -f
+
+# Move window to a desktop number and don't follow
+super + ctrl + {1-9,0,minus,equal}
+	bspc node -d ^{1-9,10,11,12}
+
+
+# Move desktop to the left
+super + bracketleft
+  bspc desktop focused -b prev
+
+# Move desktop to the right
+super + bracketright
+  bspc desktop focused -b next
+
+
+# Make a new desktop and switch to it
+#super + numbersign
+#	~/.config/bspwm/scripts/add_desktop.sh;\
+#	bspc desktop --focus next.!occupied
+#
+## Switch to new desktop and start a terminal
+#super + ctrl + numbersign
+#	~/.config/bspwm/scripts/add_desktop.sh;\
+#	bspc desktop --focus next.!occupied;\
+#	urxvt
+#
+## Move the current window onto a new desktop in the background
+#super + alt + numbersign
+#	~/.config/bspwm/scripts/add_desktop.sh;\
+#	bspc node --to-desktop next.!occupied
+#
+## Move the current window onto a new desktop and switch to it
+#super + shift + numbersign
+#	~/.config/bspwm/scripts/add_desktop.sh;\
+#	bspc node --to-desktop next.!occupied;\
+#	bspc node --focus last
 
 # bubble (move) desktop left and right
 #super + bracket{left,right}
@@ -213,33 +272,20 @@ super + shift + {Left,Right}
 #	~/.config/bspwm/scripts/renumber_desktops.sh
 # eh?
 
-super + bracketleft
-  bspc desktop focused -b prev && bspc desktop -f prev
 
-super + bracketright
-  bspc desktop focused -b next && bspc desktop -f next
-
-# focus on desktop number selected
-super + {1-9,0}
-	bspc desktop -f ^{1-9,10}
-
-# move window to selected desktop number and follow
-super + shift + {1-9,0}
-	bspc node -d ^{1-9,10} -f
-
-# move window to selected desktop number
-super + alt + {1-9}
-	bspc node -d ^{1-9}
+#??
+#super + alt + space
+#  {smartsplit ; bspc node -i,\
+#  for i in $(bspc query -N -n .leaf.!window.local); do bspc node $i -k; done}
 
 
 ### Monitor
-
 # focus on the next monitor
 super + o
 	bspc monitor -f next
 
 # move window between monitors
-super + alt + o
+super + ctrl + o
 	bspc node -m next
 
 # move window between monitors and follow
@@ -247,42 +293,37 @@ super + shift + o
 	bspc node -m next -f
 
 # Move the desktop to the previous monitor
-super + F9
-	bspc desktop --to-monitor prev;\
-	~/.config/bspwm/scripts/renumber_desktops.sh
+#super + F9
+#	bspc desktop --to-monitor prev;\
+#	~/.config/bspwm/scripts/renumber_desktops.sh
 
 # Move the desktop to the next monitor
-super + F10
-	bspc desktop --to-monitor next;\
-	~/.config/bspwm/scripts/renumber_desktops.sh
+#super + F10
+#	bspc desktop --to-monitor next;\
+#	~/.config/bspwm/scripts/renumber_desktops.sh
 
 # Move the window to the next monitor and also remove the current desktop if it's empty after moving.
-super + alt + F9
-	bspc node --to-monitor next;\
-	~/.config/bspwm/scripts/remove_desktop.sh
+#super + alt + F9
+#	bspc node --to-monitor next;\
+#	~/.config/bspwm/scripts/remove_desktop.sh
 
 # Move the window to the previous monitor and also remove the current desktop if it's empty after moving.
-super + alt + F10
-	bspc node --to-monitor prev;\
-	~/.config/bspwm/scripts/remove_desktop.sh
+#super + alt + F10
+#	bspc node --to-monitor prev;\
+#	~/.config/bspwm/scripts/remove_desktop.sh
 
 
 ### Mouse and pointer
-
 ~button1
 	bspc pointer -g focus
 
-# move, resize one size or resize two sides with mouse click and drag
-super + button{1-3}
-	bspc pointer -g {move,resize_side,resize_corner}
 
-# motion
+# Motion
 super + !button{1-3}
 	bspc pointer -t %i %i
 
-# release
-super + @button{1-3}
-	bspc pointer -u
+super + button{4,5}
+ bspc desktop -f {prev,next}
 
-#super + button{4,5}
-#  bspc desktop -f {prev,next}
+
+# vi:syn=sxhkdrc
