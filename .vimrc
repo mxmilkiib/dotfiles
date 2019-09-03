@@ -39,6 +39,9 @@ call plug#begin('~/.vim/plugged')
   """ Startup
   " Plug 'mhinz/vim-startify'
 
+  " Brings :checkhealth from Neovim to :CheckHealth in Vim
+  Plug 'rhysd/vim-healthcheck'
+
 
   """ Find things easily
   " fzf - populate a menu with things and f*i*l*t*e*r live with ripgrep
@@ -93,9 +96,9 @@ call plug#begin('~/.vim/plugged')
   " Plug 'jiangmiao/auto-pairs'
 
   " Add/remove comments with ease
-  Plug 'scrooloose/nerdcommenter'
-  let g:NERDSpaceDelims = 1
-  let g:NERDCommentEmptyLines = 1
+  " Plug 'scrooloose/nerdcommenter'
+  " let g:NERDSpaceDelims = 1
+  " let g:NERDCommentEmptyLines = 1
   " <leader>+c+<space> = toggle
 
   " Surround objects with something
@@ -113,9 +116,13 @@ call plug#begin('~/.vim/plugged')
   " . repeat for some plugin actions
   Plug 'tpope/vim-repeat'
 
-  " Text alignment
-  " Plug 'godlygeek/tabular'
 
+  " Text alignment
+  Plug 'junegunn/vim-easy-align'
+  " Start interactive EasyAlign for a motion/text object (i.e. gaip)
+  nmap ga <Plug>(EasyAlign)
+  " Start interactive EasyAlign in visual mode (i.e. vipga=)
+  xmap ga <Plug>(EasyAlign)
 
   " Display sections in sidebar
   " Plug 'yazug/vim-taglist-plus'
@@ -159,42 +166,22 @@ call plug#begin('~/.vim/plugged')
 
   " Syntax highlighting and help
 
+  " Colour parent and tags to indicate their depth
   Plug 'luochen1990/rainbow'
   let g:rainbow_active = 1
-  let g:rainbow_conf = {
-	\	'guifgs': ['royalblue3', 'darkorange3', 'seagreen3', 'firebrick'],
-	\	'ctermfgs': ['lightblue', 'lightyellow', 'lightcyan', 'lightmagenta'],
-	\	'operators': '_,_',
-	\	'parentheses': ['start=/(/ end=/)/ fold', 'start=/\[/ end=/\]/ fold', 'start=/{/ end=/}/ fold'],
-	\	'separately': {
-	\		'*': {},
-	\		'tex': {
-	\			'parentheses': ['start=/(/ end=/)/', 'start=/\[/ end=/\]/'],
-	\		},
-	\		'lisp': {
-	\			'guifgs': ['royalblue3', 'darkorange3', 'seagreen3', 'firebrick', 'darkorchid3'],
-	\		},
-	\		'vim': {
-	\			'parentheses': ['start=/(/ end=/)/', 'start=/\[/ end=/\]/', 'start=/{/ end=/}/ fold', 'start=/(/ end=/)/ containedin=vimFuncBody', 'start=/\[/ end=/\]/ containedin=vimFuncBody', 'start=/{/ end=/}/ fold containedin=vimFuncBody'],
-	\		},
-	\		'html': {
-	\			'parentheses': ['start=/\v\<((area|base|br|col|embed|hr|img|input|keygen|link|menuitem|meta|param|source|track|wbr)[ >])@!\z([-_:a-zA-Z0-9]+)(\s+[-_:a-zA-Z0-9]+(\=("[^"]*"|'."'".'[^'."'".']*'."'".'|[^ '."'".'"><=`]*))?)*\>/ end=#</\z1># fold'],
-	\		},
-	\		'css': 0,
-	\	}
-	\}
 
-  " HTML5
-  Plug 'othree/html5.vim'
+  " Highlights operator characters for every language
+  Plug 'Valloric/vim-operator-highlight'
 
-  " Faust syntax highlighting
-  " Plug 'gmoe/vim-faust'
+  " A plugin to color colornames and codes
+  Plug 'chrisbra/Colorizer'
+  autocmd VimEnter * ColorToggle
 
   " Plug 'vim-syntastic/syntastic'
   " set statusline+=%#warningmsg#
   " set statusline+=%{SyntasticStatuslineFlag()}
   " set statusline+=%*
-" 
+
   " let g:syntastic_always_populate_loc_list = 1
   " let g:syntastic_auto_loc_list = 1
   " let g:syntastic_check_on_open = 1
@@ -204,30 +191,26 @@ call plug#begin('~/.vim/plugged')
   let g:airline#extensions#ale#enabled = 1
   let g:ale_completion_enabled = 1
 
-  " Highlights operator characters for every language
-  Plug 'Valloric/vim-operator-highlight'
+  " HTML5
+  Plug 'othree/html5.vim'
+
+  " Faust syntax highlighting
+  " Plug 'gmoe/vim-faust'
 
   " Plug 'ap/vim-css-color.git'
 
-  " A plugin to color colornames and codes
-  Plug 'chrisbra/Colorizer'
-  autocmd VimEnter * ColorToggle
-
   " Plug 'cakebaker/scss-syntax.vim'
 
-  Plug 'pangloss/vim-javascript'
+  " Plug 'pangloss/vim-javascript'
 
-  Plug 'mxw/vim-jsx'
+  " Plug 'mxw/vim-jsx'
 
   " TypeScript
-  Plug 'HerringtonDarkholme/yats.vim'
+  " Plug 'HerringtonDarkholme/yats.vim'
 
-  Plug 'jparise/vim-graphql'
+  " Plug 'jparise/vim-graphql'
 
   " Plug 'StanAngeloff/php.vim'
-
-  " Synax for the sxhkd hotkey daemon
-  " Plug 'baskerville/vim-sxhkdrc'
 
   Plug 'chase/nginx.vim'
 
@@ -243,6 +226,9 @@ call plug#begin('~/.vim/plugged')
   " Plug 'xolox/vim-lua-inspect'
 
   Plug 'tbastos/vim-lua'
+
+
+
 
   " Generate snippets
   " Plug 'mattn/emmet-vim'
@@ -272,13 +258,13 @@ call plug#begin('~/.vim/plugged')
   let g:airline_symbols = {}
   endif
 
-  " let g:airline_left_sep = '▶'
-  " let g:airline_left_alt_sep = ''
-  " let g:airline_right_sep = '◀'
-  " let g:airline_right_alt_sep = ''
-  " let g:airline_symbols.branch = ''
-  " let g:airline_symbols.readonly = ''
-  " let g:airline_symbols.linenr = ''
+  let g:airline_left_sep = '▶'
+  let g:airline_left_alt_sep = ''
+  let g:airline_right_sep = '◀'
+  let g:airline_right_alt_sep = ''
+  let g:airline_symbols.branch = ''
+  let g:airline_symbols.readonly = ''
+  let g:airline_symbols.linenr = ''
   let g:airline_statusline_ontop=0
 
   " Highlight the active line
@@ -417,9 +403,15 @@ call plug#begin('~/.vim/plugged')
   Plug 'vim-scripts/xemacs-mouse-drag-copy'
 
 
+  " Synax for the sxhkd hotkey daemon
+  Plug 'baskerville/vim-sxhkdrc'
+
+  " Comment out a line or set of lines with gcc or gc<motion>
+  Plug 'tomtom/tcomment_vim'
+
+
   """ Colour theme
   " Plug 'BlackSea'
-  " colorscheme BlackSea
 
 call plug#end()
 
@@ -483,13 +475,13 @@ set shiftwidth=2
 set nu
 
 " Always show status bar
-set laststatus=2
+" set laststatus=2
 
 " Notification message space
-set cmdheight=1
+" set cmdheight= 1
 
 " Always keep extra lines above the cursor at top, excluding ends of a file
-set scrolloff=5
+set scrolloff=50
 
 " Highlight 80th chatacter of a line
 highlight ColorColumn ctermbg=magenta
@@ -583,9 +575,7 @@ set viminfo='10,\"100,:20,%,n~/.viminfo
 """ Key settings and bindings
 " N.b. I have urxvt pass shift-space as an esc
 
-" remap ; to : and : to ;
-" nnoremap ; :
-" nnoremap : ;
+
 
 " Make backspace work like most other apps
 set backspace=eol,indent,start
@@ -860,7 +850,7 @@ function! AceJump ()
   " prompt for and capture user's search character
   echo "AceJump to words starting with letter: "
   let letter = nr2char(getchar())
-  " return if invalid key, mouse press, etc.
+  " return if invalid key, mouse press, etcj
   if len(matchstr(letter, '\k')) != 1
     echo ""
     redraw
@@ -1010,9 +1000,6 @@ set hidden
 " set nobackup
 " set nowritebackup
 
-" Better display for messages
-set cmdheight=2
-
 " Smaller updatetime for CursorHold & CursorHoldI
 set updatetime=300
 
@@ -1128,3 +1115,65 @@ nnoremap <silent> <space>j  :<C-u>CocNext<CR>
 nnoremap <silent> <space>k  :<C-u>CocPrev<CR>
 " Resume latest coc list
 nnoremap <silent> <space>p  :<C-u>CocListResume<CR>
+
+
+
+" Move buffer to existing or new tab
+" https://vim.fandom.com/wiki/Move_current_window_between_tabs
+function MoveToPrevTab()
+  "there is only one window
+  if tabpagenr('$') == 1 && winnr('$') == 1
+    return
+  endif
+  "preparing new window
+  let l:tab_nr = tabpagenr('$')
+  let l:cur_buf = bufnr('%')
+  if tabpagenr() != 1
+    close!
+    if l:tab_nr == tabpagenr('$')
+      tabprev
+    endif
+    sp
+  else
+    close!
+    exe "0tabnew"
+  endif
+  "opening current buffer in new window
+  exe "b".l:cur_buf
+endfunc
+
+function MoveToNextTab()
+  "there is only one window
+  if tabpagenr('$') == 1 && winnr('$') == 1
+    return
+  endif
+  "preparing new window
+  let l:tab_nr = tabpagenr('$')
+  let l:cur_buf = bufnr('%')
+  if tabpagenr() < tab_nr
+    close!
+    if l:tab_nr == tabpagenr('$')
+      tabnext
+    endif
+    sp
+  else
+    close!
+    tabnew
+  endif
+  "opening current buffer in new window
+  exe "b".l:cur_buf
+endfunc
+
+nnoremap <A-.> :call MoveToNextTab()<CR>
+nnoremap <A-,> :call MoveToPrevTab()<CR>
+
+
+
+
+" remap ; to : and : to ;
+" nmap ; :
+" nnoremap : ;
+" nnoremap ; :
+" vnoremap : ;
+" vnoremap ; :
+noremap <Leader>; :<CR>
