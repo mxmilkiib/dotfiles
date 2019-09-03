@@ -613,12 +613,12 @@ diff () {
 
 alias mp3='youtube-dl -x --audio-format "mp3" --audio-quality 0 --add-metadata --xattrs --embed-thumbnail $*'
 
-function bbcmpv(){
+function mpvyt(){
   mpv "$@" --ytdl-format="[fps<=?30]"
 }
 
 # Web
-alias trello="google-chrome-stable --app=https://trello.com/b/AdniCH2y/to-do &"
+alias trello="google-chrome --app=https://trello.com/b/AdniCH2y/to-do &"
 
 
 # Etymology

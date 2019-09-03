@@ -20,18 +20,19 @@ Z=~/.zsh
 source $Z/environment.zsh
 
 # If running from tty1 start sway window manager
-if [ $(tty) = "/dev/tty1" ]; then
-  export XKB_DEFAULT_LAYOUT=gb
-  # export QT_QPA_PLATFORMTHEME=qt5ct
-  export QT_QPA_PLATFORM=wayland-egl
-  export QT_WAYLAND_DISABLE_WINDOWDECORATION="1"
-  export QT_STYLE_OVERRIDE="adwaita-dark"
-  CLUTTER_BACKEND=wayland
-  SDL_VIDEODRIVER=wayland
-  ssh-agent sway
-  # # sway -d >~/sway.log 2>&1
- exit 0
-fi
+# if [ $(tty) = "/dev/tty1" ]; then
+ # export XKB_DEFAULT_LAYOUT=gb
+ # export QT_QPA_PLATFORMTHEME=qt5ct
+ # export QT_STYLE_OVERRIDE="adwaita-dark"
+ # # export QT_QPA_PLATFORM=wayland-egl
+ # # export QT_WAYLAND_DISABLE_WINDOWDECORATION="1"
+ # # export MOZ_ENABLE_WAYLAND=1
+ # # export CLUTTER_BACKEND=wayland
+ # # export SDL_VIDEODRIVER=wayland
+ # # ssh-agent sx
+ # # sway -d >~/sway.log 2>&1
+# exit 0
+# fi
 
 
 # MOTD - reminder info on readline/emacs/zle binds
@@ -62,7 +63,6 @@ if ! zgen saved; then
 
   zgen load unixorn/autoupdate-zgen
 
-  zgen load nojhan/liquidprompt
 
   zgen load chrissicool/zsh-256color
 
@@ -82,6 +82,8 @@ if ! zgen saved; then
 
   zgen load zsh-users/zsh-autosuggestions
   export ZSH_AUTOSUGGEST_USE_ASYNC=1
+
+  zgen load nojhan/liquidprompt
 
   # fzf after zsh-autosuggestions - fzf/issues/227
   zgen load junegunn/fzf

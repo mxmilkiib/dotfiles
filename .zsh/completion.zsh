@@ -7,8 +7,8 @@
 # autoload -Uz compinit && compinit
 autoload -z compinit && compinit
 
+# Support both short completions and longer completions with info
 zstyle ':completion:*' verbose yes
-
 
 # zstyle ':completion:*' menu select
 zstyle ':completion:*' menu select=0 search
@@ -16,8 +16,8 @@ zstyle ':completion:*' menu select=0 search
 # order files by modification time
 zstyle ':completion:*' file-sort modification
 
-
-zstyle ':completion:*' list-colors "${LS_COLORS}" # Complete with same colors as ls.
+# Complete with same colors as ls.
+zstyle ':completion:*' list-colors "${LS_COLORS}"
 
 # Fuzzy matching of completions for when you mistype them:
 zstyle ':completion:*' completer _expand _complete _correct _approximate # Completion modifiers.
@@ -34,7 +34,7 @@ zstyle ':completion:*:functions' ignored-patterns '_*'
 # Ignore the current directory in completions
 zstyle ':completion:*' ignore-parents pwd
 
-# auto rehash commands
+# Auto rehash commands
 # http://www.zsh.org/mla/users/2011/msg00531.html
 zstyle ':completion:*' rehash true
 
@@ -59,4 +59,3 @@ zstyle ':completion:*:matches'         group 'yes'
 zstyle ':completion:*'                 group-name ''
 # completion displays directories first
 zstyle ':completion:*' list-dirs-first true
-
