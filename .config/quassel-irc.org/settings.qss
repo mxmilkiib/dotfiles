@@ -5,14 +5,7 @@
 ChatLine { font: normal 400 11pt "Droid Sans Mono"; }
 
 // Custom ChatView Colors
-Palette {
-  marker-line: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #ff0000, stop: 0.1 transparent);
-
-  /* Link colors */
-  link: #ff79c6;
-  link-visited: #bd93f9;
-}
-
+Palette { marker-line: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #ff0000, stop: 0.1 transparent); }
 ChatView { background: #334477; }
 
 ChatLine[label="highlight"] {
@@ -140,8 +133,8 @@ ChatLine::nick[sender="0e"]   { foreground: palette(sender-color-0e); }
 ChatLine::nick[sender="0f"]   { foreground: palette(sender-color-0f); }
 
 // ItemView Font
-ChatListItem { font: normal 400 11pt "Droid Sans Mono"; }
-NickListItem { font: normal 400 11pt "Droid Sans Mono"; }
+ChatListItem { font: normal 400 10pt "Droid Sans Mono"; }
+NickListItem { font: normal 400 10pt "Droid Sans Mono"; }
 
 
 // BufferView Colors

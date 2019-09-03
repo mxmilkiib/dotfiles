@@ -41,18 +41,21 @@ Xft.dpi:			95
 ! xterm*font:     *-terminus-medium-*-*-*-14-*
 ! xterm*font:     *-Fixedsys Excelsior 3.01-L2-medium-*-*-*-16-*
 xterm*font:     -*-gohufont-medium-*-*-*-14-*-*-*-*-*-*-*
-xterm.font: xft:Droid Sans Mono:pixelsize=13:Regular.
+! xterm.font: xft:Droid Sans Mono:pixelsize=13:Regular.
 
 ! URxvt.font: xft:xos4 terminus:size=12
-! URxvt*font:     -*-gohufont-medium-*-*-*-14-*-*-*-*-*-*-*
-! URxvt*font: -Gohu-Gohufont-Medium-R-Normal--14-100-100-100-C-80-ISO10646-1
-! URxvt*font: xft:Inconsolata-dz for Powerline,xft:Symbola
-! URxvt*font:     -*-gohup-medium-*-*-*-11-*-*-*-*-*-*-*
-! urxvt.font: xft:Gohu GohuFont:size=14
 ! URxvt.font: xft:terminus:pixelsize=12
 ! URxvt.font: xft:terminus:pixelsize=12:antialias=false
 ! URxvt.font: xft:Droid Sans Mono:pixelsize=13:Regular.
-URxvt.font: xft:DroidSansMonoForPowerline Nerd Font:pixelsize=13:Regular.
+! URxvt.font: xft:DroidSansMonoForPowerline Nerd Font:pixelsize=13:Regular.
+! URxvt*font: xft:Inconsolata-dz for Powerline,xft:Symbola
+! URxvt*font: -*-gohufont-medium-*-*-*-14-*-*-*-*-*-*-*
+! URxvt*font: -gohu-gohufont-medium-r-normal--12-100-100-100-c-80-iso10646-1
+! URxvt*font: -Gohu-Gohufont-Medium-R-Normal--14-100-100-100-C-80-ISO10646-1
+urxvt.font: xft:Gohu GohuFont:size=12
+! urxvt.font: xft:misc gohup:size=11
+! URxvt*font: -*-gohup-medium-*-*-*-11-*-*-*-*-*-*-*
+! urxvt.font: xft:GohuFont Powerline:size=12
 
 ! Reduce kerning by 1px
 ! URxvt.letterSpace: 0

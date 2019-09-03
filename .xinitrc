@@ -97,7 +97,7 @@ kdeconnect-indicator &
 pointerspeed.sh 0.5
 
 # infrared control
-flirc_util loadconfig ~/.config/flirc/my_flirc_config
+# flirc_util loadconfig ~/.config/flirc/my_flirc_config
 
 # Set Xorg keyboard layout
 setxkbmap gb
@@ -114,14 +114,17 @@ setxkbmap gb
 mons -a &
 
 # Hotkeys
-# sxhkd &
+sxhkd &
+
+KEY="fdf4a51d4752e99ecbc7a9ce29967c0c"
+CITY="Edinburgh"
 
 # Panel bar w/ pager, systray, program windows, weather, time, etc.
-# xfce4-panel &
 # xfce4-panel --disable-wm-check &
 # perlpanel &
 # xde-panel &
 
+# polybar milk &
 
 # Cat
 # oneko -fg "#555" -bg "#000" -time 200000 -position +200+200 &
@@ -142,9 +145,9 @@ mons -a &
 # lxpolkit &
 /usr/lib/xfce-polkit/xfce-polkit &
 
-export QT_QPA_PLATFORMTHEME=gtk2
-export QT_PLATFORMTHEME=gtk2
-export QT_PLATFORM_PLUGIN=qt5ct
+# export QT_QPA_PLATFORMTHEME=gtk2
+# export QT_PLATFORMTHEME=gtk2
+# export QT_PLATFORM_PLUGIN=qt5ct
 
 # Use mouse button8 as left windows key
 # xinput set-button-map 1 2 3 4 5 6 7 12 9 10 11 12
@@ -157,7 +160,7 @@ export QT_PLATFORM_PLUGIN=qt5ct
 
 # exec awesome
 # exec i3
-exec enlightenment_start
+# exec enlightenment_start
 # exec audacity
 # exec tdm --xstart
 # exec i3 >> /var/tmp/log/i3log 2>&1
@@ -171,7 +174,7 @@ exec enlightenment_start
 # exec urxvt 
 
 # export BSPWM_STATE=/tmp/bspwm-state.json
-# exec bspwm
+exec bspwm
 # exec startxfce4
 # exec herbstluftwm
 # exec howm
