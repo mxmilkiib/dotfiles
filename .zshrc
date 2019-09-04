@@ -16,14 +16,15 @@
 Z=~/.zsh
 
 
-# Set up a working environment.
+# Set up shell agnostic working environment.
+source ~/.profile
+
+# Set up zsh specific working environment.
 source $Z/environment.zsh
+
 
 # If running from tty1 start sway window manager
 # if [ $(tty) = "/dev/tty1" ]; then
- # export XKB_DEFAULT_LAYOUT=gb
- # export QT_QPA_PLATFORMTHEME=qt5ct
- # export QT_STYLE_OVERRIDE="adwaita-dark"
  # # export QT_QPA_PLATFORM=wayland-egl
  # # export QT_WAYLAND_DISABLE_WINDOWDECORATION="1"
  # # export MOZ_ENABLE_WAYLAND=1
