@@ -1,5 +1,4 @@
 [global]
-    font = Droid Sans Mono 12
     font = Gohu GohuFont 12
     markup = yes
     format = "<b>%s %p</b>: %b"

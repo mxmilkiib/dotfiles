@@ -3,7 +3,7 @@
 ### by milky
 
 # @ means it happens on key release
-
+# desktop ^numbers are one off as internal laptop screen creates hidden desktop 'Desktop'
 
 # Make sxhkd reload its configuration files:
 super + Escape
@@ -50,7 +50,7 @@ super + alt + q
   xkill 
 
 # Close or kill a window under the pointer with a mouse button
-#broken
+#broken atm!
 button9 + {_,shift}
   xdo button_press button1; sleep 0.2; xdo button_release button1; bspc node -{c,k} 
 
@@ -77,6 +77,10 @@ super + {Tab,grave}
 # Focus on next floating or next tiled window
 super + {w,a}
 	bspc node -f {next.floating,next.tiled}
+
+# Focus on last desktop with an urgent
+super + u
+  bspc desktop last.urgent -f
 
 # Rotate current desktop node tree root
 super + {e,s}
@@ -156,11 +160,11 @@ super + {1-9,0,minus,equal}
 
 # Move window to a desktop number and follow
 super + shift + {1-9,0,minus,equal}
-	bspc node -d ^{1-9,10,11,12} -f
+	bspc node -d ^{2-9,10,11,12,13} -f
 
 # Move window to a desktop number and don't follow
 super + ctrl + {1-9,0,minus,equal}
-	bspc node -d ^{1-9,10,11,12}
+	bspc node -d ^{2-9,10,11,12,13}
 
 
 # Move desktop to the left
@@ -263,7 +267,7 @@ super + F12
 
 
 # Simulate an "x" keypress to close tabs using Vimium in Firefox
-# broken!
+# broken atm!
 ctrl + button8
   xdo key_press -k 53; xdo key_release -k 53
 
