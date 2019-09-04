@@ -99,10 +99,9 @@ super + {_,alt + }b
 super + apostrophe
 	bspc node -s last
 
-
 # Move a floating window
-#super + ctrl + {Left,Down,Up,Right}
-#	xdo move {-x -20,-y +20,-y -20,-x +20}
+super + ctrl + alt + {Left,Down,Up,Right}
+	xdo move {-x -20,-y +20,-y -20,-x +20}
 
 
 ### Preselect (split node space for adding a new window)
@@ -175,15 +174,15 @@ super + bracketright
 
 
 ### Monitor
-# focus on the next monitor
+# Focus on the next monitor
 super + o
 	bspc monitor -f next
 
-# move window between monitors
+# Move window between monitors
 super + ctrl + o
 	bspc node -m next
 
-# move window between monitors and follow
+# Move window between monitors and follow
 super + shift + o
 	bspc node -m next -f
 
@@ -337,4 +336,4 @@ ctrl + button8
 #  for i in $(bspc query -N -n .leaf.!window.local); do bspc node $i -k; done}
 
 
-# vi:syn=sxhkdrc
+# vi:ft=sxhkdrc

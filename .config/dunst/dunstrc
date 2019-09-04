@@ -1,4 +1,5 @@
 [global]
+    font = Droid Sans Mono 12
     font = Gohu GohuFont 12
     markup = yes
     format = "<b>%s %p</b>: %b"
@@ -6,7 +7,7 @@
     indicate_hidden = true
     # geometry = "x5"
     idle_threshold = 0
-     geometry = "400x5+500-10"
+     geometry = "400x5-20-2"
     # geometry = "400x1-130+2"
     alignment = center
     show_age_threshold = 20
@@ -19,7 +20,7 @@
     separator_color = frame
     startup_notification = false
     dmenu = "/usr/bin/dmenu -p dunst: -nb #4f2877 -nf #ffffff -sb #94DBFF -sf #000000"
-    browser = google-chrome
+    browser = firefox
 
     frame_width = 0
     frame_color = "#484e50"
@@ -115,5 +116,7 @@
     foreground = "#000000"
 
 [test]
-    summary = "*test*"
-    background="#22dd22"
+summary = "*test*"
+background="#22dd22"
+
+; vim:ft=dosini
