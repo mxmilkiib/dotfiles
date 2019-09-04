@@ -179,11 +179,11 @@ URxvt.searchable-scrollback: C-s
 
 ! matcher, using usr-select instead
 ! Launch URLs
-! URxvt.url-launcher: /usr/bin/google-chrome-stable
+! URxvt.url-launcher: /usr/bin/firefox
 ! URxvt.matcher.button: 1
 
 ! url-select
-URxvt.url-select.launcher:    google-chrome-stable
+URxvt.url-select.launcher:    firefox
 URxvt.url-select.underline:   true
 URxvt.keysym.A-C-u:           perl:url-select:select_next
 
