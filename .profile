@@ -46,3 +46,8 @@ export XKB_DEFAULT_LAYOUT=gb
 # QGtkStyle
 # export QT_QPA_PLATFORMTHEME=breeze
 # export QT_QPA_PLATFORMTHEME=gtk2
+
+# For polybar weather widget
+KEY="fdf4a51d4752e99ecbc7a9ce29967c0c"
+CITY="Edinburgh"
+

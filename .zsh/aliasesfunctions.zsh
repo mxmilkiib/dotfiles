@@ -155,6 +155,9 @@ history
 # see command history'
 
 
+alias chmox='sudo chmod +x'
+
+
 ### Looking and moving around
 
 # ls colors for filetype recognition
