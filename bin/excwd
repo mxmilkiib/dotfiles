@@ -1,0 +1,1 @@
+urxvt -e "cd `xcwd` && /bin/zsh"
