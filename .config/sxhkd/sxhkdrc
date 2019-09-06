@@ -2,8 +2,12 @@
 ### for bspwm etc
 ### by milky
 
-# @ means it happens on key release
+# @ = happens on key release
+# ! = the keypress is passed directly onto other X clients
+# ; = chorded hoeykey, i.e., press on then the next
+# : = sustained hotkey, i.e., presious hotkey gets 'held down'
 # desktop ^numbers are one off as internal laptop screen creates hidden desktop 'Desktop'
+
 
 # Make sxhkd reload its configuration files:
 super + Escape
@@ -200,7 +204,7 @@ super + shift + o
 super + !button{1-3}
 	bspc pointer -t %i %i
 
-super + @button{4,5}
+super + button{4,5}
  bspc desktop -f {prev,next}
 
 
