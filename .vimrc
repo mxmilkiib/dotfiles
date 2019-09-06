@@ -247,6 +247,10 @@ call plug#begin('~/.vim/plugged')
   Plug 'spolu/dwm.vim'
 
 
+  " Most recently used start screen
+  Plug 'yegappan/mru'
+
+
   " New staus line style, a la powerline
   Plug 'vim-airline/vim-airline'
   Plug 'vim-airline/vim-airline-themes'
