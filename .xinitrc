@@ -35,13 +35,14 @@ xset fp rehash
 # hsetroot -solid "#000000"
 
 # Set background image
-feh --bg-fill --no-xinerama ~/.wallpapers/VnXDN9J_colourised.png
+# feh --bg-fill --no-xinerama ~/.wallpapers/VnXDN9J_colourised.png
+feh --bg-fill --no-xinerama ~/.wallpapers/danielle_at_sea_flickr.jpg
 
-# Unclutter - hides the mouse cursor after 5 seconds of idle
+# Unclutter - hides the mouse cursor after 15 seconds of idle
 unclutter --timeout 15 &
 
-# As xmonad default to x cursor
-# xsetroot -cursor_name left_ptr &
+# Set the mouse pointer graphic
+xsetroot -cursor_name left_ptr &
 
 # Start urxvt demon, quiet, connect to $DISPLAY, fork after control socket binding
 # urxvtd -q -o -f &
@@ -54,9 +55,8 @@ xscreensaver -nosplash &
 #doesn't work??
 caffeine &
 
-# Automount USB script with smart system tray icon
-# udiskie -s &
-# mounts with unique path??
+# Automount devices, with smart system tray icon
+udiskie -san &
 
 # Composition manager
 # compton -b										# see ~/.config/compton.conf
@@ -81,7 +81,7 @@ kmix &
 radiotray-ng &
 
 # Battery monitor
-[[ $HOST = "rose*" ]] && vattery &
+# [[ $HOST = "rose*" ]] && vattery &
 
 # Update dynamic dns
 dyndns &
@@ -116,9 +116,6 @@ mons -a &
 # Hotkeys
 sxhkd &
 
-KEY="fdf4a51d4752e99ecbc7a9ce29967c0c"
-CITY="Edinburgh"
-
 # Panel bar w/ pager, systray, program windows, weather, time, etc.
 # xfce4-panel --disable-wm-check &
 # perlpanel &
@@ -131,7 +128,7 @@ CITY="Edinburgh"
 
 
 # Folder sync tray GUI (using web interface instead)
-# syncthing-gtk &
+syncthing-gtk &
 
 # Octopi pacman update and package manager GUI
 # pamac-tray &
@@ -152,6 +149,7 @@ CITY="Edinburgh"
 # Use mouse button8 as left windows key
 # xinput set-button-map 1 2 3 4 5 6 7 12 9 10 11 12
 # button8-to-lwin.py &
+
 
 # Window manager
 
