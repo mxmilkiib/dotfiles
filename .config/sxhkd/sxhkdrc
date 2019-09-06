@@ -200,7 +200,7 @@ super + shift + o
 super + !button{1-3}
 	bspc pointer -t %i %i
 
-super + button{4,5}
+super + @button{4,5}
  bspc desktop -f {prev,next}
 
 
@@ -217,10 +217,14 @@ super + ctrl + Return
 super + shift + Return
 	bspc rule -a \* --one-shot state=floating | $TERMINAL
 
-# Open a floating clock window
+# Open a floating clock terminal
 super + semicolon
  	bspc rule -a \* --one-shot state=pseudo_tiled | urxvt -e sh -c "tty-clock -s -b -c -C 3 -D"
 
+# Open a hotkey reminder terminal
+super + F1
+  bspc rule -a \* --one-shot state=floating | urxvt -geometry '170x55' -e sh -c "vimpager ~/.config/sxhkd/sxhkdrc"
+ 
 
 ### Application hotkeys
 # Capture a screenshot
