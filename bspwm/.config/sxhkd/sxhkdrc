@@ -111,6 +111,10 @@ super + apostrophe
 super + ctrl + alt + {Left,Down,Up,Right}
 	xdo move {-x -20,-y +20,-y -20,-x +20}
 
+# Centre a floating window
+super + button8
+  center-window.sh
+
 
 ### Preselect (split node space for adding a new window)
 # Preselect section of window edge
@@ -220,6 +224,10 @@ super + ctrl + Return
 # Open a floating terminal window
 super + shift + Return
 	bspc rule -a \* --one-shot state=floating | $TERMINAL
+
+# Open a pseudotiled terminal window
+super + alt + Return
+	bspc rule -a \* --one-shot state=pseudo_tiled | $TERMINAL
 
 # Open a floating clock terminal
 super + semicolon
