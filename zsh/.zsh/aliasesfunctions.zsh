@@ -442,8 +442,11 @@ function mSs(){ [ ! $* ] && return;  makepkg --printsrcinfo > .SRCINFO && git ad
 
 
 ### VCSH - multiple git repos in the same folder
-alias vS='vcsh status'
-alias vU='vcsh foreach add -u && vcsh foreach commit -v && vcsh push'
+#alias vS='vcsh status'
+#alias vU='vcsh foreach add -u && vcsh foreach commit -v && vcsh push'
+
+alias stow="stow -t ~"
+
 
 ### Utils
 
