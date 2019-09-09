@@ -217,6 +217,10 @@ super + button{4,5}
 super + Return
   $TERMINAL
 
+# Focus on a desktop and launch a terminal on it
+super + alt + {1-9,0,minus,equal}
+  bspc desktop -f ^{2-9,10,11,12,13}; $TERMINAL
+
 # Launch a terminal in the current working directory of the focused window
 super + ctrl + Return
   $TERMINAL -cd `xcwd`
