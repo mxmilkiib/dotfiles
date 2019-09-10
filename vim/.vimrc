@@ -102,10 +102,10 @@ call plug#begin('~/.vim/plugged')
   " Plug 'jiangmiao/auto-pairs'
 
   " Add/remove comments with ease
-  " Plug 'scrooloose/nerdcommenter'
-  " let g:NERDSpaceDelims = 1
-  " let g:NERDCommentEmptyLines = 1
-  " <leader>+c+<space> = toggle
+  " gcc or gc<motion>
+  " or <leader>__ 
+  Plug 'tomtom/tcomment_vim'
+
 
   " Surround objects with something
   Plug 'tpope/vim-surround'
@@ -140,7 +140,7 @@ call plug#begin('~/.vim/plugged')
   " Plug 'Valloric/YouCompleteMe', { 'do': './install.py' }
 
   " https://github.com/neoclide/coc.nvim
-  Plug 'neoclide/coc.nvim'
+  Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
   " Visual help
 
@@ -415,9 +415,6 @@ call plug#begin('~/.vim/plugged')
 
   " Synax for the sxhkd hotkey daemon
   Plug 'baskerville/vim-sxhkdrc'
-
-  " Comment out a line or set of lines with gcc or gc<motion>
-  Plug 'tomtom/tcomment_vim'
 
 
   """ Colour theme

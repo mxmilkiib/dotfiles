@@ -1,0 +1,11 @@
+[Event/PrivMsg]
+Action=Sound|Taskbar
+Execute=
+Logfile=
+TTS=
+
+[Event/PrivMsgFocused]
+Action=
+Execute=
+Logfile=
+TTS=

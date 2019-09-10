@@ -18,7 +18,7 @@ redshift-gtk -l 55.978301:-3.228586 -t 6000:4500 &
 # Source .Xresources for this session
 [[ -f ~/.Xresources ]] && xrdb -merge -I$HOME ~/.Xresources
 
-# xsettings daemon - informs apps what themes to usex
+# xsettings daemon - informs apps what themes to use
 xsettingsd &
 
 # Make additional fonts available
@@ -59,11 +59,13 @@ caffeine &
 udiskie -san &
 
 # Composition manager
-# compton -b										# see ~/.config/compton.conf
+compton -b										# see ~/.config/compton.conf
 # compton --respect-prop-shadow -bc -t -8 -l -9 -r 6 -o 0.7 &
 # compton -cCGfF -o 0.38 -O 200 -I 200 -t 0.02 -l 0.02 -r 3.2 -D2 -m 0.88 -i 0 &
 # compton -cCGfzb -o 0.8 -O 200 -I 200 -t -9 -l -9 -r 6 -D 2 -m 0.98 -e 1 -i 1 --respect-prop-shadow  --shadow-ignore-shape
-# compton -b
+
+# Flash windows on focus
+flashfocus &
 
 # Notification daemon. ctrl-space to close, ctrl-shift-space to close all.
 dunst &
@@ -84,7 +86,7 @@ radiotray-ng &
 # [[ $HOST = "rose*" ]] && vattery &
 
 # Update dynamic dns
-dyndns &
+# dyndns &
 
 # connecto to mobile
 kdeconnect-indicator &
@@ -94,7 +96,7 @@ kdeconnect-indicator &
 # copy ctrl-xcv / shift-insert CLIPBOARD to middle mouse PRIMARY selection buffer
 # autocutsel -selection PRIMARY -fork &
 
-pointerspeed.sh 0.5
+# pointerspeed.sh 0.5
 
 # infrared control
 # flirc_util loadconfig ~/.config/flirc/my_flirc_config
@@ -171,13 +173,11 @@ syncthing-gtk &
 # exec xterm
 # exec urxvt 
 
-# export BSPWM_STATE=/tmp/bspwm-state.json
 exec bspwm
+# exec bspwm -c /home/milk/sync/dotfiles/bspwm/.config/bspwm/bspwmrc
+# exec bspwm -c /home/milk/.config/bspwm/bspwmrc
 # exec startxfce4
 # exec herbstluftwm
 # exec howm
 # exec fvwm2
 # exec openbox
-
-# loop method to allow restarting bspwm
-# exec wm

@@ -1,4 +1,4 @@
-#! /bin/sh
+#! /bin/bash
 
 # Layout
 bspc config top_padding                 18
@@ -83,14 +83,14 @@ bspc rule -a Chromium              desktop=^13
 
 
 # Restore state (on reload)
-if [ -e "$BSPWM_STATE" ] ; then
-	bspc wm -l "$BSPWM_STATE"
-	rm "$BSPWM_STATE"
-fi
+# if [ -e "$BSPWM_STATE" ] ; then
+# 	bspc wm -l "$BSPWM_STATE"
+# 	rm "$BSPWM_STATE"
+# fi
 
 
 # Start the bar at the top
 polybar milk
 
 # Start a notifications daemon
-mako --default-timeout 8000 --width 600 --anchor top-center --background-color '#472877' --border-color '#ffffffaa'
+# mako --default-timeout 8000 --width 600 --anchor top-center --background-color '#472877' --border-color '#ffffffaa'

@@ -29,7 +29,7 @@ shadow-exclude = [
 menu-opacity = 1;
 inactive-opacity = 1;
 active-opacity = 1;
-frame-opacity = 0.8;
+frame-opacity = 0.9;
 inactive-opacity-override = false;
 alpha-step = 0.06;
 # inactive-dim = 0.2;
@@ -47,12 +47,12 @@ blur-background-exclude = [
 
 # opacity-rule = [ "80:class_g = 'urxvt'" ];
 # class_g, not name, makes tmux work also
-opacity-rule = [
-  "80:class_g = 'URxvt' && !focused",
-  "85:class_g = 'URxvt' && focused",
-	"80:class_g = 'Xterm' && !focused",
-  "85:class_g = 'Xterm' && focused"
-]
+# opacity-rule = [
+#   "95:class_g = 'URxvt' && !focused",
+#   "100:class_g = 'URxvt' && focused",
+# 	"95:class_g = 'Xterm' && !focused",
+#   "100:class_g = 'Xterm' && focused"
+# ]
 
 # not needed with above rule, yay!
 # opacity-rule = [
