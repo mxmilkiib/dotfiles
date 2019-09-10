@@ -173,7 +173,7 @@ syncthing-gtk &
 # exec xterm
 # exec urxvt 
 
-exec bspwm
+exec ssh-agent bspwm
 # exec bspwm -c /home/milk/sync/dotfiles/bspwm/.config/bspwm/bspwmrc
 # exec bspwm -c /home/milk/.config/bspwm/bspwmrc
 # exec startxfce4
