@@ -144,6 +144,10 @@ syncthing-gtk &
 # lxpolkit &
 /usr/lib/xfce-polkit/xfce-polkit &
 
+# ssh-agent
+eval $(ssh-agent)
+
+
 # export QT_QPA_PLATFORMTHEME=gtk2
 # export QT_PLATFORMTHEME=gtk2
 # export QT_PLATFORM_PLUGIN=qt5ct
@@ -173,7 +177,7 @@ syncthing-gtk &
 # exec xterm
 # exec urxvt 
 
-exec ssh-agent bspwm
+exec bspwm
 # exec bspwm -c /home/milk/sync/dotfiles/bspwm/.config/bspwm/bspwmrc
 # exec bspwm -c /home/milk/.config/bspwm/bspwmrc
 # exec startxfce4
