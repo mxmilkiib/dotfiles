@@ -54,8 +54,8 @@ super + alt + q
   xkill 
 
 # Close or kill a window under the pointer with a mouse button
-#broken atm!
-button9 + {_,shift}
+#broken atm! only kills the active window still, not the window under the pointer
+super + button9 + {_,shift}
   xdo button_press button1; sleep 0.2; xdo button_release button1; bspc node -{c,k} 
 
 
@@ -146,11 +146,11 @@ super + alt + shift + {h,j,k,l}
 ### Desktop management
 # https://github.com/lietk12/dotfiles/tree/master/.config
 # Focus on previous or next desktop
-super + {Left,Right}
+super + alt + {Left,Right}
 	bspc desktop {prev.local,next.local} -f
 
 # Focus on previous or next desktop
-super + alt + {Left,Right}
+super + {Left,Right}
 	bspc desktop {prev.local.occupied,next.local.occupied} -f
 
 # Move window to the previous or next desktop
@@ -208,8 +208,13 @@ super + shift + o
 super + !button{1-3}
 	bspc pointer -t %i %i
 
+# Mousewheel to switch between desktops
 super + button{4,5}
  bspc desktop -f {prev,next}
+
+# Mousewheel to switch between desktops with nodes
+super + button{4,5}
+ bspc desktop -f {prev.local.occupied,next.local.occupied}
 
 
 ### Terminal hotkeys
