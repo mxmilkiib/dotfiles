@@ -266,7 +266,7 @@ super + p
 super + F1
   xdo activate -n geany ~/documents/scratch
 super + F2
-  xdo activate -n doublecmd || doublecmd
+  xdo activate -n doublecmd || doublecmd --no-splash
 super + shift + F2
   xdo activate -n pcmanfm-qt || pcmanfm-qt
 super + F3
