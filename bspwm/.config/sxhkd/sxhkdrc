@@ -49,6 +49,9 @@ super + alt + {z,x,c}
 super + {_,shift + }q
 	bspc node -{c,k}
 
+super + x
+  bspc node -c
+
 # Don't rely on the wm to kill
 super + alt + q
   xkill 
@@ -209,8 +212,8 @@ super + !button{1-3}
 	bspc pointer -t %i %i
 
 # Mousewheel to switch between desktops
-super + button{4,5}
- bspc desktop -f {prev,next}
+#super + button{4,5}
+# bspc desktop -f {prev,next}
 
 # Mousewheel to switch between desktops with nodes
 super + button{4,5}
