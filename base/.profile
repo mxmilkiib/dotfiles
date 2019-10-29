@@ -40,7 +40,7 @@ export LESS_TERMCAP_us=$'\E[01;32m'
 
 # Qt toolkit style configuration
 export XKB_DEFAULT_LAYOUT=gb
-# export QT_QPA_PLATFORMTHEME=qt5ct
+export QT_QPA_PLATFORMTHEME=qt5ct
 # export QT_STYLE_OVERRIDE="adwaita-dark"
 
 # QGtkStyle

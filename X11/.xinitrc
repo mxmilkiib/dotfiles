@@ -41,6 +41,9 @@ xset fp rehash
 # feh --bg-fill --no-xinerama ~/.wallpapers/VnXDN9J_colourised.png
 feh --bg-fill --no-xinerama ~/.wallpapers/danielle_at_sea_flickr.jpg
 
+# screenshot systray helper
+flameshot &
+
 # Unclutter - hides the mouse cursor after 15 seconds of idle
 unclutter --timeout 15 &
 
@@ -98,6 +101,7 @@ kdeconnect-indicator &
 # autocutsel -fork &
 # copy ctrl-xcv / shift-insert CLIPBOARD to middle mouse PRIMARY selection buffer
 # autocutsel -selection PRIMARY -fork &
+copyq &
 
 # pointerspeed.sh 0.5
 
