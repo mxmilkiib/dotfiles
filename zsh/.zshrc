@@ -35,7 +35,6 @@ source $Z/environment.zsh
 # exit 0
 # fi
 
-
 # MOTD - reminder info on readline/emacs/zle binds
 function echo_color() {
   printf "\033[0;90m$1\033[0m\n"
@@ -136,8 +135,9 @@ _fzf_compgen_dir() {
 }
 
 
-# https://github.com/clvv/fasd
-eval "$(fasd --init auto)"
+# https://github.com/rupa/z
+[[ -r "/usr/share/z/z.sh" ]] && source /usr/share/z/z.sh
+
 
 # ctrl-space executes the autosuggestion
 bindkey '^ ' autosuggest-execute
