@@ -395,7 +395,7 @@ alias pSp='yay --sortby popularity --bottomup'
 
 # full upgrade
 # alias 'pu=sudo pacman -Syu'
-alias pu='yay -Pw && echo y | yay -Syu --answeredit n --answerupgrade n --answerclean n --answerdiff n --sudoloop --combinedupgrade && xhost si:localuser:root && sudo DIFFPROG="meld" DISPLAY=:0 dbus-launch pacdiff && xhost -si:localuser:root'
+alias pu='yay -Pw && yay -Syu --answeredit n --answerupgrade n --answerclean n --answerdiff n --sudoloop --combinedupgrade --noremovemake && xhost si:localuser:root && sudo DIFFPROG="meld" DISPLAY=:0 dbus-launch pacdiff && xhost -si:localuser:root'
 # alias pu='yay -Pw && topgrade'
 # full upgrade, don't skip which packages to ignore
 alias puU='echo y | yay -Syu --answeredit n --answerclean n --answerdiff n --sudoloop --combinedupgrade'
@@ -625,6 +625,7 @@ function mpvyt(){
 }
 
 # Web
+alias ff="firefox "
 alias trello="google-chrome --app=https://trello.com/b/AdniCH2y/to-do &"
 
 
@@ -729,6 +730,9 @@ alias comptonrl='sudo killall compton; compton -b'
 
 # xev, ignoring mouse, etc. events
 alias xevk='xev -event keyboard'
+
+# filemanager
+alias dcm='doublecmd --no-splash >/dev/null 2>&1 &!'
 
 
 ### Misc
