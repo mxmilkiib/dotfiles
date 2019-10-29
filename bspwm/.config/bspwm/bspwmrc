@@ -1,19 +1,30 @@
 #! /bin/bash
 
+
+bspc config wm_name                     bspwm
+
 # Layout
 bspc config top_padding                 18
 bspc config border_width                3
 bspc config window_gap                  3
 bspc config split_ratio                 0.52
 
-
-bspc config focus_follows_pointer       false
 bspc config single_monocle              true
 bspc config borderless_monocle          true
 bspc config gapless_monocle             false
 bspc config paddingless_monocle         false
 
-bspc config initial_polarity            second_child
+# direction of second window
+# first_child for the left (on landscape screen)
+# second_child for the right (on landscape screen)
+bspc config initial_polarity            first_child
+
+bspc config history_aware_focus         true
+
+bspc config click_to_focus              false
+bspc config focus_follows_pointer       false
+
+bspc config pointer_follows_monitor     true
 
 # mod4 is windows key
 bspc config pointer_modifier            mod4
@@ -23,10 +34,8 @@ bspc config pointer_action2             resize_corner
 # cancel presel with another presel
 bspc config auto_cancel                 true
 
-bspc config wm_name                     bspwm
-bspc config pointer_follows_monitor     true
-bspc config history_aware_focus         true
-bspc config click_to_focus              false
+# keep ratio when resizing certain windows
+bspc config honor_size_hints            true
 
 
 # http://paletton.com/#uid=34r0u0kgJHN6oX3bWQhkPyZoTtA
@@ -64,6 +73,8 @@ bspc rule -a Mixer state       = floating
 bspc rule -a xfce4-panel state = floating
 bspc rule -a qjackctl state    = floating
 bspc rule -a Cadence.py state  = floating
+bspc rule -a seq64      state  = floating
+bspc rule -a copyq      state  = floating
 
 
 # Default desktop rules
