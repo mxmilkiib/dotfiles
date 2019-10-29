@@ -255,6 +255,14 @@ super + F1
 super + Print
   import -window root ~/images/screenshots/$(hostname --short)_$(date +%Y-%m-%d-%T).png
 
+# Drag to select then capture a screenshot
+super + Ctrl + Print
+  import -window ~/images/screenshots/$(hostname --short)_$(date +%Y-%m-%d-%T).png
+
+# Drag to select then capture a screenshot
+super + Shift + Print
+  bash -c import ~/images/screenshots/$(hostname --short)_$(date +%Y-%m-%d-%T).png
+
 # Open an application launcher
 super + @space
   rofi -modi combi -combi-modi 'drun#run' -show combi -show-icons -width 60 -lines 25 -theme purple.rasi -display-combi launch
@@ -262,7 +270,7 @@ super + @space
 
 # Pulseaudio application volume mixer
 super + p
-	xdo activate -n pavucontrol
+	xdo activate -n pavucontrol || pavucontrol
 
 
 # Various apps in order of assigned desktop
@@ -273,13 +281,13 @@ super + F2
 super + shift + F2
   xdo activate -n pcmanfm-qt || pcmanfm-qt
 super + F3
-  xdo activate -n qbittorrent || qbittorrent
-super + shift + F3
   xdo activate -n soulseekqt || soulseekqt
+super + shift + F3
+  xdo activate -n qbittorrent || qbittorrent
 super + F4
-  xdo activate -n urxvt -e sh -c ncmpcpp
-super + shift + F4
   xdo activate -n picard || picard
+super + shift + F4
+  xdo activate -n urxvt -e sh -c ncmpcpp || urxvt -name "ncmpcpp" -e sh -c ncmpcpp
 super + F5
   xdo activate -n cadence || cadence
 super + shift + F5
