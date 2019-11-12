@@ -50,25 +50,25 @@ super + {_,shift + }q
 	bspc node -{c,k}
 
 super + x
-  bspc node -c
+	bspc node -c
 
 # Don't rely on the wm to kill
 super + alt + q
-  xkill 
+	xkill
 
 # Close or kill a window under the pointer with a mouse button
 #broken atm! only kills the active window still, not the window under the pointer
 super + button9 + {_,shift}
-  xdo button_press button1; sleep 0.2; xdo button_release button1; bspc node -{c,k} 
+	xdo button_press button1; sleep 0.2; xdo button_release button1; bspc node -{c,k}
 
 
 ## Resize nodes
 # Contract the tiled space in the given direction
-super + ctrl + {h,j,k,l}
+super + alt + ctrl + {h,j,k,l}
 	bspc node {@east -r -10,@north -r +10,@south -r -10,@west -r +10}
 
 # Expand the tiled space in the given direction
-super + alt + {h,j,k,l}
+super + ctrl + shift + {h,j,k,l}
 	bspc node {@west -r -10,@south -r +10,@north -r -10,@east -r +10}
 
 
@@ -87,7 +87,7 @@ super + {w,a}
 
 # Focus on last desktop with an urgent
 super + u
-  bspc desktop last.urgent -f
+	bspc desktop last.urgent -f
 
 # Rotate current desktop node tree root
 super + {e,s}
@@ -102,9 +102,9 @@ super + {d,r}
 super + n
 	bspc node -s biggest.local
 
-# Equalise or balance windows on current desktop
+# Equalise or balance windows under current node
 super + {_,alt + }b
-	bspc desktop {-E,-B}
+	bspc node {-E,-B}
 
 # Swap focused window with last focused window on any desktop
 super + apostrophe
@@ -116,34 +116,34 @@ super + ctrl + alt + {Left,Down,Up,Right}
 
 # Centre a floating window
 super + button8
-  center-window.sh
+	center-window.sh
 
 
 ### Preselect (split node space for adding a new window)
 # Preselect section of window edge
-super + ctrl + alt + {h,j,k,l}
+super + alt + {h,j,k,l}
 	bspc node -p {west,south,north,east}
 
 # Preselect the ratio
 super + alt + {1-9}
 	bspc node -o 0.{1-9}
- 
+
 # Cancel preselect for window or desktop
 super + alt + space
 	bspc node -p cancel
 
 # Cancel the preselection for the focused desktop
-super + alt + shift + space
+super + alt + ctrl + space
 	bspc query -N -d | xargs -I id -n 1 bspc node id -p cancel
 
 # Transplant to preselect
-#super + ctrl + shift + {h,j,k,l}
-#  bspc window -s {left,down,up,right}
+super + ctrl + shift + {h,j,k,l}
+#	bspc window -s {left,down,up,right}
 
 # Preselect in a direction and launch terminal
 super + alt + shift + {h,j,k,l}
-  bspc node -p {west,south,north,east};\
-  $TERMINAL
+	bspc node -p {west,south,north,east};\
+	$TERMINAL
 
 
 ### Desktop management
@@ -154,6 +154,7 @@ super + alt + {Left,Right}
 
 # Focus on previous or next desktop
 super + {Left,Right}
+
 	bspc desktop {prev.local.occupied,next.local.occupied} -f
 
 # Move window to the previous or next desktop
@@ -161,18 +162,17 @@ super + ctrl + {Left,Right}
 	bspc node -d {prev,next}
 
 # Move window to the previous or next desktop and follow with focus
-super  shift + {Left,Right}
-	bspc node -d {prev,next} -f
+super + shift + {Left,Right}
+ bspc node -d {prev,next} -f
 
 
 # Focus on a desktop
 super + {1-9,0,minus,equal}
-  bspc desktop -f ^{2-9,10,11,12,13}
+	bspc desktop -f ^{2-9,10,11,12,13}
 
 # Move window to a desktop number and follow
 super + shift + {1-9,0,minus,equal}
 	bspc node -d ^{2-9,10,11,12,13} -f;\
-#  bspc rule -a 
 
 # Move window to a desktop number and don't follow
 super + ctrl + {1-9,0,minus,equal}
@@ -181,11 +181,11 @@ super + ctrl + {1-9,0,minus,equal}
 
 # Move desktop to the left
 super + bracketleft
-  bspc desktop focused -b prev
+	bspc desktop focused -b prev
 
 # Move desktop to the right
 super + bracketright
-  bspc desktop focused -b next
+	bspc desktop focused -b next
 
 
 
@@ -209,8 +209,8 @@ super + shift + o
 
 
 # Motion
-super + !button{1-3}
-	bspc pointer -t %i %i
+#super + !button{1-3}
+#	bspc pointer -t %i %i
 
 # Mousewheel to switch between desktops
 #super + button{4,5}
@@ -224,15 +224,15 @@ super + button{4,5}
 ### Terminal hotkeys
 # Launch a terminal
 super + Return
-  $TERMINAL
+	$TERMINAL
 
 # Focus on a desktop and launch a terminal on it
 super + alt + {1-9,0,minus,equal}
-  bspc desktop -f ^{2-9,10,11,12,13}; $TERMINAL
+	bspc desktop -f ^{2-9,10,11,12,13}; $TERMINAL
 
 # Launch a terminal in the current working directory of the focused window
 super + ctrl + Return
-  $TERMINAL -cd `xcwd`
+	$TERMINAL -cd `xcwd`
 
 # Open a floating terminal window
 super + shift + Return
@@ -248,28 +248,28 @@ super + semicolon
 
 # Open a hotkey reminder terminal
 super + F1
-  bspc rule -a \* --one-shot state=floating | urxvt -geometry '170x55' -e sh -c "vimpager ~/.config/sxhkd/sxhkdrc"
- 
+	bspc rule -a \* --one-shot state=floating | urxvt -geometry '170x55' -e sh -c "vimpager ~/.config/sxhkd/sxhkdrc"
+
 
 ### Application hotkeys
 # Capture a screenshot
 super + Print
-  import -window root ~/images/screenshots/$(hostname --short)_$(date +%Y-%m-%d-%T).png
+	import -window root ~/images/screenshots/$(hostname --short)_$(date +%Y-%m-%d-%T).png
 
 # Drag to select then capture a screenshot
-super + Ctrl + Print
-  import -window ~/images/screenshots/$(hostname --short)_$(date +%Y-%m-%d-%T).png
+super + ctrl + Print
+	import -window ~/images/screenshots/$(hostname --short)_$(date +%Y-%m-%d-%T).png
 
 # Drag to select then capture a screenshot
-super + Shift + Print
-  bash -c import ~/images/screenshots/$(hostname --short)_$(date +%Y-%m-%d-%T).png
+super + shift + Print
+	bash -c import ~/images/screenshots/$(hostname --short)_$(date +%Y-%m-%d-%T).png
 
-super + Alt + Print
-  xclip -selection clipboard -t image/png -o > import -window
+super + alt + Print
+	xclip -selection clipboard -t image/png -o > import -window
 
 # Open an application launcher
 super + @space
-  rofi -modi combi -combi-modi 'drun#run' -show combi -show-icons -width 60 -lines 25 -theme purple.rasi -display-combi launch
+	rofi -modi combi -combi-modi 'drun#run' -show combi -show-icons -width 60 -lines 25 -theme purple.rasi -display-combi launch
 
 
 # Pulseaudio application volume mixer
@@ -279,37 +279,37 @@ super + p
 
 # Various apps in order of assigned desktop
 super + F1
-  xdo activate -n geany ~/documents/scratch
+	xdo activate -n geany ~/documents/scratch
 super + F2
-  xdo activate -n doublecmd || doublecmd --no-splash
+	xdo activate -n doublecmd || doublecmd --no-splash
 super + shift + F2
-  xdo activate -n pcmanfm-qt || pcmanfm-qt
+	xdo activate -n pcmanfm-qt || pcmanfm-qt
 super + F3
-  xdo activate -n soulseekqt || soulseekqt
+	xdo activate -n soulseekqt || soulseekqt
 super + shift + F3
-  xdo activate -n qbittorrent || qbittorrent
+	xdo activate -n qbittorrent || qbittorrent
 super + F4
-  xdo activate -n picard || picard
+	xdo activate -n picard || picard
 super + shift + F4
-  xdo activate -n urxvt -e sh -c ncmpcpp || urxvt -name "ncmpcpp" -e sh -c ncmpcpp
+	xdo activate -n urxvt -e sh -c ncmpcpp || urxvt -name "ncmpcpp" -e sh -c ncmpcpp
 super + F5
-  xdo activate -n cadence || cadence
+	xdo activate -n cadence || cadence
 super + shift + F5
-  xdo activate -n carla || carla
+	xdo activate -n carla || carla
 super + F6
-  xdo activate -n qseq64 || qseq64
+	xdo activate -n qseq64 || qseq64
 super + F8
-  xdo activate -n keepassxc || keepassxc ~/sync/keepassxc-mb.kdbx
+	xdo activate -n keepassxc || keepassxc ~/sync/keepassxc-mb.kdbx
 super + F11
-  xdo activate -n quasselclient || quasselclient
+	xdo activate -n quasselclient || quasselclient
 super + F12
-  xdo activate -n Navigator || firefox
+	xdo activate -n Navigator || firefox
 
 
 # Simulate an "x" keypress to close tabs using Vimium in Firefox
 # broken atm!
 ctrl + button8
-  xdo key_press -k 53; xdo key_release -k 53
+	xdo key_press -k 53; xdo key_release -k 53
 
 
 #to sort/fix
@@ -344,15 +344,15 @@ ctrl + button8
 
 ## Close the current window, and also remove the current desktop after closing (if possible).
 #super + apostrophe
-#  bspc node -f -c;\
-#  sleep 0.1;\
-#  ~/.config/bspwm/scripts/remove_desktop.sh
+#	bspc node -f -c;\
+#	sleep 0.1;\
+#	~/.config/bspwm/scripts/remove_desktop.sh
 #
 #
 ## Move a window to a desktop, and remove the current desktop after closing (if possible).
 #super + alt + {1-9,0}
-#  bspc node --to-desktop ^{1-9,10};\
-#  ~/.config/bspwm/scripts/remove_desktop.sh
+#	bspc node --to-desktop ^{1-9,10};\
+#	~/.config/bspwm/scripts/remove_desktop.sh
 
 # Move the desktop to the previous monitor
 #super + F9
@@ -376,8 +376,5 @@ ctrl + button8
 
 #??
 #super + alt + space
-#  {smartsplit ; bspc node -i,\
-#  for i in $(bspc query -N -n .leaf.!window.local); do bspc node $i -k; done}
-
-
-# vi:ft=sxhkdrc
+#	{smartsplit ; bspc node -i,\
+#	for i in $(bspc query -N -n .leaf.!window.local); do bspc node $i -k; done}

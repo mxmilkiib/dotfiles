@@ -414,7 +414,8 @@ call plug#begin('~/.vim/plugged')
 
 
   " Synax for the sxhkd hotkey daemon
-  Plug 'baskerville/vim-sxhkdrc'
+  " Plug 'baskerville/vim-sxhkdrc'
+  Plug 'kovetskiy/sxhkd-vim'
 
 
   """ Colour theme

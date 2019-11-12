@@ -63,8 +63,8 @@ font-3 = siji:pixelsize=10;1
 font-4 = FontAwesome:pixelsize=7;scale=14;1
 font-5 = Noto Color Emoji:size=7:scale=14;1
 
-modules-left = bspwm
-modules-center = player-mpris-tail
+modules-left = bspwm  player-mpris-tail
+;modules-center = 
 ; modules-center = mpd
 ; modules-right = filesystem xbacklight alsa pulseaudio memory cpu wlan eth battery temperature date powermenu
 modules-right = openweathermap-fullfeatured filesystem alsa memory cpu wlan eth battery temperature updates-arch-combined pomobar date services powermenu
