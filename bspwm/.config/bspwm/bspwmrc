@@ -1,6 +1,5 @@
 #! /bin/bash
 
-
 bspc config wm_name                     bspwm
 
 # Layout
@@ -50,18 +49,21 @@ bspc config urgent_border_color         "#EFA29A"
 
 
 # Rename initial desktop
-bspc monitor -d A1 A2 A3 A4 A5 A6 A7 A8 A9 A0 A- A=
+bspc monitor -d A1
+bspc monitor -d A2 A3 A4 A5 A6 A7 A8 A9 A0 A- A=
 
 # if [[ `bspc query --monitors | wc -l` -gt 1 ]]; then
-	# # Switch to second monitor
-	# bspc monitor -f next
+# 	# Switch to second monitor
+# 	bspc monitor -f next
 #
-	# # Rename and create desktops
-	# # bspc monitor -d B1 B2 B3 B4 B5 B6 B7 B8 B9 B0 B- B=
+# 	# Rename and create desktops
+# 	bspc monitor -d B1 B2 B3 B4 B5 B6 B7 B8 B9 B0 B- B=
 #
-	# # Switch back to first monitor
-	# bspc monitor -f next
+# 	# Switch back to first monitor
+# 	bspc monitor -f next
 # fi
+
+bspc config external_rules_command "$(which external_rules)"
 
 
 # Floating window rules
@@ -80,7 +82,7 @@ bspc rule -a copyq       state = floating
 # Default desktop rules
 bspc rule -a Doublecmd             desktop=^3
 bspc rule -a pcmanfm-qt            desktop=^3
-bspc rule -a qBittorrent           desktop=^4
+# bspc rule -a qBittorrent           desktop=^4
 bspc rule -a soulseekqt.AppImage   desktop=^4
 bspc rule -a Picard                desktop=^5
 bspc rule -a Cadence               desktop=^6
@@ -101,7 +103,8 @@ bspc rule -a Chromium              desktop=^13
 
 
 # Start the bar at the top
-polybar milk
+polybar sitting
+# polybar standing
 
 # Start a notifications daemon
 # mako --default-timeout 8000 --width 600 --anchor top-center --background-color '#472877' --border-color '#ffffffaa'

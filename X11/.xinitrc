@@ -133,8 +133,6 @@ sxhkd &
 # perlpanel &
 # xde-panel &
 
-# polybar milk &
-
 # Cat
 # oneko -fg "#555" -bg "#000" -time 200000 -position +200+200 &
 

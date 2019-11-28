@@ -172,7 +172,7 @@ super + {1-9,0,minus,equal}
 
 # Move window to a desktop number and follow
 super + shift + {1-9,0,minus,equal}
-	bspc node -d ^{2-9,10,11,12,13} -f;\
+	bspc node -d ^{2-9,10,11,12,13} -f
 
 # Move window to a desktop number and don't follow
 super + ctrl + {1-9,0,minus,equal}
@@ -246,9 +246,6 @@ super + alt + Return
 super + semicolon
  	bspc rule -a \* --one-shot state=pseudo_tiled | urxvt -e sh -c "tty-clock -s -b -c -C 3 -D"
 
-# Open a hotkey reminder terminal
-super + F1
-	bspc rule -a \* --one-shot state=floating | urxvt -geometry '170x55' -e sh -c "vimpager ~/.config/sxhkd/sxhkdrc"
 
 
 ### Application hotkeys
@@ -277,8 +274,13 @@ super + p
 	xdo activate -n pavucontrol || pavucontrol
 
 
-# Various apps in order of assigned desktop
+# Open a hotkey reminder terminal
 super + F1
+	xdo activate -n urxvt -e sh -c ncmpcpp || urxvt -name "ncmpcpp" -e sh -c ncmpcpp
+super + shift + F1
+	bspc rule -a \* --one-shot state=floating | urxvt -geometry '170x55' -e sh -c "vimpager ~/.config/sxhkd/sxhkdrc"
+# Various apps in order of assigned desktop
+super + alt + F1
 	xdo activate -n geany ~/documents/scratch
 super + F2
 	xdo activate -n doublecmd || doublecmd --no-splash
@@ -290,8 +292,6 @@ super + shift + F3
 	xdo activate -n qbittorrent || qbittorrent
 super + F4
 	xdo activate -n picard || picard
-super + shift + F4
-	xdo activate -n urxvt -e sh -c ncmpcpp || urxvt -name "ncmpcpp" -e sh -c ncmpcpp
 super + F5
 	xdo activate -n cadence || cadence
 super + shift + F5
