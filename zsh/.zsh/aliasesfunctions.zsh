@@ -99,7 +99,7 @@ alias xargs='xargs '
 
 
 # Change to root with users environment
-alias se="sudo -E $SHELL"
+alias se="sudo -E $SHELL -c"
 
 # Redo last line with sudo
 alias pls='sudo $(fc -ln -1)'
@@ -156,6 +156,7 @@ history
 
 
 alias chmox='sudo chmod +x'
+alias cxmod='sudo chmod +x'
 
 
 ### Looking and moving around
@@ -398,14 +399,15 @@ alias pSp='yay --sortby popularity --bottomup'
 alias pu='yay -Pw && yay -Syu --answeredit n --answerupgrade n --answerclean n --answerdiff n --sudoloop --combinedupgrade --noremovemake && xhost si:localuser:root && sudo DIFFPROG="meld" DISPLAY=:0 dbus-launch pacdiff && xhost -si:localuser:root'
 # alias pu='yay -Pw && topgrade'
 # full upgrade, don't skip which packages to ignore
-alias puU='echo y | yay -Syu --answeredit n --answerclean n --answerdiff n --sudoloop --combinedupgrade'
+alias puU='echo y | yay -Syu --answeredit n --answerclean n --answerdiff n --sudoloop --noremovemake --combinedupgrade'
 
 # full upgrade with VCS packages checked
-alias puu='yay -Syu --answeredit n --answerupgrade n --answerclean n --answerdiff n --sudoloop --devel'
-# full upgrade with VCS packages checked, don't skip which packages to ignore
-alias puuU='yay -Syu --answeredit n --answerclean n --sudoloop --devel'
-
 # alias puu='yay -Syu --answeredit n --needed --devel'
+# alias puu='yay -Syu --answeredit n --answerupgrade n --answerclean n --answerdiff n --sudoloop --devel'
+# full upgrade with VCS packages checked, don't skip which packages to ignore
+# alias puuU='yay -Syu --answeredit n --answerclean n --sudoloop --devel'
+alias puu='pacman -Qmq | grep -Ee "-(cvs|svn|git|hg|bzr|darcs)$" | yay -S --answeredit n --answerclean n --answerdiff n --noremovemake --sudoloop --needed -'
+
 
 alias pSi='yay -Si'                         # search info
 alias pQi='pacman -Qi'                      # query info
@@ -414,7 +416,7 @@ alias pQo='pacman -Qo'                      # query file ownership
 # display info for package that contains argument file
 function pQoi(){
   PQOtmp=`pacman -Qoq $@`
-  if ( echo $PQOtmp | rg -q '!^error.*' ) then 
+  if ( echo $PQOtmp | rg -q '!^error.*' ) then
     pacman -Qi $PQOtmp
   fi
 }
@@ -722,8 +724,9 @@ alias lm='xmodmap -e "pointer = 3 2 1"'
 alias ulm='xmodmap -e "pointer = 1 2 3"'
 
 # Reset desktops for two screen 1280x1024
-alias xrandrr="xrandr --output DVI-I-1 --mode 1280x1024 --pos 0x0 --panning 0x0+0+0 --output DVI-I-0 --mode 1280x1024 --pos 1280x0"
-alias xrandrc="xrandr --output DVI-I-1 --same-as DVI-I-0"
+# alias xrandrr="xrandr --output DVI-I-1 --mode 1280x1024 --pos 0x0 --panning 0x0+0+0 --output DVI-I-0 --mode 1280x1024 --pos 1280x0"
+alias xrandrr="xrandr --output LVDS1 --off --output DP1 --off --output HDMI1 --mode 1920x1080 --pos 1920x0 --rotate normal --output VGA1 --mode 1920x1080 --pos 0x0 --rotate normal --output VIRTUAL1 --off"
+alias xrandrc="xrandr --output LVDS1 --off --output DP1 --off --output HDMI1 --mode 1920x1080 --pos 0x0 --rotate normal --output VGA1 --mode 1920x1080 --pos 0x0 --rotate normal --output VIRTUAL1 --off"
 
 # Reload compton
 alias comptonrl='sudo killall compton; compton -b'

@@ -352,14 +352,17 @@ call plug#begin('~/.vim/plugged')
 
 
   """ Tabs
-  " Plug 'jistr/vim-nerdtree-tabs'
-  " map <Leader>o <plug>NERDTreeTabsToggle<CR>
+  Plug 'jistr/vim-nerdtree-tabs'
+  map <Leader>o <plug>NERDTreeTabsToggle<CR>
 
-  Plug 'benatkin/vim-move-between-tabs'
+  " Plug 'benatkin/vim-move-between-tabs'
   " tN and tP
 
   Plug 'maxmeyer/vim-tabreorder'
   " alt-pgup and alt-pgdown
+
+  Plug 'vim-scripts/Tabmerge'
+  " :Tabmerge [tab number/$] [top|bottom|left|right]
 
   " Manage tab workspaces
   " Plug 'sjbach/lusty'

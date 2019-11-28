@@ -217,3 +217,5 @@ zle -N zle-keymap-select
     # clear
 # fi
 
+
+# if [ $(bspc query -N -d|wc -l) = "1" ]; then bspc rule -a \* --one-shot split_dir=south; fi
