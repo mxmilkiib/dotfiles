@@ -196,14 +196,14 @@ label-urgent = %name%!
 label-urgent-background = ${colors.alert}
 label-urgent-padding = 2
 
-label-empty = %index%
+label-empty = %name%
 label-empty-foreground = ${colors.foreground-alt}
 label-empty-padding = 2
 
 ; Separator in between workspaces
 ; label-separator = |
 
-ws-icon-0 = "Desktop;Aa"
+; ws-icon-0 = "Desktop;Aa"
 ws-icon-1 = "A1;A1"
 ws-icon-2 = "A2;A2"
 ws-icon-3 = "A3;A3"

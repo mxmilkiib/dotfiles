@@ -168,15 +168,15 @@ super + shift + {Left,Right}
 
 # Focus on a desktop
 super + {1-9,0,minus,equal}
-	bspc desktop -f ^{2-9,10,11,12,13}
+	bspc desktop -f ^{1-9,10,11,12}
 
 # Move window to a desktop number and follow
 super + shift + {1-9,0,minus,equal}
-	bspc node -d ^{2-9,10,11,12,13} -f
+	bspc node -d ^{1-9,10,11,12} -f
 
 # Move window to a desktop number and don't follow
 super + ctrl + {1-9,0,minus,equal}
-	bspc node -d ^{2-9,10,11,12,13}
+	bspc node -d ^{1-9,10,11,12}
 
 
 # Move desktop to the left
@@ -228,7 +228,7 @@ super + Return
 
 # Focus on a desktop and launch a terminal on it
 super + alt + {1-9,0,minus,equal}
-	bspc desktop -f ^{2-9,10,11,12,13}; $TERMINAL
+	bspc desktop -f ^{1-9,10,11,12}; $TERMINAL
 
 # Launch a terminal in the current working directory of the focused window
 super + ctrl + Return
