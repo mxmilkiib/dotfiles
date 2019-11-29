@@ -1,0 +1,18 @@
+#! /bin/sh
+
+wid=$1
+class=$2
+instance=$3
+
+
+if [ $(bspc query -N -d|wc -l) == "1" ]; then echo "split_dir=south"; fi
+
+
+if [ "$instance" = fontforge ] ; then
+	title=$(xtitle "$wid")
+	case "$title" in
+		Layers|Tools|Warning)
+			echo "focus = off"
+			;;
+	esac
+fi
