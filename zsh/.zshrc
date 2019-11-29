@@ -1,6 +1,6 @@
 # .zshrc: Configuration for the Z-Shell.
-# P.C. Shyamshankar <sykora@lucentbeing.com>
-# Hacked by milkmiruku
+# Original by P.C. Shyamshankar
+# Hacked by Milky Brewster
 
 # profiling module. 'zprof' for info.
 # zmodload zsh/zprof
