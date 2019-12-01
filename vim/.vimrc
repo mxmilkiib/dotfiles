@@ -495,7 +495,7 @@ set nu
 set scrolloff=50
 
 " Highlight 80th chatacter of a line
-highlight ColorColumn ctermbg=magenta
+highlight ColorColumn ctermbg=darkgrey
 call matchadd('ColorColumn', '\%81v', 100)
 
 " Incremental search - moves as you type
