@@ -22,7 +22,7 @@ redshift-gtk -l 55.978301:-3.228586 -t 6000:4500 &
 [[ -f ~/.Xresources ]] && xrdb -merge -I$HOME ~/.Xresources
 
 # xsettings daemon - informs apps what themes to use
-xsettingsd &
+# xsettingsd &
 
 # Make additional fonts available
 xset +fp /usr/share/fonts/local

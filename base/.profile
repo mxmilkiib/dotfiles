@@ -38,14 +38,17 @@ export LESS_TERMCAP_ue=$'\E[0m'
 export LESS_TERMCAP_us=$'\E[01;32m'
 
 
-# Qt toolkit style configuration
+# X11
 export XKB_DEFAULT_LAYOUT=gb
-export QT_QPA_PLATFORMTHEME=qt5ct
+
+# Qt toolkit style configuration
+# export QT_QPA_PLATFORMTHEME=qt5ct
+export QT_QPA_PLATFORMTHEME=gtk2
 # export QT_STYLE_OVERRIDE="adwaita-dark"
 
 # QGtkStyle
-# export QT_QPA_PLATFORMTHEME=breeze
-# export QT_QPA_PLATFORMTHEME=gtk2
+export QT_QPA_PLATFORMTHEME=breeze
+
 
 # For polybar weather widget
 KEY="fdf4a51d4752e99ecbc7a9ce29967c0c"
