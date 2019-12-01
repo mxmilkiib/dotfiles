@@ -38,15 +38,20 @@ source $Z/environment.zsh
 # MOTD - reminder info on readline/emacs/zle binds
 function echo_color() {
   # printf "\033[0;90m$1\033[0m\n"
-  printf "\033[0;96m$1\033[0m $2 \033[0;96m$3\033[0m $4\n"
+  # printf "\033[0;96m$1\033[0m $2 \033[0;96m$3\033[0m $4\n"
+  printf "\033[0;96m$1\033[0m $2 \033[0;96m$3\033[0m $4 \033[0;91m$5\033[0m $6 \033[0;91m$7\033[0m $8\n"
 }
-echo_color "  c-b"  "Move backward character    " "c-f"  "Move forward character"
-echo_color "  a-b"  "Move backward word end     " "a-f"  "Move forward word end"
-echo_color "  c-p"  "Move previous (line up)    " "c-n"  "Move next (line down)"
-echo_color "  c-h"  "Delete backward character  " "c-d"  "Delete forward character"
-echo_color "  c-w"  "Delete backward word       " "a-d"  "Delete forward word"
-echo_color "  c-u"  "Delete entire line         " "c-k"  "Delete to end of line"
-echo_color "  c-a"  "Jump to line beginning     " "c-e"  "Jump to line end"
+# echo_color " c-b"  "Move backward character    " "c-f"  "Move forward character"
+# echo_color " a-b"  "Move backward word end     " "a-f"  "Move forward word end"
+# echo_color " c-p"  "Move previous (line up)    " "c-n"  "Move next (line down)"
+# echo_color " c-h"  "Delete backward character  " "c-d"  "Delete forward character"
+# echo_color " c-w"  "Delete backward word       " "a-d"  "Delete forward word"
+# echo_color " c-u"  "Delete entire line         " "c-k"  "Delete to end of line"
+# echo_color " c-a"  "Jump to line beginning     " "c-e"  "Jump to line end"
+echo_color "  c-b "  "Move backward character    " "c-f "  "Move forward character  " "c-h "  "Delete backward character  " "c-d "  "Delete forward character"
+echo_color "  a-b "  "Move backward word end     " "a-f "  "Move forward word end   " "c-w "  "Delete backward word       " "a-d "  "Delete forward word"
+echo_color "  c-a "  "Jump to line beginning     " "c-e "  "Jump to line end        " "c-k "  "Delete to end of line      "
+echo_color "  c-p "  "Move previous (line up)    " "c-n "  "Move next (line down)   " "c-u "  "Delete entire line         "
 
 
 # Auto start tbsm after login on first two VTs
