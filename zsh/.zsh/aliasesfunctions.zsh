@@ -169,7 +169,8 @@ fi
 
 # alias ls='ls --color'         									# add colors for filetype recognition
 
-alias l='LC_COLLATE=C ls -A --group-directories-first'       # show almost all (hidden files)
+# alias l='LC_COLLATE=C ls -A --group-directories-first'       # show almost all (hidden files)
+alias l='LC_COLLATE=C ls --group-directories-first'       # show almost all (hidden files)
 alias lsd='ls --group-directories-first'
 # alias lt='ls -Atr --group-directories-first'	  # show almost all (hidden files), sort by time, reversed
 
