@@ -90,11 +90,11 @@ super + u
 	bspc desktop last.urgent -f
 
 # Rotate current desktop node tree root
-super + {e,s}
+super + {d,r}
 	bspc node @/ -R {90,270}
 
 # Circulate the leaves of desktop tree backward or forward
-super + {d,r}
+super + {e,s}
 	bspc node @/ -C {backward,forward}; \
 	bspc node -f older
 
@@ -282,10 +282,6 @@ super + shift + F1
 # Various apps in order of assigned desktop
 super + alt + F1
 	xdo activate -n geany ~/documents/scratch
-super + F2
-	xdo activate -n doublecmd || doublecmd --no-splash
-super + shift + F2
-	xdo activate -n pcmanfm-qt || pcmanfm-qt
 super + F3
 	xdo activate -n soulseekqt || soulseekqt
 super + shift + F3
@@ -300,6 +296,10 @@ super + F6
 	xdo activate -n qseq64 || qseq64
 super + F8
 	xdo activate -n keepassxc || keepassxc ~/sync/keepassxc-mb.kdbx
+super + F9
+	xdo activate -n doublecmd || doublecmd --no-splash
+super + shift + F9
+	xdo activate -n pcmanfm-qt || pcmanfm-qt
 super + F11
 	xdo activate -n quasselclient || quasselclient
 super + F12

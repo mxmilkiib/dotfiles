@@ -83,8 +83,7 @@ bspc rule -a copyq       state = floating
 
 
 # Default desktop rules
-bspc rule -a Doublecmd             desktop=^2
-bspc rule -a pcmanfm-qt            desktop=^2
+bspc rule -a ncmpcppkqt            desktop=^1
 bspc rule -a qBittorrent           desktop=^3
 bspc rule -a soulseekqt.AppImage   desktop=^3
 bspc rule -a Picard                desktop=^4
@@ -92,7 +91,8 @@ bspc rule -a Cadence               desktop=^5
 bspc rule -a Carla                 desktop=^5
 bspc rule -a qseq64                desktop=^6
 bspc rule -a keepassxc             desktop=^8
-bspc rule -a ncmpcppkqt            desktop=^9
+bspc rule -a Doublecmd             desktop=^9
+bspc rule -a pcmanfm-qt            desktop=^9
 bspc rule -a quassel               desktop=^11
 bspc rule -a firefox               desktop=^12
 bspc rule -a Chromium              desktop=^12
