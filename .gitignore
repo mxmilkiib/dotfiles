@@ -4,4 +4,4 @@ zsh/.zsh/cache/*
 mpv/.config/mpv/watch_later
 vim/.vim/undodir/*
 zsh/.zsh/cache/*/last-working-dir
-
+vim/.vim/undodir/*
