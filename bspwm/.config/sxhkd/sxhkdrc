@@ -90,11 +90,11 @@ super + u
 	bspc desktop last.urgent -f
 
 # Rotate current desktop node tree root
-super + {d,r}
+super + {e,s}
 	bspc node @/ -R {90,270}
 
 # Circulate the leaves of desktop tree backward or forward
-super + {e,s}
+super + {d,r}
 	bspc node @/ -C {backward,forward}; \
 	bspc node -f older
 

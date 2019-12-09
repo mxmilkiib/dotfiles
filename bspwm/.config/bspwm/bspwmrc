@@ -77,7 +77,7 @@ bspc rule -a Pavucontrol state = floating
 bspc rule -a Mixer       state = floating
 bspc rule -a xfce4-panel state = floating
 bspc rule -a qjackctl    state = floating
-bspc rule -a Cadence.py  state = floating
+bspc rule -a Cadence     state = floating
 bspc rule -a seq64       state = pseudo_tiled
 bspc rule -a copyq       state = floating
 
