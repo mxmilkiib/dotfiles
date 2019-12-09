@@ -282,10 +282,10 @@ super + shift + F1
 # Various apps in order of assigned desktop
 super + alt + F1
 	xdo activate -n geany ~/documents/scratch
+super + F2
+	xdo activate -n qbittorrent || qbittorrent
 super + F3
 	xdo activate -n soulseekqt || soulseekqt
-super + shift + F3
-	xdo activate -n qbittorrent || qbittorrent
 super + F4
 	xdo activate -n picard || picard
 super + F5

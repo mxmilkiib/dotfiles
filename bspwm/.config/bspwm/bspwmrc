@@ -70,7 +70,7 @@ bspc config external_rules_command "$(which external_rules)"
 
 
 # Floating window rules
-bspc rule -a Vlc         state = floating
+bspc rule -a Vlc         state = pseudo_tiled
 bspc rule -a mpv         state = pseudo_tiled
 bspc rule -a Pidgin      state = floating
 bspc rule -a Pavucontrol state = floating
@@ -78,20 +78,21 @@ bspc rule -a Mixer       state = floating
 bspc rule -a xfce4-panel state = floating
 bspc rule -a qjackctl    state = floating
 bspc rule -a Cadence.py  state = floating
-bspc rule -a seq64       state = floating
+bspc rule -a seq64       state = pseudo_tiled
 bspc rule -a copyq       state = floating
 
 
 # Default desktop rules
-bspc rule -a ncmpcppkqt            desktop=^1
-bspc rule -a qBittorrent           desktop=^3
+bspc rule -a "URxvt:ncmpcpp"       desktop=^1
+bspc rule -a qBittorrent           desktop=^2
 bspc rule -a soulseekqt.AppImage   desktop=^3
 bspc rule -a Picard                desktop=^4
 bspc rule -a Cadence               desktop=^5
 bspc rule -a Carla                 desktop=^5
 bspc rule -a qseq64                desktop=^6
 bspc rule -a keepassxc             desktop=^8
-bspc rule -a Doublecmd             desktop=^9
+bspc rule -a doublecmd             desktop=^9
+bspc rule -a "Double Commander"    desktop=^9
 bspc rule -a pcmanfm-qt            desktop=^9
 bspc rule -a quassel               desktop=^11
 bspc rule -a firefox               desktop=^12
