@@ -143,3 +143,8 @@ ChatListItem[state="inactive"] { foreground: #a0a0a4; }
 ChatListItem[state="channel-event"] { foreground: #0d9feb; }
 ChatListItem[state="unread-message"] { foreground: #ffad7b; }
 ChatListItem[state="highlighted"] { foreground: #00d701; }
+
+// NickView Colors
+NickListItem[type="category"] { foreground: #d4cccc; }
+NickListItem[type="user"] { foreground: #ffffff; }
+NickListItem[type="user", state="away"] { foreground: #a0a0a4; }

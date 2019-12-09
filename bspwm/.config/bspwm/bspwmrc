@@ -104,7 +104,6 @@ bspc rule -a Chromium              desktop=^12
 # 	rm "$BSPWM_STATE"
 # fi
 
-
 # Start the bar at the top
 polybar sitting
 # polybar standing
