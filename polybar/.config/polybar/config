@@ -35,7 +35,7 @@ height = 22
 ;offset-x = 1%
 ;offset-y = 1%
 radius = 0
-fixed-center = false
+fixed-center = true
 
 enable-ipc = true
 

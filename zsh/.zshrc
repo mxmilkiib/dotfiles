@@ -90,6 +90,7 @@ if ! zgen saved; then
 
   zgen load zsh-users/zsh-autosuggestions
   export ZSH_AUTOSUGGEST_USE_ASYNC=1
+  export ZSH_AUTOSUGGEST_MANUAL_REBIND=1
 
   zgen load nojhan/liquidprompt
 

@@ -11,7 +11,7 @@ autoload -z compinit && compinit
 zstyle ':completion:*' verbose yes
 
 # zstyle ':completion:*' menu select
-zstyle ':completion:*' menu select=0 search
+# zstyle ':completion:*' menu select=0 search
 
 # order files by modification time
 zstyle ':completion:*' file-sort modification
