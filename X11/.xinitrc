@@ -5,6 +5,8 @@
 #
 # Executed by startx (run your window manager from here)
 
+
+# Autostart X apps
 if [ -d /etc/X11/xinit/xinitrc.d ]; then
   for f in /etc/X11/xinit/xinitrc.d/*; do
     [ -x "$f" ] && . "$f"
@@ -12,21 +14,27 @@ if [ -d /etc/X11/xinit/xinitrc.d ]; then
   unset f
 fi
 
+
 # ssh-agent
+#broken in bspwm
 eval $(ssh-agent)
 
-# Redshift - changed screen colour temp
-redshift-gtk -l 55.978301:-3.228586 -t 6000:4500 &
 
 # Source .Xresources for this session
 [[ -f ~/.Xresources ]] && xrdb -merge -I$HOME ~/.Xresources
 
-# xsettings daemon - informs apps what themes to use
-# xsettingsd &
-
 # Make additional fonts available
 xset +fp /usr/share/fonts/local
 xset fp rehash
+
+# Set Xorg keyboard layout
+setxkbmap gb
+
+# xsettings daemon - informs apps what themes to use
+# xsettingsd &
+
+# Set the mouse pointer graphic
+xsetroot -cursor_name left_ptr &
 
 # xrandr --output DVI-I-1 --mode 1280x1024 --pos 0x0 --output VGA-1 --mode 1024x768 --pos 1280x195
 
@@ -41,20 +49,14 @@ xset fp rehash
 # feh --bg-fill --no-xinerama ~/.wallpapers/VnXDN9J_colourised.png
 feh --bg-fill --no-xinerama ~/.wallpapers/danielle_at_sea_flickr.jpg
 
-# screenshot systray helper
-flameshot &
-
 # Unclutter - hides the mouse cursor after 15 seconds of idle
 unclutter --timeout 15 &
-
-# Set the mouse pointer graphic
-xsetroot -cursor_name left_ptr &
 
 # Start urxvt demon, quiet, connect to $DISPLAY, fork after control socket binding
 # urxvtd -q -o -f &
 
-# Start xscreensaver
-xscreensaver -nosplash &
+# Start xscreensaver - disabled to save power
+# xscreensaver -nosplash &
 
 # Disable screensaver on media fullscreen
 # lightsOn 545 &
@@ -76,32 +78,9 @@ udiskie -san &
 # Notification daemon. ctrl-space to close, ctrl-shift-space to close all.
 dunst &
 
-# Break timer
-# workrave &
-
-# Volume system tray
-# pa-applet &
-#volti &
-# pnmixer &
-kmix &
-
-# Radio streams
-radiotray-ng &
-
-# Battery monitor
-# [[ $HOST = "rose*" ]] && vattery &
-
 # Update dynamic dns
 # dyndns &
 
-# connecto to mobile
-kdeconnect-indicator &
-
-# copy middle-mouse PRIMARY selection to ctrl-xcv/shift-insert CLIPBOARD. mostly useful when without a mouse.
-# autocutsel -fork &
-# copy ctrl-xcv / shift-insert CLIPBOARD to middle mouse PRIMARY selection buffer
-# autocutsel -selection PRIMARY -fork &
-copyq &
 
 # pointerspeed.sh 0.5
 
@@ -110,9 +89,6 @@ bspwm-urgent-border.sh &
 
 # infrared control
 # flirc_util loadconfig ~/.config/flirc/my_flirc_config
-
-# Set Xorg keyboard layout
-setxkbmap gb
 
 # Start Jack for audio
 # jack_control start &
@@ -133,15 +109,44 @@ sxhkd &
 # perlpanel &
 # xde-panel &
 
-# Cat
-# oneko -fg "#555" -bg "#000" -time 200000 -position +200+200 &
 
+### Notification icon area / systray
 
+# Redshift - changed screen colour temp
+redshift-gtk -l 55.978301:-3.228586 -t 6000:4500 &
+
+# pnmixer &
+kmix &
+
+# Radio streams
+radiotray-ng &
+
+# connect to mobile kdeconnect app
+kdeconnect-indicator &
+
+# copy middle-mouse PRIMARY selection to ctrl-xcv/shift-insert CLIPBOARD. mostly useful when without a mouse.
+# autocutsel -fork &
+# copy ctrl-xcv / shift-insert CLIPBOARD to middle mouse PRIMARY selection buffer
+# autocutsel -selection PRIMARY -fork &
+copyq &
+
+# screenshot systray helper
+flameshot &
+
+# Break timer
+# workrave &
+
+# Volume system tray
+# pa-applet &
+#volti &
+# Battery monitor
+# [[ $HOST = "rose*" ]] && vattery &
 # Folder sync tray GUI (using web interface instead)
 syncthing-gtk &
 
 # Octopi pacman update and package manager GUI
 # pamac-tray &
+
 
 # Make sure pulseaudio out is set to jack
 # (sleep 30 && pacmd set-default-source jack_in && pacmd set-default-sink jack_out ) &
@@ -161,8 +166,15 @@ syncthing-gtk &
 # xinput set-button-map 1 2 3 4 5 6 7 12 9 10 11 12
 # button8-to-lwin.py &
 
+# Cat
+#oneko -fg "#555" -bg "#000" -time 200000 -position +200+200 &
 
-# Window manager
+
+# Allow local mpd clients to not require a password
+coffee src/mpdproxy/mpdproxy.coffee &
+
+
+### Window manager
 
 # exec startlxde
 # exec cinnamon-session
@@ -180,8 +192,9 @@ syncthing-gtk &
 
 # exec selectwm
 # exec xterm
-# exec urxvt 
+# exec urxvt
 
+enforce_monitor_position HDMI1 '^1' &
 exec bspwm
 # exec bspwm -c /home/milk/sync/dotfiles/bspwm/.config/bspwm/bspwmrc
 # exec bspwm -c /home/milk/.config/bspwm/bspwmrc
