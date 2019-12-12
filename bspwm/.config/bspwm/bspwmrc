@@ -90,12 +90,15 @@ bspc rule -a qjackctl    state = floating
 bspc rule -a Cadence     state = floating
 bspc rule -a seq64       state = pseudo_tiled
 bspc rule -a copyq       state = floating
+bspc rule -a Arandr      state = floating
+bspc rule -a "* Copying" state = floating
 
 
 # Default desktop rules
 bspc rule -a "URxvt:ncmpcpp"       desktop=^1
 bspc rule -a qBittorrent           desktop=^2
 bspc rule -a soulseekqt.AppImage   desktop=^3
+bspc rule -a SoulseekQt            desktop=^3
 bspc rule -a Picard                desktop=^4
 bspc rule -a Cadence               desktop=^5
 bspc rule -a Carla                 desktop=^5
