@@ -194,7 +194,11 @@ coffee src/mpdproxy/mpdproxy.coffee &
 # exec xterm
 # exec urxvt
 
-enforce_monitor_position HDMI1 '^1' &
+
+xrandr-rose-vgaprime-hdmiright.sh
+
+
+enforce_monitor_position VGA1 '^1' &
 exec bspwm
 # exec bspwm -c /home/milk/sync/dotfiles/bspwm/.config/bspwm/bspwmrc
 # exec bspwm -c /home/milk/.config/bspwm/bspwmrc

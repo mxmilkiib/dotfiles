@@ -28,6 +28,67 @@ primary = #ecbc34
 secondary = #e60053
 alert = #bd2c40
 
+[bar/sitting-tray]
+monitor = ${env:MONITOR:VGA1}
+width = 100%
+height = 22
+;offset-x = 1%
+;offset-y = 1%
+radius = 0
+fixed-center = true
+
+enable-ipc = true
+
+background = ${colors.background}
+foreground = ${colors.foreground}
+
+line-size = 2
+line-color = #f00
+
+border-size = 0
+border-color = #00000000
+
+padding-left = 0
+padding-right = 2
+
+module-margin-left = 1
+module-margin-right = 2
+
+; font-0 = misc fixed:pixelsize=10;1
+; font-0 = GohuFont Powerline:pixelsize=12;1
+font-0 = Gohu GohuFont:pixelsize=12;1
+font-1 = Weather Icons:size=9;2
+font-2 = unifont:fontformat=truetype:size=8:antialias=false;0
+font-3 = siji:pixelsize=10;1
+font-4 = FontAwesome:pixelsize=7;scale=14;1
+font-5 = Noto Color Emoji:size=7:scale=14;1
+
+modules-left = bspwm
+modules-center = player-mpris-tail
+; modules-center = player-mpris-simple
+; modules-center = mpd
+; modules-right = filesystem xbacklight alsa pulseaudio memory cpu wlan eth battery temperature date powermenu
+modules-right = openweathermap-fullfeatured filesystem alsa memory cpu wlan eth battery temperature updates-arch-combined pomobar date services powermenu
+
+tray-position = right
+tray-padding = 0
+;tray-background = #0063ff
+
+; Fix polybar being ontop of fullscreen windows
+wm-restack = bspwm
+;wm-restack = i3
+
+;override-redirect = true
+
+;scroll-up = bspwm-desknext
+;scroll-down = bspwm-deskprev
+
+;scroll-up = i3wm-wsnext
+;scroll-down = i3wm-wsprev
+
+cursor-click = pointer
+cursor-scroll = ns-resize
+
 [bar/sitting]
 monitor = ${env:MONITOR:VGA1}
 width = 100%
@@ -149,6 +210,70 @@ wm-restack = bspwm
 
 cursor-click = pointer
 cursor-scroll = ns-resize
+
+
+[bar/standing-tray]
+monitor = ${env:MONITOR:HDMI1}
+width = 100%
+height = 22
+;offset-x = 1%
+;offset-y = 1%
+radius = 0
+fixed-center = false
+
+enable-ipc = true
+
+background = ${colors.background}
+foreground = ${colors.foreground}
+
+line-size = 2
+line-color = #f00
+
+border-size = 0
+border-color = #00000000
+
+padding-left = 0
+padding-right = 2
+
+module-margin-left = 1
+module-margin-right = 2
+
+; font-0 = misc fixed:pixelsize=10;1
+; font-0 = GohuFont Powerline:pixelsize=12;1
+font-0 = Gohu GohuFont:pixelsize=12;1
+font-1 = Weather Icons:size=9;2
+font-2 = unifont:fontformat=truetype:size=8:antialias=false;0
+font-3 = siji:pixelsize=10;1
+font-4 = FontAwesome:pixelsize=7;scale=14;1
+font-5 = Noto Color Emoji:size=7:scale=14;1
+
+modules-left = bspwm
+modules-center = player-mpris-tail
+; modules-center = player-mpris-simple
+; modules-center = mpd
+; modules-right = filesystem xbacklight alsa pulseaudio memory cpu wlan eth battery temperature date powermenu
+modules-right = openweathermap-fullfeatured filesystem alsa memory cpu wlan eth battery temperature updates-arch-combined pomobar date services powermenu
+
+tray-position = right
+tray-padding = 0
+;tray-background = #0063ff
+
+; Fix polybar being ontop of fullscreen windows
+wm-restack = bspwm
+;wm-restack = i3
+
+;override-redirect = true
+
+;scroll-up = bspwm-desknext
+;scroll-down = bspwm-deskprev
+
+;scroll-up = i3wm-wsnext
+;scroll-down = i3wm-wsprev
+
+cursor-click = pointer
+cursor-scroll = ns-resize
+
+
 [module/xwindow]
 type = internal/xwindow
 label = %title:0:30:...%
@@ -217,7 +342,7 @@ ws-icon-10 = "A0;A0"
 ws-icon-11 = "A-;A-"
 ws-icon-12 = "A=;A="
 
-pin-workspaces = false
+pin-workspaces = true
 
 [module/i3]
 type = internal/i3

@@ -159,24 +159,24 @@ super + {Left,Right}
 
 # Move window to the previous or next desktop
 super + ctrl + {Left,Right}
-	bspc node -d {prev,next}
+	bspc node -d {prev.local,next.local}
 
 # Move window to the previous or next desktop and follow with focus
 super + shift + {Left,Right}
- bspc node -d {prev,next} -f
+ bspc node -d {prev.local,next.local} -f
 
 
 # Focus on a desktop
 super + {1-9,0,minus,equal}
-	bspc desktop -f ^{1-9,10,11,12}
+	bspc desktop -f focused:^{1-9,10,11,12}
 
 # Move window to a desktop number and follow
 super + shift + {1-9,0,minus,equal}
-	bspc node -d ^{1-9,10,11,12} -f
+	bspc node -d focused:^{1-9,10,11,12} -f
 
 # Move window to a desktop number and don't follow
 super + ctrl + {1-9,0,minus,equal}
-	bspc node -d ^{1-9,10,11,12}
+	bspc node -d focused:^{1-9,10,11,12}
 
 
 # Move desktop to the left
