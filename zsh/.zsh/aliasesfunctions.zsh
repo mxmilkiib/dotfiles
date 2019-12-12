@@ -726,8 +726,10 @@ alias ulm='xmodmap -e "pointer = 1 2 3"'
 
 # Reset desktops for two screen 1280x1024
 # alias xrandrr="xrandr --output DVI-I-1 --mode 1280x1024 --pos 0x0 --panning 0x0+0+0 --output DVI-I-0 --mode 1280x1024 --pos 1280x0"
-alias xrandrr="xrandr --output LVDS1 --off --output DP1 --off --output HDMI1 --mode 1920x1080 --pos 1920x0 --rotate normal --output VGA1 --mode 1920x1080 --pos 0x0 --rotate normal --output VIRTUAL1 --off"
-alias xrandrc="xrandr --output LVDS1 --off --output DP1 --off --output HDMI1 --mode 1920x1080 --pos 0x0 --rotate normal --output VGA1 --mode 1920x1080 --pos 0x0 --rotate normal --output VIRTUAL1 --off"
+# alias xrandrr="xrandr --output LVDS1 --off --output DP1 --off --output HDMI1 --mode 1920x1080 --pos 1920x0 --rotate normal --output VGA1 --mode 1920x1080 --pos 0x0 --rotate normal --output VIRTUAL1 --off"
+# alias xrandrc="xrandr --output LVDS1 --off --output DP1 --off --output HDMI1 --mode 1920x1080 --pos 0x0 --rotate normal --output VGA1 --mode 1920x1080 --pos 0x0 --rotate normal --output VIRTUAL1 --off"
+alias xrandc="xrandr-rose-vgaprime-hdmiclone.sh"
+alias xrandr="xrandr-rose-vgaprime-hdmiright.sh"
 
 # Reload compton
 alias comptonrl='sudo killall compton; compton -b'
