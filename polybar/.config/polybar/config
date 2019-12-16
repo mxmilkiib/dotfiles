@@ -517,6 +517,8 @@ bar-volume-empty-foreground = ${colors.foreground-alt}
 [module/alsa]
 type = internal/alsa
 
+master-soundcard=Speaker
+
 format-volume = <label-volume> <bar-volume>
 label-volume = %{T4}🔊%{T-}
 label-volume-foreground = ${root.foreground}
