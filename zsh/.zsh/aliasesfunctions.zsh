@@ -366,6 +366,7 @@ alias sy='systemctl '
 compdef sy=systemctl
 alias susy='sudo systemctl'
 compdef susy=systemctl
+alias jctl='journalctl -xeb'
 
 # launch x
 alias sx='ssh-agent startx'
