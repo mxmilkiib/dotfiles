@@ -124,3 +124,5 @@ polybar sitting
 
 # Start a notifications daemon
 # mako --default-timeout 8000 --width 600 --anchor top-center --background-color '#472877' --border-color '#ffffffaa'
+
+bspwm_enforce_loop
