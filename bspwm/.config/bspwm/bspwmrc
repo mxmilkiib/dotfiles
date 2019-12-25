@@ -79,7 +79,7 @@ bspc monitor -d A1 A2 A3 A4 A5 A6 A7 A8 A9 A0 A- A=
 # 	bspc monitor -f next
 # fi
 
-bspc config external_rules_command "$(which external_rules)"
+bspc config external_rules_command "$(which bspwm_external_rules)"
 
 
 # Floating window rules
