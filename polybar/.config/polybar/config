@@ -28,6 +28,7 @@ primary = #ecbc34
 secondary = #e60053
 alert = #bd2c40
 
+
 [bar/sitting-tray]
 monitor = ${env:MONITOR:VGA1}
 width = 100%
@@ -35,7 +36,7 @@ height = 22
 ;offset-x = 1%
 ;offset-y = 1%
 radius = 0
-fixed-center = true
+fixed-center = false
 
 enable-ipc = true
 
@@ -64,11 +65,11 @@ font-4 = FontAwesome:pixelsize=7;scale=14;1
 font-5 = Noto Color Emoji:size=7:scale=14;1
 
 modules-left = bspwm
-modules-center = player-mpris-tail
+modules-center = player-mpris-tail alsa
 ; modules-center = player-mpris-simple
 ; modules-center = mpd
 ; modules-right = filesystem xbacklight alsa pulseaudio memory cpu wlan eth battery temperature date powermenu
-modules-right = openweathermap-fullfeatured filesystem alsa memory cpu wlan eth battery temperature updates-arch-combined pomobar date services powermenu
+modules-right = filesystem memory cpu wlan eth battery temperature updates-arch-combined pomobar date services powermenu
 
 tray-position = right
 tray-padding = 0
@@ -88,6 +89,7 @@ wm-restack = bspwm
 
 cursor-click = pointer
 cursor-scroll = ns-resize
+
 
 [bar/sitting]
 monitor = ${env:MONITOR:VGA1}
@@ -125,11 +127,11 @@ font-4 = FontAwesome:pixelsize=7;scale=14;1
 font-5 = Noto Color Emoji:size=7:scale=14;1
 
 modules-left = bspwm
-modules-center = player-mpris-tail
+modules-center = player-mpris-tail alsa
 ; modules-center = player-mpris-simple
 ; modules-center = mpd
 ; modules-right = filesystem xbacklight alsa pulseaudio memory cpu wlan eth battery temperature date powermenu
-modules-right = openweathermap-fullfeatured filesystem alsa memory cpu wlan eth battery temperature updates-arch-combined pomobar date services powermenu
+modules-right = openweathermap-fullfeatured filesystem memory cpu wlan eth battery temperature updates-arch-combined pomobar date services powermenu
 
 tray-position = right
 tray-padding = 0
@@ -149,6 +151,7 @@ wm-restack = bspwm
 
 cursor-click = pointer
 cursor-scroll = ns-resize
+
 
 [bar/standing]
 monitor = ${env:MONITOR:HDMI1}
@@ -186,11 +189,11 @@ font-4 = FontAwesome:pixelsize=7;scale=14;1
 font-5 = Noto Color Emoji:size=7:scale=14;1
 
 modules-left = bspwm
-modules-center = player-mpris-tail
+modules-center = player-mpris-tail alsa
 ; modules-center = player-mpris-simple
 ; modules-center = mpd
 ; modules-right = filesystem xbacklight alsa pulseaudio memory cpu wlan eth battery temperature date powermenu
-modules-right = openweathermap-fullfeatured filesystem alsa memory cpu wlan eth battery temperature updates-arch-combined pomobar date services powermenu
+modules-right = openweathermap-fullfeatured filesystem memory cpu wlan eth battery temperature updates-arch-combined pomobar date services powermenu
 
 tray-position = right
 tray-padding = 0
@@ -249,10 +252,10 @@ font-5 = Noto Color Emoji:size=7:scale=14;1
 
 modules-left = bspwm
 modules-center = player-mpris-tail
-; modules-center = player-mpris-simple
+; modules-center = player-mpris-simple alsa
 ; modules-center = mpd
 ; modules-right = filesystem xbacklight alsa pulseaudio memory cpu wlan eth battery temperature date powermenu
-modules-right = openweathermap-fullfeatured filesystem alsa memory cpu wlan eth battery temperature updates-arch-combined pomobar date services powermenu
+modules-right = openweathermap-fullfeatured filesystem memory cpu wlan eth battery temperature updates-arch-combined pomobar date services powermenu
 
 tray-position = right
 tray-padding = 0
@@ -517,7 +520,8 @@ bar-volume-empty-foreground = ${colors.foreground-alt}
 [module/alsa]
 type = internal/alsa
 
-master-soundcard=Speaker
+master-soundcard=hw:1
+master-mixer=Speaker
 
 format-volume = <label-volume> <bar-volume>
 label-volume = %{T4}🔊%{T-}
@@ -601,7 +605,7 @@ type = custom/menu
 
 expand-right = true
 
-format-spacing = 1
+format-spacing = 10
 
 label-open = 
 label-open-foreground = ${colors.secondary}
