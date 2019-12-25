@@ -5,7 +5,8 @@ class=$2
 instance=$3
 
 
-if [ $(bspc query -N -d|wc -l) == "1" ]; then echo "split_dir=south"; fi
+# if [ $(bspc query -N -d|wc -l) == "1" ]; then echo "split_dir=south"; fi
+bspwm_grid.sh
 
 
 if [ "$instance" = fontforge ] ; then
