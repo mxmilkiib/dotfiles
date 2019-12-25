@@ -50,7 +50,7 @@ super + {_,shift + }q
 	bspc node -{c,k}
 
 super + x
-	bspc node -c
+	bspc node -c && bspc node -f last.local
 
 # Don't rely on the wm to kill
 super + alt + q
