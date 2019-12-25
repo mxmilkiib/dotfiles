@@ -116,7 +116,7 @@ sxhkd &
 redshift-gtk -l 55.978301:-3.228586 -t 6000:4500 &
 
 # pnmixer &
-kmix &
+# kmix &
 
 # Radio streams
 radiotray-ng &
@@ -170,10 +170,6 @@ syncthing-gtk &
 #oneko -fg "#555" -bg "#000" -time 200000 -position +200+200 &
 
 
-# Allow local mpd clients to not require a password
-coffee src/mpdproxy/mpdproxy.coffee &
-
-
 ### Window manager
 
 # exec startlxde
@@ -198,7 +194,6 @@ coffee src/mpdproxy/mpdproxy.coffee &
 xrandr-rose-vgaprime-hdmiright.sh
 
 
-enforce_monitor_position VGA1 '^1' &
 exec bspwm
 # exec bspwm -c /home/milk/sync/dotfiles/bspwm/.config/bspwm/bspwmrc
 # exec bspwm -c /home/milk/.config/bspwm/bspwmrc
