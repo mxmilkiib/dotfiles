@@ -1,0 +1,4 @@
+#!/bin/bash
+bspc subscribe monitor | while read -a msg ; do
+  bspwm_enforce_monitor_position VGA1 '^1'
+done

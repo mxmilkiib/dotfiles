@@ -1,0 +1,9 @@
+[Unit]
+Description=Music Player Daemon proxy
+Before=mpd.service
+
+[Service]
+ExecStart=/usr/bin/coffee /home/milk/src/mpdproxy/mpdproxy.coffee
+
+[Install]
+WantedBy=default.target
