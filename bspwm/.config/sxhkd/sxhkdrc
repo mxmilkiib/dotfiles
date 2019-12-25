@@ -93,10 +93,19 @@ super + u
 super + {e,s}
 	bspc node @/ -R {90,270}
 
+# Rotate current node and parent
+super + shift + {e,s}
+	bspc node @parent -R {90,270}
+
 # Circulate the leaves of desktop tree backward or forward
 super + {d,r}
 	bspc node @/ -C {backward,forward}; \
 	bspc node -f older
+
+# Circulate the current and parent node backward or forward
+super + shift + {d,r}
+	bspc node @parent -C {backward,forward}; \
+  bspc node -f older
 
 # Swap focused window with largest tiled node on the same desktop
 super + n
@@ -125,7 +134,7 @@ super + alt + {h,j,k,l}
 	bspc node -p {west,south,north,east}
 
 # Preselect the ratio
-super + alt + {1-9}
+super + ctrl + alt + {1-9}
 	bspc node -o 0.{1-9}
 
 # Cancel preselect for window or desktop
@@ -136,9 +145,9 @@ super + alt + space
 super + alt + ctrl + space
 	bspc query -N -d | xargs -I id -n 1 bspc node id -p cancel
 
-# Transplant to preselect
-super + ctrl + shift + {h,j,k,l}
-#	bspc window -s {left,down,up,right}
+# Transplant focused node to preselected area
+super + g
+	bspc node -n 'newest.!automatic.local'
 
 # Preselect in a direction and launch terminal
 super + alt + shift + {h,j,k,l}
