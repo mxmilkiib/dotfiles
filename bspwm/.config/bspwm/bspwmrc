@@ -95,6 +95,7 @@ bspc rule -a seq64       state = pseudo_tiled
 bspc rule -a copyq       state = floating
 bspc rule -a Arandr      state = floating
 bspc rule -a "* Copying" state = floating
+bspc rule -a QjackCtl    state = floating
 
 
 # Default desktop rules
@@ -128,4 +129,5 @@ polybar sitting
 # Start a notifications daemon
 # mako --default-timeout 8000 --width 600 --anchor top-center --background-color '#472877' --border-color '#ffffffaa'
 
+bspwm_urgent_border
 bspwm_enforce_loop

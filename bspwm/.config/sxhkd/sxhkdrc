@@ -322,6 +322,23 @@ super + F12
 	xdo activate -n Navigator || firefox
 
 
+# VGA only
+super + ctrl + F9
+	xrandr-rose-vgaprime-vgaonly.sh
+
+# Clone displays
+super + ctrl + F10
+	xrandr-rose-vgaprime-hdmiclone.sh
+
+# HDMI right
+super + ctrl + F11
+	xrandr-rose-vgaprime-hdmiright.sh
+
+# HDMI only
+super + ctrl + F12
+	xrandr-rose-vgaprime-hdmionly.sh
+
+
 # Simulate an "x" keypress to close tabs using Vimium in Firefox
 # broken atm!
 ctrl + button8
