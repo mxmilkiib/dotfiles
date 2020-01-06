@@ -1,5 +1,7 @@
 let g:netrw_dirhistmax  =10
-let g:netrw_dirhistcnt =7
+let g:netrw_dirhistcnt =9
+let g:netrw_dirhist_9='/home/milk'
+let g:netrw_dirhist_8='/home/milk/.zsh'
 let g:netrw_dirhist_7='/home/milk/.projectM'
 let g:netrw_dirhist_6='/home/milk/state/mkisos/manjaro-arm-installer/.git'
 let g:netrw_dirhist_5='/home/milk/state/mkisos/manjaro-arm-installer'

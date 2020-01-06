@@ -251,7 +251,7 @@ font-4 = FontAwesome:pixelsize=7;scale=14;1
 font-5 = Noto Color Emoji:size=7:scale=14;1
 
 modules-left = bspwm
-modules-center = player-mpris-tail
+modules-center = player-mpris-tail alsa
 ; modules-center = player-mpris-simple alsa
 ; modules-center = mpd
 ; modules-right = filesystem xbacklight alsa pulseaudio memory cpu wlan eth battery temperature date powermenu
