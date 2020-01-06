@@ -30,6 +30,18 @@ export LESS_TERMCAP_us=$'\E[01;32m'
 export XKB_DEFAULT_LAYOUT=gb
 
 
+# xdg standard
+export XDG_CONFIG_HOME=${XDG_CONFIG_HOME:-"$HOME/.config"}
+export XDG_DATA_HOME=${XDG_DATA_HOME:-"$HOME/.local/share"}
+export XDG_CACHE_HOME=${XDG_CACHE_HOME:-"$HOME/.cache"}
+
+
+# gives fuller GUI 
+export XDG_CURRENT_DESKTOP=XFCE
+
+
+export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent.socket"
+
 # Qt toolkit style configuration
 
 # export QT_QPA_PLATFORMTHEME=qt5ct
@@ -47,6 +59,13 @@ export NNN_COPIER="nnn_copier.sh"
 
 # reduce mode key timeout to 0.1s
 export KEYTIMEOUT=1
+
+
+export TMPDIR=/var/tmp
+
+# npm install -g for user
+PATH="$HOME/.node_modules/bin:$PATH"
+export npm_config_prefix=~/.node_modules
 
 
 # bspwm reloading
