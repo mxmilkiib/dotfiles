@@ -1,5 +1,6 @@
 let g:netrw_dirhistmax  =10
-let g:netrw_dirhistcnt =9
+let g:netrw_dirhistcnt =0
+let g:netrw_dirhist_0='/home/milk/state/pkgs/testing/mod-cv-plugins-git'
 let g:netrw_dirhist_9='/home/milk'
 let g:netrw_dirhist_8='/home/milk/.zsh'
 let g:netrw_dirhist_7='/home/milk/.projectM'
