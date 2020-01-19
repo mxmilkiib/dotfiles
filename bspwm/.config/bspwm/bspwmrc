@@ -22,6 +22,7 @@ bspc config history_aware_focus         true
 
 bspc config click_to_focus              false
 bspc config focus_follows_pointer       false
+bspc config swallow_first_click         true
 
 bspc config pointer_follows_monitor     true
 
@@ -103,7 +104,7 @@ bspc rule -a "URxvt:ncmpcpp"       desktop=^1
 bspc rule -a qBittorrent           desktop=^2
 bspc rule -a soulseekqt.AppImage   desktop=^3
 bspc rule -a SoulseekQt            desktop=^3
-bspc rule -a Picard                desktop=^4
+bspc rule -a "MusicBrainz Picard"  desktop=^4
 bspc rule -a Cadence               desktop=^5
 bspc rule -a Carla                 desktop=^5
 bspc rule -a qseq64                desktop=^6
