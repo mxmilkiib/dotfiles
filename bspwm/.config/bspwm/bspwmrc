@@ -36,8 +36,8 @@ bspc config auto_cancel                 true
 # keep ratio when resizing certain windows
 bspc config honor_size_hints            true
 
-# bspc config remove_unplugged_monitors   true
-# bspc config remove_disabled_monitors    true
+bspc config remove_unplugged_monitors   true
+bspc config remove_disabled_monitors    true
 
 
 # http://paletton.com/#uid=34r0u0kgJHN6oX3bWQhkPyZoTtA
