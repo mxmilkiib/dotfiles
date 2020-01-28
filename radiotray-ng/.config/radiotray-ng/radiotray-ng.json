@@ -1,13 +1,13 @@
 {
 	"bookmarks" : "/home/milk/.config/radiotray-ng/bookmarks.json",
 	"compact-menu" : false,
-	"last-station" : "Jungletrain.net (128k)",
-	"last-station-group" : "Bass / Breaks",
+	"last-station" : "Schizoid: dub techno",
+	"last-station-group" : "House/tech-house",
 	"last-station-notifications" : true,
 	"max-volume-level" : 100,
 	"notification-verbose" : true,
 	"notifications" : true,
 	"split-title" : false,
-	"volume-level" : 3,
+	"volume-level" : 52,
 	"volume-step" : 3
 }

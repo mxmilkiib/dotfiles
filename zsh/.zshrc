@@ -35,7 +35,7 @@ source $Z/environment.zsh
 # exit 0
 # fi
 
-if [[ $(bspc query --nodes --desktop --node .window | wc -l) = 1 ]]; then
+if [ ! $DISPLAY ] || [ $(bspc query --nodes --desktop --node .window | wc -l) = 1 ]; then
   # MOTD - reminder info on readline/emacs/zle binds
   function echo_color() {
     # printf "\033[0;90m$1\033[0m\n"
