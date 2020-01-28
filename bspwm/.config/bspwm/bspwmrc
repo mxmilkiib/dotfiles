@@ -4,6 +4,7 @@ bspc config wm_name                     bspwm
 
 # Layout
 bspc config top_padding                 18
+# bspc config bottom_paddin               18
 bspc config border_width                3
 bspc config window_gap                  3
 bspc config split_ratio                 0.6

@@ -38,6 +38,8 @@ height = 22
 radius = 0
 fixed-center = false
 
+bottom = false
+
 enable-ipc = true
 
 background = ${colors.background}
@@ -99,6 +101,8 @@ height = 22
 ;offset-y = 1%
 radius = 0
 fixed-center = true
+
+bottom = false
 
 enable-ipc = true
 
@@ -162,6 +166,8 @@ height = 22
 radius = 0
 fixed-center = false
 
+bottom = false
+
 enable-ipc = true
 
 background = ${colors.background}
@@ -223,6 +229,8 @@ height = 22
 ;offset-y = 1%
 radius = 0
 fixed-center = false
+
+bottom = false
 
 enable-ipc = true
 

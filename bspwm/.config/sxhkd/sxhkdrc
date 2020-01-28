@@ -58,7 +58,7 @@ super + alt + q
 
 # Close or kill a window under the pointer with a mouse button
 #broken atm! only kills the active window still, not the window under the pointer
-super + button9 + {_,shift}
+super + button9 + ctrl + {_,shift}
 	xdo button_press button1; sleep 0.2; xdo button_release button1; bspc node -{c,k}
 
 
