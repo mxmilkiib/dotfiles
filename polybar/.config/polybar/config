@@ -528,8 +528,8 @@ bar-volume-empty-foreground = ${colors.foreground-alt}
 [module/alsa]
 type = internal/alsa
 
-master-soundcard=hw:1
-master-mixer=Speaker
+master-soundcard=hw:0
+master-mixer=hdmi
 
 format-volume = <label-volume> <bar-volume>
 label-volume = %{T4}🔊%{T-}
