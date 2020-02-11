@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 IFS='x' read screenWidth screenHeight < <(xdpyinfo | grep dimensions | grep -o '[0-9x]*' | head -n1)
+screenWidth=$(cat /sys/class/graphics/fb0/virtual_size | cut -d, -f1)
+screenHeight=$(cat /sys/class/graphics/fb0/virtual_size | cut -d, -f2)
 
 width=$(xdotool getactivewindow getwindowgeometry --shell | head -4 | tail -1 | sed 's/[^0-9]*//')
 height=$(xdotool getactivewindow getwindowgeometry --shell | head -5 | tail -1 | sed 's/[^0-9]*//')

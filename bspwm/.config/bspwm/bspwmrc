@@ -7,7 +7,7 @@ bspc config top_padding                 18
 # bspc config bottom_paddin               18
 bspc config border_width                3
 bspc config window_gap                  3
-bspc config split_ratio                 0.6
+bspc config split_ratio                 0.4
 
 bspc config single_monocle              true
 bspc config borderless_monocle          true
@@ -85,20 +85,21 @@ bspc config external_rules_command "$(which bspwm_external_rules)"
 
 
 # Floating window rules
-bspc rule -a Vlc         state = pseudo_tiled
-bspc rule -a mpv         state = pseudo_tiled
-bspc rule -a Pidgin      state = floating
-bspc rule -a Pavucontrol state = floating
-bspc rule -a Mixer       state = floating
-bspc rule -a xfce4-panel state = floating
-bspc rule -a qjackctl    state = floating
-bspc rule -a Cadence     state = floating
-bspc rule -a seq64       state = pseudo_tiled
-bspc rule -a copyq       state = floating
-bspc rule -a Arandr      state = floating
-bspc rule -a "* Copying" state = floating
-bspc rule -a QjackCtl    state = floating
-
+bspc rule -a Vlc                  state = pseudo_tiled
+bspc rule -a mpv                  state = pseudo_tiled
+bspc rule -a Pidgin               state = floating
+bspc rule -a Pavucontrol          state = floating
+bspc rule -a Mixer                state = floating
+bspc rule -a xfce4-panel          state = floating
+bspc rule -a qjackctl             state = floating
+bspc rule -a Cadence              state = floating
+bspc rule -a seq64                state = pseudo_tiled
+bspc rule -a copyq                state = floating
+bspc rule -a Arandr               state = floating
+bspc rule -a "* Copying"          state = floating
+bspc rule -a QjackCtl             state = floating
+bspc rule -a radium_compressor    state = floating
+bspc rule -a Goodvibes            state = floating
 
 # Default desktop rules
 bspc rule -a "URxvt:ncmpcpp"       desktop=^1

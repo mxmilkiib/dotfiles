@@ -30,6 +30,8 @@ xset fp rehash
 # Set Xorg keyboard layout
 setxkbmap gb
 
+numlockx &
+
 # xsettings daemon - informs apps what themes to use
 # xsettingsd &
 
@@ -119,10 +121,11 @@ redshift-gtk -l 55.978301:-3.228586 -t 6000:4500 &
 # kmix &
 
 # Radio streams
-radiotray-ng &
+# radiotray-ng &
+goodvibes --status-icon &
 
 # connect to mobile kdeconnect app
-kdeconnect-indicator &
+# $(sleep 10 && kdeconnect-indicator &)
 
 # copy middle-mouse PRIMARY selection to ctrl-xcv/shift-insert CLIPBOARD. mostly useful when without a mouse.
 # autocutsel -fork &
