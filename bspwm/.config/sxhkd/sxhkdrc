@@ -220,8 +220,8 @@ super + shift + o
 
 
 ### Mouse and pointer
-~button1
-	bspc pointer -g focus
+# ~button1
+	# bspc pointer -g focus
 
 
 # Motion
@@ -267,27 +267,45 @@ super + semicolon
 ### Application hotkeys
 # Capture a screenshot
 super + Print
-	import -window root ~/images/screenshots/$(hostname --short)_$(date +%Y-%m-%d-%T).png
+	import --with-x11 -window root ~/media/images/screenshots/$(hostname --short)_$(date +%Y-%m-%d-%T).png
 
 # Drag to select then capture a screenshot
 super + ctrl + Print
-	import -window ~/images/screenshots/$(hostname --short)_$(date +%Y-%m-%d-%T).png
+	import --with-x11 -window ~/media/images/screenshots/$(hostname --short)_$(date +%Y-%m-%d-%T).png
 
 # Drag to select then capture a screenshot
 super + shift + Print
-	bash -c import ~/images/screenshots/$(hostname --short)_$(date +%Y-%m-%d-%T).png
+	bash -c import --with-x11 ~/media/images/screenshots/$(hostname --short)_$(date +%Y-%m-%d-%T).png
 
 super + alt + Print
-	xclip -selection clipboard -t image/png -o > import -window
+	xclip -selection clipboard -t image/png -o > import --with-x11 -window
+
 
 # Open an application launcher
-super + @space
-	rofi -modi combi -combi-modi 'drun#run' -show combi -show-icons -width 60 -lines 25 -theme purple.rasi -display-combi launch
+# super + @space
+	# rofi -modi combi -combi-modi 'drun#run' -show combi -show-icons -width 60 -lines 25 -theme purple.rasi -display-combi launch
+#double tap
+# ~Super_L ; @Super_L
+super + space
+	rofi -modi drun -combi-modi 'drun' -show drun -show-icons -width 60 -lines 25 -theme purple.rasi
 
 
 # Pulseaudio application volume mixer
 super + p
 	xdo activate -n pavucontrol || pavucontrol
+
+
+XF86AudioLowerVolume
+  amixer set Master 2%-
+
+XF86AudioRaiseVolume
+  amixer set Master 2%+
+
+XF86AudioMute
+	amixer set Master 1+ toggle
+
+XF86AudioPlay
+	playerctl play-pause
 
 
 # Open a hotkey reminder terminal

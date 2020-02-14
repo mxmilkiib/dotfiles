@@ -125,7 +125,7 @@ redshift-gtk -l 55.978301:-3.228586 -t 6000:4500 &
 goodvibes --status-icon &
 
 # connect to mobile kdeconnect app
-# $(sleep 10 && kdeconnect-indicator &)
+kdeconnect-indicator &
 
 # copy middle-mouse PRIMARY selection to ctrl-xcv/shift-insert CLIPBOARD. mostly useful when without a mouse.
 # autocutsel -fork &
