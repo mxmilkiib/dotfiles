@@ -40,17 +40,17 @@ super + ctrl + {m,z,x,c}
 	bspc node -g {marked,locked,sticky,private}
 
 # Set the node z-layer state
-super + alt + {z,x,c}
+super + {comma,period,slash}
 	bspc node -l {below,normal,above}
 
 
 ## Closing/killing
 # Close or kill window node
 super + {_,shift + }q
-	bspc node -{c,k}
+	bspc node -{c,k} && bspc node -f last.local
 
-super + x
-	bspc node -c && bspc node -f last.local
+# super + x
+	# bspc node -c && bspc node -f last.local
 
 # Don't rely on the wm to kill
 super + alt + q
@@ -65,11 +65,11 @@ super + button9 + ctrl + {_,shift}
 ## Resize nodes
 # Contract the tiled space in the given direction
 super + alt + ctrl + {h,j,k,l}
-	bspc node {@east -r -10,@north -r +10,@south -r -10,@west -r +10}
+	bspc node {@east -r -20,@north -r +20,@south -r -20,@west -r +20}
 
 # Expand the tiled space in the given direction
 super + ctrl + shift + {h,j,k,l}
-	bspc node {@west -r -10,@south -r +10,@north -r -10,@east -r +10}
+	bspc node {@west -r -20,@south -r +20,@north -r -20,@east -r +20}
 
 
 ## Focus/swap/move
@@ -170,7 +170,6 @@ super + alt + {Left,Right}
 
 # Focus on previous or next desktop
 super + {Left,Right}
-
 	bspc desktop {prev.local.occupied,next.local.occupied} -f
 
 # Move window to the previous or next desktop
@@ -179,7 +178,8 @@ super + ctrl + {Left,Right}
 
 # Move window to the previous or next desktop and follow with focus
 super + shift + {Left,Right}
- bspc node -d {prev.local,next.local} -f
+ bspc node -d {prev.local,next.local} -f;\
+ bspwm_centre_window 
 
 
 # Focus on a desktop
@@ -310,7 +310,8 @@ XF86AudioPlay
 
 # Open a hotkey reminder terminal
 super + F1
-	xdo activate -n urxvt -e sh -c ncmpcpp || urxvt -name "ncmpcpp" -e sh -c ncmpcpp
+	xdo activate -n clementine || clementine
+	# xdo activate -n urxvt -e sh -c ncmpcpp || urxvt -name "ncmpcpp" -e sh -c ncmpcpp
 super + shift + F1
 	bspc rule -a \* --one-shot state=floating | urxvt -geometry '170x55' -e sh -c "vimpager ~/.config/sxhkd/sxhkdrc"
 # Various apps in order of assigned desktop
