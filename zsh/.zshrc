@@ -145,8 +145,10 @@ _fzf_compgen_dir() {
 }
 
 
-# https://github.com/rupa/z
-[[ -r "/usr/share/z/z.sh" ]] && source /usr/share/z/z.sh
+## Autojump
+if command -v pazi &>/dev/null; then
+  eval "$(pazi init zsh)" # or 'bash'
+fi
 
 
 # ctrl-space executes the autosuggestion

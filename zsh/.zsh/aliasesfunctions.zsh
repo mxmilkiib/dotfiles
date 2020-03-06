@@ -624,9 +624,11 @@ diff () {
 
 alias mp3='youtube-dl -x --audio-format "mp3" --audio-quality 0 --add-metadata --xattrs --embed-thumbnail $*'
 
-function mpvyt(){
-  mpv "$@" --ytdl-format="[fps<=?30]"
-}
+alias repa='systemctl --user restart pulseaudio.service'
+
+# alias mpvyt="mpv --ytdl-format='[fps<=?30]'}"
+alias mpvyt="mpv --ytdl-format='bestvideo[height<=1080]+bestaudio/best[height<=1080]'"
+alias mpvhls='mpv --script-opts=ytdl_hook-all_formats=yes'
 
 # Web
 alias ff="firefox "
