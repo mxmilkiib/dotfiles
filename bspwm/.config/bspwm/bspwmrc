@@ -103,6 +103,7 @@ bspc rule -a Goodvibes            state = floating
 
 # Default desktop rules
 bspc rule -a "URxvt:ncmpcpp"       desktop=^1
+bspc rule -a Clementine            desktop=^1
 bspc rule -a qBittorrent           desktop=^2
 bspc rule -a soulseekqt.AppImage   desktop=^3
 bspc rule -a SoulseekQt            desktop=^3
