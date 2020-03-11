@@ -100,6 +100,8 @@ bspc rule -a "* Copying"          state = floating
 bspc rule -a QjackCtl             state = floating
 bspc rule -a radium_compressor    state = floating
 bspc rule -a Goodvibes            state = floating
+bspc rule -a Gsmartcontrol        state = floating
+bspc rule -a "Picture-in-Picture" state = floating
 
 # Default desktop rules
 bspc rule -a "URxvt:ncmpcpp"       desktop=^1
