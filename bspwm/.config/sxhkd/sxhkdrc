@@ -36,8 +36,12 @@ super + {t,shift + z,z,f}
 #locked = ignores nodes --close msgs
 #sticky = appwars on all desktops
 #private = tries to keep same shape
-super + ctrl + {m,z,x,c}
-	bspc node -g {marked,locked,sticky,private}
+super + ctrl + {m,z,c}
+	bspc node -g {marked,locked,private}
+
+# Set node to appear on all desktops
+super + x
+	bspc node -g sticky
 
 # Set the node z-layer state
 super + {comma,period,slash}
@@ -48,7 +52,6 @@ super + {comma,period,slash}
 # Close or kill window node
 super + {_,shift + }q
 	bspc node -{c,k} && bspc node -f last.local
-
 # super + x
 	# bspc node -c && bspc node -f last.local
 
@@ -83,7 +86,7 @@ super + {Tab,grave}
 
 # Focus on next floating or next tiled window
 super + {w,a}
-	bspc node -f {next.floating,next.tiled}
+	bspc node -f {prev.floating,next.tiled}
 
 # Focus on last desktop with an urgent
 super + u
