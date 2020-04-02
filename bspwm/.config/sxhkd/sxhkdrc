@@ -36,7 +36,7 @@ super + {t,shift + z,z,f}
 #locked = ignores nodes --close msgs
 #sticky = appwars on all desktops
 #private = tries to keep same shape
-super + ctrl + {m,z,c}
+super + {m,i,c}
 	bspc node -g {marked,locked,private}
 
 # Set node to appear on all desktops

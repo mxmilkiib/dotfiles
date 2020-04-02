@@ -72,6 +72,8 @@ if ! zgen saved; then
 
   zgen load unixorn/autoupdate-zgen
 
+  # zgen load nojhan/liquidprompt
+
 
   zgen load chrissicool/zsh-256color
 
@@ -92,8 +94,6 @@ if ! zgen saved; then
   zgen load zsh-users/zsh-autosuggestions
   export ZSH_AUTOSUGGEST_USE_ASYNC=1
   export ZSH_AUTOSUGGEST_MANUAL_REBIND=1
-
-  zgen load nojhan/liquidprompt
 
   # fzf after zsh-autosuggestions - fzf/issues/227
   zgen load junegunn/fzf
