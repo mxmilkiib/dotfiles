@@ -85,23 +85,24 @@ bspc config external_rules_command "$(which bspwm_external_rules)"
 
 
 # Floating window rules
-bspc rule -a Vlc                  state = pseudo_tiled
-bspc rule -a mpv                  state = pseudo_tiled
-bspc rule -a Pidgin               state = floating
-bspc rule -a Pavucontrol          state = floating
-bspc rule -a Mixer                state = floating
-bspc rule -a xfce4-panel          state = floating
-bspc rule -a qjackctl             state = floating
-bspc rule -a Cadence              state = floating
-bspc rule -a seq64                state = pseudo_tiled
-bspc rule -a copyq                state = floating
-bspc rule -a Arandr               state = floating
-bspc rule -a "* Copying"          state = floating
-bspc rule -a QjackCtl             state = floating
-bspc rule -a radium_compressor    state = floating
-bspc rule -a Goodvibes            state = floating
-bspc rule -a Gsmartcontrol        state = floating
-bspc rule -a "Picture-in-Picture" state = floating
+bspc rule -a Vlc                      state = pseudo_tiled
+bspc rule -a mpv                      state = pseudo_tiled
+bspc rule -a Pidgin                   state = floating
+bspc rule -a Pavucontrol              state = floating
+bspc rule -a Mixer                    state = floating
+bspc rule -a xfce4-panel              state = floating
+bspc rule -a qjackctl                 state = floating
+bspc rule -a Cadence                  state = floating
+bspc rule -a seq64                    state = pseudo_tiled
+bspc rule -a copyq                    state = floating
+bspc rule -a Arandr                   state = floating
+bspc rule -a "* Copying"              state = floating
+bspc rule -a QjackCtl                 state = floating
+bspc rule -a radium_compressor        state = floating
+bspc rule -a Goodvibes                state = floating
+bspc rule -a Gsmartcontrol            state = floating
+bspc rule -a "Picture-in-Picture"     state = floating
+bspc rule -a "Choose an application"  state = floating
 
 # Default desktop rules
 bspc rule -a "URxvt:ncmpcpp"       desktop=^1

@@ -703,7 +703,7 @@ click-middle = playerctl play-pause
 
 [module/player-mpris-tail]
 type = custom/script
-exec = /usr/share/polybar/scripts/player-mpris-tail.py -f '{icon} {:artist:t35:{artist}:}{:artist: - :}{:t35:{title}:}  %{A1:/usr/share/polybar/scripts/player-mpris-tail.py previous:}⏮%{A} %{A1:/usr/share/polybar/scripts/player-mpris-tail.py play-pause:}{icon-reversed}%{A} %{A1:/usr/share/polybar/scripts/player-mpris-tail.py next:}⏭%{A}'
+exec = /usr/share/polybar/scripts/player-mpris-tail.py -f '{:artist:t35:{artist}:}{:artist: - :}{:year:{year} - :}{:album:t20:{album}:}{:album: - :}{:t20:{title}:}  %{A1:/usr/share/polybar/scripts/player-mpris-tail.py previous:}⏮%{A} %{A1:/usr/share/polybar/scripts/player-mpris-tail.py play-pause:}{icon-reversed}%{A} %{A1:/usr/share/polybar/scripts/player-mpris-tail.py next:}⏭%{A}'
 ; exec = polybar-mpris-wrapper.sh
 tail = true
 label = %output%
