@@ -1,5 +1,6 @@
 let g:netrw_dirhistmax  =10
-let g:netrw_dirhistcnt =6
+let g:netrw_dirhistcnt =7
+let g:netrw_dirhist_7='/home/milk/state/pkgs/mine/0_testing/spectacle-analyzer.lv2-git'
 let g:netrw_dirhist_6='/home/milk/state/pkgs/mine'
 let g:netrw_dirhist_5='/home/milk/state/pkgs/mine/mpv-autoload'
 let g:netrw_dirhist_4='/home/milk/state/pkgs/mine'
@@ -9,4 +10,3 @@ let g:netrw_dirhist_1='/home/milk/.projectM'
 let g:netrw_dirhist_0='/home/milk/state/pkgs/testing/mod-cv-plugins-git'
 let g:netrw_dirhist_9='/home/milk'
 let g:netrw_dirhist_8='/home/milk/.zsh'
-let g:netrw_dirhist_7='/home/milk/.projectM'

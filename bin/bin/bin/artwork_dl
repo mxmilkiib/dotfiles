@@ -1,0 +1,91 @@
+#!/usr/bin/env python3
+import bs4
+import requests
+import json
+import subprocess
+import argparse
+import sys
+import urllib.parse
+import shutil
+
+def main(args):
+    parser = argparse.ArgumentParser()
+    parser.add_argument("artist",type=str,action="store")
+    parser.add_argument("album",type=str,action="store")
+    parser.add_argument("--out",type=str,default="cover.jpg",action="store",
+            help="Specify output file, default cover.jpg")
+    parser.add_argument("--quality",type=str,default="original",action="store",
+            help="Specify desired quality: original,large or small")
+    results = parser.parse_args(args)
+    
+    #Base URLS
+    brainz = "http://musicbrainz.org/ws/2/release"
+    cover_art = "http://coverartarchive.org/release/"
+    look_artist = results.artist
+    look_album = results.album
+    output_file = results.out
+    output_quality = results.quality
+    output_qualities = {
+        "original":lambda x: x["images"][0]["image"],
+        "large":lambda x: x["images"][0]["thumbnails"]["large"],
+        "small":lambda x: x["images"][0]["thumbnails"]["small"]
+    }
+    #Verify the given output quality is valid
+    try:
+        output_qualities[output_quality]
+    except KeyError:
+        print("Quality {} does not exits".format(output_quality))
+
+    #Request for inital album lists with look_album
+    req = brainz + "?" + urllib.parse.urlencode({'query':look_album})
+    album_pg = requests.get(req)
+    if not album_pg.status_code == 200:
+        print("Bad status code {}".format(album_pg.status_code))
+        sys.exit(1)
+    
+    album_id = ""
+    albums = bs4.BeautifulSoup(album_pg.content,'html.parser')
+    #Loop through all releases
+    for release in albums.find_all('release'):
+        artist = release.find("name").get_text()
+        if artist.lower() == look_artist.lower():
+            album_id = release.get("id")
+            #Find out if it has album artwork
+            artwork_req = requests.get(brainz + "/" + album_id)
+            if not artwork_req.status_code == 200:
+                print("Bad status code {} for album id {}".format(
+                    artwork_req.status_code,album_id))
+            artwork_tree = bs4.BeautifulSoup(artwork_req.content,'html.parser')
+            artwork_present = artwork_tree.find("release").find(
+                    "cover-art-archive").find("artwork").get_text()
+            if artwork_present == "true":
+                print("Using Album id: {}".format(album_id))
+                break
+    #Exit if no matching album_id is found
+    if album_id == "":
+        print("Not found")
+        sys.exit(1)
+
+    coverart_req = requests.get(cover_art + album_id)
+    
+    if not coverart_req.status_code == 200:
+        print("Bad coverartarchive status code {}".format(coverart_req.status_code))
+        sys.exit(1)
+    art = json.loads(coverart_req.content)
+    f = output_qualities[output_quality](art)
+
+    print("Downloading {} from {}".format(look_album,f))
+    img_dl = requests.get(f,stream=True)
+    if not img_dl.status_code == 200:
+        print("Bad Status code {} when downloading image".format(img_dl.status_code))
+
+    with open(output_file,'wb') as out_file:
+        shutil.copyfileobj(img_dl.raw, out_file)
+    #Convert png to jpg
+    if f.endswith(".png"):
+        command = "convert {} {}".format(output_file,output_file)
+        print("Converting to jpg")
+        subprocess.Popen(command.split(" "),stdout=subprocess.PIPE,stderr=subprocess.PIPE).wait()
+
+if __name__ == "__main__":
+    main(sys.argv[1:])

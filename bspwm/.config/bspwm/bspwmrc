@@ -103,6 +103,9 @@ bspc rule -a Goodvibes                state = floating
 bspc rule -a Gsmartcontrol            state = floating
 bspc rule -a "Picture-in-Picture"     state = floating
 bspc rule -a "Choose an application"  state = floating
+bspc rule -a "flameshot"              state = floating
+bspc rule -a "SimpleScreenRecorder"   state = floating
+bspc rule -a "Mattermost"             state = floating
 
 # Default desktop rules
 bspc rule -a "URxvt:ncmpcpp"       desktop=^1

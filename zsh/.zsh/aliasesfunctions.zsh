@@ -194,6 +194,9 @@ alias lsrd='tree -Cdf | less -RFX'          		# alternative recursive ls, direct
 
 # Search in files
 function gcode() { rg -uu --color=always -nC3 -- "$@" . | /usr/bin/less -R; }
+function gcode5() { rg -uu --color=always -nC5 -- "$@" . | /usr/bin/less -R; }
+function gcode7() { rg -uu --color=always -nC7 -- "$@" . | /usr/bin/less -R; }
+function gcode9() { rg -uu --color=always -nC9 -- "$@" . | /usr/bin/less -R; }
 
 # Mount with coloum output
 alias mounts='mount | column -t'
@@ -751,6 +754,8 @@ alias dcm='doublecmd --no-splash >/dev/null 2>&1 &!'
 
 
 ### Misc
+# xclock-fork catclock
+alias xcat='xclock -mode cat -hl black -catcolor black -tiecolor purple -bg "#bbb" -ntails 60 &!'
 
 # Bastard Oper From Hell excuse
 alias bofh='telnet bofh.jeffballard.us 666 2>/dev/null | tail -1'

@@ -1,0 +1,3 @@
+#!/bin/bash
+tput setaf 1 && fortune -a oblique-strategies | xargs -0 -I {} toilet -t -f future {} | head -c -1
+# tput setaf 1 && fortune -a oblique-strategies | xargs -0 -I {} figlet -c {} 

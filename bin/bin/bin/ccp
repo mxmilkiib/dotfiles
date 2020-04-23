@@ -1,0 +1,1 @@
+rsync -arhHPAXx --info=progress2 --no-i-r --partial-dir=.rsync-partial "$@"

@@ -57,13 +57,6 @@ unclutter --timeout 15 &
 # Start urxvt demon, quiet, connect to $DISPLAY, fork after control socket binding
 # urxvtd -q -o -f &
 
-# Start xscreensaver - disabled to save power
-# xscreensaver -nosplash &
-
-# Disable screensaver on media fullscreen
-# lightsOn 545 &
-#doesn't work??
-caffeine &
 
 # Automount devices, with smart system tray icon
 udiskie -san &
@@ -173,6 +166,18 @@ syncthing-gtk &
 #oneko -fg "#555" -bg "#000" -time 200000 -position +200+200 &
 
 
+# Start xscreensaver - disabled to save power
+# xscreensaver -nosplash &
+# Disable screen blanking
+xset dpms 0 0 0
+xset -dpms
+xset s noblank
+
+
+# Disable screensaver on media fullscreen
+# lightsOn 545 &
+#doesn't work??
+# caffeine &
 ### Window manager
 
 # exec startlxde

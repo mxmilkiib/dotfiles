@@ -1,0 +1,21 @@
+#!/bin/bash
+
+if [ -z "$NSM_SESSION_NAME" ]; then
+	echo 'must be run under nsm-proxy'
+	exit 0
+fi
+
+aj-snapshot -r "$NSM_CLIENT_ID.aj.bak"
+
+while true; do
+	zenity --question --title="Session connection snapshot" \
+		--text="No=restore\nYes=overwrite"
+
+	if [ $? -eq 0 ] ; then
+		aj-snapshot -f "$NSM_CLIENT_ID.aj.bak"
+		# zenity --info --text="Saved"
+	else
+		aj-snapshot -r "$NSM_CLIENT_ID.aj.bak"
+		# zenity --error --text="Restored"
+	fi
+done
