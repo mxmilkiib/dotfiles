@@ -35,7 +35,7 @@ source $Z/environment.zsh
 # exit 0
 # fi
 
-if [[ $(bspc query --nodes --desktop --node .window | wc -l) = 1 ]]; then
+if [ ! $DISPLAY ] || [ $(bspc query --nodes --desktop --node .window | wc -l) = 1 ]; then
   # MOTD - reminder info on readline/emacs/zle binds
   function echo_color() {
     # printf "\033[0;90m$1\033[0m\n"
@@ -72,6 +72,8 @@ if ! zgen saved; then
 
   zgen load unixorn/autoupdate-zgen
 
+  # zgen load nojhan/liquidprompt
+
 
   zgen load chrissicool/zsh-256color
 
@@ -92,8 +94,6 @@ if ! zgen saved; then
   zgen load zsh-users/zsh-autosuggestions
   export ZSH_AUTOSUGGEST_USE_ASYNC=1
   export ZSH_AUTOSUGGEST_MANUAL_REBIND=1
-
-  zgen load nojhan/liquidprompt
 
   # fzf after zsh-autosuggestions - fzf/issues/227
   zgen load junegunn/fzf
@@ -145,8 +145,10 @@ _fzf_compgen_dir() {
 }
 
 
-# https://github.com/rupa/z
-[[ -r "/usr/share/z/z.sh" ]] && source /usr/share/z/z.sh
+## Autojump
+if command -v pazi &>/dev/null; then
+  eval "$(pazi init zsh)" # or 'bash'
+fi
 
 
 # ctrl-space executes the autosuggestion

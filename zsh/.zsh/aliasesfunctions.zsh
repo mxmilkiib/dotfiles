@@ -105,7 +105,8 @@ alias se="sudo -E $SHELL"
 alias pls='sudo $(fc -ln -1)'
 
 # Quick command name kill
-alias ska='sudo killall'
+alias ska='killall'
+alias sska='sudo killall'
 
 # Check if command exists
 command_exists () {
@@ -335,6 +336,9 @@ alias cons='lsof -i'
 
 # Public IP address
 alias publicip='wget http://checkip.dyndns.org/ -O - -o /dev/null | cut -d: -f 2 | cut -d\< -f 1'
+
+# ytcracker
+alias whodis='whois'
 
 # Get shit done - temp redirect certain sites to localhost
 alias gsd='sudo /home/milk/scripts/gsd.sh/gsd.sh'
@@ -624,9 +628,11 @@ diff () {
 
 alias mp3='youtube-dl -x --audio-format "mp3" --audio-quality 0 --add-metadata --xattrs --embed-thumbnail $*'
 
-function mpvyt(){
-  mpv "$@" --ytdl-format="[fps<=?30]"
-}
+alias repa='systemctl --user restart pulseaudio.service'
+
+# alias mpvyt="mpv --ytdl-format='[fps<=?30]'}"
+alias mpvyt="mpv --ytdl-format='bestvideo[height<=1080]+bestaudio/best[height<=1080]'"
+alias mpvhls='mpv --script-opts=ytdl_hook-all_formats=yes'
 
 # Web
 alias ff="firefox "

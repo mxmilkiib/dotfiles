@@ -3,11 +3,11 @@
 node_number=$(bspc query --nodes --desktop --node .window | wc -l)
 
 case $node_number in
-	1) bspc config split_ratio 0.6 && echo "split_dir=south";;
-	2) bspc config split_ratio 0.45 && bspc node -f biggest.local && bspc node -f south && echo "split_dir=east";;
+	1) bspc config split_ratio 0.5 && echo "split_dir=south";;
+	2) bspc config split_ratio 0.5 && bspc node -f biggest.local && bspc node -f south && echo "split_dir=east";;
 	3) bspc config split_ratio 0.5  && bspc node -f biggest.local && bspc node -f south && echo "split_dir=south";;
-	4) bspc config split_ratio 0.7  && bspc node -f biggest.local && echo "split_dir=south";;
-	5) bspc config split_ratio 0.5  && bspc node -f biggest.local && bspc node -f south && echo "split_dir=east";;
+	4) bspc config split_ratio 0.5  && bspc node -f biggest.local && bspc node -f south && bspc node -f south && bspc node -f west && echo "split_dir=south";;
+	5) bspc config split_ratio 0.5  && bspc node -f biggest.local && bspc node -f west && echo "split_dir=east";;
 	6) bspc config split_ratio 0.5  && bspc node -f biggest.local && echo "split_dir=east";;
 	7) bspc config split_ratio 0.65 && bspc node -f biggest.local && echo "split_dir=south";;
 	8) bspc config split_ratio 0.5  && bspc node -f biggest.local && echo "split_dir=south";;

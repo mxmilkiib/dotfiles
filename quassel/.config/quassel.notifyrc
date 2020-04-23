@@ -1,3 +1,8 @@
+[Event/Highlight]
+Execute=
+Logfile=
+TTS=
+
 [Event/PrivMsg]
 Action=Sound|Taskbar
 Execute=

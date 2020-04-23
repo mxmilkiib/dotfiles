@@ -30,6 +30,8 @@ xset fp rehash
 # Set Xorg keyboard layout
 setxkbmap gb
 
+numlockx &
+
 # xsettings daemon - informs apps what themes to use
 # xsettingsd &
 
@@ -116,10 +118,11 @@ sxhkd &
 redshift-gtk -l 55.978301:-3.228586 -t 6000:4500 &
 
 # pnmixer &
-# kmix &
+kmix &
 
 # Radio streams
-radiotray-ng &
+# radiotray-ng &
+goodvibes --status-icon &
 
 # connect to mobile kdeconnect app
 kdeconnect-indicator &

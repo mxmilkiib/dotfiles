@@ -5,7 +5,8 @@
 ChatLine { font: normal 400 11pt "Droid Sans Mono"; }
 
 // Custom ChatView Colors
-Palette { marker-line: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #ff0000, stop: 0.1 transparent); }
+Palette { marker-line: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #ff0000, stop: 0.1 transparent); link: #539FA3; link-visited: #845B90;}
+
 ChatView { background: #334477; }
 
 ChatLine[label="highlight"] {

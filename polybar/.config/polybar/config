@@ -38,6 +38,8 @@ height = 22
 radius = 0
 fixed-center = false
 
+bottom = false
+
 enable-ipc = true
 
 background = ${colors.background}
@@ -99,6 +101,8 @@ height = 22
 ;offset-y = 1%
 radius = 0
 fixed-center = true
+
+bottom = false
 
 enable-ipc = true
 
@@ -162,6 +166,8 @@ height = 22
 radius = 0
 fixed-center = false
 
+bottom = false
+
 enable-ipc = true
 
 background = ${colors.background}
@@ -223,6 +229,8 @@ height = 22
 ;offset-y = 1%
 radius = 0
 fixed-center = false
+
+bottom = false
 
 enable-ipc = true
 
@@ -520,8 +528,8 @@ bar-volume-empty-foreground = ${colors.foreground-alt}
 [module/alsa]
 type = internal/alsa
 
-master-soundcard=hw:1
-master-mixer=Speaker
+master-soundcard=hw:0
+master-mixer=hdmi
 
 format-volume = <label-volume> <bar-volume>
 label-volume = %{T4}🔊%{T-}
@@ -695,7 +703,7 @@ click-middle = playerctl play-pause
 
 [module/player-mpris-tail]
 type = custom/script
-exec = /usr/share/polybar/scripts/player-mpris-tail.py -f '{icon} {:artist:t35:{artist}:}{:artist: - :}{:t35:{title}:}  %{A1:/usr/share/polybar/scripts/player-mpris-tail.py previous:}⏮%{A} %{A1:/usr/share/polybar/scripts/player-mpris-tail.py play-pause:}{icon-reversed}%{A} %{A1:/usr/share/polybar/scripts/player-mpris-tail.py next:}⏭%{A}'
+exec = /usr/share/polybar/scripts/player-mpris-tail.py -f '{:artist:t35:{artist}:}{:artist: - :}{:year:{year} - :}{:album:t20:{album}:}{:album: - :}{:t20:{title}:}  %{A1:/usr/share/polybar/scripts/player-mpris-tail.py previous:}⏮%{A} %{A1:/usr/share/polybar/scripts/player-mpris-tail.py play-pause:}{icon-reversed}%{A} %{A1:/usr/share/polybar/scripts/player-mpris-tail.py next:}⏭%{A}'
 ; exec = polybar-mpris-wrapper.sh
 tail = true
 label = %output%
