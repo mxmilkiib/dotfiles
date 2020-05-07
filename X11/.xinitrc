@@ -117,9 +117,6 @@ kmix &
 # radiotray-ng &
 goodvibes --status-icon &
 
-# connect to mobile kdeconnect app
-kdeconnect-indicator &
-
 # copy middle-mouse PRIMARY selection to ctrl-xcv/shift-insert CLIPBOARD. mostly useful when without a mouse.
 # autocutsel -fork &
 # copy ctrl-xcv / shift-insert CLIPBOARD to middle mouse PRIMARY selection buffer
@@ -197,6 +194,11 @@ xset s noblank
 # exec selectwm
 # exec xterm
 # exec urxvt
+
+
+### Troublesome - trying near the end for now
+# connect to mobile kdeconnect app
+kdeconnect-indicator &
 
 
 xrandr-rose-vgaprime-hdmiright.sh
