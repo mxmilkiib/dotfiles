@@ -1,10 +1,13 @@
-if [ ! $DISPLAY ] || [ $(bspc query --nodes --desktop --node .window | wc -l) = 1 ]; then
+[ -x bspc ]; bspwm_one_window=$(bspc query --nodes --desktop --node .window | wc -l );
+if [ ! $DISPLAY ] || [ $bspwm_one_window = 0 ]; then
   # MOTD - reminder info on readline/emacs/zle binds
   function echo_color() {
     # printf "\033[0;90m$1\033[0m\n"
     # printf "\033[0;96m$1\033[0m $2 \033[0;96m$3\033[0m $4\n"
     printf "\033[0;96m$1\033[0m $2 \033[0;96m$3\033[0m $4 \033[0;91m$5\033[0m $6 \033[0;91m$7\033[0m $8\n"
   }
+  # function echo_color_a() { printf "\033[0;96m$1\033[0m $2 \033[0;96m$3\033[0m $4 \033[0;96m$5\033[0m $6" }
+  # function echo_color_a() { printf "\033[0;96m$1\033[0m $2 \033[0;96m$3\033[0m $4 \033[0;91m$5\033[0m $6 \033[0;91m$7\033[0m $8\n" }
   # echo_color "  c-b"  "Move backward character    " "c-f"  "Move forward character"
   # echo_color "  a-b"  "Move backward word end     " "a-f"  "Move forward word end"
   # echo_color "  c-p"  "Move previous (line up)    " "c-n"  "Move next (line down)"
@@ -12,18 +15,18 @@ if [ ! $DISPLAY ] || [ $(bspc query --nodes --desktop --node .window | wc -l) = 
   # echo_color "  c-w"  "Delete backward word       " "a-d"  "Delete forward word"
   # echo_color "  c-u"  "Delete entire line         " "c-k"  "Delete to end of line"
   # echo_color "  c-a"  "Jump to line beginning     " "c-e"  "Jump to line end"
-  echo_color " c-b "  "move Backward character   " "c-f "  "move Forward char         " "c-h "  "delete backward cHar      " "c-d "  "delete forwarD char"
-  echo_color " a-b "  "move Backward word end    " "a-f "  "move Forward word end     " "c-w "  "delete backward Word      " "a-d "  "delete forwarD word"
-  echo_color " c-a "  "move to stArt of line     " "c-e "  "move to End of line       " "c-k "  "Kut to end of line        "
-  echo_color " c-p "  "move Previous (line up)   " "c-n "  "move Next (line down)     " "c-u "  "Undo entire line          "
+  echo_color "c-b" "Backward char     "  " c-f" "Forward char    "  " c-h" "delete backward cHar"  " c-d" "delete forwarD char"
+  echo_color "a-b" "Backward word end "  " a-f" "Forward word end"  " c-w" "delete backward Word"  " a-d" "delete forwarD word"
+  echo_color "c-a" "to stArt of line  "  " c-e" "to End of line  "  " c-k" "Kut to end of line"
+  echo_color "c-p" "Previous (line up)"  " c-n" "Next (line down)"  " c-u" "Undo entire line"
 fi
 
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block; everything else may go below.
-if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-fi
+# if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  # source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+# fi
 
 # .zshrc: Configuration for the Z-Shell.
 # Original by P.C. Shyamshankar

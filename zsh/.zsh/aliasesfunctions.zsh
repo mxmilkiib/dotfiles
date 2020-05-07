@@ -204,8 +204,8 @@ alias mounts='mount | column -t'
 # Human readable df default
 alias 'df=df -h'
 
-# dfc with sort by type, show used size, type, wide filename, wide bar, sum usage, just ext* and tmpfs
-alias dfcc="dfc -q type -dTWws -t ext,tmpfs,vfat"
+# dfc with sort by type, show used size, type, wide filename, wide bar, sum usage, just ext/fat/samba
+alias dfcc="dfc -q type -dTWws -t ext,vfat,cifs"
 
 # better cdu
 alias du2='cdu -idh'
@@ -267,7 +267,7 @@ cache_file="$Z/cache/$HOST/last-working-dir"
 chpwd_functions+=(chpwd_last_working_dir)
 function chpwd_last_working_dir() {
 	# Use >| in case noclobber is set to avoid "file exists" error
-	pwd >| "$cache_file"
+	[[ -f "$cache_file" ]] || pwd >| "$cache_file"
 }
 
 # Changes directory to the last working directory.
@@ -442,6 +442,7 @@ alias pR='sudo pacman -Rcsn'								# remove, rm deps, recursive, remove config 
 alias pU='sudo pacman -U'										# install a local package file
 alias pL='sudo rm /var/lib/pacman/db.lck'   # remove lockfile if pacman doesn't exit gracefully
 
+alias pF='pkgfile'
 
 # get PKGBUILD
 alias pG='yay -G'
