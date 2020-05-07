@@ -22,6 +22,16 @@ super + alt + {_,shift + }Escape
 	 bspc quit 1}
 
 
+# polybar hotkeys
+super + alt + b
+	xdo hide -N "Polybar"; \
+  bspc config top_padding 0
+
+super + alt + v
+	xdo show -N "Polybar"; \
+  bspc config top_padding 22
+
+
 ### Node (window) management
 ## Node state/flags
 # Cycle desktop layout between monocle and tiled
@@ -33,8 +43,8 @@ super + {t,shift + z,z,f}
 	bspc node -t {tiled,pseudo_tiled,floating,fullscreen}
 
 # Set the node flags
+#marked = mark a node for preselection transfer(?)
 #locked = ignores nodes --close msgs
-#sticky = appwars on all desktops
 #private = tries to keep same shape
 super + {m,i,c}
 	bspc node -g {marked,locked,private}
@@ -292,12 +302,19 @@ super + alt + Print
 super + space
 	rofi -modi drun -combi-modi 'drun' -show drun -show-icons -width 60 -lines 25 -theme purple.rasi
 
+super + ctrl + alt + e
+	rofi -show emoji -modi emoji -show-icons -width 60 -lines 25 -theme purple.rasi
+
+super + ctrl + alt + c
+  rofi -show calc -modi calc -show-icons -width 40 -lines 20 -theme purple.rasi
+
 
 # Pulseaudio application volume mixer
 super + p
 	xdo activate -n pavucontrol || pavucontrol
 
 
+# Keyboard media keys
 XF86AudioLowerVolume
   amixer set Master 2%-
 
@@ -313,8 +330,8 @@ XF86AudioPlay
 
 # Open a hotkey reminder terminal
 super + F1
-	xdo activate -n clementine || clementine
-	# xdo activate -n urxvt -e sh -c ncmpcpp || urxvt -name "ncmpcpp" -e sh -c ncmpcpp
+	xdo activate -n urxvt -e sh -c ncmpcpp || urxvt -name "ncmpcpp" -e sh -c ncmpcpp
+	# xdo activate -n clementine || clementine
 super + shift + F1
 	bspc rule -a \* --one-shot state=floating | urxvt -geometry '170x55' -e sh -c "vimpager ~/.config/sxhkd/sxhkdrc"
 # Various apps in order of assigned desktop
