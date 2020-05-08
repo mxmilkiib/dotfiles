@@ -17,6 +17,7 @@ alias c='clear'
 
 # :q (Vim) as exit
 alias :q='exit'
+alias quit='exit'
 
 function zle-keymap-select {
 		VIMODE="${${KEYMAP/vicmd/-- NORMAL --}/(main|viins)/-- INSERT --}"
@@ -568,6 +569,7 @@ alias gis='git status '
 alias gd='git diff --color'
 alias gdc='git diff --color --cached'
 alias gl='git log'
+alias glp='git log -p'
 alias gll='git log --pretty=format:"%h %ad | %s%d [%an]" --graph --date=short'
 alias ga='git add '
 alias gaa='git add .'
