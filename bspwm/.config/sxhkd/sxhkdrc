@@ -276,10 +276,13 @@ super + semicolon
  	bspc rule -a \* --one-shot state=pseudo_tiled | urxvt -e sh -c "tty-clock -s -b -c -C 3 -D"
 
 
-
 ### Application hotkeys
-# Capture a screenshot
+# Capture screenshot of the current desktop
 super + Print
+	import -window root ~/media/images/screenshots/$(hostname --short)_$(date +%Y-%m-%d-%T).png
+
+# Capture screenshot of a single window
+super + alt + Print
 	import --with-x11 -window root ~/media/images/screenshots/$(hostname --short)_$(date +%Y-%m-%d-%T).png
 
 # Drag to select then capture a screenshot
@@ -290,7 +293,8 @@ super + ctrl + Print
 super + shift + Print
 	bash -c import --with-x11 ~/media/images/screenshots/$(hostname --short)_$(date +%Y-%m-%d-%T).png
 
-super + alt + Print
+# Copy desktop screenshot to clipboard
+super + ctrl + alt + Print
 	xclip -selection clipboard -t image/png -o > import --with-x11 -window
 
 

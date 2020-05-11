@@ -105,6 +105,10 @@ sxhkd &
 # xde-panel &
 
 
+# mpris from mpd server
+mpd-mpris -host 192.168.1.3 &
+
+
 ### Notification icon area / systray
 
 # Redshift - changed screen colour temp

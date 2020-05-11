@@ -1,7 +1,12 @@
 let g:netrw_dirhistmax  =10
+<<<<<<< HEAD
 let g:netrw_dirhistcnt =9
 let g:netrw_dirhist_9='/usr/lib/mpdproxy/.git'
 let g:netrw_dirhist_8='/usr/lib/mpdproxy'
+=======
+let g:netrw_dirhistcnt =8
+let g:netrw_dirhist_8='/home/milk/.mozilla/firefox/prf2kjct.default/chrome'
+>>>>>>> 6397ed60c17c765353a6b09d6a93afacfdf3b184
 let g:netrw_dirhist_7='/home/milk/state/pkgs/mine/0_testing/spectacle-analyzer.lv2-git'
 let g:netrw_dirhist_6='/home/milk/state/pkgs/mine'
 let g:netrw_dirhist_5='/home/milk/state/pkgs/mine/mpv-autoload'
@@ -10,3 +15,7 @@ let g:netrw_dirhist_3='/home/milk/state/pkgs/mine/mpv-autoload'
 let g:netrw_dirhist_2='/home/milk'
 let g:netrw_dirhist_1='/home/milk/.projectM'
 let g:netrw_dirhist_0='/home/milk/state/pkgs/testing/mod-cv-plugins-git'
+<<<<<<< HEAD
+=======
+let g:netrw_dirhist_9='/home/milk'
+>>>>>>> 6397ed60c17c765353a6b09d6a93afacfdf3b184

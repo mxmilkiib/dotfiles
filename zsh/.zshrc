@@ -1,6 +1,7 @@
 [ -x bspc ]; bspwm_one_window=$(bspc query --nodes --desktop --node .window | wc -l );
 if [ ! $DISPLAY ] || [ $bspwm_one_window = 0 ]; then
   # MOTD - reminder info on readline/emacs/zle binds
+  # sleep 0.1
   function echo_color() {
     # printf "\033[0;90m$1\033[0m\n"
     # printf "\033[0;96m$1\033[0m $2 \033[0;96m$3\033[0m $4\n"
