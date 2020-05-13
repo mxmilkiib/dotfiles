@@ -253,7 +253,7 @@ super + button{4,5}
 ### Terminal hotkeys
 # Launch a terminal
 super + Return
-	$TERMINAL
+	$TERMINAL -g 120x50
 
 # Focus on a desktop and launch a terminal on it
 super + alt + {1-9,0,minus,equal}
