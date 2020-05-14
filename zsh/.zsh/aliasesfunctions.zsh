@@ -599,7 +599,7 @@ function gc(){
 function gcl(){
   git clone $*;
   [[ $* =~ "\.git$" ]] && cd `basename $* | head -c -5` && return
-	cd `basename $*`;
+	# cd `basename $*`;
 }
 
 # Checkout last commit before date argument, in both current and argument directory
