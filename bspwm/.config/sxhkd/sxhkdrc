@@ -1,6 +1,6 @@
-bspwm_centre_window sxhkd config
+### sxhkd config
 ### for bspwm etc
-### by milky
+### by milkii
 
 # @ = happens on key release
 # ! = the keypress is passed directly onto other X clients
