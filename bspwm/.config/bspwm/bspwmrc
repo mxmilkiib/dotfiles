@@ -103,9 +103,10 @@ bspc rule -a Goodvibes                state = floating
 bspc rule -a Gsmartcontrol            state = floating
 bspc rule -a "Picture-in-Picture"     state = floating
 bspc rule -a "Choose an application"  state = floating
-bspc rule -a "flameshot"              state = floating
-bspc rule -a "SimpleScreenRecorder"   state = floating
-bspc rule -a "Mattermost"             state = floating
+bspc rule -a flameshot                state = floating
+bspc rule -a SimpleScreenRecorder     state = floating
+bspc rule -a Mattermost               state = floating
+bspc rule -a KeePassXC                state = floating
 
 # Default desktop rules
 bspc rule -a "URxvt:ncmpcpp"       desktop=^1
@@ -117,7 +118,7 @@ bspc rule -a "MusicBrainz Picard"  desktop=^4
 bspc rule -a Cadence               desktop=^5
 bspc rule -a Carla                 desktop=^5
 bspc rule -a qseq64                desktop=^6
-bspc rule -a KeePassXC             desktop=^8
+# bspc rule -a KeePassXC             desktop=^8
 bspc rule -a doublecmd             desktop=^9
 bspc rule -a "Double Commander"    desktop=^9
 bspc rule -a pcmanfm-qt            desktop=^9
@@ -133,7 +134,7 @@ bspc rule -a Chromium              desktop=^12
 # fi
 
 # Start the bar at the top
-polybar sitting
+# polybar sitting
 # polybar standing
 
 # Start a notifications daemon

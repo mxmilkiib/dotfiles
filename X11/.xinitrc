@@ -103,6 +103,7 @@ sxhkd &
 # xfce4-panel --disable-wm-check &
 # perlpanel &
 # xde-panel &
+polybar sitting &
 
 
 # mpris from mpd server
