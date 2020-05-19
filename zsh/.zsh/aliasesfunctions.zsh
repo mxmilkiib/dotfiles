@@ -377,7 +377,8 @@ compdef susy=systemctl
 alias jctl='journalctl -xeb'
 
 # launch x
-alias sx='ssh-agent startx'
+# alias sx='ssh-agent startx'
+alias sx='startx'
 
 
 ### Package management

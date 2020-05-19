@@ -17,7 +17,7 @@ fi
 
 # ssh-agent
 #broken in bspwm
-eval $(ssh-agent)
+# eval $(ssh-agent)
 
 
 # Source .Xresources for this session
