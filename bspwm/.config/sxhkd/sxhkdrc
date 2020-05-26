@@ -46,7 +46,7 @@ super + {t,shift + z,z,f}
 #marked = mark a node for preselection transfer(?)
 #locked = ignores nodes --close msgs
 #private = tries to keep same shape
-super + {m,i,c}
+super + {v,i,c}
 	bspc node -g {marked,locked,private}
 
 # Set node to appear on all desktops
@@ -172,7 +172,7 @@ super + alt + shift + {h,j,k,l}
 	$TERMINAL
 
 # Create a receptacle node
-bspc node -i
+# bspc node -i
 
 
 ### Desktop management
