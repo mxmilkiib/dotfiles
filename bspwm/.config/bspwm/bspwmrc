@@ -101,12 +101,16 @@ bspc rule -a QjackCtl                 state = floating
 bspc rule -a radium_compressor        state = floating
 bspc rule -a Goodvibes                state = floating
 bspc rule -a Gsmartcontrol            state = floating
-bspc rule -a "Picture-in-Picture"     state = floating
+bspc rule -a "Syncthing GTK"          state = floating
+bspc rule -a "Picture-in-Picture"     state = floating #firefox 
 bspc rule -a "Choose an application"  state = floating
 bspc rule -a flameshot                state = floating
 bspc rule -a SimpleScreenRecorder     state = floating
 bspc rule -a Mattermost               state = floating
 bspc rule -a KeePassXC                state = floating
+bspc rule -a "Image Menu"             state = floating
+bspc rule -a "File operations"        state = floating  # doublecmd
+
 
 # Default desktop rules
 bspc rule -a "URxvt:ncmpcpp"       desktop=^1
