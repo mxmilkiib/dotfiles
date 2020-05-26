@@ -501,7 +501,8 @@ function invoicesum() {
   unset DDANSWER DDSUM DDDAYS
 }
 
-### -g aliases work at the end of a line
+
+### -g = Global aliases work at the end of a line
 alias -g L='| less -RF'      # redraw (color), quit under one page, dont init/deinit term
 alias -g LL='| less -RFX'    # redraw (color), quit under one page, allow mousescroll
 
@@ -513,6 +514,8 @@ alias -g GP='| rg -in --color=never'
 alias -g S='&> /dev/null &'
 # fzf
 alias -g F='`fzf`'
+# vim
+alias -g V='|& vim -'
 
 # last modified file
 alias LF='ls -Art | tail -n 1'
