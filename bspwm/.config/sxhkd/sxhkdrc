@@ -181,19 +181,26 @@ super + alt + shift + {h,j,k,l}
 # bspc node -i
 
 
+
 ### Desktop management
+
 # https://github.com/lietk12/dotfiles/tree/master/.config
+# Focus on previous or next non-empty desktop
+super + {Left,Right}
+	bspc desktop {prev.local.occupied,next.local.occupied} -f
+
 # Focus on previous or next desktop
 super + alt + {Left,Right}
 	bspc desktop {prev.local,next.local} -f
 
-# Focus on previous or next desktop
-super + {Left,Right}
-	bspc desktop {prev.local.occupied,next.local.occupied} -f
-
 # Move window to the previous or next desktop
 super + ctrl + {Left,Right}
 	bspc node -d {prev.local,next.local}
+
+# Move window to the previous or next non-empty desktop and follow with focus
+super + shift + alt + {Left,Right}
+ bspc node -d {prev.local.occupied,next.local.occupied} -f;\
+ bspwm_centre_window 
 
 # Move window to the previous or next desktop and follow with focus
 super + shift + {Left,Right}
