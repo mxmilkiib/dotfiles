@@ -81,12 +81,13 @@ bspc monitor -d A1 A2 A3 A4 A5 A6 A7 A8 A9 A0 A- A=
 # 	bspc monitor -f next
 # fi
 
-bspc config external_rules_command "$(which bspwm_external_rules)"
+# bspc config external_rules_command "$(which bspwm_external_rules)"
 
 
 # Floating window rules
 bspc rule -a Vlc                      state = pseudo_tiled
 bspc rule -a mpv                      state = pseudo_tiled
+bspc rule -a mpv                      state = floating
 bspc rule -a Pidgin                   state = floating
 bspc rule -a Pavucontrol              state = floating
 bspc rule -a Mixer                    state = floating
@@ -94,6 +95,8 @@ bspc rule -a xfce4-panel              state = floating
 bspc rule -a qjackctl                 state = floating
 bspc rule -a Cadence                  state = floating
 bspc rule -a seq64                    state = pseudo_tiled
+# bspc rule -a qseq64                   state = pseudo_tiled
+# bspc rule -a qseq66                   state = pseudo_tiled
 bspc rule -a copyq                    state = floating
 bspc rule -a Arandr                   state = floating
 bspc rule -a "* Copying"              state = floating
