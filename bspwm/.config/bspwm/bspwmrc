@@ -63,7 +63,7 @@ bspc monitor LVDS1 -r
 xrandr2-clone-vgaprime.sh
 bspc monitor -r
 # Fix background stretch after removing the internal monitor
-feh --bg-fill --no-xinerama ~/.wallpapers/danielle_at_sea_flickr.jpg
+feh --bg-fill --no-xinerama `return-wallpaper.sh`
 
 # Rename initial desktop
 bspc monitor -d A1 A2 A3 A4 A5 A6 A7 A8 A9 A0 A- A=
