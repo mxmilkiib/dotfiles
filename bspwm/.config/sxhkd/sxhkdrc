@@ -14,7 +14,9 @@ super + Escape
 	pkill -USR1 -x sxhkd
 
 
+
 ### bspwm hotkeys
+
 # Quit bspwm or save layout and quit. bspwm loop is broken atm.
 # todo; broken?
 super + alt + {_,shift + }Escape
@@ -22,18 +24,11 @@ super + alt + {_,shift + }Escape
 	 bspc quit 1}
 
 
-# polybar hotkeys
-super + alt + b
-	xdo hide -N "Polybar"; \
-  bspc config top_padding 0
-
-super + alt + v
-	xdo show -N "Polybar"; \
-  bspc config top_padding 22
-
 
 ### Node (window) management
+
 ## Node state/flags
+
 # Cycle desktop layout between monocle and tiled
 super + m
 	bspc desktop -l next
@@ -59,6 +54,7 @@ super + {comma,period,slash}
 
 
 ## Closing/killing
+
 # Close or kill window node
 super + {_,shift + }q
 	bspc node -{c,k} && bspc node -f last.local
@@ -76,6 +72,7 @@ super + button9 + ctrl + {_,shift}
 
 
 ## Resize nodes
+
 # Contract the tiled space in the given direction
 super + alt + ctrl + {h,j,k,l}
 	bspc node {@east -r -20,@north -r +20,@south -r -20,@west -r +20}
@@ -86,6 +83,7 @@ super + ctrl + shift + {h,j,k,l}
 
 
 ## Focus/swap/move
+
 # Focus to or swap window with direction given
 super + {_,shift + }{h,j,k,l}
 	bspc node -{f,s} {west,south,north,east}
@@ -218,7 +216,9 @@ super + bracketright
 
 
 
+
 ### Monitor
+
 # Focus on the next monitor
 super + o
 	bspc monitor -f next
@@ -237,7 +237,9 @@ super + shift + o
 	# bspc pointer -g focus
 
 
-# Motion
+
+### Mouse
+
 #super + !button{1-3}
 #	bspc pointer -t %i %i
 
@@ -250,7 +252,9 @@ super + button{4,5}
  bspc desktop -f {prev.local.occupied,next.local.occupied}
 
 
+
 ### Terminal hotkeys
+
 # Launch a terminal
 super + Return
 	$TERMINAL -g 120x50
@@ -276,7 +280,9 @@ super + semicolon
  	bspc rule -a \* --one-shot state=pseudo_tiled | urxvt -e sh -c "tty-clock -s -b -c -C 3 -D"
 
 
+
 ### Application hotkeys
+
 # Capture screenshot of the current desktop
 super + Print
 	import -window root ~/media/images/screenshots/$(hostname --short)_$(date +%Y-%m-%d-%T).png
