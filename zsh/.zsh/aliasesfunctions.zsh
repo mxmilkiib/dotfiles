@@ -553,8 +553,10 @@ alias swaytree='swaymsg -t get_tree'
 alias sn='sudo nano -c' # With line numbers
 
 # Quick sudo vim (with $EDITOR=vim)
-alias sv='sudoedit'
-compdef sv=sudoedit
+alias sv='sudo vim'
+
+alias svv='sudoedit '
+compdef svv=sudoedit
 
 # Vim
 alias vg='gvim '
@@ -593,6 +595,7 @@ alias gx="gco -- \*; git reset HEAD \*"
 alias gcp="git cherry-pick"
 alias gcpc="git cherry-pick --continue"
 alias gcpa="git cherry-pick --abort"
+alias gsu="git submodule update --init --recursive"
 
 # Easy Git commit; $ gc this is my commit message
 function gc(){
@@ -603,7 +606,7 @@ function gc(){
 function gcl(){
   git clone $*;
   [[ $* =~ "\.git$" ]] && cd `basename $* | head -c -5` && return
-	# cd `basename $*`;
+	cd `basename $*`;
 }
 
 # Checkout last commit before date argument, in both current and argument directory
@@ -638,6 +641,8 @@ diff () {
 
 alias mp3='youtube-dl -x --audio-format "mp3" --audio-quality 0 --add-metadata --xattrs --embed-thumbnail $*'
 
+alias youtube-dl='youtube-dl --no-mtime'
+
 alias repa='systemctl --user restart pulseaudio.service'
 
 # alias mpvyt="mpv --ytdl-format='[fps<=?30]'}"
@@ -647,6 +652,9 @@ alias mpvhls='mpv --script-opts=ytdl_hook-all_formats=yes'
 # Web
 alias ff="firefox "
 alias trello="google-chrome --app=https://trello.com/b/AdniCH2y/to-do &"
+
+# Game
+alias defrag="quake3 +set fs_game defrag +devmap tr1ckhouse-beta3 +sv_cheats '1' +df_promode '1'"
 
 
 # Etymology

@@ -50,3 +50,9 @@ promptinit
 
 # Colour support
 # autoload -U colors && colors			# set in git-prompt
+
+
+# https://github.com/zsh-users/zsh/blob/master/Functions/Zle/bracketed-paste-magic
+autoload -Uz bracketed-paste-magic
+zle -N bracketed-paste bracketed-paste-magic
+# zstyle :bracketed-paste-magic paste-init backward-extend-paste
