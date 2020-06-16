@@ -403,6 +403,17 @@ super + ctrl + F12
 	xrandr-rose-vgaprime-hdmionly.sh
 
 
+
+# polybar hotkeys
+super + alt + b
+	xdo hide -N "Polybar"; \
+  bspc config top_padding 0
+
+super + alt + v
+	xdo show -N "Polybar"; \
+  bspc config top_padding 22
+
+
 # Simulate an "x" keypress to close tabs using Vimium in Firefox
 # broken atm!
 ctrl + button8
