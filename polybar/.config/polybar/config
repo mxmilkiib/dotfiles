@@ -71,7 +71,7 @@ modules-center = player-mpris-tail alsa
 ; modules-center = player-mpris-simple
 ; modules-center = mpd
 ; modules-right = filesystem xbacklight alsa pulseaudio memory cpu wlan eth battery temperature date powermenu
-modules-right = filesystem memory cpu wlan eth battery temperature updates-arch-combined pomobar date services powermenu
+modules-right = filesystem memory cpu wlan eth battery temperature updates-pacman-aurhelper pomobar date services powermenu
 
 tray-position = right
 tray-padding = 0
@@ -135,7 +135,7 @@ modules-center = player-mpris-tail alsa
 ; modules-center = player-mpris-simple
 ; modules-center = mpd
 ; modules-right = filesystem xbacklight alsa pulseaudio memory cpu wlan eth battery temperature date powermenu
-modules-right = openweathermap-fullfeatured filesystem memory cpu wlan eth battery temperature updates-arch-combined pomobar date services powermenu
+modules-right = openweathermap-fullfeatured filesystem memory cpu wlan eth battery temperature updates-pacman-aurhelper pomobar date services powermenu
 
 tray-position = right
 tray-padding = 0
@@ -199,7 +199,7 @@ modules-center = player-mpris-tail alsa
 ; modules-center = player-mpris-simple
 ; modules-center = mpd
 ; modules-right = filesystem xbacklight alsa pulseaudio memory cpu wlan eth battery temperature date powermenu
-modules-right = openweathermap-fullfeatured filesystem memory cpu wlan eth battery temperature updates-arch-combined pomobar date services powermenu
+modules-right = openweathermap-fullfeatured filesystem memory cpu wlan eth battery temperature updates-pacman-aurhelper pomobar date services powermenu
 
 tray-position = right
 tray-padding = 0
@@ -263,7 +263,7 @@ modules-center = player-mpris-tail alsa
 ; modules-center = player-mpris-simple alsa
 ; modules-center = mpd
 ; modules-right = filesystem xbacklight alsa pulseaudio memory cpu wlan eth battery temperature date powermenu
-modules-right = openweathermap-fullfeatured filesystem memory cpu wlan eth battery temperature updates-arch-combined pomobar date services powermenu
+modules-right = openweathermap-fullfeatured filesystem memory cpu wlan eth battery temperature updates-pacman-aurhelper pomobar date services powermenu
 
 tray-position = right
 tray-padding = 0
@@ -650,9 +650,9 @@ margin-top = 0
 margin-bottom = 0
 
 
-[module/updates-arch-combined]
+[module/updates-pacman-aurhelper]
 type = custom/script
-exec = /usr/share/polybar/scripts/updates-arch-combined.sh
+exec = /usr/share/polybar/scripts/updates-pacman-aurhelper.sh
 interval = 600
 ;format-underline = #96cd11
 
