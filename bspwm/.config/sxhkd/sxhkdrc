@@ -118,6 +118,14 @@ super + shift + {d,r}
 	bspc node @parent -C {backward,forward}; \
 	bspc node -f older
 
+# Focus on parent node
+super + g
+	bspc node -f @parent
+
+# Focus on sibling node
+super + shift + g
+	bspc node -f @brother
+
 # Swap focused window with largest tiled node on the same desktop
 super + n
 	bspc node -s biggest.local
@@ -156,13 +164,13 @@ super + alt + space
 super + alt + ctrl + space
 	bspc query -N -d | xargs -I id -n 1 bspc node id -p cancel
 
-# Transplant focused node to preselected area
-super + g
-	bspc node -n 'newest.!automatic.local'
-
 # Send the newest marked node to the newest preselected node
 super + y
 	bspc node newest.marked.local -n newest.!automatic.local
+
+# Transplant focused node to preselected area
+super + shift + y
+	bspc node -n 'newest.!automatic.local'
 
 # Preselect in a direction and launch terminal
 super + alt + shift + {h,j,k,l}
