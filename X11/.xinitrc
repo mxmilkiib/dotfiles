@@ -49,7 +49,7 @@ xsetroot -cursor_name left_ptr &
 
 # Set background image
 # feh --bg-fill --no-xinerama ~/.wallpapers/VnXDN9J_colourised.png
-feh --bg-fill --no-xinerama ~/.wallpapers/danielle_at_sea_flickr.jpg
+feh --bg-fill --no-xinerama `return-wallpaper.sh`
 
 # Unclutter - hides the mouse cursor after 15 seconds of idle
 unclutter --timeout 15 &
@@ -115,8 +115,11 @@ mpd-mpris -host 192.168.1.3 &
 # Redshift - changed screen colour temp
 redshift-gtk -l 55.978301:-3.228586 -t 6000:4500 &
 
-# pnmixer &
-kmix &
+# connect to mobile kdeconnect app
+kdeconnect-indicator &
+
+pnmixer &
+# kmix &
 
 # Radio streams
 # radiotray-ng &
@@ -201,9 +204,6 @@ xset s noblank
 # exec urxvt
 
 
-### Troublesome - trying near the end for now
-# connect to mobile kdeconnect app
-kdeconnect-indicator &
 
 
 xrandr-rose-vgaprime-hdmiright.sh
