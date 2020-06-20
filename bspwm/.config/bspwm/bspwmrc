@@ -7,7 +7,7 @@ bspc config top_padding                 22
 # bspc config bottom_paddin               18
 bspc config border_width                3
 bspc config window_gap                  3
-bspc config split_ratio                 0.4
+bspc config split_ratio                 0.45
 
 bspc config single_monocle              true
 bspc config borderless_monocle          true
@@ -17,7 +17,8 @@ bspc config paddingless_monocle         false
 # direction of second window
 # first_child for the left (on landscape screen)
 # second_child for the right (on landscape screen)
-bspc config initial_polarity            first_child
+# bspc config initial_polarity            first_child
+bspc config initial_polarity            second_child
 
 bspc config history_aware_focus         true
 
@@ -81,7 +82,7 @@ bspc monitor -d A1 A2 A3 A4 A5 A6 A7 A8 A9 A0 A- A=
 # 	bspc monitor -f next
 # fi
 
-# bspc config external_rules_command "$(which bspwm_external_rules)"
+bspc config external_rules_command "$(which bspwm_external_rules)"
 
 
 # Floating window rules
@@ -101,6 +102,7 @@ bspc rule -a copyq                    state = floating
 bspc rule -a Arandr                   state = floating
 bspc rule -a "* Copying"              state = floating
 bspc rule -a QjackCtl                 state = floating
+bspc rule -a Argodejo                 state = floating
 bspc rule -a radium_compressor        state = floating
 bspc rule -a Goodvibes                state = floating
 bspc rule -a Gsmartcontrol            state = floating
@@ -113,6 +115,7 @@ bspc rule -a Mattermost               state = floating
 bspc rule -a KeePassXC                state = floating
 bspc rule -a "Image Menu"             state = floating
 bspc rule -a "File operations"        state = floating  # doublecmd
+bspc rule -a "File operations"        state = floating  # doublecmd
 
 
 # Default desktop rules
@@ -122,7 +125,7 @@ bspc rule -a qBittorrent           desktop=^2
 bspc rule -a soulseekqt.AppImage   desktop=^3
 bspc rule -a SoulseekQt            desktop=^3
 bspc rule -a "MusicBrainz Picard"  desktop=^4
-bspc rule -a Cadence               desktop=^5
+# bspc rule -a Cadence               desktop=^5
 bspc rule -a Carla                 desktop=^5
 bspc rule -a qseq64                desktop=^6
 # bspc rule -a KeePassXC             desktop=^8

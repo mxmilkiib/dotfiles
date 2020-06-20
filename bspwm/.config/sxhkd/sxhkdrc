@@ -24,7 +24,6 @@ super + alt + {_,shift + }Escape
 	 bspc quit 1}
 
 
-
 ### Node (window) management
 
 ## Node state/flags
@@ -101,11 +100,11 @@ super + u
 	bspc desktop last.urgent -f
 
 # Rotate current desktop node tree root
-super + {e,s}
+super + {s,e}
 	bspc node @/ -R {90,270}
 
 # Rotate current node and parent
-super + shift + {e,s}
+super + shift + {s,e}
 	bspc node @parent -R {90,270}
 
 # Circulate the leaves of desktop tree backward or forward
