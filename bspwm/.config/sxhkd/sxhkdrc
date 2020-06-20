@@ -367,6 +367,8 @@ super + F3
 	xdo activate -n soulseekqt || soulseekqt
 super + F4
 	xdo activate -n picard || picard
+super + shift + F4
+	xdo activate -n simplescreenrecorder || simplescreenrecorder
 super + F5
 	xdo activate -n cadence || cadence
 super + shift + F5
@@ -404,7 +406,7 @@ super + ctrl + F12
 
 
 # polybar hotkeys
-super + alt + b
+super + shift + v
 	xdo hide -N "Polybar"; \
   bspc config top_padding 0
 
