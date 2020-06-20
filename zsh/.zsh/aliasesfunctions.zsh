@@ -655,6 +655,7 @@ alias trello="google-chrome --app=https://trello.com/b/AdniCH2y/to-do &"
 
 # Game
 alias defrag="quake3 +set fs_game defrag +devmap tr1ckhouse-beta3 +sv_cheats '1' +df_promode '1'"
+alias defrag2="quake3 +set fs_game defrag +devmap longtunnel +sv_cheats '1' +df_promode '1'"
 
 
 # Etymology
