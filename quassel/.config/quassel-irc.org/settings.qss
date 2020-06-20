@@ -138,8 +138,8 @@ NickListItem { font: normal 500 13pt "GohuNew"; }
 
 
 // BufferView Colors
-ChatListItem { foreground: #e6e8fd; }
+ChatListItem { foreground: #cdcdcd; }
 ChatListItem[state="inactive"] { foreground: #9d9d9d; }
 ChatListItem[state="channel-event"] { foreground: #8dafc4; }
 ChatListItem[state="unread-message"] { foreground: #e68547; }
-ChatListItem[state="highlighted"] { foreground: #578fb1; }
+ChatListItem[state="highlighted"] { foreground: #619ec2; }
