@@ -106,6 +106,9 @@ sxhkd &
 polybar sitting &
 
 
+# snapcast reciever
+snapclient -s 6 &
+
 # mpris from mpd server
 mpd-mpris -host 192.168.1.3 &
 
