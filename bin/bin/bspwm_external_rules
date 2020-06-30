@@ -1,4 +1,3 @@
-
 #! /bin/sh
 
 wid=$1
@@ -6,16 +5,14 @@ class=$2
 instance=$3
 
 
-# if [ $(bspc query -N -d|wc -l) == "1" ]; then echo "split_dir=south"; fi
-# echo "split_dir=south"
+if [ $(bspc query -N -d|wc -l) == "1" ]; then echo "split_dir=south"; fi
 # bspwm_grid
 
-
-if [ "$instance" = fontforge ] ; then
-	title=$(xtitle "$wid")
-	case "$title" in
-		Layers|Tools|Warning)
-			echo "focus = off"
-			;;
-	esac
-fi
+# if [ "$instance" = fontforge ] ; then
+# 	title=$(xtitle "$wid")
+# 	case "$title" in
+# 		Layers|Tools|Warning)
+# 			echo "focus = off"
+# 			;;
+# 	esac
+# fi

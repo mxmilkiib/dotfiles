@@ -7,7 +7,7 @@ bspc config top_padding                 22
 # bspc config bottom_paddin               18
 bspc config border_width                3
 bspc config window_gap                  3
-bspc config split_ratio                 0.45
+bspc config split_ratio                 0.5
 
 bspc config single_monocle              true
 bspc config borderless_monocle          true
@@ -20,7 +20,11 @@ bspc config paddingless_monocle         false
 # bspc config initial_polarity            first_child
 bspc config initial_polarity            second_child
 
-bspc config history_aware_focus         true
+bspc config external_rules_command "$(which bspwm_external_rules)"
+
+bspc config automatic_scheme alternate
+
+# bspc config history_aware_focus         true
 
 bspc config click_to_focus              false
 bspc config focus_follows_pointer       false
@@ -82,8 +86,6 @@ bspc monitor -d A1 A2 A3 A4 A5 A6 A7 A8 A9 A0 A- A=
 # 	bspc monitor -f next
 # fi
 
-bspc config external_rules_command "$(which bspwm_external_rules)"
-
 
 # Floating window rules
 bspc rule -a Vlc                      state = pseudo_tiled
@@ -116,6 +118,8 @@ bspc rule -a KeePassXC                state = floating
 bspc rule -a "Image Menu"             state = floating
 bspc rule -a "File operations"        state = floating  # doublecmd
 bspc rule -a "File operations"        state = floating  # doublecmd
+bspc rule -a "QMidiArp*"              state = floating
+bspc rule -a "Jack_mixer"             state = floating
 
 
 # Default desktop rules
@@ -126,7 +130,7 @@ bspc rule -a soulseekqt.AppImage   desktop=^3
 bspc rule -a SoulseekQt            desktop=^3
 bspc rule -a "MusicBrainz Picard"  desktop=^4
 # bspc rule -a Cadence               desktop=^5
-bspc rule -a Carla                 desktop=^5
+bspc rule -a Carla2                 desktop=^5
 bspc rule -a qseq64                desktop=^6
 # bspc rule -a KeePassXC             desktop=^8
 bspc rule -a doublecmd             desktop=^9
@@ -151,4 +155,4 @@ bspc rule -a Chromium              desktop=^12
 # mako --default-timeout 8000 --width 600 --anchor top-center --background-color '#472877' --border-color '#ffffffaa'
 
 bspwm_urgent_border
-bspwm_enforce_loop
+# bspwm_enforce_loop
