@@ -83,8 +83,8 @@ if ! zgen saved; then
 
   zgen load unixorn/autoupdate-zgen
 
-  zgen load romkatv/powerlevel10k powerlevel10k
-
+  zgen load nojhan/liquidprompt
+  # zgen load romkatv/powerlevel10k powerlevel10k
 
   zgen load chrissicool/zsh-256color
 
