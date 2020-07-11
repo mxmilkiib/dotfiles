@@ -231,6 +231,7 @@ alias .......='cd ../../../../../..'
 alias cd..='cd ..'
 alias ,,='..'
 alias c.='cd $PWD'
+alias c-='cd -'
 
 
 #to fox
