@@ -104,7 +104,7 @@ bspc rule -a copyq                    state = floating
 bspc rule -a Arandr                   state = floating
 bspc rule -a "* Copying"              state = floating
 bspc rule -a QjackCtl                 state = floating
-bspc rule -a Argodejo                 state = floating
+bspc rule -a Agordejo                 state = floating
 bspc rule -a radium_compressor        state = floating
 bspc rule -a Goodvibes                state = floating
 bspc rule -a Gsmartcontrol            state = floating
@@ -119,7 +119,9 @@ bspc rule -a "Image Menu"             state = floating
 bspc rule -a "File operations"        state = floating  # doublecmd
 bspc rule -a "File operations"        state = floating  # doublecmd
 bspc rule -a "QMidiArp*"              state = floating
-bspc rule -a "Jack_mixer"             state = floating
+bspc rule -a Onboard                  state = floating
+# bspc rule -a "Jack_mixer"             state = floating
+
 
 
 # Default desktop rules
@@ -128,13 +130,14 @@ bspc rule -a Clementine            desktop=^1
 bspc rule -a qBittorrent           desktop=^2
 bspc rule -a soulseekqt.AppImage   desktop=^3
 bspc rule -a SoulseekQt            desktop=^3
-bspc rule -a Argodejo              desktop=^3
+bspc rule -a Agordejo              desktop=^3
 bspc rule -a "MusicBrainz Picard"  desktop=^4
 bspc rule -a qseq64                desktop=^4
 bspc rule -a qseq66                desktop=^4
 # bspc rule -a Cadence              desktop=^5
 bspc rule -a Carla2                desktop=^5
-bspc rule -a Jack_mixer            desktop=^5
+bspc rule -a Jack_mixer            desktop=^6
+bspc rule -a radium_compressor     desktop=^6
 # bspc rule -a KeePassXC            desktop=^8
 bspc rule -a doublecmd             desktop=^9
 bspc rule -a "Double Commander"    desktop=^9
