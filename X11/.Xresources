@@ -216,11 +216,22 @@ URxvt.resize-font.reset:      C-0
 ! clipboard
 ! Shift ctrl-c
 ! URxvt.keysym.Shift-Control-V:   perl:clipboard:paste
-URxvt.keysym.Alt-c:               perl:clipboard:copy
-! Alt-middle click for clipboard pasting
-URxvt.keysym.Alt-v:               perl:clipboard:paste
-URxvt.keysym.A-C-v:             perl:clipboard:paste_escaped
+! URxvt.keysym.Alt-c:               perl:clipboard:copy
+! ! Alt-middle click for clipboard pasting
+! URxvt.keysym.Alt-v:               perl:clipboard:paste
+! URxvt.keysym.A-C-v:             perl:clipboard:paste_escaped
 ! alt-ctrl-c/v defaults
+
+URxvt.keysym.Shift-Control-V: eval:paste_clipboard
+URxvt.keysym.Shift-Control-C: eval:selection_to_clipboard
+
+! To disable the previous keybindings youll also need
+URxvt.keysym.Control-Meta-c: builtin-string:
+URxvt.keysym.Control-Meta-v: builtin-string:
+
+
+
+!
 ! Ctrl-Shift-c/v copy and paste CLIPBOARD buffer
 xterm*VT100.Translations: #override Ctrl Shift <Key>V: insert-selection(CLIPBOARD) \n Ctrl Shift <Key>C: copy-selection(CLIPBOARD)
 
