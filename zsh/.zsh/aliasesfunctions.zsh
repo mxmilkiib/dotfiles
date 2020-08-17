@@ -419,6 +419,7 @@ alias puU='echo y | yay -Syu --answeredit n --answerclean n --answerdiff n --sud
 # full upgrade with VCS packages checked, don't skip which packages to ignore
 # alias puuU='yay -Syu --answeredit n --answerclean n --sudoloop --devel'
 alias puu='pacman -Qmq | grep -Ee "-(cvs|svn|git|hg|bzr|darcs)$" | yay -S --answeredit n --answerclean n --answerdiff n --noremovemake --sudoloop --needed -'
+alias p3='pu&&puu'
 
 
 alias pSi='yay -Si'                         # search info
@@ -435,6 +436,9 @@ function pQoi(){
 # list files owned by package that contains argument file
 function pQol(){
   pacman -Ql `pacman -Qoq $@`
+}
+function pQlb(){
+  pacman -Ql $@ | grep bin
 }
 # list packages of libraries used by a binary in path
 function pQp(){ whereis -b $1 | awk '{print $2}' | xargs ldd | awk '{print $1}' | xargs whereis | awk '{print $2}' | grep . | xargs pacman -Qo | awk '{print $5}' | sort | uniq | paste -s -d ' ' }
