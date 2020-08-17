@@ -1,5 +1,7 @@
 let g:netrw_dirhistmax  =10
-let g:netrw_dirhistcnt =9
+let g:netrw_dirhistcnt =1
+let g:netrw_dirhist_1='/home/milk/state/pkgs/mine/alo.lv2-git'
+let g:netrw_dirhist_0='/home/milk/media/audio/projects/NSM/boom4a'
 let g:netrw_dirhist_9='/home/milk/state/pkgs/mine/0_testing/x2godesktopsharing'
 let g:netrw_dirhist_8='/home/milk/.mozilla/firefox/prf2kjct.default/chrome'
 let g:netrw_dirhist_7='/home/milk/state/pkgs/mine/0_testing/spectacle-analyzer.lv2-git'
@@ -8,5 +10,3 @@ let g:netrw_dirhist_5='/home/milk/state/pkgs/mine/mpv-autoload'
 let g:netrw_dirhist_4='/home/milk/state/pkgs/mine'
 let g:netrw_dirhist_3='/home/milk/state/pkgs/mine/mpv-autoload'
 let g:netrw_dirhist_2='/home/milk'
-let g:netrw_dirhist_1='/home/milk/.projectM'
-let g:netrw_dirhist_0='/home/milk/state/pkgs/testing/mod-cv-plugins-git'
