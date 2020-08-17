@@ -333,6 +333,11 @@ super + ctrl + alt + c
   rofi -show calc -modi calc -show-icons -width 40 -lines 20 -theme purple.rasi
 
 
+# On-screen virtual keyboard
+super + alt + i
+  onboard
+
+
 # Pulseaudio application volume mixer
 super + p
 	xdo activate -n pavucontrol || pavucontrol
@@ -350,6 +355,9 @@ XF86AudioMute
 
 XF86AudioPlay
 	playerctl play-pause
+
+# XF86Calculator
+# 	
 
 
 # Open a hotkey reminder terminal
