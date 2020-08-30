@@ -18,20 +18,20 @@ bspc config paddingless_monocle         false
 # first_child for the left (on landscape screen)
 # second_child for the right (on landscape screen)
 # bspc config initial_polarity            first_child
-bspc config initial_polarity            second_child
-
-bspc config external_rules_command "$(which bspwm_external_rules)"
-
-bspc config automatic_scheme alternate
+# bspc config initial_polarity            second_child
+#
+# bspc config external_rules_command "$(which bspwm_external_rules)"
+#
+# bspc config automatic_scheme alternate
 
 # bspc config history_aware_focus         true
 
-bspc config click_to_focus              false
-bspc config focus_follows_pointer       false
-bspc config swallow_first_click         true
-
-bspc config pointer_follows_monitor     true
-
+# bspc config click_to_focus              false
+# bspc config focus_follows_pointer       false
+# bspc config swallow_first_click         true
+#
+# bspc config pointer_follows_monitor     true
+#
 # mod4 is windows key
 bspc config pointer_modifier            mod4
 bspc config pointer_action1             move
@@ -72,7 +72,6 @@ feh --bg-fill --no-xinerama `return-wallpaper.sh`
 
 # Rename initial desktop
 bspc monitor -d A1 A2 A3 A4 A5 A6 A7 A8 A9 A0 A- A=
-
 
 
 # if [[ `bspc query --monitors | wc -l` -gt 1 ]]; then
@@ -121,7 +120,6 @@ bspc rule -a "File operations"        state = floating  # doublecmd
 bspc rule -a "QMidiArp*"              state = floating
 bspc rule -a Onboard                  state = floating
 # bspc rule -a "Jack_mixer"             state = floating
-
 
 
 # Default desktop rules
