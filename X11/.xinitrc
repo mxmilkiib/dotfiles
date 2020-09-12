@@ -96,9 +96,6 @@ bspwm-urgent-border.sh &
 # reset to primary monitor if secondary is removed (for after a use of mons -s)
 mons -a &
 
-# Hotkeys
-sxhkd &
-
 # Panel bar w/ pager, systray, program windows, weather, time, etc.
 # xfce4-panel --disable-wm-check &
 # perlpanel &
@@ -148,8 +145,15 @@ flameshot &
 # Folder sync tray GUI (using web interface instead)
 syncthing-gtk &
 
+nextcloud &
+
+# keepassxc ~/state/nextcloud/sync/keepassxc-mb.kdbx &
+
 # Octopi pacman update and package manager GUI
 # pamac-tray &
+
+# Hotkeys
+sxhkd &
 
 
 # Make sure pulseaudio out is set to jack
