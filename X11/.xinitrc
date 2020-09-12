@@ -211,12 +211,11 @@ xset s noblank
 # exec urxvt
 
 
-
-
-xrandr-rose-vgaprime-hdmiright.sh
+# xrandr-rose-vgaprime-hdmiright.sh
 
 
 exec bspwm
+# exec ssh-agent bspwm
 # exec bspwm -c /home/milk/sync/dotfiles/bspwm/.config/bspwm/bspwmrc
 # exec bspwm -c /home/milk/.config/bspwm/bspwmrc
 # exec startxfce4

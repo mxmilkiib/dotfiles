@@ -56,7 +56,8 @@ super + {comma,period,slash}
 
 # Close or kill window node
 super + {_,shift + }q
-	bspc node -{c,k} && bspc node -f last.local
+	bspc node -{c,k}
+	# bspc node -{c,k} && bspc node -f last.local
 # super + x
 	# bspc node -c && bspc node -f last.local
 
@@ -356,8 +357,8 @@ XF86AudioMute
 XF86AudioPlay
 	playerctl play-pause
 
-# XF86Calculator
-# 	
+XF86Calculator
+  rofi -show calc -modi calc -show-icons -width 40 -lines 20 -theme purple.rasi
 
 
 # Open a hotkey reminder terminal
@@ -384,7 +385,7 @@ super + shift + F5
 super + F6
 	xdo activate -n qseq64 || qseq64
 super + F8
-	xdo activate -n keepassxc || keepassxc ~/sync/keepassxc-mb.kdbx
+	xdo activate -n keepassxc || keepassxc ~/state/nextcloud/sync/keepassxc-mb.kdbx
 super + F9
 	xdo activate -n doublecmd || doublecmd --no-splash
 super + shift + F9

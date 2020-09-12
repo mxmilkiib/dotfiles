@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set +o
 IFS='x' read screenWidth screenHeight < <(xdpyinfo | grep dimensions | grep -o '[0-9x]*' | head -n1)
 screenWidth=$(cat /sys/class/graphics/fb0/virtual_size | cut -d, -f1)
 screenHeight=$(cat /sys/class/graphics/fb0/virtual_size | cut -d, -f2)

@@ -4,12 +4,16 @@ wid=$1
 class=$2
 instance=$3
 
+if [ "$instance" = 'Picture-in-picture' ]; then # chain other sticky conditions here
+  echo state=floating sticky=on
+fi
 
 if [ $(bspc query -N -d|wc -l) == "1" ]; then echo "split_dir=south"; fi
 # bspwm_grid
 
+
 # if [ "$instance" = fontforge ] ; then
-# 	title=$(xtitle "$wid")
+# 	/.wallpapers/danielle_at_sea_flickr_purple.pngtitle=$(xtitle "$wid")
 # 	case "$title" in
 # 		Layers|Tools|Warning)
 # 			echo "focus = off"

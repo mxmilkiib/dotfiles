@@ -1,10 +1,8 @@
 #! /bin/bash
 
-bspc config wm_name                     bspwm
-
 # Layout
 bspc config top_padding                 22
-# bspc config bottom_paddin               18
+# bspc config bottom_padding               18
 bspc config border_width                3
 bspc config window_gap                  3
 bspc config split_ratio                 0.5
@@ -12,7 +10,10 @@ bspc config split_ratio                 0.5
 bspc config single_monocle              true
 bspc config borderless_monocle          true
 bspc config gapless_monocle             false
-bspc config paddingless_monocle         false
+
+# for side in right bottom left; do
+# 	bspc config ${side}_monocle_padding -$(bspc config ${side}_padding)
+# done
 
 # direction of second window
 # first_child for the left (on landscape screen)
@@ -20,7 +21,7 @@ bspc config paddingless_monocle         false
 # bspc config initial_polarity            first_child
 # bspc config initial_polarity            second_child
 #
-# bspc config external_rules_command "$(which bspwm_external_rules)"
+bspc config external_rules_command "$(which bspwm_external_rules)"
 #
 # bspc config automatic_scheme alternate
 
@@ -37,9 +38,6 @@ bspc config pointer_modifier            mod4
 bspc config pointer_action1             move
 bspc config pointer_action2             resize_corner
 
-# cancel presel with another presel
-bspc config auto_cancel                 true
-
 # keep ratio when resizing certain windows
 bspc config honor_size_hints            true
 
@@ -52,10 +50,9 @@ bspc config focused_border_color        "#ECBC34"
 bspc config active_border_color         "#000000"
 bspc config normal_border_color         "#000000"
 bspc config presel_feedback_color       "#A7BF81"
-bspc config focused_locked_border_color "#C7B579"
-bspc config active_locked_border_color  "#7E7F89"
-bspc config normal_locked_border_color  "#3F3E3B"
-bspc config urgent_border_color         "#EFA29A"
+# bspc config focused_locked_border_color "#C7B579"
+# bspc config active_locked_border_color  "#7E7F89"
+# bspc config normal_locked_border_color  "#3F3E3B"
 
 
 # Remove the bspwm logical monitor to remove its "Desktop"
