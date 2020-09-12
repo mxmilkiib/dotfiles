@@ -177,6 +177,7 @@ alias lsd='ls --group-directories-first'
 # alias lt='ls -Atr --group-directories-first'	  # show almost all (hidden files), sort by time, reversed
 
 alias ll='ls -lhs --group-directories-first'    # long list, alphabetical sort (default), human readable (K, M, etc.), display blocks used, directories first
+alias kk='ll'
 alias lla='ls -lhA --group-directories-first'   # long list, alphabetical sort (default), human readable (K, M, etc.), directories first
 alias laa='ls -lAh --color | less -RFX'				  # long, almost all, no reverse, piped to less w/ redraw (color), quit if under one screen, don't init/deinit terminal
 
@@ -643,6 +644,10 @@ diff () {
 		command diff "$@a" | less
 	fi
 }
+
+
+# refresh pulseaudio devices
+alias paref='pacmd unload-module module-udev-detect && pacmd load-module module-udev-detect'
 
 alias mp3='youtube-dl -x --audio-format "mp3" --audio-quality 0 --add-metadata --xattrs --embed-thumbnail $*'
 

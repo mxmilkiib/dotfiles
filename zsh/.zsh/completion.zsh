@@ -58,4 +58,4 @@ zstyle ':completion:*:sudo:*' command-path /usr/local/sbin /usr/local/bin /usr/s
 zstyle ':completion:*:matches'         group 'yes'
 zstyle ':completion:*'                 group-name ''
 # completion displays directories first
-zstyle ':completion:*' list-dirs-first true
+# zstyle ':completion:*' list-dirs-first true
