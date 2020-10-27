@@ -59,3 +59,6 @@ zstyle ':completion:*:matches'         group 'yes'
 zstyle ':completion:*'                 group-name ''
 # completion displays directories first
 # zstyle ':completion:*' list-dirs-first true
+
+# For enabling autocompletion of privileged environments in privileged commands
+zstyle ':completion::complete:*' gain-privileges 1

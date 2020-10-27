@@ -81,6 +81,8 @@ source /usr/share/zsh/share/zgen.zsh
 if ! zgen saved; then
   echo "Creating a zgen save"
 
+  zgen load larkery/zsh-histdb
+
   zgen load unixorn/autoupdate-zgen
 
   zgen load nojhan/liquidprompt
@@ -97,6 +99,9 @@ if ! zgen saved; then
     # source ~/.zshrc # or run `compinit'
     # ggrep -*[TAB]* -> magic
 
+  zgen load Aloxaf/fzf-tab
+  # needs to be sourced after compinit, but before plugins which will wrap widgets like zsh-autosuggestions or fast-syntax-highlighting.
+
   zgen load zsh-users/zsh-history-substring-search
 
   # zgen load zsh-users/zsh-syntax-highlighting
@@ -107,9 +112,9 @@ if ! zgen saved; then
   export ZSH_AUTOSUGGEST_MANUAL_REBIND=1
 
   # fzf after zsh-autosuggestions - fzf/issues/227
-  zgen load junegunn/fzf
-  zgen load junegunn/fzf shell/completion.zsh
-  zgen load junegunn/fzf shell/key-bindings.zsh
+  # zgen load junegunn/fzf
+  # zgen load junegunn/fzf shell/completion.zsh
+  # zgen load junegunn/fzf shell/key-bindings.zsh
     # CTRL-T (paste files/dirs), CTRL-R (history), and ALT-C (cd), alias -g F, **<tab>
 
   zgen save
@@ -121,7 +126,7 @@ fi
 source $Z/bindings.zsh
 
 # Initialize the completion system.
-source $Z/completion.zsh
+# source $Z/completion.zsh
 
 # Set up some aliases and functions
 source $Z/aliasesfunctions.zsh
@@ -137,6 +142,7 @@ source $Z/zbell.sh
 
 # FZF settings
 export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'
+export FZF_ALT_C_COMMAND="fd --hidden --exclude '.git' --exclude 'node_modules'"
 export FZF_COMPLETION_TRIGGER='**'
 export FZF_COMPLETION_OPTS='+c -x'
 export FZF_DEFAULT_OPTS='--reverse'
@@ -187,6 +193,9 @@ ZSH_AUTOSUGGEST_CLEAR_WIDGETS+=reset-prompt-and-accept-line
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
+  zstyle ':fzf-tab:*' insert-space true
+  zstyle ':fzf-tab:*' continuous-trigger '/'
+  zstyle ':completion:complete:ls:argument-rest' sort false
 
 # Modal cursor color for vi's insert/normal modes.
 # http://stackoverflow.com/questions/30985436/
@@ -245,3 +254,4 @@ zle -N zle-keymap-select
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+

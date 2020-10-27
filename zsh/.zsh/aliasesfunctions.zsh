@@ -296,6 +296,15 @@ bak() { cp "$1" "$1".bak; }
 # Backup file and remove original
 bakd() { mv "$1" "$1".bak; }
 
+bak2() {
+#   if [[ $1 =~ ^(.*).morig ]]; then
+#   mv $1 $
+#   mv $
+#  else
+#   mv $1 $1.morig
+#  fi
+}
+
 # replace spaces with underscores in filename
 alias renamens="perl-rename -E 's/ /_/g' -E 's/(/_/g' -E 's/)/_/g'"
 
