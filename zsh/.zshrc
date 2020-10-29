@@ -141,25 +141,25 @@ fi
 source $Z/zbell.sh
 
 # FZF settings
-export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'
-export FZF_ALT_C_COMMAND="fd --hidden --exclude '.git' --exclude 'node_modules'"
-export FZF_COMPLETION_TRIGGER='**'
-export FZF_COMPLETION_OPTS='+c -x'
-export FZF_DEFAULT_OPTS='--reverse'
-export FZF_TMUX='1'
+# export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'
+# export FZF_ALT_C_COMMAND="fd --hidden --exclude '.git' --exclude 'node_modules'"
+# export FZF_COMPLETION_TRIGGER='**'
+# export FZF_COMPLETION_OPTS='+c -x'
+# export FZF_DEFAULT_OPTS='--reverse'
+# export FZF_TMUX='1'
 
 # Use fd (https://github.com/sharkdp/fd) instead of the default find
 # command for listing path candidates.
 # - The first argument to the function ($1) is the base path to start traversal
 # - See the source code (completion.{bash,zsh}) for the details.
-_fzf_compgen_path() {
-  fd --hidden --follow --exclude ".git" . "$1"
-}
-
-# Use fd to generate the list for directory completion
-_fzf_compgen_dir() {
-  fd --type d --hidden --follow --exclude ".git" . "$1"
-}
+# _fzf_compgen_path() {
+#   fd --hidden --follow --exclude ".git" . "$1"
+# }
+#
+# # Use fd to generate the list for directory completion
+# _fzf_compgen_dir() {
+#   fd --type d --hidden --follow --exclude ".git" . "$1"
+# }
 
 
 ## Autojump
@@ -181,21 +181,14 @@ zle -N reset-prompt-and-accept-line
 bindkey '^m' reset-prompt-and-accept-line
 ZSH_AUTOSUGGEST_CLEAR_WIDGETS+=reset-prompt-and-accept-line
 
-# launch a tmux session for each terminal. if closed, session persists, and next terminal reconnects.
-# if [[ -z "$TMUX" ]] ;then
-#     ID="`tmux ls | grep -vm1 attached | cut -d: -f1`"
-#     if [[ -z "$ID" ]] ;then
-#         tmux new-session
-#     else
-#         tmux attach-session -t "$ID"
-#     fi
-# fi
+
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
   zstyle ':fzf-tab:*' insert-space true
   zstyle ':fzf-tab:*' continuous-trigger '/'
   zstyle ':completion:complete:ls:argument-rest' sort false
+  zstyle ':completion:*' file-sort access
 
 # Modal cursor color for vi's insert/normal modes.
 # http://stackoverflow.com/questions/30985436/
@@ -210,6 +203,7 @@ zle-line-init () {
   #print 'did init' >/dev/pts/16
 }
 zle -N zle-line-init
+
 zle-keymap-select () {
   # solid block
   # let &t_EI .= "\<Esc>[1 q"
@@ -240,6 +234,17 @@ zle-keymap-select () {
 }
 zle -N zle-keymap-select
 
+#
+# launch a tmux session for each terminal. if closed, session persists, and next terminal reconnects.
+# if [[ -z "$TMUX" ]] ;then
+#     ID="`tmux ls | grep -vm1 attached | cut -d: -f1`"
+#     if [[ -z "$ID" ]] ;then
+#         tmux new-session
+#     else
+#         tmux attach-session -t "$ID"
+#     fi
+# fi
+
 
 # if [ "$TERM" = "linux" ]; then
     # _SEDCMD='s/.*\*color\([0-9]\{1,\}\).*#\([0-9a-fA-F]\{6\}\).*/\1 \2/p'
@@ -252,6 +257,6 @@ zle -N zle-keymap-select
 
 # if [ $(bspc query -N -d|wc -l) = "1" ]; then bspc rule -a \* --one-shot split_dir=south; fi
 
+
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
-
