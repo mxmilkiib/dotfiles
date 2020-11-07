@@ -469,6 +469,7 @@ alias mP='makepkg -si'
 alias mS='makepkg --printsrcinfo > .SRCINFO'
 # update .SRCINFO, git add+commit+push
 function mSs(){ [ ! $* ] && return;  makepkg --printsrcinfo > .SRCINFO && git add PKGBUILD .SRCINFO && git commit -m "$@" && git push }
+alias vP='vim PKGBUILD'
 
 
 ### VCSH - multiple git repos in the same folder
@@ -515,6 +516,10 @@ function invoicesum() {
   echo "= $DDDAYS $(date +%H -d@$DDSUM) hours, $(date +%M -d@$DDSUM) minutes"
   unset DDANSWER DDSUM DDDAYS
 }
+
+
+### -s suffix aliases, end of the filename
+# alias -s 
 
 
 ### -g = Global aliases work at the end of a line

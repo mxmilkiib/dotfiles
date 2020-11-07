@@ -62,3 +62,8 @@ zstyle ':completion:*'                 group-name ''
 
 # For enabling autocompletion of privileged environments in privileged commands
 zstyle ':completion::complete:*' gain-privileges 1
+
+# alias k="kill"
+# zstyle ':completion:*:*:*:*:processes' command 'ps -ef --no-headers -w -w'
+# zstyle ':fzf-tab:complete:k:argument-rest' extra-opts \
+#   --preview=$extract';ps --pid=$in[(w)2] uww' --preview-window='down:15%:wrap'

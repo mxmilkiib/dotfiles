@@ -37,6 +37,8 @@ bindkey '^a' beginning-of-line
 bindkey '^e' end-of-line
 bindkey '^[[1~' beginning-of-line
 bindkey '^[[4~' end-of-line
+bindkey '^[[OH' beginning-of-line
+bindkey '^[[OF' end-of-line
 
 [[ -n "${key[Insert]}"    ]]  && bindkey  "${key[Insert]}"  overwrite-mode #broken?
 [[ -n "${key[Backspace]}" ]]  && bindkey  "${key[Backspace]}"  backward-delete-char
@@ -62,6 +64,8 @@ bindkey '^[[1;5C' emacs-forward-word
 # urxvt
 bindkey "\eOd" emacs-backward-word
 bindkey "\eOc" emacs-forward-word # lands between words, not on first char
+
+
 
 # alt-left, alt-right - move cursor to start of previous or next word
 # same as ctrl-left/right, just fixes accidental pressing. to change to cursor location on end of jump..
@@ -219,4 +223,4 @@ bindkey "^[s" insert-sudo
 # fi
 
 # simulate escape key with menu key
-bindkey '^[[29~' '^[' noop noop
+# bindkey '^[[29~' '^[' noop noop

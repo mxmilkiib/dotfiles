@@ -1,5 +1,6 @@
-[ -x bspc ]; bspwm_one_window=$(bspc query --nodes --desktop --node .window | wc -l );
-if [ ! $DISPLAY ] || [ $bspwm_one_window = 0 ]; then
+
+# [ -x bspc ]; bspwm_one_window=$(bspc query --nodes --desktop --node .window | wc -l );
+# if [ ! $DISPLAY ] || [ $bspwm_one_window = 0 ]; then
   # MOTD - reminder info on readline/emacs/zle binds
   # sleep 0.1
   function echo_color() {
@@ -7,26 +8,26 @@ if [ ! $DISPLAY ] || [ $bspwm_one_window = 0 ]; then
     # printf "\033[0;96m$1\033[0m $2 \033[0;96m$3\033[0m $4\n"
     printf "\033[0;96m$1\033[0m $2 \033[0;96m$3\033[0m $4 \033[0;91m$5\033[0m $6 \033[0;91m$7\033[0m $8\n"
   }
-  # function echo_color_a() { printf "\033[0;96m$1\033[0m $2 \033[0;96m$3\033[0m $4 \033[0;96m$5\033[0m $6" }
-  # function echo_color_a() { printf "\033[0;96m$1\033[0m $2 \033[0;96m$3\033[0m $4 \033[0;91m$5\033[0m $6 \033[0;91m$7\033[0m $8\n" }
-  # echo_color "  c-b"  "Move backward character    " "c-f"  "Move forward character"
-  # echo_color "  a-b"  "Move backward word end     " "a-f"  "Move forward word end"
-  # echo_color "  c-p"  "Move previous (line up)    " "c-n"  "Move next (line down)"
-  # echo_color "  c-h"  "Delete backward character  " "c-d"  "Delete forward character"
-  # echo_color "  c-w"  "Delete backward word       " "a-d"  "Delete forward word"
-  # echo_color "  c-u"  "Delete entire line         " "c-k"  "Delete to end of line"
-  # echo_color "  c-a"  "Jump to line beginning     " "c-e"  "Jump to line end"
-  echo_color "c-b" "Backward char     "  " c-f" "Forward char    "  " c-h" "delete backward cHar"  " c-d" "delete forwarD char"
-  echo_color "a-b" "Backward word end "  " a-f" "Forward word end"  " c-w" "delete backward Word"  " a-d" "delete forwarD word"
-  echo_color "c-a" "to stArt of line  "  " c-e" "to End of line  "  " c-k" "Kut to end of line"
-  echo_color "c-p" "Previous (line up)"  " c-n" "Next (line down)"  " c-u" "Undo entire line"
-fi
+# function echo_color_a() { printf "\033[0;96m$1\033[0m $2 \033[0;96m$3\033[0m $4 \033[0;96m$5\033[0m $6" }
+# function echo_color_a() { printf "\033[0;96m$1\033[0m $2 \033[0;96m$3\033[0m $4 \033[0;91m$5\033[0m $6 \033[0;91m$7\033[0m $8\n" }
+# echo_color "  c-b"  "Move backward character    " "c-f"  "Move forward character"
+# echo_color "  a-b"  "Move backward word end     " "a-f"  "Move forward word end"
+# echo_color "  c-p"  "Move previous (line up)    " "c-n"  "Move next (line down)"
+# echo_color "  c-h"  "Delete backward character  " "c-d"  "Delete forward character"
+# echo_color "  c-w"  "Delete backward word       " "a-d"  "Delete forward word"
+# echo_color "  c-u"  "Delete entire line         " "c-k"  "Delete to end of line"
+# echo_color "  c-a"  "Jump to line beginning     " "c-e"  "Jump to line end"
+echo_color "C-b" "Back char     " "C-f" "Forward char    "  "C-h" "del back cHar"  " C-d" "del forwarD char"
+echo_color "A-b" "Back word end " "A-f" "Forward word end"  "C-w" "del back Word"  " A-d" "del forwarD word"
+echo_color "C-a" "to line stArt " "C-e" "to End of line  "  "C-k" "Kut to lineend"
+echo_color "C-p" "Prev (line up)" "C-n" "Next (line down)"  "C-u" "Undo line"
+# fi
 
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block; everything else may go below.
 # if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  # source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+# source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 # fi
 
 # .zshrc: Configuration for the Z-Shell.
@@ -53,18 +54,6 @@ source ~/.profile
 # Set up zsh specific working environment.
 source $Z/environment.zsh
 
-
-# If running from tty1 start sway window manager
-# if [ $(tty) = "/dev/tty1" ]; then
- # # export QT_QPA_PLATFORM=wayland-egl
- # # export QT_WAYLAND_DISABLE_WINDOWDECORATION="1"
- # # export MOZ_ENABLE_WAYLAND=1
- # # export CLUTTER_BACKEND=wayland
- # # export SDL_VIDEODRIVER=wayland
- # # ssh-agent sx
- # # sway -d >~/sway.log 2>&1
-# exit 0
-# fi
 
 # Auto start tbsm after login on first two VTs
 # [[ $XDG_VTNR -le 2 ]] && tdm
@@ -95,9 +84,9 @@ if ! zgen saved; then
   zgen load zsh-users/zsh-completions
 
   zgen load RobSis/zsh-completion-generator
-    # gencomp ggrep
-    # source ~/.zshrc # or run `compinit'
-    # ggrep -*[TAB]* -> magic
+  # gencomp ggrep
+  # source ~/.zshrc # or run `compinit'
+  # ggrep -*[TAB]* -> magic
 
   zgen load Aloxaf/fzf-tab
   # needs to be sourced after compinit, but before plugins which will wrap widgets like zsh-autosuggestions or fast-syntax-highlighting.
@@ -112,10 +101,10 @@ if ! zgen saved; then
   export ZSH_AUTOSUGGEST_MANUAL_REBIND=1
 
   # fzf after zsh-autosuggestions - fzf/issues/227
-  # zgen load junegunn/fzf
-  # zgen load junegunn/fzf shell/completion.zsh
-  # zgen load junegunn/fzf shell/key-bindings.zsh
-    # CTRL-T (paste files/dirs), CTRL-R (history), and ALT-C (cd), alias -g F, **<tab>
+  zgen load junegunn/fzf
+  zgen load junegunn/fzf shell/completion.zsh
+  zgen load junegunn/fzf shell/key-bindings.zsh
+  # CTRL-T (paste files/dirs), CTRL-R (history), and ALT-C (cd), alias -g F, **<tab>
 
   zgen save
 fi
@@ -126,7 +115,7 @@ fi
 source $Z/bindings.zsh
 
 # Initialize the completion system.
-# source $Z/completion.zsh
+source $Z/completion.zsh
 
 # Set up some aliases and functions
 source $Z/aliasesfunctions.zsh
@@ -141,25 +130,25 @@ fi
 source $Z/zbell.sh
 
 # FZF settings
-# export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'
-# export FZF_ALT_C_COMMAND="fd --hidden --exclude '.git' --exclude 'node_modules'"
-# export FZF_COMPLETION_TRIGGER='**'
-# export FZF_COMPLETION_OPTS='+c -x'
-# export FZF_DEFAULT_OPTS='--reverse'
-# export FZF_TMUX='1'
+export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'
+export FZF_ALT_C_COMMAND="fd --hidden --exclude '.git' --exclude 'node_modules'"
+export FZF_COMPLETION_TRIGGER='**'
+export FZF_COMPLETION_OPTS='+c -x'
+export FZF_DEFAULT_OPTS='--reverse'
+export FZF_TMUX='1'
 
 # Use fd (https://github.com/sharkdp/fd) instead of the default find
 # command for listing path candidates.
 # - The first argument to the function ($1) is the base path to start traversal
 # - See the source code (completion.{bash,zsh}) for the details.
-# _fzf_compgen_path() {
-#   fd --hidden --follow --exclude ".git" . "$1"
-# }
-#
-# # Use fd to generate the list for directory completion
-# _fzf_compgen_dir() {
-#   fd --type d --hidden --follow --exclude ".git" . "$1"
-# }
+_fzf_compgen_path() {
+  fd --hidden --follow --exclude ".git" . "$1"
+}
+
+# Use fd to generate the list for directory completion
+_fzf_compgen_dir() {
+  fd --type d --hidden --follow --exclude ".git" . "$1"
+}
 
 
 ## Autojump
@@ -173,8 +162,8 @@ bindkey '^ ' autosuggest-execute
 
 # update prompt time when pressing return to launch a command
 reset-prompt-and-accept-line() {
-    zle reset-prompt
-    zle accept-line
+zle reset-prompt
+zle accept-line
 }
 zle -N reset-prompt-and-accept-line
 
@@ -185,52 +174,53 @@ ZSH_AUTOSUGGEST_CLEAR_WIDGETS+=reset-prompt-and-accept-line
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
-  zstyle ':fzf-tab:*' insert-space true
-  zstyle ':fzf-tab:*' continuous-trigger '/'
-  zstyle ':completion:complete:ls:argument-rest' sort false
-  zstyle ':completion:*' file-sort access
+zstyle ':fzf-tab:*' insert-space true
+zstyle ':fzf-tab:*' continuous-trigger '/'
+zstyle ':completion:complete:*:argument-rest' sort false
+zstyle ':completion:*' file-sort modification
+
 
 # Modal cursor color for vi's insert/normal modes.
 # http://stackoverflow.com/questions/30985436/
 # https://bbs.archlinux.org/viewtopic.php?id=95078
 # http://unix.stackexchange.com/questions/115009/
 zle-line-init () {
-  zle -K viins
-  #echo -ne "\033]12;Grey\007"
-  #echo -n 'grayline1'
-  echo -ne "\033]12;Gray\007"
-  echo -ne "\033[6 q"
-  #print 'did init' >/dev/pts/16
+zle -K viins
+#echo -ne "\033]12;Grey\007"
+#echo -n 'grayline1'
+echo -ne "\033]12;Gray\007"
+echo -ne "\033[6 q"
+#print 'did init' >/dev/pts/16
 }
 zle -N zle-line-init
 
 zle-keymap-select () {
-  # solid block
-  # let &t_EI .= "\<Esc>[1 q"
-  # 1 or 0 -> blinking block
-  # 3 -> blinking underscore
-  # Recent versions of xterm (282 or above) also support
-  # 5 -> blinking vertical bar
-  # 6 -> solid vertical bar
+# solid block
+# let &t_EI .= "\<Esc>[1 q"
+# 1 or 0 -> blinking block
+# 3 -> blinking underscore
+# Recent versions of xterm (282 or above) also support
+# 5 -> blinking vertical bar
+# 6 -> solid vertical bar
 
-  if [[ $KEYMAP == vicmd ]]; then
-    if [[ -z $TMUX ]]; then
-      printf "\033]12;Green\007"
-      printf "\033[2 q"
-    else
-      printf "\033Ptmux;\033\033]12;red\007\033\\"
-      printf "\033Ptmux;\033\033[2 q\033\\"
-    fi
+if [[ $KEYMAP == vicmd ]]; then
+  if [[ -z $TMUX ]]; then
+    printf "\033]12;Green\007"
+    printf "\033[2 q"
   else
-    if [[ -z $TMUX ]]; then
-      printf "\033]12;Grey\007"
-      printf "\033[4 q"
-    else
-      printf "\033Ptmux;\033\033]12;grey\007\033\\"
-      printf "\033Ptmux;\033\033[4 q\033\\"
-    fi
+    printf "\033Ptmux;\033\033]12;red\007\033\\"
+    printf "\033Ptmux;\033\033[2 q\033\\"
   fi
-  #print 'did select' >/dev/pts/16
+else
+  if [[ -z $TMUX ]]; then
+    printf "\033]12;Grey\007"
+    printf "\033[4 q"
+  else
+    printf "\033Ptmux;\033\033]12;grey\007\033\\"
+    printf "\033Ptmux;\033\033[4 q\033\\"
+  fi
+fi
+#print 'did select' >/dev/pts/16
 }
 zle -N zle-keymap-select
 
@@ -247,11 +237,11 @@ zle -N zle-keymap-select
 
 
 # if [ "$TERM" = "linux" ]; then
-    # _SEDCMD='s/.*\*color\([0-9]\{1,\}\).*#\([0-9a-fA-F]\{6\}\).*/\1 \2/p'
-    # for i in $(sed -n "$_SEDCMD" $HOME/.Xresources | awk '$1 < 16 {printf "\\e]P%X%s", $1, $2}'); do
-        # echo -en "$i"
-    # done
-    # clear
+# _SEDCMD='s/.*\*color\([0-9]\{1,\}\).*#\([0-9a-fA-F]\{6\}\).*/\1 \2/p'
+# for i in $(sed -n "$_SEDCMD" $HOME/.Xresources | awk '$1 < 16 {printf "\\e]P%X%s", $1, $2}'); do
+# echo -en "$i"
+# done
+# clear
 # fi
 
 
