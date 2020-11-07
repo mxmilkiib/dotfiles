@@ -10,10 +10,12 @@ export TERMINAL=urxvt
 export DIFFPROG=meld
 
 # default pager
-export PAGER="/usr/bin/less -RF"
+export PAGER="/usr/bin/less -RFI"
 # < pager
 #export READNULLCMD=less_rfx
 export READNULLCMD=bat
+# because bat doesn't read PAGER https://github.com/sharkdp/bat/issues/1130#issuecomment-695136196
+export BAT_PAGER="/usr/bin/less -RFI"
 
 
 # Color for manpages in less makes manpages a little easier to read:
@@ -37,7 +39,18 @@ export XDG_CACHE_HOME=${XDG_CACHE_HOME:-"$HOME/.cache"}
 
 
 # gives fuller GUI 
-export XDG_CURRENT_DESKTOP=XFCE
+export XDG_SESSION_DESKTOP=bspwm
+export XDG_SESSION_TYPE=x11
+export XDG_CURRENT_DESKTOP=bspwm
+
+# If running from tty1 start sway window manager
+if [ $(tty) = "/dev/tty1" ]; then
+  export QT_QPA_PLATFORM=wayland-egl
+  export QT_WAYLAND_DISABLE_WINDOWDECORATION="1"
+  export MOZ_ENABLE_WAYLAND=1
+  export CLUTTER_BACKEND=wayland
+  export SDL_VIDEODRIVER=wayland
+fi
 
 
 if ! pgrep -x ssh-agent -u $(id -u) >/dev/null; then
@@ -98,3 +111,6 @@ export BSPWM_STATE=/tmp/bspwm-state.json
 KEY="fdf4a51d4752e99ecbc7a9ce29967c0c"
 CITY="Edinburgh"
 
+
+# urxvt crash on exit fix https://www.reddit.com/r/archlinux/comments/htq7hk/urxvt_segfaults_on_exit_for_whatever_reason/
+PERL_DESTRUCT_LEVEL=2
