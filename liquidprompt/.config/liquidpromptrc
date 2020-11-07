@@ -162,4 +162,8 @@ LP_ENABLE_SSH_COLORS=1
 # will be disabled
 LP_DISABLED_VCS_PATH=""
 
+
+LP_ENABLE_RUNTIME_BELL=1
+LP_RUNTIME_BELL_THRESHOLD=2
+
 # vim: set et sts=4 sw=4 tw=120 ft=sh:
