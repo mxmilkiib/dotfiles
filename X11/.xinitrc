@@ -100,11 +100,11 @@ mons -a &
 # xfce4-panel --disable-wm-check &
 # perlpanel &
 # xde-panel &
-polybar sitting &
+# polybar sitting &
 
 
 # snapcast reciever
-snapclient -s 6 &
+snapauto.sh &
 
 # mpris from mpd server
 mpd-mpris -host 192.168.1.3 &
@@ -118,8 +118,8 @@ redshift-gtk -l 55.978301:-3.228586 -t 6000:4500 &
 # connect to mobile kdeconnect app
 kdeconnect-indicator &
 
-pnmixer &
-# kmix &
+# pnmixer &
+kmix &
 
 # Radio streams
 # radiotray-ng &
@@ -147,13 +147,15 @@ syncthing-gtk &
 
 nextcloud &
 
+signal-desktop --start-in-tray &
+
 # keepassxc ~/state/nextcloud/sync/keepassxc-mb.kdbx &
 
 # Octopi pacman update and package manager GUI
 # pamac-tray &
 
 # Hotkeys
-sxhkd &
+# sxhkd &
 
 
 # Make sure pulseaudio out is set to jack
@@ -195,7 +197,6 @@ xset s noblank
 # exec startlxde
 # exec cinnamon-session
 
-# exec awesome
 # exec i3
 # exec enlightenment_start
 # exec audacity
@@ -214,7 +215,8 @@ xset s noblank
 # xrandr-rose-vgaprime-hdmiright.sh
 
 
-exec bspwm
+exec awesome
+# exec bspwm
 # exec ssh-agent bspwm
 # exec bspwm -c /home/milk/sync/dotfiles/bspwm/.config/bspwm/bspwmrc
 # exec bspwm -c /home/milk/.config/bspwm/bspwmrc
