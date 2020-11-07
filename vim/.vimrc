@@ -252,10 +252,19 @@ call plug#begin('~/.vim/plugged')
   " Ctrl-j/k/space/...
   Plug 'spolu/dwm.vim'
 
-
   " Most recently used start screen
   Plug 'yegappan/mru'
 
+  " Quick theme change
+  Plug 'chxuan/change-colorscheme'
+  nnoremap <silent> <F9> :PreviousColorScheme<cr>
+  inoremap <silent> <F9> <esc> :PreviousColorScheme<cr>
+  nnoremap <silent> <F10> :NextColorScheme<cr>
+  inoremap <silent> <F10> <esc> :NextColorScheme<cr>
+  nnoremap <silent> <F11> :RandomColorScheme<cr>
+  inoremap <silent> <F11> <esc> :RandomColorScheme<cr>
+  nnoremap <silent> <F12> :ShowColorScheme<cr>
+  inoremap <silent> <F12> <esc> :ShowColorScheme<cr>
 
   " New staus line style, a la powerline
   Plug 'vim-airline/vim-airline'
@@ -410,7 +419,7 @@ call plug#begin('~/.vim/plugged')
 
   """ Mouse support
   " F12 to toggle mouse between vim and terminal
-  Plug 'vim-scripts/toggle_mouse'
+  " Plug 'vim-scripts/toggle_mouse'
 
   " ctrl/shift mouse click+drag over text copies/moves said text
   Plug 'vim-scripts/xemacs-mouse-drag-copy'
