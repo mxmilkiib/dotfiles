@@ -11,7 +11,7 @@
 
 # Make sxhkd reload its configuration files:
 super + Escape
-	pkill -USR1 -x sxhkd
+	pkill -USR1 -x sxhkd && notify-send -i /usr/share/icons/Papirus-Dark/16x16/apps/administration.svg "sxhkd config" "Reloaded key bindings" 
 
 
 
@@ -177,6 +177,13 @@ super + alt + shift + {h,j,k,l}
 	bspc node -p {west,south,north,east};\
 	$TERMINAL
 
+# open a "scratchpad" terminal (quake-style, in this case, on a 1366x768 display)
+# ctrl + shift + F12
+# 	bspc rule -a \* --one-shot state=floating; \
+#   xdotool search --onlyvisible --classname URxvtQuake windowunmap \
+#     || xdotool search --classname URxvtQuake windowmap \
+#     || urxvt -name URxvtQuake -geometry 110x20+6+3
+
 # Create a receptacle node
 # bspc node -i
 
@@ -292,8 +299,11 @@ super + alt + Return
 
 # Open a floating clock terminal
 super + semicolon
- 	bspc rule -a \* --one-shot state=pseudo_tiled | urxvt -e sh -c "tty-clock -s -b -c -C 3 -D"
+	bspc rule -a \* --one-shot state=floating | urxvt -e sh -c "tty-clock -s -b -c -C 3 -D" -geometry '50x10' -name "tty-clock"
 
+# Open a nethogs
+super + colon
+	bspc rule -a \* --one-shot state=floating | urxvt -e sh -c "sudo nethogs -s" -geometry '70x25' -name "nethogs"
 
 
 ### Application hotkeys
@@ -363,17 +373,22 @@ XF86Calculator
 
 # Open a hotkey reminder terminal
 super + F1
-	xdo activate -n urxvt -e sh -c ncmpcpp || urxvt -name "ncmpcpp" -e sh -c ncmpcpp
+	xdo activate -n urxvt -e sh -c "ncmpc -h 192.168.1.3 -m -c" || urxvt -name "ncmpc" -e sh -c "ncmpc -h 192.168.1.3 -m -c"
+	# xdo activate -n urxvt -e sh -c ncmpcpp || urxvt -name "ncmpcpp" -e sh -c ncmpcpp
 	# xdo activate -n clementine || clementine
 super + shift + F1
-	bspc rule -a \* --one-shot state=floating | urxvt -geometry '170x55' -e sh -c "vimpager ~/.config/sxhkd/sxhkdrc"
+	xdo activate -n urxvt -e sh -c ncmpcpp || urxvt -name "ncmpcpp" -e sh -c ncmpcpp
+
+super + question
+	bspc rule -a \* --one-shot state=floating | urxvt -geometry '170x45' -e sh -c "vimpager ~/.config/sxhkd/sxhkdrc"
 # Various apps in order of assigned desktop
+
 super + alt + F1
 	xdo activate -n geany ~/documents/scratch
 super + F2
-	xdo activate -n qbittorrent || qbittorrent
-super + F3
 	xdo activate -n soulseekqt || soulseekqt
+super + F3
+	xdo activate -n qbittorrent || qbittorrent
 super + F4
 	xdo activate -n picard || picard
 super + shift + F4
@@ -385,7 +400,7 @@ super + shift + F5
 super + F6
 	xdo activate -n qseq64 || qseq64
 super + F8
-	xdo activate -n keepassxc || keepassxc ~/state/nextcloud/sync/keepassxc-mb.kdbx
+	keepassxc ~/state/nextcloud/sync/keepassxc-mb.kdbx
 super + F9
 	xdo activate -n doublecmd || doublecmd --no-splash
 super + shift + F9

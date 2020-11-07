@@ -85,7 +85,7 @@ bspc monitor -d A1 A2 A3 A4 A5 A6 A7 A8 A9 A0 A- A=
 
 # Floating window rules
 bspc rule -a Vlc                      state = pseudo_tiled
-bspc rule -a mpv                      state = pseudo_tiled
+# bspc rule -a mpv                      state = pseudo_tiled
 bspc rule -a mpv                      state = floating
 bspc rule -a Pidgin                   state = floating
 bspc rule -a Pavucontrol              state = floating
@@ -116,15 +116,19 @@ bspc rule -a "File operations"        state = floating  # doublecmd
 bspc rule -a "File operations"        state = floating  # doublecmd
 bspc rule -a "QMidiArp*"              state = floating
 bspc rule -a Onboard                  state = floating
+bspc rule -a emulsion                 state = floating
+bspc rule -a Studio-controls          state = floating
+
 # bspc rule -a "Jack_mixer"             state = floating
 
+bspc rule -a firefox:Toolkit sticky=on state=floating
 
 # Default desktop rules
 bspc rule -a "URxvt:ncmpcpp"       desktop=^1
 bspc rule -a Clementine            desktop=^1
-bspc rule -a qBittorrent           desktop=^2
-bspc rule -a soulseekqt.AppImage   desktop=^3
-bspc rule -a SoulseekQt            desktop=^3
+bspc rule -a soulseekqt.AppImage   desktop=^2
+bspc rule -a SoulseekQt            desktop=^2
+bspc rule -a qBittorrent           desktop=^3
 bspc rule -a Agordejo              desktop=^3
 bspc rule -a "MusicBrainz Picard"  desktop=^4
 bspc rule -a qseq64                desktop=^4
