@@ -118,8 +118,8 @@ redshift-gtk -l 55.978301:-3.228586 -t 6000:4500 &
 # connect to mobile kdeconnect app
 kdeconnect-indicator &
 
-# pnmixer &
-kmix &
+pnmixer &
+# kmix &
 
 # Radio streams
 # radiotray-ng &
