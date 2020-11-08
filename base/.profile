@@ -44,13 +44,13 @@ export XDG_SESSION_TYPE=x11
 export XDG_CURRENT_DESKTOP=bspwm
 
 # If running from tty1 start sway window manager
-if [ $(tty) = "/dev/tty1" ]; then
-  export QT_QPA_PLATFORM=wayland-egl
-  export QT_WAYLAND_DISABLE_WINDOWDECORATION="1"
-  export MOZ_ENABLE_WAYLAND=1
-  export CLUTTER_BACKEND=wayland
-  export SDL_VIDEODRIVER=wayland
-fi
+# if [ $(tty) = "/dev/tty1" ]; then
+#   export QT_QPA_PLATFORM=wayland-egl
+#   export QT_WAYLAND_DISABLE_WINDOWDECORATION="1"
+#   export MOZ_ENABLE_WAYLAND=1
+#   export CLUTTER_BACKEND=wayland
+#   export SDL_VIDEODRIVER=wayland
+# fi
 
 
 if ! pgrep -x ssh-agent -u $(id -u) >/dev/null; then
