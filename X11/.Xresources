@@ -58,6 +58,8 @@ urxvt.font: xft:Gohu GohuFont:size=12
 ! URxvt*font: -*-gohup-medium-*-*-*-11-*-*-*-*-*-*-*
 ! urxvt.font: xft:GohuFont Powerline:size=12
 
+termite.font: xft:Gohu GohuFont:size=12
+
 ! Reduce kerning by 1px
 URxvt.letterSpace: 0
 
