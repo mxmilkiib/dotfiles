@@ -20,7 +20,6 @@ local revelation=require("revelation")
 
 local cyclefocus = require("cyclefocus")
 
-
 local gmath = require("gears.math")
 
 -- Enable hotkeys help widget for VIM and other apps
@@ -205,9 +204,12 @@ end
 -- Re-set wallpaper when a screen's geometry changes (e.g. different resolution)
 screen.connect_signal("property::geometry", set_wallpaper)
 
+local quake = require("quake")
+
 awful.screen.connect_for_each_screen(function(s)
     -- Wallpaper
     -- set_wallpaper(s)
+    s.quake = quake({ app = "urxvt",argname = "-name %s",extra = "-title QuakeDD -e tmux new-session -A -s quake", visible = true, height = 0.9 })
 
     -- {{{ Tags
     -- Each screen has its own tag table.
@@ -251,12 +253,12 @@ awful.screen.connect_for_each_screen(function(s)
             s.mytaglist,
             -- mylauncher,
             s.mypromptbox,
+            mykeyboardlayout,
         },
         s.mytasklist, -- Middle widget
         { -- Right widgets
             layout = wibox.layout.fixed.horizontal,
             mytextclock,
-            mykeyboardlayout,
             wibox.widget.systray(),
             s.mylayoutbox,
         },
@@ -283,6 +285,8 @@ globalkeys = gears.table.join(
     -- Show hotkey help popup dialog window
     awful.key({ modkey,           }, "s",      hotkeys_popup.show_help,
               {description="show help", group="awesome"}),
+
+    awful.key({ modkey, }, "g", function () awful.screen.focused().quake:toggle() end, {description = "dropdown application", group = "launcher"}),
 
     -- Cycle to previous tag
     awful.key({ modkey, "Shift"   }, "Left",   awful.tag.viewprev,
@@ -422,9 +426,29 @@ globalkeys = gears.table.join(
               end,
               {description = "restore minimized", group = "client"}),
 
+
+    -- https://www.reddit.com/r/awesomewm/comments/jc6j8d/video_floating_on_all_tags
+    -- Toggle floating window to the corner
+    awful.key({ modkey, "Shift" }, "w", function (c)
+      awful.client.floating.toggle()
+      if c.floating then
+        c.ontop=true
+        c.sticky=true
+        c.width=533
+        c.height=300
+        awful.placement.top_right(client.focus)
+      else
+        c.ontop=false
+        c.sticky=false
+      end
+    end,
+    {description = "ontop floating right corner", group = "client"}),
+
+
     -- Apps
     awful.key({ modkey, "Shift" },   "e",       function () awful.spawn.raise_or_spawn("urxvt -e sh -c 'vim ~/.config/awesome/rc.lua'",nil,nil,"awesomeconf") end, { description = "edit awesome config", group = "launcher" }),
 
+    awful.key({ modkey,},            "F1",      function () awful.spawn.raise_or_spawn("urxvt -e sh -c 'ncmpcpp' -name 'ncmpcpp'",nil,nil,"ncmpcpp") end, { description = "run ncmpcpp in a terminal", group = "launcher" }),
     awful.key({ modkey },            "F2",      function () awful.spawn.raise_or_spawn("soulseekqt",nil,nil,"soulseekqt") end, { description = "run soulseekqt", group = "launcher" }),
     awful.key({ modkey },            "F3",      function () awful.spawn.raise_or_spawn("qbittorrent",nil,nil,"qbittorrent") end, { description = "run qbittorrent", group = "launcher" }),
     awful.key({ modkey },            "F4",      function () awful.spawn.raise_or_spawn("picard",nil,nil,"picard") end, { description = "run picard", group = "launcher" }),
@@ -434,6 +458,7 @@ globalkeys = gears.table.join(
     awful.key({ modkey },            "F6",      function () awful.spawn.raise_or_spawn("carla",nil,nil,"carla") end, { description = "run carla", group = "launcher" }),
     awful.key({ modkey, "Shift" },   "F6",      function () awful.spawn.raise_or_spawn("qseq66",nil,nil,"qseq66") end, { description = "run qseq66", group = "launcher" }),
     awful.key({ modkey },            "F8",      function () awful.spawn.raise_or_spawn("keepassxc ~/state/nextcloud/sync/keepassxc-mb.kdbx",nil,nil,"keepassxc") end, { description = "run keepassxc", group = "launcher" }),
+    awful.key({ modkey,},            "F9",      function () awful.spawn.raise_or_spawn("doublecmd",nil,nil,"doublecmd") end, { description = "run doublecmd", group = "launcher" }),
     awful.key({ modkey },            "F11",     function () awful.spawn.raise_or_spawn("quasselclient",nil,nil,"quasselclient") end, { description = "run quasselclient", group = "launcher" }),
     awful.key({ modkey },            "F12",     function () awful.spawn.raise_or_spawn("firefox",nil,nil,"Firefox") end, { description = "run firefox", group = "launcher" }),
 
@@ -686,14 +711,16 @@ awful.rules.rules = {
       }, properties = { floating = true }},
       
 
-      { rule = { instance = "soulseekqt" },         properties = { tag = "2" } },
+      { rule = { single_instance_id = "ncmpcpp" },            properties = { tag = "1", screen = 1 } },
+      { rule = { instance = "SoulseekQt" },         properties = { tag = "2" } },
+      { rule = { instance = "Agordejo" },           properties = { tag = "2" } },
       { rule = { instance = "qbittorrent" },        properties = { tag = "3" } },
       { rule = { instance = "Agordejo" },           properties = { tag = "3" } },
       { rule = { instance = "MusicBrainz Picard" }, properties = { tag = "4" } },
       { rule = { instance = "qseq64" },             properties = { tag = "4" } },
       { rule = { instance = "qseq66" },             properties = { tag = "4" } },
-      { rule = { instance = "Carla2" },             properties = { tag = "5" } },
-      { rule = { instance = "Jack_mixer" },         properties = { tag = "6" } },
+      { rule = { instance = "carla" },              properties = { tag = "5" } },
+      { rule = { instance = "jack_mixer" },         properties = { tag = "6" } },
       { rule = { instance = "radium_compressor" },  properties = { tag = "6" } },
       { rule = { instance = "doublecmd" },          properties = { tag = "6" } },
       { rule = { instance = "Double Commander" },   properties = { tag = "6" } },
@@ -728,6 +755,7 @@ client.connect_signal("manage", function (c)
     end
 end)
 
+
 client.connect_signal("request::manage", function(client, context)
     -- https://www.reddit.com/r/awesomewm/comments/ic7vqt/center_floating_windows_on_screen
     if client.floating and context == "new" then
@@ -735,8 +763,11 @@ client.connect_signal("request::manage", function(client, context)
     end
 end)
 
+client.connect_signal("manage", function(client)
+  if client.floating then client.ontop = true end
+end)
+
 -- Avoid FF PiP popping FF window up/down when PiP meets the bottom/top edge
---
 client.connect_signal("property::struts", function(c)
   local struts = c:struts()
   if struts.left ~= 0 or struts.right ~= 0 or struts.top ~= 0 or struts.bottom ~= 0 then
