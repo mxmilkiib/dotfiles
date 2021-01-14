@@ -670,7 +670,7 @@ alias youtube-dl='youtube-dl --no-mtime'
 alias repa='systemctl --user restart pulseaudio.service'
 
 # alias mpvyt="mpv --ytdl-format='[fps<=?30]'}"
-alias mpvyt="mpv --ytdl-format='bestvideo[height<=1080]+bestaudio/best[height<=1080]'"
+alias mpvyt="mpv --ytdl-format='bestvideo[height<=1080][fps<=?30]'"
 alias mpvhls='mpv --script-opts=ytdl_hook-all_formats=yes'
 
 # Web

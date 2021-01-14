@@ -1,8 +1,8 @@
 {
 	"bookmarks" : "/home/milk/.config/radiotray-ng/bookmarks.json",
 	"compact-menu" : false,
-	"last-station" : "cliqhop idm",
-	"last-station-group" : "Techno / Rave",
+	"last-station" : "Jungletrain.net (128k)",
+	"last-station-group" : "Bass / Breaks",
 	"last-station-notifications" : true,
 	"max-volume-level" : 100,
 	"notification-verbose" : true,
