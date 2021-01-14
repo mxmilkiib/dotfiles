@@ -672,6 +672,7 @@ awful.rules.rules = {
           "Mixer",
           "MessageWin",  -- kalarm.
           "mpv",
+          "QjackCtl",
           "Pavucontrol",
           "seq64",
           "qseq66",
@@ -696,6 +697,7 @@ awful.rules.rules = {
           "Wpa_gui",
           "veromix",
           "Vlc",
+          "Protonvpn-gui",
           "xtightvncviewer"},
 
         -- Note that the name property shown in xprop might be set slightly after creation of the client
