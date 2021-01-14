@@ -113,12 +113,13 @@ mpd-mpris -host 192.168.1.3 &
 ### Notification icon area / systray
 
 # Redshift - changed screen colour temp
-redshift-gtk -l 55.978301:-3.228586 -t 6000:4500 &
+# redshift-gtk -l 55.978301:-3.228586 -t 6000:4500 &
+gammy &
 
 # connect to mobile kdeconnect app
 kdeconnect-indicator &
 
-pnmixer &
+# pnmixer &
 # kmix &
 
 # Radio streams
@@ -145,7 +146,7 @@ flameshot &
 # Folder sync tray GUI (using web interface instead)
 syncthing-gtk &
 
-nextcloud &
+# nextcloud &
 
 signal-desktop --start-in-tray &
 
@@ -188,6 +189,11 @@ xset -dpms
 xset s noblank
 
 
+# xrandr-rose-vgaprime-hdmiright.sh
+
+# ~/.screenlayout/laptop-no-internal.sh
+
+
 # Disable screensaver on media fullscreen
 # lightsOn 545 &
 #doesn't work??
@@ -210,9 +216,6 @@ xset s noblank
 # exec selectwm
 # exec xterm
 # exec urxvt
-
-
-# xrandr-rose-vgaprime-hdmiright.sh
 
 
 exec awesome

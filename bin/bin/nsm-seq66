@@ -1,0 +1,12 @@
+#!/bin/bash
+
+if [ -z "$NSM_SESSION_NAME" ]; then
+    echo 'must be run under nsm-proxy'
+    exit 0
+fi
+
+if ! [ -a "$NSM_CLIENT_ID.midi" ]; then
+    echo 'creating empty midi file'
+    echo "MThd^@^@^@^F^@^@^@^A^A<E0>MTrk^@^@^@^R^@<FF>^C  Pattern 1<9E>^@<FF>/^@" > "$NSM_CLIENT_ID.midi"
+fi
+exec qseq66 /home/milk/media/audio/projects/NSM/boom4a-copy/"$NSM_CLIENT_ID.midi"
