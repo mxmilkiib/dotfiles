@@ -141,6 +141,8 @@ flameshot &
 # Volume system tray
 # pa-applet &
 #volti &
+pasystray &
+
 # Battery monitor
 # [[ $HOST = "rose*" ]] && vattery &
 # Folder sync tray GUI (using web interface instead)
@@ -187,6 +189,10 @@ signal-desktop --start-in-tray &
 xset dpms 0 0 0
 xset -dpms
 xset s noblank
+
+
+# fix wonkey internal laptop keyboard
+FLOATKB=`xinput | grep Translated | awk -F ' ' '{print substr($7,length($7)-1,length($7))}'` && xinput float $FLOATKB
 
 
 # xrandr-rose-vgaprime-hdmiright.sh
