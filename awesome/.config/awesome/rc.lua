@@ -91,9 +91,9 @@ awful.layout.layouts = {
     awful.layout.suit.max,
     awful.layout.suit.max.fullscreen,
     awful.layout.suit.magnifier,
-    -- awful.layout.suit.corner.nw,
-    -- awful.layout.suit.corner.ne,
-    -- awful.layout.suit.corner.sw,
+    awful.layout.suit.corner.nw,
+    awful.layout.suit.corner.ne,
+    awful.layout.suit.corner.sw,
 }
 -- }}}
 
@@ -279,6 +279,13 @@ root.buttons(gears.table.join(
 -- }}}
 
 
+-- matcher generator
+local create_matcher = function(class_name)
+    return function(c)
+        return awful.rules.match(c, { class = class_name })
+    end
+end
+
 
 -- {{{ Key bindings
 globalkeys = gears.table.join(
@@ -329,7 +336,7 @@ globalkeys = gears.table.join(
               {description = "go back", group = "tag"}),
 
     -- Trigger relevation script to display and number all windows for quick switch
-    awful.key({ modkey,           }, "e",      revelation),
+    awful.key({ modkey,    "Ctrl"          }, "space",      revelation),
 
     -- Focus on prev/next window on current tag
     awful.key({ modkey,           }, "j",
@@ -448,21 +455,24 @@ globalkeys = gears.table.join(
     -- Apps
     awful.key({ modkey, "Shift" },   "e",       function () awful.spawn.raise_or_spawn("urxvt -e sh -c 'vim ~/.config/awesome/rc.lua'",nil,nil,"awesomeconf") end, { description = "edit awesome config", group = "launcher" }),
 
-    awful.key({ modkey,},            "F1",      function () awful.spawn.raise_or_spawn("urxvt -e sh -c 'ncmpcpp' -name 'ncmpcpp'",nil,nil,"ncmpcpp") end, { description = "run ncmpcpp in a terminal", group = "launcher" }),
-    awful.key({ modkey },            "F2",      function () awful.spawn.raise_or_spawn("soulseekqt",nil,nil,"soulseekqt") end, { description = "run soulseekqt", group = "launcher" }),
-    awful.key({ modkey },            "F3",      function () awful.spawn.raise_or_spawn("qbittorrent",nil,nil,"qbittorrent") end, { description = "run qbittorrent", group = "launcher" }),
-    awful.key({ modkey },            "F4",      function () awful.spawn.raise_or_spawn("picard",nil,nil,"picard") end, { description = "run picard", group = "launcher" }),
-    awful.key({ modkey, "Shift" },   "F4",      function () awful.spawn.raise_or_spawn("simplescreenrecorder",nil,nil,"simplescreenrecorder") end, { description = "run simplescreenrecorder", group = "launcher" }),
-    awful.key({ modkey },            "F5",      function () awful.spawn.raise_or_spawn("studio-controls",nil,nil,"studio-controls") end, { description = "run studio-controls", group = "launcher" }),
-    awful.key({ modkey, "Shift" },   "F5",      function () awful.spawn.raise_or_spawn("urxvt -e sh -c 'nsm'",nil,nil,"nsm") end, { description = "run argodejo in a terminal", group = "launcher" }),
-    awful.key({ modkey },            "F6",      function () awful.spawn.raise_or_spawn("carla",nil,nil,"carla") end, { description = "run carla", group = "launcher" }),
-    awful.key({ modkey, "Shift" },   "F6",      function () awful.spawn.raise_or_spawn("qseq66",nil,nil,"qseq66") end, { description = "run qseq66", group = "launcher" }),
-    awful.key({ modkey },            "F8",      function () awful.spawn.raise_or_spawn("keepassxc ~/state/nextcloud/sync/keepassxc-mb.kdbx",nil,nil,"keepassxc") end, { description = "run keepassxc", group = "launcher" }),
-    awful.key({ modkey,},            "F9",      function () awful.spawn.raise_or_spawn("doublecmd",nil,nil,"doublecmd") end, { description = "run doublecmd", group = "launcher" }),
-    awful.key({ modkey },            "F11",     function () awful.spawn.raise_or_spawn("quasselclient",nil,nil,"quasselclient") end, { description = "run quasselclient", group = "launcher" }),
-    awful.key({ modkey },            "F12",     function () awful.spawn.raise_or_spawn("firefox",nil,nil,"Firefox") end, { description = "run firefox", group = "launcher" }),
+    --    awful.key({ modkey,},            "F1",      function () awful.spawn.raise_or_spawn("urxvt -e sh -c 'ncmpcpp' -name 'ncmpcpp'",nil,nil,"ncmpcpp") end, { description = "run ncmpcpp in a terminal", group = "launcher" }),
+    awful.key({ modkey,},            "F1",      function () awful.spawn.raise_or_spawn("nsm",nil,create_matcher("agordejo")) end, { description = "NSM manager and launcher", group = "launcher" }),
+    awful.key({ modkey },            "F2",      function () awful.spawn.raise_or_spawn("soulseekqt",nil,create_matcher("soulseekqt")) end, { description = "run soulseekqt", group = "launcher" }),
+    awful.key({ modkey },            "F3",      function () awful.spawn.raise_or_spawn("qbittorrent",nil,create_matcher("qbittorrent")) end, { description = "run qbittorrent", group = "launcher" }),
+    awful.key({ modkey },            "F4",      function () awful.spawn.raise_or_spawn("picard",nil,create_matcher("Picard")) end, { description = "run picard", group = "launcher" }),
+    awful.key({ modkey, "Shift" },   "F4",      function () awful.spawn.raise_or_spawn("simplescreenrecorder",nil,create_matcher("simplescreenrecorder")) end, { description = "run simplescreenrecorder", group = "launcher" }),
+    awful.key({ modkey },            "F5",      function () awful.spawn.raise_or_spawn("studio-controls",nil,create_matcher("studio-controls")) end, { description = "run studio-controls", group = "launcher" }),
+    awful.key({ modkey, "Shift" },   "F5",      function () awful.spawn.raise_or_spawn("urxvt -e sh -c 'nsm'",nil,create_matcher("nsm"),"nsm") end, { description = "run argodejo in a terminal", group = "launcher" }),
+    -- awful.key({ modkey, "Ctrl" },    "F5",      function () awful.spawn.raise_or_spawn("",nil,nil,"studio-controls") end, { description = "run studio-controls", group = "launcher" }),
+    awful.key({ modkey },            "F6",      function () awful.spawn.raise_or_spawn("carla",nil,create_matcher("carla")) end, { description = "run carla", group = "launcher" }),
+    awful.key({ modkey, "Shift" },   "F6",      function () awful.spawn.raise_or_spawn("qseq66",nil,create_matcher("qseq66")) end, { description = "run qseq66", group = "launcher" }),
+    awful.key({ modkey },            "F8",      function () awful.spawn.raise_or_spawn("keepassxc ~/state/nextcloud/sync/keepassxc-mb.kdbx",nil,create_matcher("keepassxc")) end, { description = "run keepassxc", group = "launcher" }),
+    awful.key({ modkey,},            "F9",      function () awful.spawn.raise_or_spawn("doublecmd",nil,create_matcher("doublecmd")) end, { description = "run doublecmd", group = "launcher" }),
+    --awful.key({ modkey },            "F11",     function () awful.spawn.raise_or_spawn("quasselclient",nil,nil,"quasselclient") end, { description = "run quasselclient", group = "launcher" }),
+    awful.key({ modkey },            "F11",     function () awful.spawn.raise_or_spawn("quasselclient",nil,create_matcher("quassel"))end, { description = "run quasselclient", group = "launcher" }),
+    awful.key({ modkey },            "F12",     function () awful.spawn.raise_or_spawn("firefox",nil,create_matcher("Firefox")) end, { description = "run firefox", group = "launcher" }),
 
-    awful.key({ modkey },            "p",       function () awful.spawn("pavucontrol") end, {description = "run pavucontrol", group = "launcher"}),
+    awful.key({ modkey },            "p",       function () awful.spawn.raise_or_spawn("pavucontrol",nil,create_matcher("pavucontrol")) end, {description = "run pavucontrol", group = "launcher"}),
 
     awful.key({ modkey },            "Print",   function () awful.spawn.with_shell("scrot -e 'mv $f ~/media/images/screenshots/' $(hostname --short)_$(date +%Y-%m-%d-%T).png 2>/dev/null", false) end),
     -- awful.key({ modkey,   }, "Print", function () awful.spawn.with_shell("import -window root '~/media/images/screenshots/$(hostname --short)_$(date +%Y-%m-%d-%T).png'",false) end),
@@ -676,6 +686,7 @@ awful.rules.rules = {
           "Pavucontrol",
           "seq64",
           "qseq66",
+          "patroneo",
           "copyq",
           "* Copying",
           "Agordejo",
@@ -693,6 +704,7 @@ awful.rules.rules = {
           "Image Menu",
           "emulsion",
           "Sxiv",
+          "gammy",
           "Tor Browser", -- Needs a fixed window size to avoid fingerprinting by screen size.
           "Wpa_gui",
           "veromix",
@@ -704,28 +716,33 @@ awful.rules.rules = {
         -- and the name shown there might not match defined rules here.
         name = {
           "Event Tester",  -- xev.
+          "Choose an application", --doublecmd dialog
         },
         role = {
-          "AlarmWindow",  -- Thunderbird's calendar.
-          "ConfigManager",  -- Thunderbird's about:config.
-          "pop-up",       -- e.g. Google Chrome's (detached) Developer Tools.
+          "AlarmWindow",   -- Thunderbird's calendar.
+          "ConfigManager", -- Thunderbird's about:config.
+          "pop-up",        -- e.g. Google Chrome's (detached) Developer Tools.
+          "page-info",     -- Firefox page info dialog
         }
-      }, properties = { floating = true }},
+      },
+        properties = { 
+        floating = true,
+        placement = awful.placement.centered + awful.placement.no_overlap+awful.placement.no_offscreen
+        }
+      },
       
-
-      { rule = { single_instance_id = "ncmpcpp" },            properties = { tag = "1", screen = 1 } },
       { rule = { instance = "SoulseekQt" },         properties = { tag = "2" } },
       { rule = { instance = "Agordejo" },           properties = { tag = "2" } },
       { rule = { instance = "qbittorrent" },        properties = { tag = "3" } },
-      { rule = { instance = "Agordejo" },           properties = { tag = "3" } },
+      { rule = { instance = "carla" },              properties = { tag = "4" } },
       { rule = { instance = "MusicBrainz Picard" }, properties = { tag = "4" } },
       { rule = { instance = "qseq64" },             properties = { tag = "4" } },
       { rule = { instance = "qseq66" },             properties = { tag = "4" } },
-      { rule = { instance = "carla" },              properties = { tag = "5" } },
       { rule = { instance = "jack_mixer" },         properties = { tag = "6" } },
       { rule = { instance = "radium_compressor" },  properties = { tag = "6" } },
       { rule = { instance = "doublecmd" },          properties = { tag = "6" } },
       { rule = { instance = "Double Commander" },   properties = { tag = "6" } },
+      { rule = { single_instance_id = "ncmpcpp" },  properties = { tag = "7", screen = 7 } },
       { rule = { instance = "quassel" },            properties = { tag = "8" } },
       { rule = { instance = "firefox" },            properties = { tag = "9" } }
 
@@ -758,12 +775,12 @@ client.connect_signal("manage", function (c)
 end)
 
 
-client.connect_signal("request::manage", function(client, context)
-    -- https://www.reddit.com/r/awesomewm/comments/ic7vqt/center_floating_windows_on_screen
-    if client.floating and context == "new" then
-      client.placement = awful.placement.centered + awful.placement.no_overlap
-    end
-end)
+-- client.connect_signal("request::manage", function(client, context)
+--     -- https://www.reddit.com/r/awesomewm/comments/ic7vqt/center_floating_windows_on_screen
+--     if client.floating and context == "new" then
+--       client.placement = awful.placement.centered + awful.placement.no_overlap
+--     end
+-- end)
 
 client.connect_signal("manage", function(client)
   if client.floating then client.ontop = true end
