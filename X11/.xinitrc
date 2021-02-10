@@ -104,7 +104,7 @@ mons -a &
 
 
 # snapcast reciever
-snapauto.sh &
+# snapauto.sh &
 
 # mpris from mpd server
 mpd-mpris -host 192.168.1.3 &
@@ -112,9 +112,6 @@ mpd-mpris -host 192.168.1.3 &
 
 ### Notification icon area / systray
 
-# Redshift - changed screen colour temp
-# redshift-gtk -l 55.978301:-3.228586 -t 6000:4500 &
-gammy &
 
 # connect to mobile kdeconnect app
 kdeconnect-indicator &
@@ -141,7 +138,7 @@ flameshot &
 # Volume system tray
 # pa-applet &
 #volti &
-pasystray &
+pasystray --no-icon-tooltip --no-notify --volume-max=100 &
 
 # Battery monitor
 # [[ $HOST = "rose*" ]] && vattery &
@@ -171,6 +168,7 @@ signal-desktop --start-in-tray &
 /usr/lib/xfce-polkit/xfce-polkit &
 
 
+
 # export QT_QPA_PLATFORMTHEME=gtk2
 # export QT_PLATFORMTHEME=gtk2
 # export QT_PLATFORM_PLUGIN=qt5ct
@@ -193,6 +191,17 @@ xset s noblank
 
 # fix wonkey internal laptop keyboard
 FLOATKB=`xinput | grep Translated | awk -F ' ' '{print substr($7,length($7)-1,length($7))}'` && xinput float $FLOATKB
+
+
+
+# Redshift - changed screen colour temp
+# redshift-gtk -l 55.978301:-3.228586 -t 6000:4500 &
+sleep 3 && gammy &
+
+sleep 6 && agordejo --session-root ~/media/audio/projects/NSM --load-session 0_base --hide &
+
+sleep 9 && laptop-no-internal.sh &
+
 
 
 # xrandr-rose-vgaprime-hdmiright.sh
