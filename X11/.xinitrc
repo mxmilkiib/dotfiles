@@ -196,9 +196,9 @@ FLOATKB=`xinput | grep Translated | awk -F ' ' '{print substr($7,length($7)-1,le
 
 # Redshift - changed screen colour temp
 # redshift-gtk -l 55.978301:-3.228586 -t 6000:4500 &
-sleep 3 && gammy &
+sleep 6 && gammy &
 
-sleep 6 && agordejo --session-root ~/media/audio/projects/NSM --load-session 0_base --hide &
+# sleep 6 && agordejo --session-root ~/media/audio/projects/NSM --load-session 0_base --hide &
 
 sleep 9 && laptop-no-internal.sh &
 
