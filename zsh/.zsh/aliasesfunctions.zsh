@@ -663,7 +663,7 @@ diff () {
 # refresh pulseaudio devices
 alias paref='pacmd unload-module module-udev-detect && pacmd load-module module-udev-detect'
 
-alias mp3='youtube-dl -x --audio-format "mp3" --audio-quality 0 --add-metadata --xattrs --embed-thumbnail $*'
+alias yt-music='youtube-dl -x --audio-format best --audio-quality 0 --add-metadata --xattrs --embed-thumbnail $*'
 
 alias youtube-dl='youtube-dl --no-mtime'
 
