@@ -456,9 +456,9 @@ globalkeys = gears.table.join(
     awful.key({ modkey, "Shift" },   "e",       function () awful.spawn.raise_or_spawn("urxvt -e sh -c 'vim ~/.config/awesome/rc.lua'",nil,nil,"awesomeconf") end, { description = "edit awesome config", group = "launcher" }),
 
     --    awful.key({ modkey,},            "F1",      function () awful.spawn.raise_or_spawn("urxvt -e sh -c 'ncmpcpp' -name 'ncmpcpp'",nil,nil,"ncmpcpp") end, { description = "run ncmpcpp in a terminal", group = "launcher" }),
-    awful.key({ modkey,},            "F1",      function () awful.spawn.raise_or_spawn("nsm",nil,create_matcher("agordejo")) end, { description = "NSM manager and launcher", group = "launcher" }),
-    awful.key({ modkey },            "F2",      function () awful.spawn.raise_or_spawn("soulseekqt",nil,create_matcher("soulseekqt")) end, { description = "run soulseekqt", group = "launcher" }),
-    awful.key({ modkey },            "F3",      function () awful.spawn.raise_or_spawn("qbittorrent",nil,create_matcher("qbittorrent")) end, { description = "run qbittorrent", group = "launcher" }),
+    awful.key({ modkey,},            "F1",      function () awful.spawn.raise_or_spawn("nsm",nil,create_matcher("Agordejo"),"Agordejo") end, { description = "NSM manager and launcher", group = "launcher" }),
+    awful.key({ modkey },            "F2",      function () awful.spawn.raise_or_spawn("soulseekqt",nil,create_matcher("SoulseekQt")) end, { description = "run soulseekqt", group = "launcher" }),
+    awful.key({ modkey },            "F3",      function () awful.spawn.raise_or_spawn("qbittorrent",nil,create_matcher("qBittorrent"),"qBittorrent") end, { description = "run qbittorrent", group = "launcher" }),
     awful.key({ modkey },            "F4",      function () awful.spawn.raise_or_spawn("picard",nil,create_matcher("Picard")) end, { description = "run picard", group = "launcher" }),
     awful.key({ modkey, "Shift" },   "F4",      function () awful.spawn.raise_or_spawn("simplescreenrecorder",nil,create_matcher("simplescreenrecorder")) end, { description = "run simplescreenrecorder", group = "launcher" }),
     awful.key({ modkey },            "F5",      function () awful.spawn.raise_or_spawn("studio-controls",nil,create_matcher("studio-controls")) end, { description = "run studio-controls", group = "launcher" }),
@@ -470,7 +470,7 @@ globalkeys = gears.table.join(
     awful.key({ modkey,},            "F9",      function () awful.spawn.raise_or_spawn("doublecmd",nil,create_matcher("doublecmd")) end, { description = "run doublecmd", group = "launcher" }),
     --awful.key({ modkey },            "F11",     function () awful.spawn.raise_or_spawn("quasselclient",nil,nil,"quasselclient") end, { description = "run quasselclient", group = "launcher" }),
     awful.key({ modkey },            "F11",     function () awful.spawn.raise_or_spawn("quasselclient",nil,create_matcher("quassel"))end, { description = "run quasselclient", group = "launcher" }),
-    awful.key({ modkey },            "F12",     function () awful.spawn.raise_or_spawn("firefox",nil,create_matcher("Firefox")) end, { description = "run firefox", group = "launcher" }),
+    awful.key({ modkey },            "F12",     function () awful.spawn.raise_or_spawn("firefox",nil,create_matcher("firefox")) end, { description = "run firefox", group = "launcher" }),
 
     awful.key({ modkey },            "p",       function () awful.spawn.raise_or_spawn("pavucontrol",nil,create_matcher("pavucontrol")) end, {description = "run pavucontrol", group = "launcher"}),
 
