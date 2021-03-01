@@ -54,6 +54,7 @@ call plug#begin('~/.vim/plugged')
 
   """ Find things easily
   " fzf - populate a menu with things and f*i*l*t*e*r live with ripgrep
+  Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
   Plug 'junegunn/fzf.vim'
   noremap <Leader><Leader>f :FZF<CR>
   noremap <Leader><Leader>b :Buffers<CR>
@@ -143,7 +144,8 @@ call plug#begin('~/.vim/plugged')
   " Plug 'Valloric/YouCompleteMe', { 'do': './install.py' }
 
   " https://github.com/neoclide/coc.nvim
-  Plug 'neoclide/coc.nvim', {'branch': 'release'}
+  Plug 'neoclide/coc.nvim', {'branch': 'master', 'do': 'yarn install --frozen-lockfile'}
+  let g:coc_disable_startup_warning = 1
 
   " Visual help
 
@@ -151,7 +153,7 @@ call plug#begin('~/.vim/plugged')
   " Plug 'sunaku/vim-highlightedyank'
 
   " Visually highlight matching opening & closing tags
-  Plug 'Valloric/MatchTagAlways'
+  " Plug 'Valloric/MatchTagAlways'
   " Jump to last tag
   nnoremap <leader>% :MtaJumpToOtherTag<cr>
 
@@ -167,7 +169,7 @@ call plug#begin('~/.vim/plugged')
   nnoremap <leader><leader>n :NumbersOff<CR>
 
   " Visual guide to indentation level
-  " <leader>ig
+  " <LEADER>ig
   " Plug 'nathanaelkane/vim-indent-guides'
   "let g:indent_guides_enable_on_vim_startup = 1
   Plug 'Yggdroot/indentLine'
@@ -249,8 +251,10 @@ hi! RainbowLevel7 ctermbg=233 guibg=#121212
   " For vim-session
   " Plug 'xolox/vim-misc'
   " Plug 'xolox/vim-lua-inspect'
+  " Plug 'tbastos/vim-lua'
+  " Plug 'xolox/vim-lua-ftplugin'
 
-  Plug 'tbastos/vim-lua'
+  Plug 'wsdjeg/vim-lua'
 
 
 

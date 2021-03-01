@@ -12,10 +12,9 @@ visualizer_sync_interval = "20"
 visualizer_in_stereo = "yes"
 visualizer_type = "spectrum"
 visualizer_look = "+|"
-mpd_music_dir = /var/lib/mpd/music
 
 autocenter_mode = yes
-# user_interface = alternative
+#user_interface = alternative
 
 # https://github.com/arybczak/ncmpcpp/blob/81cb7a4f85287ce2671beca9023048f4de41ddf0/doc/config#L230
 song_columns_list_format = (20)[]{a} (4f)[green]{d} (4f)[green]{NE} (30)[white]{t|f:Title} (8f)[white]{y} (20)[cyan]{b}(7f)[magenta]{lr:Length}
