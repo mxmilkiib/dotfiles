@@ -64,7 +64,7 @@ source $Z/options.zsh
 
 
 # Plugin managament
-source /usr/share/zsh/share/zgen.zsh
+source /usr/share/zgen/zgen.zsh
 
 # check if there's no init script
 if ! zgen saved; then

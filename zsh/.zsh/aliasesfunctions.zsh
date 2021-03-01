@@ -396,11 +396,11 @@ alias sx='startx'
 
 ## Debian derived
 alias a='sudo aptitude'
-alias ai='sudo aptitude install'
-alias ar='sudo aptitude remove'
+alias aI='sudo aptitude install'
+alias aR='sudo aptitude remove'
 alias au='sudo aptitude update'
 alias auu'=sudo aptitude safe-upgrade'
-alias as='apt-cache search'
+alias aS='apt-cache search'
 alias aw='apt-cache show'
 
 ## Arch Linux
