@@ -80,7 +80,7 @@ dunst &
 # pointerspeed.sh 0.5
 
 # Script that changes a window border colour on urgent signal
-bspwm-urgent-border.sh &
+#bspwm-urgent-border.sh &
 
 # infrared control
 # flirc_util loadconfig ~/.config/flirc/my_flirc_config
@@ -107,21 +107,17 @@ mons -a &
 # snapauto.sh &
 
 # mpris from mpd server
-mpd-mpris -host 192.168.1.3 &
+# mpd-mpris -host 192.168.1.3 &
+mpDris2 &
+
+# make playerctl always target most recently active player
+playerctld &
 
 
 ### Notification icon area / systray
 
-
 # connect to mobile kdeconnect app
 kdeconnect-indicator &
-
-# pnmixer &
-# kmix &
-
-# Radio streams
-# radiotray-ng &
-goodvibes --status-icon &
 
 # copy middle-mouse PRIMARY selection to ctrl-xcv/shift-insert CLIPBOARD. mostly useful when without a mouse.
 # autocutsel -fork &
@@ -140,8 +136,18 @@ flameshot &
 #volti &
 pasystray --no-icon-tooltip --no-notify --volume-max=100 &
 
+# pnmixer &
+# kmix &
+
+# Radio streams
+# radiotray-ng &
+goodvibes --status-icon &
+
+
 # Battery monitor
 # [[ $HOST = "rose*" ]] && vattery &
+
+
 # Folder sync tray GUI (using web interface instead)
 syncthing-gtk &
 
@@ -193,6 +199,8 @@ xset s noblank
 FLOATKB=`xinput | grep Translated | awk -F ' ' '{print substr($7,length($7)-1,length($7))}'` && xinput float $FLOATKB
 
 
+# eval `luarocks path --bin`
+
 
 # Redshift - changed screen colour temp
 # redshift-gtk -l 55.978301:-3.228586 -t 6000:4500 &
@@ -200,7 +208,7 @@ sleep 6 && gammy &
 
 # sleep 6 && agordejo --session-root ~/media/audio/projects/NSM --load-session 0_base --hide &
 
-sleep 9 && laptop-no-internal.sh &
+# sleep 9 && laptop-no-internal.sh &
 
 
 
