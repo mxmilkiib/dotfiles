@@ -1,0 +1,12 @@
+[submodule "media-player-widget"]
+	path = awesome/.config/awesome/plugins/media-player
+	url = https://github.com/macunha1/awesomewm-media-player-widget
+	branch = master
+[submodule "lain"]
+	path = awesome/.config/awesome/lain
+	url = https://github.com/lcpz/lain
+	branch = master
+[submodule "widgets"]
+	path = awesome/.config/awesome/awesome-wm-widgets
+	url = https://github.com/streetturtle/awesome-wm-widgets
+	branch = master
