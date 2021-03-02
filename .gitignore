@@ -5,3 +5,4 @@ mpv/.config/mpv/watch_later
 vim/.vim/undodir/*
 zsh/.zsh/cache/*/last-working-dir
 vim/.vim/undodir/*
+mpd/.config/mpd/password_secret.conf
