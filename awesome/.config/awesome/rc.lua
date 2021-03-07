@@ -90,7 +90,7 @@ require("smart_borders") {
         stops = {{0, "#a1bfcf"}, {1, "#F7C6FF"}}
     },
 
-    snapping = true,
+    snapping = false,
     snapping_center_mouse = true,
 
     -- custom control example:
@@ -960,7 +960,8 @@ awful.rules.rules = {
       { rule = { instance = "radium_compressor" },  properties = { tag = "6" } },
       { rule = { instance = "doublecmd" },          properties = { tag = "6" } },
       { rule = { instance = "Double Commander" },   properties = { tag = "6" } },
-      { rule = { single_instance_id = "ncmpcpp" },  properties = { tag = "7", screen = 7 } },
+      -- { rule = { single_instance_id = "ncmpcpp" },  properties = { tag = "7", screen = 7 } },
+      { rule = { single_instance_id = "ncmpcpp" },  properties = { tag = "7" } },
       { rule = { instance = "quassel" },            properties = { tag = "8" } },
       { rule = { instance = "firefox" },            properties = { tag = "9" } }
 
