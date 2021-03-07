@@ -40,7 +40,66 @@ local dovetail = require("awesome-dovetail")
 -- local titlebar = fenetre { }
 
 
--- }-- addons requires
+require("smart_borders") {
+    show_button_tooltips = true,
+
+    button_positions = {"top"},
+    buttons = {"floating", "minimize", "maximize", "close"},
+
+    layout = "fixed",
+    align_horizontal = "center",
+    button_size = 40,
+    button_floating_size = 60,
+    button_close_size = 60,
+    border_width = 6,
+
+    color_close_normal = {
+        type = "linear",
+        from = {0, 0},
+        to = {60, 0},
+        stops = {{0, "#fd8489"}, {1, "#56666f"}}
+    },
+    color_close_focus = {
+        type = "linear",
+        from = {0, 0},
+        to = {60, 0},
+        stops = {{0, "#fd8489"}, {1, "#a1bfcf"}}
+    },
+    color_close_hover = {
+        type = "linear",
+        from = {0, 0},
+        to = {60, 0},
+        stops = {{0, "#FF9EA3"}, {1, "#a1bfcf"}}
+    },
+    color_floating_normal = {
+        type = "linear",
+        from = {0, 0},
+        to = {40, 0},
+        stops = {{0, "#56666f"}, {1, "#ddace7"}}
+    },
+    color_floating_focus = {
+        type = "linear",
+        from = {0, 0},
+        to = {40, 0},
+        stops = {{0, "#a1bfcf"}, {1, "#ddace7"}}
+    },
+    color_floating_hover = {
+        type = "linear",
+        from = {0, 0},
+        to = {40, 0},
+        stops = {{0, "#a1bfcf"}, {1, "#F7C6FF"}}
+    },
+
+    snapping = true,
+    snapping_center_mouse = true,
+
+    -- custom control example:
+    button_back = function(c)
+        -- set client as master
+        c:swap(awful.client.getmaster())
+    end
+}
+
 
 revelation.init()
 
@@ -101,7 +160,7 @@ end
 
   -- This is used later as the default terminal and editor to run.
   terminal = "urxvt"
-  editor = os.getenv("EDITOR") or "nano"
+  editor = os.getenv("EDITOR") or "vi"
   editor_cmd = terminal .. " -e " .. editor
 
 
@@ -120,7 +179,6 @@ end
   -- https://awesomewm.org/doc/api/libraries/awful.layout.html
   -- https://github.com/lcpz/lain/wiki/Layouts
   awful.layout.layouts = {
-    -- awful.layout.suit.floating,
     -- dynamite.layout.conditional,
     -- dynamite.layout.ratio,
     -- dynamite.layout.stack,
@@ -129,25 +187,26 @@ end
     dovetail.layout.right,
     lain.layout.termfair.center,
     lain.layout.termfair,
-    lain.layout.cascade,
     lain.layout.cascade.tile,
-    lain.layout.centerwork,
-    lain.layout.centerwork.horizontal,
-    awful.layout.suit.tile.bottom,
-    awful.layout.suit.tile.top,
-    awful.layout.suit.corner.se,
-    awful.layout.suit.tile,
-    awful.layout.suit.tile.left,
+    -- lain.layout.cascade,
+    -- lain.layout.centerwork,
+    -- lain.layout.centerwork.horizontal,
     awful.layout.suit.fair,
     awful.layout.suit.fair.horizontal,
     awful.layout.suit.spiral,
     awful.layout.suit.spiral.dwindle,
-    awful.layout.suit.max,
+    -- awful.layout.suit.tile,
+    -- awful.layout.suit.tile.left,
+    -- awful.layout.suit.tile.bottom,
+    -- awful.layout.suit.tile.top,
+    -- awful.layout.suit.corner.se,
+    -- awful.layout.suit.corner.nw,
+    -- awful.layout.suit.corner.ne,
+    -- awful.layout.suit.corner.sw
+    -- awful.layout.suit.max,
     -- awful.layout.suit.max.fullscreen,
-    awful.layout.suit.magnifier,
-    awful.layout.suit.corner.nw,
-    awful.layout.suit.corner.ne,
-    awful.layout.suit.corner.sw
+    -- awful.layout.suit.magnifier,
+    -- awful.layout.suit.floating
   }
   -- }}}
 
@@ -1028,4 +1087,3 @@ awful.rules.rules = {
 --
 --     order = { "max", "ontop", "sticky", "floating", "title" }
 -- }
-require("smart_borders"){ show_button_tooltips = true }
