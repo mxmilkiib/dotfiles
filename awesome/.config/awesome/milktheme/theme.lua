@@ -9,6 +9,11 @@ local dpi = xresources.apply_dpi
 local gfs = require("gears.filesystem")
 local themes_path = gfs.get_themes_dir()
 
+
+local fenetre = require("fenetre")
+local titlebar = fenetre { }
+
+
 local theme = {}
 
 theme.font          = "Gohu GohuFont 9"
@@ -24,8 +29,9 @@ theme.fg_focus      = "#222222"
 theme.fg_urgent     = "#9f78e1"
 theme.fg_minimize   = "#9f78e1"
 
-theme.useless_gap   = dpi(0)
-theme.border_width  = dpi(1)
+theme.useless_gap   = dpi(2)
+-- theme.border_width  = dpi(2)
+theme.border_width  = 0
 theme.border_normal = "#000000"
 theme.border_focus  = "#535d6c"
 theme.border_marked = "#91231c"
@@ -118,6 +124,9 @@ theme.layout_cornerne = themes_path.."default/layouts/cornernew.png"
 theme.layout_cornersw = themes_path.."default/layouts/cornersww.png"
 theme.layout_cornerse = themes_path.."default/layouts/cornersew.png"
 
+-- theme.layout_dovetail = themes_path.."default/layouts/cornersew.png"
+theme.layout_thrizen = themes_path.."thrizen/themes/default/thrizen.png"
+
 -- Generate Awesome icon:
 theme.awesome_icon = theme_assets.awesome_icon(
     theme.menu_height, theme.bg_focus, theme.fg_focus
@@ -126,6 +135,19 @@ theme.awesome_icon = theme_assets.awesome_icon(
 -- Define the icon theme for application icons. If not set then the icons
 -- from /usr/share/icons and /usr/share/icons/hicolor will be used.
 theme.icon_theme = nil
+
+
+
+theme.lain_icons         = os.getenv("HOME") ..
+                           "/.config/awesome/lain/icons/layout/default/"
+theme.layout_termfair    = theme.lain_icons .. "termfair.png"
+theme.layout_centerfair  = theme.lain_icons .. "centerfair.png"  -- termfair.center
+theme.layout_cascade     = theme.lain_icons .. "cascade.png"
+theme.layout_cascadetile = theme.lain_icons .. "cascadetile.png" -- cascade.tile
+theme.layout_centerwork  = theme.lain_icons .. "centerwork.png"
+theme.layout_centerworkh = theme.lain_icons .. "centerworkh.png" -- centerwork.horizontal
+
+
 
 return theme
 
