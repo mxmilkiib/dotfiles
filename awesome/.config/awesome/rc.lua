@@ -119,18 +119,9 @@ end
   -- https://awesomewm.org/doc/api/libraries/awful.layout.html
   -- https://github.com/lcpz/lain/wiki/Layouts
   awful.layout.layouts = {
-    -- dynamite.layout.conditional,
-    -- dynamite.layout.ratio,
-    -- dynamite.layout.stack,
-    -- dynamite.layout.tabbed,
-    -- thrizen,
-    dovetail.layout.right,
     lain.layout.termfair.center,
     lain.layout.termfair,
     lain.layout.cascade.tile,
-    -- lain.layout.cascade,
-    -- lain.layout.centerwork,
-    -- lain.layout.centerwork.horizontal,
     awful.layout.suit.fair,
     awful.layout.suit.fair.horizontal,
     awful.layout.suit.spiral,
@@ -147,6 +138,15 @@ end
     -- awful.layout.suit.max.fullscreen,
     -- awful.layout.suit.magnifier,
     -- awful.layout.suit.floating
+    -- lain.layout.cascade,
+    -- lain.layout.centerwork,
+    -- lain.layout.centerwork.horizontal,
+    -- thrizen,
+    -- dovetail.layout.right,
+    -- dynamite.layout.conditional,
+    -- dynamite.layout.ratio,
+    -- dynamite.layout.stack,
+    -- dynamite.layout.tabbed,
   }
   -- }}}
 
@@ -1031,8 +1031,7 @@ awful.rules.rules = {
 
 
 require("smart_borders") {
-    -- show_button_tooltips = true,
-    --
+    show_button_tooltips = true,
     positions = {"top"},
     -- button_positions = {"top"},
     -- buttons = {"floating", "minimize", "maximize", "close"},
