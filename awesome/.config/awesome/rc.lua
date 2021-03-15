@@ -308,9 +308,9 @@ client.connect_signal("unfocus", function(c) c.border_color = "#00000000" end)
 
 
 
-for s in screen do
-  freedesktop.desktop.add_icons({screen = s})
-end
+-- for s in screen do
+--   freedesktop.desktop.add_icons({screen = s})
+-- end
 
 
 -- setup launcher wih icon and menu
