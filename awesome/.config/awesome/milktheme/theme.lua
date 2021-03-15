@@ -16,11 +16,11 @@ local titlebar = fenetre { }
 
 local theme = {}
 
-theme.font          = "Gohu GohuFont 9"
+theme.font          = "Hack regular 9"
 
 theme.bg_normal     = "#222222"
 theme.bg_focus      = "#9f78e1"
-theme.bg_urgent     = "#ecbc34"
+-- theme.bg_urgent     = "#ecbc34"
 theme.bg_minimize   = "#222222"
 theme.bg_systray    = theme.bg_normal
 
@@ -29,10 +29,13 @@ theme.fg_focus      = "#222222"
 theme.fg_urgent     = "#9f78e1"
 theme.fg_minimize   = "#9f78e1"
 
-theme.useless_gap   = dpi(2)
--- theme.border_width  = dpi(2)
-theme.border_width  = 0
-theme.border_normal = "#000000"
+-- theme.useless_gap   = dpi(3)
+theme.useless_gap   = 3
+-- theme.border_width  = dpi(0)
+theme.border_width  = 3
+
+-- theme.border_normal = "#535d6c"
+theme.border_normal = "#ffffffff"
 theme.border_focus  = "#535d6c"
 theme.border_marked = "#91231c"
 
@@ -147,6 +150,12 @@ theme.layout_cascadetile = theme.lain_icons .. "cascadetile.png" -- cascade.tile
 theme.layout_centerwork  = theme.lain_icons .. "centerwork.png"
 theme.layout_centerworkh = theme.lain_icons .. "centerworkh.png" -- centerwork.horizontal
 
+theme.layout_leavedright = "~/.config/awesome/awesome-leaved/icons/leavedright.png"
+theme.layout_leavedleft = "~/.config/awesome/awesome-leaved/icons/leavedleft.png"
+theme.layout_leavedbottom = "~/.config/awesome/awesome-leaved/icons/leavedbottom.png"
+theme.layout_leavedtop = "~/.config/awesome/awesome-leaved/icons/leavedtop.png"
+
+theme.layout_treetile = "~/.config/awesome/treetile/layout_icon.png"
 
 
 return theme
