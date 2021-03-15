@@ -239,9 +239,9 @@ DISPLAY=:1.0 awesome -c ~/.config/awesome/rc.lua.new
   -- redFrequency = .1
   -- grnFrequency = .1
   -- bluFrequency = .1
-  redFrequency = .14
+  redFrequency = .11
   grnFrequency = .13
-  bluFrequency = .10
+  bluFrequency = .17
   -- redFrequency = .1
   -- grnFrequency = .2
   -- bluFrequency = .3
@@ -253,14 +253,14 @@ DISPLAY=:1.0 awesome -c ~/.config/awesome/rc.lua.new
   -- phase2 = 10
   -- phase3 = 30
   phase1 = 0
-  phase2 = 120
-  phase3 = 240
+  phase2 = 100
+  phase3 = 200
 
   -- center = 128
   -- width = 127
   -- center = 210
   -- width = 45
-  center = 150
+  center = 190
   width = 55
   len = 360
 
@@ -281,24 +281,19 @@ DISPLAY=:1.0 awesome -c ~/.config/awesome/rc.lua.new
     call_now  = true,
     autostart = true,
     callback  = function()
-
       -- debug
       -- naughty.notify({ preset = naughty.config.presets.critical, title = borderLoop, bg = border_animate_colours[borderLoop], notification_border_width = 0 })
-
       local c = client.focus
       if c then
         c.border_color = border_animate_colours[borderLoop]
-
         if not borderLoopReverse then
           borderLoop = borderLoop + 1
           if borderLoop >= len then borderLoopReverse = true end
         end
-
         if borderLoopReverse then
           borderLoop = borderLoop - 1
           if borderLoop <= 1 then borderLoopReverse = false end
          end
-
       end
     end
   }
