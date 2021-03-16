@@ -10,10 +10,6 @@ local gfs = require("gears.filesystem")
 local themes_path = gfs.get_themes_dir()
 
 
-local fenetre = require("fenetre")
-local titlebar = fenetre { }
-
-
 local theme = {}
 
 theme.font          = "Hack regular 9"
@@ -29,15 +25,19 @@ theme.fg_focus      = "#222222"
 theme.fg_urgent     = "#9f78e1"
 theme.fg_minimize   = "#9f78e1"
 
--- theme.useless_gap   = dpi(3)
-theme.useless_gap   = 3
--- theme.border_width  = dpi(0)
-theme.border_width  = 3
 
--- theme.border_normal = "#535d6c"
-theme.border_normal = "#ffffffff"
+-- theme.useless_gap   = dpi(3)
+theme.useless_gap   = 0
+
+theme.border_width  = dpi(2)
+-- theme.border_width  = 3
+
+
+theme.border_normal = "#535d6c"
+-- theme.border_normal = "#ffffff"
 theme.border_focus  = "#535d6c"
 theme.border_marked = "#91231c"
+
 
 -- There are other variable sets
 -- overriding the default one when

@@ -2,7 +2,7 @@
 
 --[[ Configuration testing invocation:
 Xephyr :1 -ac -br -noreset -screen 1152x720 &
-DISPLAY=:1.0 awesome -c ~/.config/awesome/rc.lua.new
+DISPLAY=:1.0 awesome -c ~/.config/awesome/rc.lua
 ]]
 
 -- If LuaRocks is installed, make sure that packages installed through it are
@@ -10,10 +10,20 @@ DISPLAY=:1.0 awesome -c ~/.config/awesome/rc.lua.new
   pcall(require, "luarocks.loader")
 
 
+  -- awful.spawn.with_shell(
+  --      'if (xrdb -query | grep -q "^awesome\\.started:\\s*true$"); then exit; fi;' ..
+  --      'xrdb -merge <<< "awesome.started:true";' ..
+  --      -- list each of your autostart commands, followed by ; inside single quotes, followed by ..
+  --      'dex --environment Awesome --autostart --search-paths "$XDG_CONFIG_DIRS/autostart:$XDG_CONFIG_HOME/autostart"' -- https://github.com/jceb/dex
+  --      )
+
+
   -- Standard awesomewm library
   local gears = require("gears")
   local awful = require("awful")
   require("awful.autofocus")
+
+  local gmath = require("gears.math")
 
   local wibox = require("wibox")                 -- Widget and layout library
   local beautiful = require("beautiful")         -- Theme handling library
@@ -26,24 +36,28 @@ DISPLAY=:1.0 awesome -c ~/.config/awesome/rc.lua.new
   -- when client with a matching name is opened:
   require("awful.hotkeys_popup.keys")
 
-
   -- Extra awesomewm scripts
-  local lain = require("lain")                   -- Layouts, widgets, something
-  local revelation = require("revelation")       -- App/desktop switching script
-  revelation.init()
-  local cyclefocus = require("cyclefocus")       -- Cycle between apps
   local tyrannical = require("tyrannical")       -- Dynamic desktop tagging
   --require("tyrannical.shortcut") --optional
-
-  local gmath = require("gears.math")
+  local lain = require("lain")                   -- Layouts, widgets, something
+  local cyclefocus = require("cyclefocus")       -- Cycle between apps
+  local revelation = require("revelation")       -- App/desktop switching script
+  revelation.init()
 
   -- Create a menu from .desktop files
   local freedesktop = require("freedesktop")
 
 
   -- Window titlebar as widget
-  -- local fenetre = require("fenetre")
-  -- local titlebar = fenetre { }
+
+local fenetre = require("fenetre")
+
+
+  local titlebar = fenetre {
+    max_vert_button = "Shift",
+    max_horiz_button = "Control",
+    order = { "max", "ontop", "sticky", "floating", "close" }
+}
 
 
   -- Layout scripts
@@ -105,6 +119,8 @@ DISPLAY=:1.0 awesome -c ~/.config/awesome/rc.lua.new
   beautiful.init(gears.filesystem.get_configuration_dir() .. "milktheme/theme.lua")
 
   beautiful.wallpaper = awful.util.get_configuration_dir() .. "milktheme/background.png"
+
+  beautiful.bg_systray = "#000000"
 
   -- Attempt to constrain the size of large icons in their apps notifications
   beautiful.notification_icon_size = "32"
@@ -219,7 +235,7 @@ DISPLAY=:1.0 awesome -c ~/.config/awesome/rc.lua.new
 
 
   -- Gradient generator, adapted from https://krazydad.com/tutorials/makecolors.php
-  border_animate_colours = {} 
+  border_animate_colours = {}
   function makeColorGradient(frequency1, frequency2, frequency3, phase1, phase2, phase3, center, width, len)
     if center == nil   then center = 128 end
     if width == nil    then width = 127 end
@@ -234,35 +250,36 @@ DISPLAY=:1.0 awesome -c ~/.config/awesome/rc.lua.new
     end
   end
 
-
-
-  -- redFrequency = .1
-  -- grnFrequency = .1
-  -- bluFrequency = .1
-  redFrequency = .11
-  grnFrequency = .13
-  bluFrequency = .17
+  redFrequency = .1
+  grnFrequency = .1
+  bluFrequency = .1
+  -- redFrequency = .11
+  -- grnFrequency = .13
+  -- bluFrequency = .17
   -- redFrequency = .1
   -- grnFrequency = .2
   -- bluFrequency = .3
+  -- redFrequency = .11
+  -- grnFrequency = .13
+  -- bluFrequency = .17
 
   -- phase1 = 0
   -- phase2 = 2
   -- phase3 = 4
-  -- phase1 = 0
-  -- phase2 = 10
-  -- phase3 = 30
   phase1 = 0
-  phase2 = 100
-  phase3 = 200
+  phase2 = 5
+  phase3 = 10
+  -- phase1 = 0
+  -- phase2 = 30
+  -- phase3 = 60
 
   -- center = 128
   -- width = 127
   -- center = 210
   -- width = 45
-  center = 190
+  center = 140
   width = 55
-  len = 360
+  len = 180
 
   makeColorGradient(redFrequency,grnFrequency,bluFrequency,phase1,phase2,phase3,center,width,len)
 
@@ -277,12 +294,12 @@ DISPLAY=:1.0 awesome -c ~/.config/awesome/rc.lua.new
 
   borderLoop = 1
   border_animation_timer = gears.timer {
-    timeout   = 0.1,
+    timeout   = 0.05,
     call_now  = true,
     autostart = true,
     callback  = function()
       -- debug
-      -- naughty.notify({ preset = naughty.config.presets.critical, title = borderLoop, bg = border_animate_colours[borderLoop], notification_border_width = 0 })
+      -- naughty.notify({ preset = naughty.config.presets.critical, title = "- " .. borderLoop .. " -", bg = border_animate_colours[borderLoop], notification_border_width = 0 })
       local c = client.focus
       if c then
         c.border_color = border_animate_colours[borderLoop]
@@ -466,7 +483,7 @@ DISPLAY=:1.0 awesome -c ~/.config/awesome/rc.lua.new
           s.mytasklist, -- Middle widget
           { -- Right widgets
             layout = wibox.layout.fixed.horizontal,
-            -- titlebar,
+            titlebar,
             mytextclock,
             mylauncher,
             wibox.widget.systray(),
@@ -496,8 +513,17 @@ DISPLAY=:1.0 awesome -c ~/.config/awesome/rc.lua.new
             layout      = awful.layout.suit.tile,
             exec_once   = {"dolphin"}, --When the tag is accessed for the first time, execute this command
             class  = {
-              "Thunar", "Konqueror", "Dolphin", "ark", "Nautilus","emelfm", "Double Commander"
+              "Thunar", "Konqueror", "Dolphin", "ark", "Nautilus","emelfm", "Doublecmd"
             }
+          } ,
+          {
+            name        = "Share",
+            init        = true,
+            exclusive   = true,
+            screen      = 1,
+            layout      = awful.layout.suit.max                          ,
+            class ={
+            "qBittorrent", "Nicotine" }
           } ,
           {
             name        = "Keepass",
@@ -928,12 +954,12 @@ DISPLAY=:1.0 awesome -c ~/.config/awesome/rc.lua.new
           end,
           {description = "lua execute prompt", group = "awesome"}),
 
-        --   awful.key({ modkey }, "v",
-          -- function ()
-            --     myscreen = awful.screen.focused()
-            --     myscreen.mywibox.visible = not myscreen.mywibox.visible
-            -- end,
-            -- {description = "toggle statusbar"}),
+          awful.key({ modkey }, "v",
+          function ()
+                myscreen = awful.screen.focused()
+                myscreen.mywibox.visible = not myscreen.mywibox.visible
+            end,
+            {description = "toggle statusbar"}),
 
 
             -- Show/Hide Wibox
@@ -1330,6 +1356,18 @@ DISPLAY=:1.0 awesome -c ~/.config/awesome/rc.lua.new
                 }
               end)
 
+screen.connect_signal("arrange", function (s)
+    if s.selected_tag then local max = s.selected_tag.layout.name == "max" end
+    local only_one = #s.tiled_clients == 1 -- use tiled_clients so that other floating windows don't affect the count
+    -- but iterate over clients instead of tiled_clients as tiled_clients doesn't include maximized windows
+    for _, c in pairs(s.clients) do
+        if (max or only_one) and not c.floating or c.maximized then
+            c.border_width = 0
+        else
+            c.border_width = beautiful.border_width
+        end
+    end
+end)
               -- Enable sloppy focus, so that focus follows mouse.
               -- client.connect_signal("mouse::enter", function(c)
               --     c:emit_signal("request::activate", "mouse_enter", {raise = false})
