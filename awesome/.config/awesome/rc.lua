@@ -49,15 +49,13 @@ DISPLAY=:1.0 awesome -c ~/.config/awesome/rc.lua
 
 
   -- Window titlebar as widget
-
-local fenetre = require("fenetre")
-
-
-  local titlebar = fenetre {
-    max_vert_button = "Shift",
-    max_horiz_button = "Control",
-    order = { "max", "ontop", "sticky", "floating", "close" }
-}
+  -- local fenetre = require("fenetre")
+  --
+  -- local titlebar = fenetre {
+  --   max_vert_button = "Shift",
+  --   max_horiz_button = "Control",
+  --   order = { "max", "ontop", "sticky", "floating", "close" }
+  -- }
 
 
   -- Layout scripts
@@ -250,9 +248,9 @@ local fenetre = require("fenetre")
     end
   end
 
-  redFrequency = .1
-  grnFrequency = .1
-  bluFrequency = .1
+  redFrequency = .11
+  grnFrequency = .13
+  bluFrequency = .17
   -- redFrequency = .11
   -- grnFrequency = .13
   -- bluFrequency = .17
@@ -267,8 +265,8 @@ local fenetre = require("fenetre")
   -- phase2 = 2
   -- phase3 = 4
   phase1 = 0
-  phase2 = 5
-  phase3 = 10
+  phase2 = 10
+  phase3 = 30
   -- phase1 = 0
   -- phase2 = 30
   -- phase3 = 60
@@ -277,9 +275,9 @@ local fenetre = require("fenetre")
   -- width = 127
   -- center = 210
   -- width = 45
-  center = 140
-  width = 55
-  len = 180
+  center = 200
+  width = 40
+  len = 80
 
   makeColorGradient(redFrequency,grnFrequency,bluFrequency,phase1,phase2,phase3,center,width,len)
 
@@ -294,7 +292,7 @@ local fenetre = require("fenetre")
 
   borderLoop = 1
   border_animation_timer = gears.timer {
-    timeout   = 0.05,
+    timeout   = 0.03,
     call_now  = true,
     autostart = true,
     callback  = function()
@@ -310,7 +308,7 @@ local fenetre = require("fenetre")
         if borderLoopReverse then
           borderLoop = borderLoop - 1
           if borderLoop <= 1 then borderLoopReverse = false end
-         end
+        end
       end
     end
   }
@@ -477,8 +475,8 @@ local fenetre = require("fenetre")
           { -- Left widgets
             layout = wibox.layout.fixed.horizontal,
             s.mytaglist,
-            s.mypromptbox,
             mykeyboardlayout,
+            s.mypromptbox,
           },
           s.mytasklist, -- Middle widget
           { -- Right widgets
@@ -495,8 +493,8 @@ local fenetre = require("fenetre")
 
         tyrannical.tags = {
           {
-            name        = "Term",                 -- Call the tag "Term"
-            init        = true,                   -- Load the tag on startu
+            name        = "1:Term",                 -- Call the tag "Term"
+            init        = true,                   -- Load the tag on startup
             exclusive   = true,                   -- Refuse any other type of clients (by classes)
             screen      = {1,2},                  -- Create this tag on screen 1 and screen 2
             layout      = milkdefault,
@@ -506,18 +504,48 @@ local fenetre = require("fenetre")
             }
           } ,
           {
-            name        = "Files",
+            name        = "2:Files",
             init        = true,
             exclusive   = true,
             screen      = 1,
             layout      = awful.layout.suit.tile,
-            exec_once   = {"dolphin"}, --When the tag is accessed for the first time, execute this command
+            -- exec_once   = {"doublecmd"}, --When the tag is accessed for the first time, execute this command
             class  = {
               "Thunar", "Konqueror", "Dolphin", "ark", "Nautilus","emelfm", "Doublecmd"
             }
           } ,
           {
-            name        = "Share",
+            name        = "3:Music",
+            init        = true,
+            exclusive   = true,
+            screen      = 1,
+            layout      = awful.layout.suit.max                          ,
+            instance = { "awful.client.property.single_instance_id" },
+            class = {
+            "ncmpcpp" },
+          } ,
+          {
+            name        = "4:Media",
+            init        = true,
+            exclusive   = true,
+            screen      = 1,
+            layout      = awful.layout.suit.max                          ,
+            instance = { "awful.client.property.single_instance_id" },
+            class = {
+            "mpv" },
+          } ,
+          {
+            name        = "5:Vol",
+            init        = true,
+            exclusive   = true,
+            screen      = 1,
+            layout      = awful.layout.suit.max                          ,
+            instance = { "awful.client.property.single_instance_id" },
+            class = {
+            "Pavucontrol", "Jack_mixer" }
+          } ,
+          {
+            name        = "6:Share",
             init        = true,
             exclusive   = true,
             screen      = 1,
@@ -526,45 +554,45 @@ local fenetre = require("fenetre")
             "qBittorrent", "Nicotine" }
           } ,
           {
-            name        = "Keepass",
+            name        = "7:Pass",
             init        = true,
             exclusive   = true,
             screen      = 1,
             layout      = awful.layout.suit.max                          ,
             class ={
-            "keepassxc"}
+            "keepassxc" }
           } ,
           {
-            name        = "Chat",
+            name        = "8:Chat",
             init        = true,
             exclusive   = true,
             screen      = 1,
             layout      = awful.layout.suit.max                          ,
             class ={
-            "quassel"}
+            "quassel" }
           } ,
+          -- {
+          --   name        = "Dev",
+          --   init        = true,
+          --   exclusive   = true,
+          --   screen      = 1,
+          --   layout      = awful.layout.suit.max                          ,
+          --   class ={
+          --   "Kate", "KDevelop", "Codeblocks", "Code::Blocks" , "DDD", "kate4" }
+          -- } ,
+          -- {
+          --   name        = "Doc",
+          --   init        = false, -- This tag wont be created at startup, but will be when one of the
+          --   -- client in the "class" section will start. It will be created on
+          --   -- the client startup screen
+          --   exclusive   = true,
+          --   layout      = awful.layout.suit.max,
+          --   class       = {
+          --     "Assistant"     , "Okular"         , "Evince"    , "EPDFviewer"   , "xpdf",
+          --   "Xpdf"          ,                                        }
+          -- } ,
           {
-            name        = "Develop",
-            init        = true,
-            exclusive   = true,
-            screen      = 1,
-            layout      = awful.layout.suit.max                          ,
-            class ={
-            "Kate", "KDevelop", "Codeblocks", "Code::Blocks" , "DDD", "kate4"}
-          } ,
-          {
-            name        = "Doc",
-            init        = false, -- This tag wont be created at startup, but will be when one of the
-            -- client in the "class" section will start. It will be created on
-            -- the client startup screen
-            exclusive   = true,
-            layout      = awful.layout.suit.max,
-            class       = {
-              "Assistant"     , "Okular"         , "Evince"    , "EPDFviewer"   , "xpdf",
-            "Xpdf"          ,                                        }
-          } ,
-          {
-            name        = "Web",
+            name        = "9:Web",
             init        = true,
             exclusive   = true,
             -- icon        = "~net.png",                 -- Use this icon for the tag (uncomment with a real path)
@@ -866,6 +894,7 @@ local fenetre = require("fenetre")
           end
         end,
         {description = "ontop floating right corner", group = "client"}),
+
       -- https://www.reddit.com/r/awesomewm/comments/jc6j8d/video_floating_on_all_tags
       -- awful.key({ modkey, shiftkey }, "w", function (c)
       --   awful.client.floating.toggle()
@@ -886,7 +915,8 @@ local fenetre = require("fenetre")
       -- Apps
       awful.key({ modkey, shiftkey },   "e",       function () awful.spawn.raise_or_spawn("urxvt -e sh -c 'vim ~/.config/awesome/rc.lua'",nil,nil,"awesomeconf") end, { description = "edit awesome config", group = "launcher" }),
 
-      awful.key({ modkey,},            "F1",      function () awful.spawn.raise_or_spawn("urxvt -e sh -c 'ncmpcpp' -name 'ncmpcpp'",nil,nil,"ncmpcpp") end, { description = "run ncmpcpp in a terminal", group = "launcher" }),
+      awful
+      .key({ modkey,},            "F1",      function () awful.spawn.raise_or_spawn("urxvt -e sh -c 'ncmpcpp' -name 'ncmpcpp'",nil,nil,"ncmpcpp") end, { description = "run ncmpcpp in a terminal", group = "launcher" }),
       -- awful.key({ modkey,},            "F1",      function () awful.spawn.raise_or_spawn("nsm",nil,create_matcher("Agordejo"),"Agordejo") end, { description = "NSM manager and launcher", group = "launcher" }),
       awful.key({ modkey },            "F2",      function () awful.spawn.raise_or_spawn("nicotine",nil,create_matcher("Nicotine")) end, { description = "run nicotine++", group = "launcher" }),
       awful.key({ modkey },            "F3",      function () awful.spawn.raise_or_spawn("qbittorrent",nil,create_matcher("qBittorrent"),"qBittorrent") end, { description = "run qbittorrent", group = "launcher" }),
@@ -910,8 +940,8 @@ local fenetre = require("fenetre")
 
 
       -- Volume Keys
-      awful.key({}, "XF86AudioLowerVolume", function () awful.util.spawn("amixer -q -D pulse sset Master 5%-", false) end),
-      awful.key({}, "XF86AudioRaiseVolume", function () awful.util.spawn("amixer -q -D pulse sset Master 5%+", false) end),
+      awful.key({}, "XF86AudioLowerVolume", function () awful.util.spawn("amixer -q -D pulse sset Master 3%-", false) end),
+      awful.key({}, "XF86AudioRaiseVolume", function () awful.util.spawn("amixer -q -D pulse sset Master 3%+", false) end),
       awful.key({}, "XF86AudioMute", function () awful.util.spawn("amixer -D pulse set Master 1+ toggle", false) end),
       -- Media Keys
       awful.key({}, "XF86AudioPlay", function() awful.util.spawn("playerctl play-pause", false) end),
@@ -921,539 +951,552 @@ local fenetre = require("fenetre")
 
       -- Prompt
       -- awful.key({ modkey },            "r",     function () awful.screen.focused().mypromptbox:run() end,
-        awful.key({ modkey },            "space",     function () awful.util.spawn("/home/milk/bin/rofi_nice") end,
-          {description = "run rofi", group = "launcher"}),
+      awful.key({ modkey },            "space",     function () awful.util.spawn("/home/milk/bin/rofi_nice") end,
+        {description = "run rofi", group = "launcher"}),
 
 
 
-        -- awful.key({ modkey }, "v", treetile.vertical),
-        -- awful.key({ modkey }, "h", treetile.horizontal),
+      -- awful.key({ modkey }, "v", treetile.vertical),
+      -- awful.key({ modkey }, "h", treetile.horizontal),
 
 
-        -- awful.key({ modkey }, "o", leaved.keys.shiftOrder),
-        -- awful.key({ modkey, "Shift" }, "h", leaved.keys.splitH), --split next horizontal
-        -- awful.key({ modkey, "Shift" }, "v", leaved.keys.splitV), --split next vertical
-        -- awful.key({ modkey, "Shift" }, "o", leaved.keys.splitOpp), --split in opposing direction
-        -- awful.key({ modkey, "Shift" }, "t", leaved.keys.shiftStyle),
-        -- awful.key({ modkey, "Shift" }, "]", leaved.keys.scaleV(-5)),
-        -- awful.key({ modkey, "Shift" }, "[", leaved.keys.scaleV(5)),
-        -- awful.key({ modkey }, "]", leaved.keys.scaleH(-5)),
-        -- awful.key({ modkey }, "[", leaved.keys.scaleH(5)),
+      -- awful.key({ modkey }, "o", leaved.keys.shiftOrder),
+      -- awful.key({ modkey, "Shift" }, "h", leaved.keys.splitH), --split next horizontal
+      -- awful.key({ modkey, "Shift" }, "v", leaved.keys.splitV), --split next vertical
+      -- awful.key({ modkey, "Shift" }, "o", leaved.keys.splitOpp), --split in opposing direction
+      -- awful.key({ modkey, "Shift" }, "t", leaved.keys.shiftStyle),
+      -- awful.key({ modkey, "Shift" }, "]", leaved.keys.scaleV(-5)),
+      -- awful.key({ modkey, "Shift" }, "[", leaved.keys.scaleV(5)),
+      -- awful.key({ modkey }, "]", leaved.keys.scaleH(-5)),
+      -- awful.key({ modkey }, "[", leaved.keys.scaleH(5)),
 
 
 
 
-        awful.key({ modkey, shiftkey }, "x",
-          function ()
-            awful.prompt.run {
-              prompt       = "Run Lua code: ",
-              textbox      = awful.screen.focused().mypromptbox.widget,
-              exe_callback = awful.util.eval,
-              history_path = awful.util.get_cache_dir() .. "/history_eval"
-            }
-          end,
-          {description = "lua execute prompt", group = "awesome"}),
+      awful.key({ modkey, shiftkey }, "x",
+        function ()
+          awful.prompt.run {
+            prompt       = "Run Lua code: ",
+            textbox      = awful.screen.focused().mypromptbox.widget,
+            exe_callback = awful.util.eval,
+            history_path = awful.util.get_cache_dir() .. "/history_eval"
+          }
+        end,
+        {description = "lua execute prompt", group = "awesome"}),
 
-          awful.key({ modkey }, "v",
-          function ()
-                myscreen = awful.screen.focused()
-                myscreen.mywibox.visible = not myscreen.mywibox.visible
-            end,
-            {description = "toggle statusbar"}),
-
-
-            -- Show/Hide Wibox
-            awful.key({ modkey, altkey }, "v", function ()
-              for s in screen do
-                s.mywibox.visible = not s.mywibox.visible
-                if s.myaltwibox then
-                  s.myaltwibox.visible = not s.myaltwibox.visible
-                end
-              end
-            end,
-            {description = "toggle wibox", group = "awesome"}),
+      awful.key({ modkey }, "v",
+        function ()
+          myscreen = awful.screen.focused()
+          myscreen.mywibox.visible = not myscreen.mywibox.visible
+        end,
+        {description = "toggle statusbar"}),
 
 
-          -- Menubar
-          awful.key({ modkey, shiftkey }, "space", function() menubar.show() end, {description = "show the menubar", group = "launcher"}));
-
-        clientkeys = gears.table.join(
-          awful.key({ modkey,           }, "f",
-            function (c)
-              c.fullscreen = not c.fullscreen
-              c:raise()
-            end,
-            {description = "toggle fullscreen", group = "client"}),
-          awful.key({ modkey,           }, "q",      function (c) c:kill()                         end,
-            {description = "close", group = "client"}),
-          awful.key({ modkey,           }, "z",  awful.client.floating.toggle                     ,
-            {description = "toggle floating", group = "client"}),
-          awful.key({ modkey, ctrlkey }, "Return", function (c) c:swap(awful.client.getmaster()) end,
-            {description = "move to master", group = "client"}),
-          awful.key({ modkey,           }, "o",      function (c) c:move_to_screen()               end,
-            {description = "move to screen", group = "client"}),
-          awful.key({ modkey,           }, "t",      function (c) c.ontop = not c.ontop            end,
-            {description = "toggle keep on top", group = "client"}),
+      -- Show/Hide Wibox
+      awful.key({ modkey, altkey }, "v", function ()
+        for s in screen do
+          s.mywibox.visible = not s.mywibox.visible
+          if s.myaltwibox then
+            s.myaltwibox.visible = not s.myaltwibox.visible
+          end
+        end
+      end,
+      {description = "toggle wibox", group = "awesome"}),
 
 
-          -- Window z-index
-          -- Send window to the behind plane
-          awful.key({ modkey,           }, "comma",      function (c) c.below = not c.below            end,
-            {description = "behind", group = "client"}),
+    -- Menubar
+    awful.key({ modkey, shiftkey }, "space", function() menubar.show() end, {description = "show the menubar", group = "launcher"}));
 
-          -- -- Send window to the middle plane
-          -- awful.key({ modkey,           }, "period",      function (c) c.below = false     end,
-          --   {description = "behind", group = "client"}),
-
-          -- Send window to the above plane
-          awful.key({ modkey,           }, "slash",      function (c) c.above = not c.above            end,
-            {description = "behind", group = "client"}),
-
-
-          -- Switcky window, stays on all tags
-          awful.key({ modkey,           }, "x",      function (c) c.sticky = not c.sticky  end),
-
-
-          -- Minimize current window
-          awful.key({ modkey,           }, "n",
-            function (c)
-              -- The client currently has the input focus, so it cannot be
-              -- minimized, since minimized clients can't have the focus.
-              c.minimized = true
-            end ,
-            {description = "minimize", group = "client"}),
+  clientkeys = gears.table.join(
+    awful.key({ modkey,           }, "f",
+      function (c)
+        c.fullscreen = not c.fullscreen
+        c:raise()
+      end,
+      {description = "toggle fullscreen", group = "client"}),
+    awful.key({ modkey,           }, "q",      function (c) c:kill()                         end,
+      {description = "close", group = "client"}),
+    awful.key({ modkey,           }, "z",  awful.client.floating.toggle                     ,
+      {description = "toggle floating", group = "client"}),
+    awful.key({ modkey, ctrlkey }, "Return", function (c) c:swap(awful.client.getmaster()) end,
+      {description = "move to master", group = "client"}),
+    awful.key({ modkey,           }, "o",      function (c) c:move_to_screen()               end,
+      {description = "move to screen", group = "client"}),
+    awful.key({ modkey,           }, "t",      function (c) c.ontop = not c.ontop            end,
+      {description = "toggle keep on top", group = "client"}),
 
 
-          -- Unminimize current window
-          awful.key({ modkey, ctrlkey }, "n",
-            function ()
-              local c = awful.client.restore()
-              -- Focus restored client
-              if c then
-                c:emit_signal(
-                  "request::activate", "key.unminimize", {raise = true}
-                  )
-              end
-            end,
-            {description = "restore minimized", group = "client"}),
+    -- Window z-index
+    -- Send window to the behind plane
+    awful.key({ modkey,           }, "comma",      function (c) c.below = not c.below            end,
+      {description = "behind", group = "client"}),
+
+    -- -- Send window to the middle plane
+    -- awful.key({ modkey,           }, "period",      function (c) c.below = false     end,
+    --   {description = "behind", group = "client"}),
+
+    -- Send window to the above plane
+    awful.key({ modkey,           }, "slash",      function (c) c.above = not c.above            end,
+      {description = "behind", group = "client"}),
 
 
-          -- Maximise toggle for current window
-          awful.key({ modkey,           }, "m",
-            function (c)
-              c.maximized = not c.maximized
-              c:raise()
-            end ,
-            {description = "(un)maximize", group = "client"}),
+    -- Switcky window, stays on all tags
+    awful.key({ modkey,           }, "x",      function (c) c.sticky = not c.sticky  end),
 
 
-          -- Maximise vertivally toggle for current window
-          awful.key({ modkey, ctrlkey }, "m",
-            function (c)
-              c.maximized_vertical = not c.maximized_vertical
-              c:raise()
-            end ,
-            {description = "(un)maximize vertically", group = "client"}),
+    -- Minimize current window
+    awful.key({ modkey,           }, "n",
+      function (c)
+        -- The client currently has the input focus, so it cannot be
+        -- minimized, since minimized clients can't have the focus.
+        c.minimized = true
+      end ,
+      {description = "minimize", group = "client"}),
 
 
-          -- Maximise horizontally toggle for current window
-          awful.key({ modkey, shiftkey   }, "m",
-            function (c)
-              c.maximized_horizontal = not c.maximized_horizontal
-              c:raise()
-            end ,
-            {description = "(un)maximize horizontally", group = "client"})
-
-
-          -- awful.key({ modkey, shiftkey }, "z",  awful.client.position. ,
-          --         {description = "toggle floating", group = "client"})
-          )
-
-
-        -- todo rework with dynamic tags and 0 to =
-        -- Bind all key numbers to tags.
-        -- Be careful: we use keycodes to make it work on any keyboard layout.
-        -- This should map on the top row of your keyboard, usually 1 to 9.
-        for i = 1, 9 do
-          globalkeys = gears.table.join(globalkeys,
-
-            -- View tag only.
-            awful.key({ modkey }, "#" .. i + 9,
-              function ()
-                local screen = awful.screen.focused()
-                local tag = screen.tags[i]
-                if tag then
-                  tag:view_only()
-                end
-              end,
-              {description = "view tag #"..i, group = "tag"}),
-
-            -- Toggle tag display.
-            awful.key({ modkey, ctrlkey }, "#" .. i + 9,
-              function ()
-                local screen = awful.screen.focused()
-                local tag = screen.tags[i]
-                if tag then
-                  awful.tag.viewtoggle(tag)
-                end
-              end,
-              {description = "toggle tag #" .. i, group = "tag"}),
-
-            -- Move client to tag.
-            awful.key({ modkey, shiftkey }, "#" .. i + 9,
-              function ()
-                if client.focus then
-                  local tag = client.focus.screen.tags[i]
-                  if tag then
-                    client.focus:move_to_tag(tag)
-                  end
-                end
-              end,
-              {description = "move focused client to tag #"..i, group = "tag"}),
-
-            -- Toggle tag on focused client.
-            awful.key({ modkey, ctrlkey, shiftkey }, "#" .. i + 9,
-              function ()
-                if client.focus then
-                  local tag = client.focus.screen.tags[i]
-                  if tag then
-                    client.focus:toggle_tag(tag)
-                  end
-                end
-              end,
-              {description = "toggle focused client on tag #" .. i, group = "tag"})
+    -- Unminimize current window
+    awful.key({ modkey, ctrlkey }, "n",
+      function ()
+        local c = awful.client.restore()
+        -- Focus restored client
+        if c then
+          c:emit_signal(
+            "request::activate", "key.unminimize", {raise = true}
             )
         end
+      end,
+      {description = "restore minimized", group = "client"}),
+
+
+    -- Maximise toggle for current window
+    awful.key({ modkey,           }, "m",
+      function (c)
+        c.maximized = not c.maximized
+        c:raise()
+      end ,
+      {description = "(un)maximize", group = "client"}),
+
+
+    -- Maximise vertivally toggle for current window
+    awful.key({ modkey, ctrlkey }, "m",
+      function (c)
+        c.maximized_vertical = not c.maximized_vertical
+        c:raise()
+      end ,
+      {description = "(un)maximize vertically", group = "client"}),
+
+
+    -- Maximise horizontally toggle for current window
+    awful.key({ modkey, shiftkey   }, "m",
+      function (c)
+        c.maximized_horizontal = not c.maximized_horizontal
+        c:raise()
+      end ,
+      {description = "(un)maximize horizontally", group = "client"})
+
+
+    -- awful.key({ modkey, shiftkey }, "z",  awful.client.position. ,
+    --         {description = "toggle floating", group = "client"})
+    )
+
+
+  -- todo rework with dynamic tags and 0 to =
+  -- Bind all key numbers to tags.
+  -- Be careful: we use keycodes to make it work on any keyboard layout.
+  -- This should map on the top row of your keyboard, usually 1 to 9.
+  for i = 1, 9 do
+    globalkeys = gears.table.join(globalkeys,
+
+      -- View tag only.
+      awful.key({ modkey }, "#" .. i + 9,
+        function ()
+          local screen = awful.screen.focused()
+          local tag = screen.tags[i]
+          if tag then
+            tag:view_only()
+          end
+        end,
+        {description = "view tag #"..i, group = "tag"}),
+
+      -- Toggle tag display.
+      awful.key({ modkey, ctrlkey }, "#" .. i + 9,
+        function ()
+          local screen = awful.screen.focused()
+          local tag = screen.tags[i]
+          if tag then
+            awful.tag.viewtoggle(tag)
+          end
+        end,
+        {description = "toggle tag #" .. i, group = "tag"}),
+
+      -- Move client to tag.
+      awful.key({ modkey, shiftkey }, "#" .. i + 9,
+        function ()
+          if client.focus then
+            local tag = client.focus.screen.tags[i]
+            if tag then
+              client.focus:move_to_tag(tag)
+            end
+          end
+        end,
+        {description = "move focused client to tag #"..i, group = "tag"}),
+
+      -- Toggle tag on focused client.
+      awful.key({ modkey, ctrlkey, shiftkey }, "#" .. i + 9,
+        function ()
+          if client.focus then
+            local tag = client.focus.screen.tags[i]
+            if tag then
+              client.focus:toggle_tag(tag)
+            end
+          end
+        end,
+        {description = "toggle focused client on tag #" .. i, group = "tag"})
+      )
+  end
 
 
 
-        clientbuttons = gears.table.join(
-          awful.button({ }, 1, function (c)
-            c:emit_signal("request::activate", "mouse_click", {raise = true})
-          end),
-          awful.button({ modkey }, 1, function (c)
-            c:emit_signal("request::activate", "mouse_click", {raise = true})
-            awful.mouse.client.move(c)
-          end),
-          awful.button({ modkey }, 3, function (c)
-            c:emit_signal("request::activate", "mouse_click", {raise = true})
-            awful.mouse.client.resize(c)
-          end),
-          awful.button({ modkey, shiftkey }, 4, function (c) move_to_previous_tag() end),
-          awful.button({ modkey, shiftkey }, 5, function (c) move_to_next_tag() end)
+  clientbuttons = gears.table.join(
+    awful.button({ }, 1, function (c)
+      c:emit_signal("request::activate", "mouse_click", {raise = true})
+    end),
+    awful.button({ modkey }, 1, function (c)
+      c:emit_signal("request::activate", "mouse_click", {raise = true})
+      awful.mouse.client.move(c)
+    end),
+    awful.button({ modkey }, 3, function (c)
+      c:emit_signal("request::activate", "mouse_click", {raise = true})
+      awful.mouse.client.resize(c)
+    end),
+    awful.button({ modkey, shiftkey }, 4, function (c) move_to_previous_tag() end),
+    awful.button({ modkey, shiftkey }, 5, function (c) move_to_next_tag() end)
 
-          -- awful.button({ modkey }, 1,
-          -- function (c)
-          --      c.maximized_horizontal = false
-          --      c.maximized_vertical   = false
-          --      c.maximized            = false
-          --      c.fullscreen           = false
-          --      awful.mouse.client.move(c)
-          -- end)
-          )
-
-
-        -- Set keys
-        root.keys(globalkeys)
-        -- }}}
-
-        -- {{{ Rules
-        -- Rules to apply to new clients (through the "manage" signal).
-        awful.rules.rules = {
-          -- All clients will match this rule.
-          { rule = { },
-            properties = { border_width = beautiful.border_width,
-              border_color = beautiful.border_normal,
-              focus = awful.client.focus.filter,
-              raise = true,
-              keys = clientkeys,
-              buttons = clientbuttons,
-              screen = awful.screen.preferred,
-              placement = awful.placement.no_overlap+awful.placement.no_offscreen,
-              size_hints_honor = false,
-              titlebars_enabled = false
-            }
-          },
-
-          -- { rule_any = { type = { "dialog", "normal" } }, properties = { titlebars_enabled = true } },
-
-          -- Floating clients.
-          { rule_any = {
-              instance = {
-                "DTA",  -- Firefox addon DownThemAll.
-                "copyq",  -- Includes session name in class.
-                "pinentry",
-              },
-              class = {
-                "Arandr",
-                "Blueman-manager",
-                "Cadence",
-                "qjackctl",
-                "Studio-controls",
-                "Gpick",
-                "Kruler",
-                "Mixer",
-                "MessageWin",  -- kalarm.
-                "mpv",
-                "QjackCtl",
-                "Pavucontrol",
-                "seq64",
-                "qseq66",
-                "patroneo",
-                "copyq",
-                "* Copying",
-                "Agordejo",
-                "radium_compessor",
-                "Goodvibes",
-                "Gsmartcontrol",
-                "Syncthing GTK",
-                "Choose an application",
-                "File operations",
-                "flameshot",
-                "SimpleScreenRecorder",
-                "Mattermost",
-                "KeePassXC",
-                "Onboard",
-                "Image Menu",
-                "emulsion",
-                "Sxiv",
-                "gammy",
-                "Tor Browser", -- Needs a fixed window size to avoid fingerprinting by screen size.
-                "Wpa_gui",
-                "veromix",
-                "Vlc",
-                "Protonvpn-gui",
-              "xtightvncviewer"},
-
-              -- Note that the name property shown in xprop might be set slightly after creation of the client
-              -- and the name shown there might not match defined rules here.
-              name = {
-              "Event Tester",  -- xev.
-              "Choose an application", --doublecmd dialog
-              },
-              role = {
-              "AlarmWindow",   -- Thunderbird's calendar.
-              "ConfigManager", -- Thunderbird's about:config.
-              "pop-up",        -- e.g. Google Chrome's (detached) Developer Tools.
-              "page-info",     -- Firefox page info dialog
-              }
-              },
-              properties = {
-              floating = true,
-              placement = awful.placement.centered + awful.placement.no_overlap+awful.placement.no_offscreen
-              }
-              },
+    -- awful.button({ modkey }, 1,
+    -- function (c)
+    --      c.maximized_horizontal = false
+    --      c.maximized_vertical   = false
+    --      c.maximized            = false
+    --      c.fullscreen           = false
+    --      awful.mouse.client.move(c)
+    -- end)
+    )
 
 
-              { rule = { },                                 properties = { focus = awful.client.focus.filter } },
-              -- or focus = true,
+  -- Set keys
+  root.keys(globalkeys)
+  -- }}}
+
+  -- {{{ Rules
+  -- Rules to apply to new clients (through the "manage" signal).
+  awful.rules.rules = {
+    -- All clients will match this rule.
+    { rule = { },
+      properties = { border_width = beautiful.border_width,
+        border_color = beautiful.border_normal,
+        focus = awful.client.focus.filter,
+        raise = true,
+        keys = clientkeys,
+        buttons = clientbuttons,
+        screen = awful.screen.preferred,
+        placement = awful.placement.no_overlap+awful.placement.no_offscreen,
+        size_hints_honor = false,
+        titlebars_enabled = false
+      }
+    },
+
+    -- { rule_any = { type = { "dialog", "normal" } }, properties = { titlebars_enabled = true } },
+
+    -- Floating clients.
+    { rule_any = {
+        instance = {
+          "DTA",  -- Firefox addon DownThemAll.
+          "copyq",  -- Includes session name in class.
+          "pinentry",
+          "ncmpcpp",
+        },
+        class = {
+          "Arandr",
+          "Blueman-manager",
+          "Cadence",
+          "qjackctl",
+          "Studio-controls",
+          "Gpick",
+          "Kruler",
+          "Mixer",
+          "MessageWin",  -- kalarm.
+          "mpv",
+          "QjackCtl",
+          "Pavucontrol",
+          "seq64",
+          "qseq66",
+          "patroneo",
+          "copyq",
+          "* Copying",
+          "Agordejo",
+          "radium_compessor",
+          "Goodvibes",
+          "Gsmartcontrol",
+          "Syncthing GTK",
+          "Choose an application",
+          "File operations",
+          "flameshot",
+          "SimpleScreenRecorder",
+          "Mattermost",
+          "KeePassXC",
+          "Onboard",
+          "Image Menu",
+          "emulsion",
+          "Sxiv",
+          "gammy",
+          "Tor Browser", -- Needs a fixed window size to avoid fingerprinting by screen size.
+          "Wpa_gui",
+          "veromix",
+          "Vlc",
+          "Protonvpn-gui",
+        "xtightvncviewer"},
+
+        -- Note that the name property shown in xprop might be set slightly after creation of the client
+        -- and the name shown there might not match defined rules here.
+        name = {
+          "Event Tester",  -- xev.
+          "Choose an application", --doublecmd dialog
+        },
+        role = {
+          "AlarmWindow",   -- Thunderbird's calendar.
+          "ConfigManager", -- Thunderbird's about:config.
+          "pop-up",        -- e.g. Google Chrome's (detached) Developer Tools.
+          "page-info",     -- Firefox page info dialog
+        }
+      },
+      properties = {
+        floating = true,
+        placement = awful.placement.centered + awful.placement.no_overlap+awful.placement.no_offscreen
+      }
+    },
 
 
-              { rule = { instance = "Nicotine" },           properties = { tag = "2" } },
-              { rule = { instance = "Agordejo" },           properties = { tag = "2" } },
-              { rule = { instance = "qbittorrent" },        properties = { tag = "3" } },
-              { rule = { instance = "carla" },              properties = { tag = "4" } },
-              { rule = { instance = "MusicBrainz Picard" }, properties = { tag = "4" } },
-              { rule = { instance = "qseq64" },             properties = { tag = "4" } },
-              { rule = { instance = "qseq66" },             properties = { tag = "4" } },
-              { rule = { instance = "jack_mixer" },         properties = { tag = "6" } },
-              { rule = { instance = "radium_compressor" },  properties = { tag = "6" } },
-              { rule = { instance = "doublecmd" },          properties = { tag = "6" } },
-              { rule = { instance = "Double Commander" },   properties = { tag = "6" } },
-              -- { rule = { single_instance_id = "ncmpcpp" },  properties = { tag = "7", screen = 7 } },
-              { rule = { single_instance_id = "ncmpcpp" },  properties = { tag = "7" } },
-              { rule = { instance = "quassel" },            properties = { tag = "8" } },
-              { rule = { instance = "firefox" },            properties = { tag = "9" } }
+    { rule = { },                                 properties = { focus = awful.client.focus.filter } },
+    -- or focus = true,
 
 
-              -- Add titlebars to normal clients and dialogs
-              -- { rule_any = {type = { "normal", "dialog" }
-              --   }, properties = { titlebars_enabled = true }
-              -- },
-
-              -- Set Firefox to always map on the tag named "2" on screen 1.
-              -- { rule = { class = "Firefox" },
-              --   properties = { screen = 1, tag = "2" } },
-              }
-              -- }}}
-
-
-              -- {{{ Signals
-              -- Signal function to execute when a new client appears.
-              client.connect_signal("manage", function (c)
-              -- Set the windows at the slave,
-              -- i.e. put it at the end of others instead of setting it master.
-              -- if not awesome.startup then awful.client.setslave(c) end
-
-              if awesome.startup
-              and not c.size_hints.user_position
-              and not c.size_hints.program_position then
-              -- Prevent clients from being unreachable after screen count changes.
-              awful.placement.no_offscreen(c)
-              end
-              end)
+    -- Commented out due to use of Tyrannical
+    -- { rule = { instance = "Nicotine" },           properties = { tag = "2" } },
+    -- { rule = { instance = "Agordejo" },           properties = { tag = "2" } },
+    -- { rule = { instance = "qbittorrent" },        properties = { tag = "3" } },
+    -- { rule = { instance = "carla" },              properties = { tag = "4" } },
+    -- { rule = { instance = "MusicBrainz Picard" }, properties = { tag = "4" } },
+    -- { rule = { instance = "qseq64" },             properties = { tag = "4" } },
+    -- { rule = { instance = "qseq66" },             properties = { tag = "4" } },
+    -- { rule = { instance = "jack_mixer" },         properties = { tag = "6" } },
+    -- { rule = { instance = "radium_compressor" },  properties = { tag = "6" } },
+    -- { rule = { instance = "doublecmd" },          properties = { tag = "6" } },
+    -- { rule = { instance = "Double Commander" },   properties = { tag = "6" } },
+    -- -- { rule = { single_instance_id = "ncmpcpp" },  properties = { tag = "7", screen = 7 } },
+    -- { rule = { instance = "ncmpcpp" },  properties = { tag = "7" } },
+    -- { rule = { instance = "quassel" },            properties = { tag = "8" } },
+    -- { rule = { instance = "firefox" },            properties = { tag = "9" } }
 
 
-              -- client.connect_signal("request::manage", function(client, context)
-              --     -- https://www.reddit.com/r/awesomewm/comments/ic7vqt/center_floating_windows_on_screen
-              --     if client.floating and context == "new" then
-              --       client.placement = awful.placement.centered + awful.placement.no_overlap
-              --     end
-              -- end)
+    -- Add titlebars to normal clients and dialogs
+    -- { rule_any = {type = { "normal", "dialog" }
+    --   }, properties = { titlebars_enabled = true }
+    -- },
 
-              client.connect_signal("manage", function(client)
-              if client.floating then client.ontop = true end
-              end)
-
-              -- Avoid FF PiP popping FF window up/down when PiP meets the bottom/top edge
-              client.connect_signal("property::struts", function(c)
-              local struts = c:struts()
-              if struts.left ~= 0 or struts.right ~= 0 or struts.top ~= 0 or struts.bottom ~= 0 then
-              c:struts({ left = 0, right = 0, top = 0, bottom = 0 })
-              end
-              end)
-
-              -- run_once({ "xrandr --output LVDS1 --off --output DP1 --off --output HDMI1 --off --output VGA1 --mode 1920x1080 --pos 0x0 --rotate normal --output VIRTUAL1 --off" }) -- entries must be separated by commas
+    -- Set Firefox to always map on the tag named "2" on screen 1.
+    -- { rule = { class = "Firefox" },
+    --   properties = { screen = 1, tag = "2" } },
+  }
+  -- }}}
 
 
-              -- Add a titlebar if titlebars_enabled is set to true in the rules.
-              client.connect_signal("request::titlebars", function(c)
-                -- buttons for the titlebar
-                local buttons = gears.table.join(
-                  awful.button({ }, 1, function()
-                    c:emit_signal("request::activate", "titlebar", {raise = true})
-                    awful.mouse.client.move(c)
-                  end),
-                  awful.button({ }, 3, function()
-                    c:emit_signal("request::activate", "titlebar", {raise = true})
-                    awful.mouse.client.resize(c)
-                  end)
-                  )
+  -- {{{ Signals
+  -- Signal function to execute when a new client appears.
+  client.connect_signal("manage", function (c)
+    -- Set the windows at the slave,
+    -- i.e. put it at the end of others instead of setting it master.
+    -- if not awesome.startup then awful.client.setslave(c) end
 
-                awful.titlebar(c) : setup {
-                  { -- Left
-                    awful.titlebar.widget.iconwidget(c),
-                    buttons = buttons,
-                    layout  = wibox.layout.fixed.horizontal
-                  },
-                  { -- Middle
-                    { -- Title
-                      align  = "center",
-                      widget = awful.titlebar.widget.titlewidget(c)
-                    },
-                    buttons = buttons,
-                    layout  = wibox.layout.flex.horizontal
-                  },
-                  { -- Right
-                    awful.titlebar.widget.floatingbutton (c),
-                    awful.titlebar.widget.maximizedbutton(c),
-                    awful.titlebar.widget.stickybutton   (c),
-                    awful.titlebar.widget.ontopbutton    (c),
-                    awful.titlebar.widget.closebutton    (c),
-                    layout = wibox.layout.fixed.horizontal()
-                  },
-                  layout = wibox.layout.align.horizontal
-                }
-              end)
+    if awesome.startup
+      and not c.size_hints.user_position
+      and not c.size_hints.program_position then
+      -- Prevent clients from being unreachable after screen count changes.
+      awful.placement.no_offscreen(c)
+    end
+  end)
 
-screen.connect_signal("arrange", function (s)
+
+  -- client.connect_signal("request::manage", function(client, context)
+  --     -- https://www.reddit.com/r/awesomewm/comments/ic7vqt/center_floating_windows_on_screen
+  --     if client.floating and context == "new" then
+  --       client.placement = awful.placement.centered + awful.placement.no_overlap
+  --     end
+  -- end)
+
+  client.connect_signal("manage", function(client)
+    if client.floating then client.ontop = true end
+  end)
+
+  -- Avoid FF PiP popping FF window up/down when PiP meets the bottom/top edge
+  client.connect_signal("property::struts", function(c)
+    local struts = c:struts()
+    if struts.left ~= 0 or struts.right ~= 0 or struts.top ~= 0 or struts.bottom ~= 0 then
+      c:struts({ left = 0, right = 0, top = 0, bottom = 0 })
+    end
+  end)
+
+  -- run_once({ "xrandr --output LVDS1 --off --output DP1 --off --output HDMI1 --off --output VGA1 --mode 1920x1080 --pos 0x0 --rotate normal --output VIRTUAL1 --off" }) -- entries must be separated by commas
+
+
+  -- Add a titlebar if titlebars_enabled is set to true in the rules.
+  client.connect_signal("request::titlebars", function(c)
+    -- buttons for the titlebar
+    local buttons = gears.table.join(
+      awful.button({ }, 1, function()
+        c:emit_signal("request::activate", "titlebar", {raise = true})
+        awful.mouse.client.move(c)
+      end),
+      awful.button({ }, 3, function()
+        c:emit_signal("request::activate", "titlebar", {raise = true})
+        awful.mouse.client.resize(c)
+      end)
+      )
+
+    awful.titlebar(c) : setup {
+      { -- Left
+        awful.titlebar.widget.iconwidget(c),
+        buttons = buttons,
+        layout  = wibox.layout.fixed.horizontal
+      },
+      { -- Middle
+        { -- Title
+          align  = "center",
+          widget = awful.titlebar.widget.titlewidget(c)
+        },
+        buttons = buttons,
+        layout  = wibox.layout.flex.horizontal
+      },
+      { -- Right
+        awful.titlebar.widget.floatingbutton (c),
+        awful.titlebar.widget.maximizedbutton(c),
+        awful.titlebar.widget.stickybutton   (c),
+        awful.titlebar.widget.ontopbutton    (c),
+        awful.titlebar.widget.closebutton    (c),
+        layout = wibox.layout.fixed.horizontal()
+      },
+      layout = wibox.layout.align.horizontal
+    }
+
+    -- { rule = { class = "URxvt", instance = "ncmpcpp" },
+    --   -- properties = {
+    --   --   overwrite_class = "urxvt:ncmpcpp"
+    --   -- }
+    --   callback = function (c)
+    --     awful.client.property.set(c, "overwrite_class", "URxvt:ncmpcpp")
+    --   end
+    -- }
+
+  end)
+
+  screen.connect_signal("arrange", function (s)
     if s.selected_tag then local max = s.selected_tag.layout.name == "max" end
     local only_one = #s.tiled_clients == 1 -- use tiled_clients so that other floating windows don't affect the count
     -- but iterate over clients instead of tiled_clients as tiled_clients doesn't include maximized windows
     for _, c in pairs(s.clients) do
-        if (max or only_one) and not c.floating or c.maximized then
-            c.border_width = 0
-        else
-            c.border_width = beautiful.border_width
-        end
+      if (max or only_one) and not c.floating or c.maximized then
+        c.border_width = 0
+      else
+        c.border_width = beautiful.border_width
+      end
     end
-end)
-              -- Enable sloppy focus, so that focus follows mouse.
-              -- client.connect_signal("mouse::enter", function(c)
-              --     c:emit_signal("request::activate", "mouse_enter", {raise = false})
-              -- end)
+  end)
 
-              -- client.connect_signal("focus", function(c) c.border_color = beautiful.border_focus end)
-              -- client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)
-              -- }}}
+  -- Enable sloppy focus, so that focus follows mouse.
+  -- client.connect_signal("mouse::enter", function(c)
+  --     c:emit_signal("request::activate", "mouse_enter", {raise = false})
+  -- end)
 
-
-
-              -- window gaps
-              -- beautiful.useless_gap = 4
-
-              --
-              --     local titlebar = fenetre {
-              --     title_edit = function()
-              --         -- Remove " - Mozilla Firefox" from the ends of firefox's titles
-              --         local firefox = " - Mozilla Firefox"
-              --         local pri_brow = firefox .. " (Private Browsing)"
-              --         if title:sub(-firefox:len()) == firefox or title:sub(-pri_brow:len()) == pri_brow then
-              --             title = title:gsub(" %- Mozilla Firefox", "")
-              --         end
-              --     end,
-              --     max_vert_button = "Shift",
-              --     max_horiz_button = "Control",
-              --
-              --     order = { "max", "ontop", "sticky", "floating", "title" }
+  -- client.connect_signal("focus", function(c) c.border_color = beautiful.border_focus end)
+  -- client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)
+  -- }}}
 
 
-              -- require("smart_borders") {
-              --     show_button_tooltips = true,
-              --     positions = {"top"},
-              --     -- button_positions = {"top"},
-              --     -- buttons = {"floating", "minimize", "maximize", "close"},
-              --     --
-              --     -- layout = "fixed",
-              --     -- align_horizontal = "center",
-              --     -- button_size = 40,
-              --     -- button_floating_size = 60,
-              --     -- button_close_size = 60,
-              --     -- border_width = 6,
-              --     --
-              --     -- color_close_normal = {
-              --     --     type = "linear",
-              --     --     from = {0, 0},
-              --     --     to = {60, 0},
-              --     --     stops = {{0, "#fd8489"}, {1, "#56666f"}}
-              --     -- },
-              --     -- color_close_focus = {
-              --     --     type = "linear",
-              --     --     from = {0, 0},
-              --     --     to = {60, 0},
-              --     --     stops = {{0, "#fd8489"}, {1, "#a1bfcf"}}
-              --     -- },
-              --     -- color_close_hover = {
-              --     --     type = "linear",
-              --     --     from = {0, 0},
-              --     --     to = {60, 0},
-              --     --     stops = {{0, "#FF9EA3"}, {1, "#a1bfcf"}}
-              --     -- },
-              --     -- color_floating_normal = {
-              --     --     type = "linear",
-              --     --     from = {0, 0},
-              --     --     to = {40, 0},
-              --     --     stops = {{0, "#56666f"}, {1, "#ddace7"}}
-              --     -- },
-              --     -- color_floating_focus = {
-              --     --     type = "linear",
-              --     --     from = {0, 0},
-              --     --     to = {40, 0},
-              --     --     stops = {{0, "#a1bfcf"}, {1, "#ddace7"}}
-              --     -- },
-              --     -- color_floating_hover = {
-              --     --     type = "linear",
-              --     --     from = {0, 0},
-              --     --     to = {40, 0},
-              --     --     stops = {{0, "#a1bfcf"}, {1, "#F7C6FF"}}
-              --     -- },
-              --     --
-              --     -- snapping = false,
-              --     -- snapping_center_mouse = true,
-              --     --
-              --     -- -- custom control example:
-              --     -- button_back = function(c)
-              --     --     -- set client as master
-              --     --     c:swap(awful.client.getmaster())
-              --     -- end
-              -- }
+
+  -- window gaps
+  -- beautiful.useless_gap = 4
+
+  --
+  --     local titlebar = fenetre {
+  --     title_edit = function()
+  --         -- Remove " - Mozilla Firefox" from the ends of firefox's titles
+  --         local firefox = " - Mozilla Firefox"
+  --         local pri_brow = firefox .. " (Private Browsing)"
+  --         if title:sub(-firefox:len()) == firefox or title:sub(-pri_brow:len()) == pri_brow then
+  --             title = title:gsub(" %- Mozilla Firefox", "")
+  --         end
+  --     end,
+  --     max_vert_button = "Shift",
+  --     max_horiz_button = "Control",
+  --
+  --     order = { "max", "ontop", "sticky", "floating", "title" }
+
+
+  -- require("smart_borders") {
+  --     show_button_tooltips = true,
+  --     positions = {"top"},
+  --     -- button_positions = {"top"},
+  --     -- buttons = {"floating", "minimize", "maximize", "close"},
+  --     --
+  --     -- layout = "fixed",
+  --     -- align_horizontal = "center",
+  --     -- button_size = 40,
+  --     -- button_floating_size = 60,
+  --     -- button_close_size = 60,
+  --     -- border_width = 6,
+  --     --
+  --     -- color_close_normal = {
+  --     --     type = "linear",
+  --     --     from = {0, 0},
+  --     --     to = {60, 0},
+  --     --     stops = {{0, "#fd8489"}, {1, "#56666f"}}
+  --     -- },
+  --     -- color_close_focus = {
+  --     --     type = "linear",
+  --     --     from = {0, 0},
+  --     --     to = {60, 0},
+  --     --     stops = {{0, "#fd8489"}, {1, "#a1bfcf"}}
+  --     -- },
+  --     -- color_close_hover = {
+  --     --     type = "linear",
+  --     --     from = {0, 0},
+  --     --     to = {60, 0},
+  --     --     stops = {{0, "#FF9EA3"}, {1, "#a1bfcf"}}
+  --     -- },
+  --     -- color_floating_normal = {
+  --     --     type = "linear",
+  --     --     from = {0, 0},
+  --     --     to = {40, 0},
+  --     --     stops = {{0, "#56666f"}, {1, "#ddace7"}}
+  --     -- },
+  --     -- color_floating_focus = {
+  --     --     type = "linear",
+  --     --     from = {0, 0},
+  --     --     to = {40, 0},
+  --     --     stops = {{0, "#a1bfcf"}, {1, "#ddace7"}}
+  --     -- },
+  --     -- color_floating_hover = {
+  --     --     type = "linear",
+  --     --     from = {0, 0},
+  --     --     to = {40, 0},
+  --     --     stops = {{0, "#a1bfcf"}, {1, "#F7C6FF"}}
+  --     -- },
+  --     --
+  --     -- snapping = false,
+  --     -- snapping_center_mouse = true,
+  --     --
+  --     -- -- custom control example:
+  --     -- button_back = function(c)
+  --     --     -- set client as master
+  --     --     c:swap(awful.client.getmaster())
+  --     -- end
+  -- }
