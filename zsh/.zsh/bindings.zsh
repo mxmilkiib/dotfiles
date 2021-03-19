@@ -65,6 +65,9 @@ bindkey '^[[1;5C' emacs-forward-word
 bindkey "\eOd" emacs-backward-word
 bindkey "\eOc" emacs-forward-word # lands between words, not on first char
 
+bindkey "Od" emacs-backward-word
+bindkey "Od" emacs-forward-word # lands between words, not on first char
+
 
 
 # alt-left, alt-right - move cursor to start of previous or next word
@@ -82,6 +85,7 @@ bindkey '^f' forward-word
 # ctrl-backspace - deletes word to left of cursor
 # bindkey \" backward-kill-word
 bindkey '^h' backward-kill-word
+bindkey '^H' backward-kill-word
 
 # ctrl-del - deletes word to right of cursor
 # xterm

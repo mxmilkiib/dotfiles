@@ -183,6 +183,7 @@ alias lla='ls -lhA --group-directories-first'   # long list, alphabetical sort (
 alias laa='ls -lAh --color | less -RFX'				  # long, almost all, no reverse, piped to less w/ redraw (color), quit if under one screen, don't init/deinit terminal
 
 alias lt='ls -ltrh'         										# long list, sort by modification time, reversed (recent last), human readable
+alias wlt='watch ls -ltrh'
 alias lta='ls -ltrhA'        										# long list, sort by modification time, reversed (recent last), human readable, almost all files
 alias lu='ls -lturh'        										# long list, sort by and show access time, reversed, human readable
 alias lc='ls -ltcrh'         										# long list, sort by and show attribute change time, reversed, human readable
@@ -235,6 +236,8 @@ alias ,,='..'
 alias c.='cd $PWD'
 alias c-='cd -'
 
+# try fdfind if fd isn't available (Debian)
+alias fd='fd || fdfind'
 
 #to fox
 alias cdpwd='export CPPWD=$(pwd)'
@@ -383,6 +386,7 @@ alias suspend='pm-suspend' # With sudoers
 
 # systemd
 alias sy='systemctl '
+alias sys='systemctl --all -t service'
 compdef sy=systemctl
 alias susy='sudo systemctl'
 compdef susy=systemctl
@@ -396,11 +400,10 @@ alias sx='startx'
 ### Package management
 
 ## Debian derived
-alias a='sudo aptitude'
-alias aI='sudo aptitude install'
-alias aR='sudo aptitude remove'
+alias a='sudo aptitude install'
 alias au='sudo aptitude update'
 alias auu'=sudo aptitude safe-upgrade'
+alias aR='sudo aptitude remove'
 alias aS='apt-cache search'
 alias aw='apt-cache show'
 
@@ -556,19 +559,16 @@ alias ccp='rsync -arhHP --info=progress2 --no-i-r --partial-dir=.rsync-partial'
 # with both in and out
 alias alsamixer='alsamixer -V=all'
 
-alias mpdc='ncmpcpp'
+alias ncm='ncmpcpp'
 
 # Open a file
 function o(){
 	xdg-open "$@" &
 }
 
-# Check Awesome window manager config
-alias ak='awesome -k'
 
 # Sway window JSON tree
 alias swaytree='swaymsg -t get_tree'
-
 
 # Quick sudo nano
 alias sn='sudo nano -c' # With line numbers
@@ -664,15 +664,19 @@ diff () {
 # refresh pulseaudio devices
 alias paref='pacmd unload-module module-udev-detect && pacmd load-module module-udev-detect'
 
-alias yt-music='youtube-dl -x --audio-format best --audio-quality 0 --add-metadata --xattrs --embed-thumbnail $*'
 
 alias youtube-dl='youtube-dl --no-mtime'
-
-alias repa='systemctl --user restart pulseaudio.service'
+alias yt-music='youtube-dl -x --audio-format best --audio-quality 0 --add-metadata --xattrs --embed-thumbnail $*'
 
 # alias mpvyt="mpv --ytdl-format='[fps<=?30]'}"
 alias mpvyt="mpv --ytdl-format='bestvideo[height<=1080][fps<=?30]'"
 alias mpvhls='mpv --script-opts=ytdl_hook-all_formats=yes'
+
+
+alias repa='systemctl --user restart pulseaudio.service'
+
+
+
 
 # Web
 alias ff="firefox "
@@ -767,6 +771,13 @@ function google; {
 
 ### Web frameworks
 alias dr='drush'
+
+
+### Window managers
+
+# Check Awesome window manager config
+alias awK='awesome -k'
+alias awE='vim ~/.config/awesome/rc.lua'
 
 
 ### X
