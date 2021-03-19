@@ -62,6 +62,7 @@ unclutter --timeout 15 &
 udiskie -san &
 
 # Composition manager
+compton &
 # compton -b										# see ~/.config/compton.conf
 # compton --respect-prop-shadow -bc -t -8 -l -9 -r 6 -o 0.7 &
 # compton -cCGfF -o 0.38 -O 200 -I 200 -t 0.02 -l 0.02 -r 3.2 -D2 -m 0.88 -i 0 &
@@ -71,7 +72,7 @@ udiskie -san &
 # flashfocus &
 
 # Notification daemon. ctrl-space to close, ctrl-shift-space to close all.
-dunst &
+# dunst &
 
 # Update dynamic dns
 # dyndns &
@@ -203,8 +204,8 @@ FLOATKB=`xinput | grep Translated | awk -F ' ' '{print substr($7,length($7)-1,le
 
 
 # Redshift - changed screen colour temp
-# redshift-gtk -l 55.978301:-3.228586 -t 6000:4500 &
-sleep 6 && gammy &
+redshift-gtk -l 55.978301:-3.228586 -t 6000:4500 &
+# sleep 6 && gammy &
 
 # sleep 6 && agordejo --session-root ~/media/audio/projects/NSM --load-session 0_base --hide &
 
