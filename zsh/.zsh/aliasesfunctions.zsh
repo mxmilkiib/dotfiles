@@ -19,6 +19,7 @@ alias c='clear'
 alias :q='exit'
 alias quit='exit'
 
+
 function zle-keymap-select {
 		VIMODE="${${KEYMAP/vicmd/-- NORMAL --}/(main|viins)/-- INSERT --}"
 		zle reset-prompt

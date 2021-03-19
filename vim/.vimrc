@@ -91,6 +91,9 @@ call plug#begin('~/.vim/plugged')
   " Multiline f/t search
   Plug 'svermeulen/vim-extended-ft'
 
+  "  Lightning fast left-right movement in Vim
+  Plug 'unblevable/quick-scope'
+
   " File navigation
   " Jump to word using characters <leader>w (like f in vimium)
   " Plug 'Lokaltog/vim-easymotion'
@@ -101,7 +104,7 @@ call plug#begin('~/.vim/plugged')
 
   """ Coding
 
-  " Provide insert mode auto-completion for quotes, parens, brackets, etc.
+  " Provide insert mode nuto-completion for quotes, parens, brackets, etc.
   " Plug 'Raimondi/delimitMate'
   " Plug 'jiangmiao/auto-pairs'
 
@@ -251,12 +254,12 @@ hi! RainbowLevel7 ctermbg=233 guibg=#121212
   " For vim-session
   " Plug 'xolox/vim-misc'
   " Plug 'xolox/vim-lua-inspect'
-  " Plug 'tbastos/vim-lua'
+  Plug 'tbastos/vim-lua'
   " Plug 'xolox/vim-lua-ftplugin'
 
   Plug 'wsdjeg/vim-lua'
 
-
+  Plug 'intrntbrn/awesomewm-vim-tmux-navigator'
 
 
   " Generate snippets
@@ -300,14 +303,14 @@ hi! RainbowLevel7 ctermbg=233 guibg=#121212
   let g:airline_symbols = {}
   endif
 
-  let g:airline_left_sep = '▶'
-  let g:airline_left_alt_sep = ''
-  let g:airline_right_sep = '◀'
-  let g:airline_right_alt_sep = ''
-  let g:airline_symbols.branch = ''
-  let g:airline_symbols.readonly = ''
-  let g:airline_symbols.linenr = ''
-  let g:airline_statusline_ontop=0
+  " let g:airline_left_sep = '▶'
+  " let g:airline_left_alt_sep = ''
+  " let g:airline_right_sep = '◀'
+  " let g:airline_right_alt_sep = ''
+  " let g:airline_symbols.branch = ''
+  " let g:airline_symbols.readonly = ''
+  " let g:airline_symbols.linenr = ''
+  " let g:airline_statusline_ontop=0
 
   " Highlight the active line
   Plug 'ntpeters/vim-airline-colornum'
@@ -450,7 +453,7 @@ hi! RainbowLevel7 ctermbg=233 guibg=#121212
 
   " Synax for the sxhkd hotkey daemon
   " Plug 'baskerville/vim-sxhkdrc'
-  Plug 'kovetskiy/sxhkd-vim'
+  " Plug 'kovetskiy/sxhkd-vim'
 
 
   """ Colour theme
@@ -619,9 +622,9 @@ set viminfo='10,\"100,:20,%,n~/.viminfo
 " N.b. I have urxvt pass shift-space as an esc
 
 
-
 " Make backspace work like most other apps
 set backspace=eol,indent,start
+
 
 " Shift-space as Esc - for gvim, vim requires mapping in terminal emulator config
 " ..but doesn't work in gvim??
@@ -644,6 +647,7 @@ nnoremap <CR> i<CR><Esc>
 nnoremap <Space> i <Esc>l
 
 
+
 " Instead of stumbling into ex mode, repeat the last macro used.
 nnoremap Q @@
 
@@ -652,6 +656,7 @@ nmap <C-N><C-N> :set invnumber<CR>
 
 " Leader key (default = \)
 "let mapleader = ","
+
 
 
 " Edit .vimrc in current buffer with \ev
