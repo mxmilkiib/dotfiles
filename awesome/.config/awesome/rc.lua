@@ -493,10 +493,10 @@ DISPLAY=:1.0 awesome -c ~/.config/awesome/rc.lua
 
         tyrannical.tags = {
           {
-            name        = "1:Term",                 -- Call the tag "Term"
+            name        = "1 Term",                 -- Call the tag "Term"
             init        = true,                   -- Load the tag on startup
             exclusive   = true,                   -- Refuse any other type of clients (by classes)
-            screen      = {1,2},                  -- Create this tag on screen 1 and screen 2
+            screen      = {1,2},                  -- Create this tag on screen 1 and screen 3
             layout      = milkdefault,
             instance    = {"dev", "ops"},         -- Accept the following instances. This takes precedence over 'class'
             class       = { --Accept the following classes, refuse everything else (because of "exclusive=true")
@@ -504,7 +504,45 @@ DISPLAY=:1.0 awesome -c ~/.config/awesome/rc.lua
             }
           } ,
           {
-            name        = "2:Files",
+            name        = "2 Music",
+            init        = true,
+            exclusive   = true,
+            screen      = 1,
+            layout      = awful.layout.suit.max                          ,
+            instance = { "awful.client.property.single_instance_id" },
+            class = {
+            "ncmpcpp" },
+          } ,
+          {
+            name        = "3 Media",
+            init        = true,
+            exclusive   = true,
+            screen      = 1,
+            layout      = awful.layout.suit.max                          ,
+            instance = { "awful.client.property.single_instance_id" },
+            class = {
+            "mpv" },
+          } ,
+          {
+            name        = "4 Share",
+            init        = true,
+            exclusive   = true,
+            screen      = 1,
+            layout      = awful.layout.suit.max                          ,
+            class ={
+            "qBittorrent", "Nicotine" }
+          } ,
+          {
+            name        = "5 Other",
+            init        = true,
+            exclusive   = true,
+            screen      = 1,
+            layout      = awful.layout.suit.max                          ,
+            class ={
+            "" }
+          } ,
+          {
+            name        = "6 Files",
             init        = true,
             exclusive   = true,
             screen      = 1,
@@ -515,46 +553,7 @@ DISPLAY=:1.0 awesome -c ~/.config/awesome/rc.lua
             }
           } ,
           {
-            name        = "3:Music",
-            init        = true,
-            exclusive   = true,
-            screen      = 1,
-            layout      = awful.layout.suit.max                          ,
-            instance = { "awful.client.property.single_instance_id" },
-            class = {
-            "ncmpcpp" },
-          } ,
-          {
-            name        = "4:Media",
-            init        = true,
-            exclusive   = true,
-            screen      = 1,
-            layout      = awful.layout.suit.max                          ,
-            instance = { "awful.client.property.single_instance_id" },
-            class = {
-            "mpv" },
-          } ,
-          {
-            name        = "5:Vol",
-            init        = true,
-            exclusive   = true,
-            screen      = 1,
-            layout      = awful.layout.suit.max                          ,
-            instance = { "awful.client.property.single_instance_id" },
-            class = {
-            "Pavucontrol", "Jack_mixer" }
-          } ,
-          {
-            name        = "6:Share",
-            init        = true,
-            exclusive   = true,
-            screen      = 1,
-            layout      = awful.layout.suit.max                          ,
-            class ={
-            "qBittorrent", "Nicotine" }
-          } ,
-          {
-            name        = "7:Pass",
+            name        = "7 Pass",
             init        = true,
             exclusive   = true,
             screen      = 1,
@@ -562,8 +561,35 @@ DISPLAY=:1.0 awesome -c ~/.config/awesome/rc.lua
             class ={
             "keepassxc" }
           } ,
+                  {
+            name        = "8 Pass",
+            init        = true,
+            exclusive   = true,
+            screen      = 1,
+            layout      = awful.layout.suit.max                          ,
+            class ={
+            "keepassxc" }
+          } ,         
           {
-            name        = "8:Chat",
+            name        = "9 Vol",
+            init        = true,
+            exclusive   = true,
+            screen      = 1,
+            layout      = awful.layout.suit.max                          ,
+            class = {
+            "Pavucontrol", "Jack_mixer" }
+          } ,
+          {
+            name        = "0 Sys",
+            init        = true,
+            exclusive   = true,
+            screen      = 1,
+            layout      = awful.layout.suit.max                          ,
+            class ={
+            "" }
+          } ,          
+          {
+            name        = "- Chat",
             init        = true,
             exclusive   = true,
             screen      = 1,
@@ -571,28 +597,8 @@ DISPLAY=:1.0 awesome -c ~/.config/awesome/rc.lua
             class ={
             "quassel" }
           } ,
-          -- {
-          --   name        = "Dev",
-          --   init        = true,
-          --   exclusive   = true,
-          --   screen      = 1,
-          --   layout      = awful.layout.suit.max                          ,
-          --   class ={
-          --   "Kate", "KDevelop", "Codeblocks", "Code::Blocks" , "DDD", "kate4" }
-          -- } ,
-          -- {
-          --   name        = "Doc",
-          --   init        = false, -- This tag wont be created at startup, but will be when one of the
-          --   -- client in the "class" section will start. It will be created on
-          --   -- the client startup screen
-          --   exclusive   = true,
-          --   layout      = awful.layout.suit.max,
-          --   class       = {
-          --     "Assistant"     , "Okular"         , "Evince"    , "EPDFviewer"   , "xpdf",
-          --   "Xpdf"          ,                                        }
-          -- } ,
           {
-            name        = "9:Web",
+            name        = "= Web",
             init        = true,
             exclusive   = true,
             -- icon        = "~net.png",                 -- Use this icon for the tag (uncomment with a real path)
@@ -602,7 +608,9 @@ DISPLAY=:1.0 awesome -c ~/.config/awesome/rc.lua
               "Opera"         , "Firefox"        , "Rekonq"    , "Dillo"        , "Arora",
             "Chromium"      , "nightly"        , "minefield" , "Firefox-esr"     }
           } ,
-        }
+          }
+        
+        
 
         -- Ignore the tag "exclusive" property for the following clients (matched by classes)
         tyrannical.properties.intrusive = {
@@ -780,6 +788,7 @@ DISPLAY=:1.0 awesome -c ~/.config/awesome/rc.lua
         --         end),
 
 
+        awful.key({ modkey,          }, "0", awful.tag.viewidx(10)),
 
         -- Jump between current and previous window on whatever tag
         awful.key({ modkey,           }, "Escape", awful.tag.history.restore,
@@ -1104,7 +1113,7 @@ DISPLAY=:1.0 awesome -c ~/.config/awesome/rc.lua
   -- Bind all key numbers to tags.
   -- Be careful: we use keycodes to make it work on any keyboard layout.
   -- This should map on the top row of your keyboard, usually 1 to 9.
-  for i = 1, 9 do
+  for i = 1, 12 do
     globalkeys = gears.table.join(globalkeys,
 
       -- View tag only.
