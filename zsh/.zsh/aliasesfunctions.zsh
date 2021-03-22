@@ -386,10 +386,10 @@ alias suspend='pm-suspend' # With sudoers
 
 # systemd
 alias sy='systemctl '
-alias sys='systemctl --all -t service'
+alias ssy='sudo systemctl'
 compdef sy=systemctl
-alias susy='sudo systemctl'
-compdef susy=systemctl
+compdef ssy=systemctl
+alias sys='systemctl --all -t service'
 alias jctl='journalctl -xeb'
 
 # launch x
