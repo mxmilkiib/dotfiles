@@ -50,7 +50,6 @@ DISPLAY=:1.0 awesome -c ~/.config/awesome/rc.lua
 
   -- Window titlebar as widget
   -- local fenetre = require("fenetre")
-  --
   -- local titlebar = fenetre {
   --   max_vert_button = "Shift",
   --   max_horiz_button = "Control",
@@ -59,7 +58,7 @@ DISPLAY=:1.0 awesome -c ~/.config/awesome/rc.lua
 
 
   -- Layout scripts
-  local dovetail = require("awesome-dovetail")
+  -- local dovetail = require("awesome-dovetail")
   -- local thrizen = require("thrizen")
 
   -- local leaved = require "awesome-leaved"
@@ -121,7 +120,7 @@ DISPLAY=:1.0 awesome -c ~/.config/awesome/rc.lua
   beautiful.bg_systray = "#000000"
 
   -- Attempt to constrain the size of large icons in their apps notifications
-  beautiful.notification_icon_size = "32"
+  -- beautiful.notification_icon_size = "32"
 
 
   for s = 1, screen.count() do
@@ -227,11 +226,17 @@ DISPLAY=:1.0 awesome -c ~/.config/awesome/rc.lua
     })
 
 
+  -- Add icon entries to desktop
+  -- for s in screen do
+  --   freedesktop.desktop.add_icons({screen = s})
+  -- end
 
 
 
 
 
+
+  -- Animate active borders
   -- Gradient generator, adapted from https://krazydad.com/tutorials/makecolors.php
   border_animate_colours = {}
   function makeColorGradient(frequency1, frequency2, frequency3, phase1, phase2, phase3, center, width, len)
@@ -275,7 +280,7 @@ DISPLAY=:1.0 awesome -c ~/.config/awesome/rc.lua
   -- width = 127
   -- center = 210
   -- width = 45
-  center = 200
+  center = 180
   width = 40
   len = 80
 
@@ -316,13 +321,13 @@ DISPLAY=:1.0 awesome -c ~/.config/awesome/rc.lua
 
   -- window borders
   -- client.connect_signal("focus", function(c) c.border_color = "#ecbc34" end)
-  -- client.connect_signal("focus", function(c)
-  -- c.border_color = border_animate_colours[borderLoop]
-  -- end)
+  client.connect_signal("focus", function(c)
+  c.border_color = border_animate_colours[borderLoop]
+  end)
 
-  -- client.connect_signal("border_animation_timer:timeout", function(c)
-  --   c.border_color = border_animate_colours[borderLoop]
-  -- end)
+  client.connect_signal("border_animation_timer:timeout", function(c)
+    c.border_color = border_animate_colours[borderLoop]
+  end)
 
 
   -- Make border black on unfocus
@@ -331,10 +336,6 @@ DISPLAY=:1.0 awesome -c ~/.config/awesome/rc.lua
 
 
 
-
-  -- for s in screen do
-  --   freedesktop.desktop.add_icons({screen = s})
-  -- end
 
 
   -- setup launcher wih icon and menu
@@ -509,9 +510,9 @@ DISPLAY=:1.0 awesome -c ~/.config/awesome/rc.lua
             exclusive   = true,
             screen      = 1,
             layout      = awful.layout.suit.max                          ,
-            instance = { "awful.client.property.single_instance_id" },
+            single_instance_id = { "ncmpcpp" },
             class = {
-            "ncmpcpp" },
+            "*" },
           } ,
           {
             name        = "3 Media",
@@ -519,7 +520,6 @@ DISPLAY=:1.0 awesome -c ~/.config/awesome/rc.lua
             exclusive   = true,
             screen      = 1,
             layout      = awful.layout.suit.max                          ,
-            instance = { "awful.client.property.single_instance_id" },
             class = {
             "mpv" },
           } ,
@@ -553,13 +553,13 @@ DISPLAY=:1.0 awesome -c ~/.config/awesome/rc.lua
             }
           } ,
           {
-            name        = "7 Pass",
+            name        = "7 Stuff",
             init        = true,
             exclusive   = true,
             screen      = 1,
             layout      = awful.layout.suit.max                          ,
             class ={
-            "keepassxc" }
+            "" }
           } ,
                   {
             name        = "8 Pass",
@@ -691,6 +691,7 @@ DISPLAY=:1.0 awesome -c ~/.config/awesome/rc.lua
           return awful.rules.match(c, { class = class_name })
         end
       end
+
 
 
 
@@ -924,8 +925,8 @@ DISPLAY=:1.0 awesome -c ~/.config/awesome/rc.lua
       -- Apps
       awful.key({ modkey, shiftkey },   "e",       function () awful.spawn.raise_or_spawn("urxvt -e sh -c 'vim ~/.config/awesome/rc.lua'",nil,nil,"awesomeconf") end, { description = "edit awesome config", group = "launcher" }),
 
-      awful
-      .key({ modkey,},            "F1",      function () awful.spawn.raise_or_spawn("urxvt -e sh -c 'ncmpcpp' -name 'ncmpcpp'",nil,nil,"ncmpcpp") end, { description = "run ncmpcpp in a terminal", group = "launcher" }),
+      awful.key({ modkey,},            "F1",      function () awful.spawn.raise_or_spawn("urxvt -e sh -c 'ncmpcpp' -name 'ncmpcpp'",nil,create_matcher("ncmpcpp"),"ncmpcpp") end, { description = "run ncmpcpp in a terminal", group = "launcher" }),
+      -- awful.key({ modkey,},            "F1",      function () awful.spawn.raise_or_spawn("urxvt -e sh -c 'ncmpcpp' -name 'ncmpcpp'",nil,nil,"ncmpcpp") end, { description = "run ncmpcpp in a terminal", group = "launcher" }),
       -- awful.key({ modkey,},            "F1",      function () awful.spawn.raise_or_spawn("nsm",nil,create_matcher("Agordejo"),"Agordejo") end, { description = "NSM manager and launcher", group = "launcher" }),
       awful.key({ modkey },            "F2",      function () awful.spawn.raise_or_spawn("nicotine",nil,create_matcher("Nicotine")) end, { description = "run nicotine++", group = "launcher" }),
       awful.key({ modkey },            "F3",      function () awful.spawn.raise_or_spawn("qbittorrent",nil,create_matcher("qBittorrent"),"qBittorrent") end, { description = "run qbittorrent", group = "launcher" }),
@@ -1025,7 +1026,7 @@ DISPLAY=:1.0 awesome -c ~/.config/awesome/rc.lua
       {description = "toggle fullscreen", group = "client"}),
     awful.key({ modkey,           }, "q",      function (c) c:kill()                         end,
       {description = "close", group = "client"}),
-    awful.key({ modkey,           }, "z",  awful.client.floating.toggle                     ,
+    awful.key({ modkey,           }, "z",  function(c) c.floating = not c.floating           end,
       {description = "toggle floating", group = "client"}),
     awful.key({ modkey, ctrlkey }, "Return", function (c) c:swap(awful.client.getmaster()) end,
       {description = "move to master", group = "client"}),
@@ -1288,6 +1289,13 @@ DISPLAY=:1.0 awesome -c ~/.config/awesome/rc.lua
     { rule = { },                                 properties = { focus = awful.client.focus.filter } },
     -- or focus = true,
 
+    {
+        rule = { class = "URxvt", instance = "ncmpcpp" },
+        callback = function(c)
+            c.overwrite_class = "urxvt:dev"
+        end
+    },
+
 
     -- Commented out due to use of Tyrannical
     -- { rule = { instance = "Nicotine" },           properties = { tag = "2" } },
@@ -1395,15 +1403,6 @@ DISPLAY=:1.0 awesome -c ~/.config/awesome/rc.lua
       },
       layout = wibox.layout.align.horizontal
     }
-
-    -- { rule = { class = "URxvt", instance = "ncmpcpp" },
-    --   -- properties = {
-    --   --   overwrite_class = "urxvt:ncmpcpp"
-    --   -- }
-    --   callback = function (c)
-    --     awful.client.property.set(c, "overwrite_class", "URxvt:ncmpcpp")
-    --   end
-    -- }
 
   end)
 
