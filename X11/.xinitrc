@@ -27,8 +27,7 @@ fi
 xset +fp /usr/share/fonts/local
 xset fp rehash
 
-# Set Xorg keyboard layout
-setxkbmap gb
+
 
 numlockx &
 
@@ -211,6 +210,9 @@ redshift-gtk -l 55.978301:-3.228586 -t 6000:4500 &
 
 # sleep 9 && laptop-no-internal.sh &
 
+
+# Set Xorg keyboard layout
+setxkbmap gb
 
 
 # xrandr-rose-vgaprime-hdmiright.sh
