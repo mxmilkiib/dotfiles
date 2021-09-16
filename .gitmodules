@@ -10,3 +10,24 @@
 	path = awesome/.config/awesome/awesome-wm-widgets
 	url = https://github.com/streetturtle/awesome-wm-widgets
 	branch = master
+[submodule "awesome/.config/awesome/tyrannical"]
+	path = awesome/.config/awesome/tyrannical
+	url = https://github.com/Elv13/tyrannical
+[submodule "awesome/.config/awesome/cyclefocus"]
+	path = awesome/.config/awesome/cyclefocus
+	url = https://github.com/blueyed/awesome-cyclefocus
+[submodule "awesome/.config/awesome/lain"]
+	path = awesome/.config/awesome/lain
+	url = https://github.com/lcpz/lain
+[submodule "awesome/.config/awesome/revelation"]
+	path = awesome/.config/awesome/revelation
+	url = https://github.com/guotsuan/awesome-revelation
+[submodule "awesome/.config/awesome/freedesktop"]
+	path = awesome/.config/awesome/freedesktop
+	url = https://github.com/lcpz/awesome-freedesktop
+[submodule "awesome/.config/awesome/treetile"]
+	path = awesome/.config/awesome/treetile
+	url = https://github.com/alfunx/awesome-treetile
+[submodule "awesome/.config/awesome/media-player-widget"]
+	path = awesome/.config/awesome/media-player-widget
+	url = https://github.com/macunha1/awesomewm-media-player-widget
