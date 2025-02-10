@@ -1,8 +1,8 @@
 # Shell agnostic env setup
 
 # Important applications.
-export EDITOR=vim
-export VISUAL=vim
+export EDITOR=nvim
+export VISUAL=nvim
 # export BROWSER=google-chrome-stable
 # export BROWSER=chrome
 export BROWSER=firefox
@@ -39,9 +39,9 @@ export XDG_CACHE_HOME=${XDG_CACHE_HOME:-"$HOME/.cache"}
 
 
 # gives fuller GUI 
-export XDG_SESSION_DESKTOP=bspwm
-export XDG_SESSION_TYPE=x11
-export XDG_CURRENT_DESKTOP=bspwm
+# export XDG_SESSION_DESKTOP=bspwm
+# export XDG_SESSION_TYPE=x11
+# export XDG_CURRENT_DESKTOP=bspwm
 
 # If running from tty1 start sway window manager
 # if [ $(tty) = "/dev/tty1" ]; then
@@ -53,19 +53,22 @@ export XDG_CURRENT_DESKTOP=bspwm
 # fi
 
 
-if ! pgrep -x ssh-agent -u $(id -u) >/dev/null; then
- # This sets SSH_AUTH_SOCK and SSH_AGENT_PID variables
- eval "$(ssh-agent -s)"
- export SSH_AUTH_SOCK SSH_AGENT_PID
- cat > "$XDG_RUNTIME_DIR/ssh-agent-env" <<- __EOF__
- export SSH_AUTH_SOCK=$SSH_AUTH_SOCK
- export SSH_AGENT_PID=$SSH_AGENT_PID
-__EOF__
-else
- if [ -s "$XDG_RUNTIME_DIR/ssh-agent-env" ]; then
-  . $XDG_RUNTIME_DIR/ssh-agent-env
- fi
-fi
+
+export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent.socket"
+
+# if ! pgrep -x ssh-agent -u $(id -u) >/dev/null; then
+#  # This sets SSH_AUTH_SOCK and SSH_AGENT_PID variables
+#  eval "$(ssh-agent -s)"
+#  export SSH_AUTH_SOCK SSH_AGENT_PID
+#  cat > "$XDG_RUNTIME_DIR/ssh-agent-env" <<- __EOF__
+#  export SSH_AUTH_SOCK=$SSH_AUTH_SOCK
+#  export SSH_AGENT_PID=$SSH_AGENT_PID
+# __EOF__
+# else
+#  if [ -s "$XDG_RUNTIME_DIR/ssh-agent-env" ]; then
+#   . $XDG_RUNTIME_DIR/ssh-agent-env
+#  fi
+# fi
 
 # if ! pgrep -u "$USER" ssh-agent > /dev/null; then
 #     ssh-agent > "$XDG_RUNTIME_DIR/ssh-agent.env"
@@ -80,11 +83,21 @@ fi
 
 # Qt toolkit style configuration
 
-# export QT_QPA_PLATFORMTHEME=qt5ct
-export QT_QPA_PLATFORMTHEME=gtk2
+# export QT_QPA_PLATFORMTHEME=gtk2
+export QT_QPA_PLATFORMTHEME=qt6ct
 
 # export QT_STYLE_OVERRIDE="adwaita-dark"
 # export QT_STYLE_OVERRIDE="breeze"
+
+# export QT_THEME=Breeze:dark
+
+# this to make sure the right theme style is used
+export XDG_CURRENT_DESKTOP=qt6ct
+
+
+export LIBVA_DRIVER_NAME=nvidia
+export MOZ_DISABLE_RDD_SANDBOX=1
+export MOZ_X11_EGL=1
 
 
 # pacmatic

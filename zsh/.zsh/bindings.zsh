@@ -57,17 +57,21 @@ bindkey "${key[Down]}" history-substring-search-down
 # [[ -n "${key[CtrlLeft]}" ]]  && bindkey  "${key[CtrlLeft]}" backward-word
 # [[ -n "${key[CtrlRight]}" ]]  && bindkey  "${key[CtrlRight]}" forward-word
 
+
 # ctrl-left, ctrl-right - move cursor over words
 # xterm-256-color?
 bindkey '^[[1;5D' emacs-backward-word
 bindkey '^[[1;5C' emacs-forward-word
+# bindkey '[1;5C' emacs-forward-word
 # urxvt
 bindkey "\eOd" emacs-backward-word
 bindkey "\eOc" emacs-forward-word # lands between words, not on first char
 
 bindkey "Od" emacs-backward-word
-bindkey "Od" emacs-forward-word # lands between words, not on first char
+bindkey "Oc" emacs-forward-word # lands between words, not on first char
 
+bindkey "^[Od" emacs-backward-word
+bindkey "^[Oc" emacs-forward-word # lands between words, not on first char
 
 
 # alt-left, alt-right - move cursor to start of previous or next word
@@ -82,10 +86,12 @@ bindkey '^[^[[C'  forward-word
 bindkey '^b' backward-word
 bindkey '^f' forward-word
 
+
 # ctrl-backspace - deletes word to left of cursor
 # bindkey \" backward-kill-word
 bindkey '^h' backward-kill-word
 bindkey '^H' backward-kill-word
+
 
 # ctrl-del - deletes word to right of cursor
 # xterm
@@ -93,6 +99,7 @@ bindkey '^[[3;5~' kill-word
 # urxvt
 bindkey '^[[3^'   kill-word
 bindkey '^d'      kill-word
+
 
 # Type command then ctrl-up/ctrl-down to search history
 # bindkey "^[[1;5A" history-beginning-search-backward
@@ -106,8 +113,23 @@ bindkey '^d'      kill-word
 # bindkey "^S" history-incremental-search-forward
 # bindkey "^R" history-incremental-search-backward
 
-bindkey "^p" up-line-or-search
-bindkey "^n" down-line-or-search
+# bindkey "^p" up-line-or-search
+# bindkey "^n" down-line-or-search
+
+# Seach command history with up and down
+autoload -U history-search-end
+zle -N history-beginning-search-backward-end history-search-end
+zle -N history-beginning-search-forward-end history-search-end
+# bindkey "^[[A" history-beginning-search-backward-end
+# bindkey "^[[B" history-beginning-search-forward-end
+# make this ctrl-up/ctrl-down
+bindkey '^[[1;5A' history-beginning-search-backward-end
+bindkey '^[[1;5B' history-beginning-search-forward-end
+
+# zsh-history-substring-search
+# up/down
+bindkey '^[[A' history-substring-search-up
+bindkey '^[[B' history-substring-search-down
 
 
 key[F1]=${terminfo[kf1]}
@@ -148,6 +170,9 @@ autoload edit-command-line
 zle -N edit-command-line
 bindkey $key[F4] edit-command-line
 
+
+# Display contents of files in dir and below
+bindkey $key[F5] "bat *"
 
 
 # Ctrl-w - push line to buffer stack, 
@@ -228,3 +253,30 @@ bindkey "^[s" insert-sudo
 
 # simulate escape key with menu key
 # bindkey '^[[29~' '^[' noop noop
+
+if (( ${+terminfo[smkx]} )) && (( ${+terminfo[rmkx]} )); then
+  function zle-line-init() {
+    echoti smkx
+  }
+  function zle-line-finish() {
+    echoti rmkx
+  }
+  zle -N zle-line-init
+  zle -N zle-line-finish
+fi
+
+# Use emacs key bindings
+bindkey -e
+
+# [Home] - Go to beginning of line
+if [[ -n "${terminfo[khome]}" ]]; then
+  bindkey -M emacs "${terminfo[khome]}" beginning-of-line
+  bindkey -M viins "${terminfo[khome]}" beginning-of-line
+  bindkey -M vicmd "${terminfo[khome]}" beginning-of-line
+fi
+# [End] - Go to end of line
+if [[ -n "${terminfo[kend]}" ]]; then
+  bindkey -M emacs "${terminfo[kend]}"  end-of-line
+  bindkey -M viins "${terminfo[kend]}"  end-of-line
+  bindkey -M vicmd "${terminfo[kend]}"  end-of-line
+fi

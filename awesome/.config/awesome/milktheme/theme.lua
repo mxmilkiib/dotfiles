@@ -12,31 +12,60 @@ local themes_path = gfs.get_themes_dir()
 
 local theme = {}
 
-theme.font          = "Hack regular 9"
 
-theme.bg_normal     = "#222222"
-theme.bg_focus      = "#9f78e1"
+theme.font          = "Hack Nerd Font Mono 9"
+-- theme.font          = "Hack regular 9"
+-- theme.font          = "Hack regular 12"
+
+
+---- active window
+-- theme.bg_focus      = "#623997"
+
+theme.bg_focus       = "#623997"
+theme.fg_focus       = "#ffffff"
+
+---- general window
+-- theme.bg_normal     = "#000000"
+theme.bg_normal      = "#020202"
+theme.fg_normal      = "#fff"
+
+
+-- theme.bg_minimize   = "#000000"
+theme.bg_minimize    = "#000000"
+-- theme.fg_minimize   = "#9543b8"
+theme.fg_minimize    = "#999"
+
+
 -- theme.bg_urgent     = "#ecbc34"
-theme.bg_minimize   = "#222222"
-theme.bg_systray    = theme.bg_normal
+theme.fg_urgent      = "#ff0000"
 
-theme.fg_normal     = "#9f78e1"
-theme.fg_focus      = "#222222"
-theme.fg_urgent     = "#9f78e1"
-theme.fg_minimize   = "#9f78e1"
 
+theme.bg_systray     = theme.bg_normal
+-- theme.bg_systray    = "#000000"
+
+
+theme.titlebar_bg_normal = "#000000"
+theme.taglist_bg_normal = "#000000"
+
+
+-- beautiful.hotkeys_modifiers_fg = "#ffffff"
 
 -- theme.useless_gap   = dpi(3)
-theme.useless_gap   = 0
+-- theme.useless_gap   = 4
 
-theme.border_width  = dpi(2)
--- theme.border_width  = 3
+-- theme.border_width  = dpi(2)
+theme.border_width  = 4
+-- theme.border_width  = 2
+-- theme.border_width  = 1
 
 
 theme.border_normal = "#535d6c"
 -- theme.border_normal = "#ffffff"
 theme.border_focus  = "#535d6c"
 theme.border_marked = "#91231c"
+
+--theme.collision_focus_bg = "#ffff00"
+theme.collision_focus_bg_center = "#00ff00"
 
 
 -- There are other variable sets
@@ -52,14 +81,18 @@ theme.border_marked = "#91231c"
 -- Example:
 --theme.taglist_bg_focus = "#ff0000"
 
+
+
 -- Generate taglist squares:
-local taglist_square_size = dpi(4)
+local taglist_square_size = dpi(6.5)
 theme.taglist_squares_sel = theme_assets.taglist_squares_sel(
     taglist_square_size, theme.fg_normal
 )
 theme.taglist_squares_unsel = theme_assets.taglist_squares_unsel(
     taglist_square_size, theme.fg_normal
 )
+
+
 
 -- Variables set for theming notifications:
 -- notification_font
@@ -71,8 +104,10 @@ theme.taglist_squares_unsel = theme_assets.taglist_squares_unsel(
 -- menu_[bg|fg]_[normal|focus]
 -- menu_[border_color|border_width]
 theme.menu_submenu_icon = themes_path.."default/submenu.png"
-theme.menu_height = dpi(15)
-theme.menu_width  = dpi(100)
+theme.menu_height = dpi(20)
+theme.menu_width  = dpi(300)
+-- theme.menu_font   = "JetBrains Mono 12" 
+theme.menu_font   = "Hack regular 9" 
 
 -- You can add as many variables as
 -- you wish and access them by using

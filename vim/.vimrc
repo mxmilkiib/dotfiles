@@ -110,8 +110,10 @@ call plug#begin('~/.vim/plugged')
 
   " Add/remove comments with ease
   " gcc or gc<motion>
-  " or <leader>__ 
-  Plug 'tomtom/tcomment_vim'
+  " or <leader>__
+  " Plug 'tomtom/tcomment_vim'
+  " Plug 'tpope/vim-commentary'
+  Plug 'numToStr/Comment.nvim'
 
 
   " Surround objects with something
@@ -198,7 +200,7 @@ hi! RainbowLevel5 ctermbg=235 guibg=#262626
 hi! RainbowLevel6 ctermbg=234 guibg=#1c1c1c
 hi! RainbowLevel7 ctermbg=233 guibg=#121212
   hi! RainbowLevel8 ctermbg=232 guibg=#080808
- 
+
 
   " Highlights operator characters for every language
   Plug 'Valloric/vim-operator-highlight'
@@ -250,16 +252,32 @@ hi! RainbowLevel7 ctermbg=233 guibg=#121212
   " Python coding style formatting
   " Plug 'tell-k/vim-autopep8'
 
-  " Doesn't work right with Awesome
-  " For vim-session
+
+  """ Lua related scripts
+  " For vim-session and vim-lua-inspect and lua.vim (?)
   " Plug 'xolox/vim-misc'
   " Plug 'xolox/vim-lua-inspect'
-  Plug 'tbastos/vim-lua'
-  " Plug 'xolox/vim-lua-ftplugin'
+  " Plug 'vim-scripts/lua.vim'
 
-  Plug 'wsdjeg/vim-lua'
+  " indent plugin, doensn't indent right when functions don't have a specific
+  " linebreak format
+  " Plug 'tbastos/vim-lua'
+  "
+  " Plug 'wsdjeg/vim-lua'
+  " Plug 'idbrii/vim-lua'
 
-  Plug 'intrntbrn/awesomewm-vim-tmux-navigator'
+  " indent and syntax plugin, doesn't unindent when functions are commented
+  " out
+  "Plug 'marcuscf/vim-lua'
+
+  " badly opinionated formatting
+  " Plug 'andrejlevkovitch/vim-lua-format'
+  " autocmd FileType lua nnoremap <buffer> <c-k> :call LuaFormat()<cr>
+  " autocmd BufWrite *.lua call LuaFormat()
+  "
+  Plug 'https://gist.github.com/bonsaiviking/8845871.git'
+
+  " Plug 'intrntbrn/awesomewm-vim-tmux-navigator'
 
 
   " Generate snippets
@@ -493,7 +511,9 @@ set ttyfast
 if has ("mouse_sgr")
   set ttymouse=sgr
 else
-  set ttymouse=xterm2
+  if !has('nvim')
+    set ttymouse=xterm2
+  endif
 end
 
 " Enable mouse use in all modes. Use shift+middle-click to paste
@@ -544,12 +564,18 @@ set wrapscan
 set ignorecase
 set smartcase
 
+" Disable automatic comment on new line
+" set formatoptions-=r formatoptions-=c formatoptions-=o
+autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
+
 " history buffer to 1000 lines
 set history=1000
 
 " Set swap and backup dir
 set backupdir=/tmp
 set directory=/tmp
+
+set ttimeoutlen=100 " wait up to 100ms after Esc for special key
 
 
 """ Cursor
@@ -615,7 +641,7 @@ set wildchar=<Tab> wildmenu wildmode=full
 "  n... :  where to save the viminfo files
 " I.e., for remembering cursor position
 " http://vim.wikia.com/wiki/Restore_cursor_to_file_position_in_previous_editing_session
-set viminfo='10,\"100,:20,%,n~/.viminfo
+set viminfo='10,\"100,:20,%,n~/.viminfo.old
 
 
 """ Key settings and bindings
@@ -738,6 +764,7 @@ let c = col(".")
 let @/=_s
 call cursor(l, c)
 endfunction
+
 noremap <silent> <Leader><Space> :call <SID>StripTrailingWhitespace()<CR>
 
 

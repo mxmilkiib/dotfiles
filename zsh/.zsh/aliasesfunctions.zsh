@@ -79,15 +79,17 @@ zle -N down-line-or-history down-or-fake-accept-line
 
 ### Terminal multiplexing
 
+# Quick shortcut for tmux
+# alias t='tmux'
+
 # Check if there is an existing tmux server
-function ctmux(){
+function t(){
 	CTMUXC="$(tmux ls 2>&1 >/dev/null)"
-				if [[ $CTMUXC = "server not found: Connection refused" ]]; then
+	if [[ $CTMUXC = "server not found: Connection refused" || $CTMUXC = "no server running on /tmp/tmux-1000/default" || $CTMUXC = "no sessions" ]]; then
 		tmux -2
 	else
 		tmux -2 attach
 	fi
-	zsh
 }
 
 
@@ -196,6 +198,7 @@ alias lsrd='tree -Cdf | less -RFX'          		# alternative recursive ls, direct
 # Graphical tree of subdir files
 #alias 'lt=tree -d'
 
+
 # Search in files
 function gcode() { rg -uu --color=always -nC3 -- "$@" . | /usr/bin/less -R; }
 function gcode5() { rg -uu --color=always -nC5 -- "$@" . | /usr/bin/less -R; }
@@ -205,11 +208,12 @@ function gcode9() { rg -uu --color=always -nC9 -- "$@" . | /usr/bin/less -R; }
 # Mount with coloum output
 alias mounts='mount | column -t'
 
+
 # Human readable df default
 alias 'df=df -h'
 
 # dfc with sort by type, show used size, type, wide filename, wide bar, sum usage, just ext/fat/samba
-alias dfcc="dfc -q type -dTWws -t ext,vfat,cifs"
+alias dfcc="dfc -q type -dTws -t ext,vfat,nfs,btrfs,tmpfs"
 
 # better cdu
 alias du2='cdu -idh'
@@ -221,8 +225,10 @@ alias 'dus=du -ms * | sort -n'
 alias 'ncdu=ncdu --color dark -q'
 
 # Check disk usage in ncdu (arch root)
-alias 'ncduar=sudo ncdu / --color dark -q --exclude /home --exclude /mnt --exclude /media --exclude /run/media --exclude /boot --exclude /tmp --exclude /dev --exclude /proc --exclude /var --exclude /run/user'
+alias 'ncduar=sudo ncdu / --color dark -q --exclude /home --exclude /mnt --exclude /media --exclude /run/media --exclude /boot --exclude /tmp --exclude /dev --exclude /proc --exclude /var --exclude /run/user --exclude /btrbk_snapshots'
 
+# Check logical disc usage in btd
+alias btdul='sudo btdu --du --expert --max-time=30m /'
 
 alias ..='cd ..' 		# Automatic in ZSH (default?)
 alias ...=../..
@@ -237,32 +243,32 @@ alias c.='cd $PWD'
 alias c-='cd -'
 
 # try fdfind if fd isn't available (Debian)
-alias fd='fd || fdfind'
+# alias fd='fd || fdfind'
 
 #to fox
 alias cdpwd='export CPPWD=$(pwd)'
 alias gopwd='cd $CPPWD'
 
 # https://github.com/clvv/fasd
-alias a='fasd -a'        # any
-alias s='fasd -si'       # show / search / select
-alias d='fasd -d'        # directory
-alias f='fasd -f'        # file
+# alias a='fasd -a'        # any
+# alias s='fasd -si'       # show / search / select
+# alias d='fasd -d'        # directory
+# alias f='fasd -f'        # file
 # alias fd='fasd -sid'     # interactive directory selection
 # alias sf='fasd -sif'     # interactive file selection
 
 # function to execute built-in cd
-fasd_cd() {
-  if [ $# -le 1 ]; then
-    fasd "$@"
-  else
-    local _fasd_ret="$(fasd -e 'printf %s' "$@")"
-    [ -z "$_fasd_ret" ] && return
-    [ -d "$_fasd_ret" ] && cd "$_fasd_ret" || printf %s\n "$_fasd_ret"
-  fi
-}
-alias z='fasd_cd -d'
-alias zz='fasd_cd -d -i'
+# fasd_cd() {
+#   if [ $# -le 1 ]; then
+#     fasd "$@"
+#   else
+#     local _fasd_ret="$(fasd -e 'printf %s' "$@")"
+#     [ -z "$_fasd_ret" ] && return
+#     [ -d "$_fasd_ret" ] && cd "$_fasd_ret" || printf %s\n "$_fasd_ret"
+#   fi
+# }
+# alias z='fasd_cd -d'
+# alias zz='fasd_cd -d -i'
 
 
 # lwd - jump back to last dir of previous terminal
@@ -295,6 +301,10 @@ function lwd() {
 up() { cd $(eval printf '../'%.0s {1..$1}) && pwd; }
 #and "cd -[N]" or "cd -<TAB>" to get back
 
+
+# Moving as root
+alias smv='sudo mv'
+
 # Backup a file
 bak() { cp "$1" "$1".bak; }
 # Backup file and remove original
@@ -315,6 +325,11 @@ alias renamens="perl-rename -E 's/ /_/g' -E 's/(/_/g' -E 's/)/_/g'"
 # Makes parent dir if it doesn't exist (i.e. newdir/secondnewdir/third etc.)
 alias mkdir='mkdir -p'
 
+alias cp='cp --no-clobber'
+
+# 'cp' with archive, recursive, human readable, hard links, full progress, dest partial tmp dir
+alias ccp='rsync -arhHP --info=progress2 --no-i-r --partial-dir=.rsync-partial'
+
 # Make and change into new directory
 mkcd() { mkdir -p "$1" && cd "$1"; }
 
@@ -325,8 +340,14 @@ mvf() { mv "$@" && goto "$_"; }
 # Change into directory and long list files combo
 cl() { cd "$1" && ll . ; }
 
+# Make a backup of a file
+mkbk() {
+  cp "$1"{,.bak}
+}
+
 # Quick remove directory
 alias rd='rm -rf'
+alias srd='sudo rm -rf'
 
 # https://lobste.rs/s/vyfhpm/bash_aliases_are_great_so_is_dired
 spaces2underscores() {
@@ -340,6 +361,18 @@ spaces2underscores() {
 
 ### Network
 
+# wifi-menu quickie
+alias swf="sudo wifi-menu"
+
+# wifi status
+alias wifi-status='netctl list | grep "*";iwconfig 2>/dev/null|grep Signal|sed "s/^\s*//";[ $? -ne 0 ]&&echo No Signal'
+
+# ping gateway
+alias pinga="ping 192.168.1.1"
+
+# ping bbc.co.uk
+alias pingb='ping bbc.co.uk'
+
 # Ping and traceroute combo
 alias mtr="mtr -b -z -o LSDRNABWVGJMXI"
 
@@ -349,6 +382,9 @@ alias serverphp='php -S localhost:8000'
 
 # List open ports and their process
 alias tcpports='netstat -plnt'
+
+# List active network connections
+alias snh='sudo nethogs -C -a -v3 -s'
 alias netports='netstat --inet -pln'
 # List connections
 alias cons='lsof -i'
@@ -375,26 +411,31 @@ alias shu='systemctl poweroff'
 alias sre='systemctl reboot'
 
 # alias slo='systemctl restart display-manager' # Logout
-alias slo='sudo killall -u `whoami`' # Logout
+alias slo='loginctl kill-session self' # Logout
 
 
 # Suspend and [hubernate to come]
 # alias slo='sudo killall -u milk'
-alias pms='sudo pm-suspend'
-alias suspend='pm-suspend' # With sudoers
+# alias pms='sudo pm-suspend'
+# alias suspend='pm-suspend' # With sudoers
 
 
 # systemd
 alias sy='systemctl '
+alias syu='systemctl --user'
 alias ssy='sudo systemctl'
 compdef sy=systemctl
-compdef ssy=systemctl
-alias sys='systemctl --all -t service'
+alias  sys='systemctl status'
+alias  syr='systemctl restart'
+alias syy='systemctl --all -t service'
 alias jctl='journalctl -xeb'
 
 # launch x
 # alias sx='ssh-agent startx'
 alias sx='startx'
+alias sxl='startx -- -logverbose 6'
+alias xs='startx'
+
 
 
 ### Package management
@@ -407,18 +448,19 @@ alias aR='sudo aptitude remove'
 alias aS='apt-cache search'
 alias aw='apt-cache show'
 
+
 ## Arch Linux
 # install specific package
-alias p='yay -S --answeredit n'
+alias p='yay -S --answeredit n --sudoloop --answerclean n'
 # install specific package and allow build file editing
 alias pP='yay -S --editmenu --bottomup'
 
 # interactive search (pkg # + prompt)
-alias pS='yay --answeredit n --answerdiff n --bottomup'
+# alias pS='yay --answeredit none --answerdiff n --bottomup --sudoloop --answerclean n'
+# interactive search of AUR by popularity with confirm
+alias pS='yay --answeredit none --answerdiff n --bottomup --sudoloop --answerclean n --sortby popularity --bottomup'
 # interactive search with editing of PKGBUILD
 alias pSe='yay --editmenu --bottomup'
-# interactive search of AUR by popularity with confirm
-alias pSp='yay --sortby popularity --bottomup'
 
 # full upgrade
 # alias 'pu=sudo pacman -Syu'
@@ -432,13 +474,16 @@ alias puU='echo y | yay -Syu --answeredit n --answerclean n --answerdiff n --sud
 # alias puu='yay -Syu --answeredit n --answerupgrade n --answerclean n --answerdiff n --sudoloop --devel'
 # full upgrade with VCS packages checked, don't skip which packages to ignore
 # alias puuU='yay -Syu --answeredit n --answerclean n --sudoloop --devel'
-alias puu='pacman -Qmq | grep -Ee "-(cvs|svn|git|hg|bzr|darcs)$" | yay -S --answeredit n --answerclean n --answerdiff n --noremovemake --sudoloop --needed -'
+#alias puu='pacman -Qmq | grep -Ee "-(cvs|svn|git|hg|bzr|darcs)$" | yay -S --answeredit n --answerclean n --answerdiff n --noremovemake --sudoloop --needed - && checkrebuild'
+alias puu='pacman -Qmq | yay -S --devel --answeredit n --answerclean n --answerdiff n --noremovemake --sudoloop --needed && checkrebuild'
 alias p3='pu&&puu'
-
+alias puuu='pu&&puu'
 
 alias pSi='yay -Si'                         # search info
+
 alias pQi='pacman -Qi'                      # query info
 alias pQl='pacman -Ql'                      # query contents
+
 alias pQo='pacman -Qo'                      # query file ownership
 # display info for package that contains argument file
 function pQoi(){
@@ -463,7 +508,7 @@ alias pR='sudo pacman -Rcsn'								# remove, rm deps, recursive, remove config 
 alias pU='sudo pacman -U'										# install a local package file
 alias pL='sudo rm /var/lib/pacman/db.lck'   # remove lockfile if pacman doesn't exit gracefully
 
-alias pF='pkgfile'
+alias pF='pacman -F'
 
 # get PKGBUILD
 alias pG='yay -G'
@@ -473,7 +518,7 @@ alias mP='makepkg -si'
 alias mS='makepkg --printsrcinfo > .SRCINFO'
 # update .SRCINFO, git add+commit+push
 function mSs(){ [ ! $* ] && return;  makepkg --printsrcinfo > .SRCINFO && git add PKGBUILD .SRCINFO && git commit -m "$@" && git push }
-alias vP='vim PKGBUILD'
+alias vP='$EDITOR PKGBUILD'
 
 
 ### VCSH - multiple git repos in the same folder
@@ -539,7 +584,7 @@ alias -g S='&> /dev/null &'
 # fzf
 alias -g F='`fzf`'
 # vim
-alias -g V='|& vim -'
+alias -g V='|& $EDITOR -'
 
 # last modified file
 alias LF='ls -Art | tail -n 1'
@@ -552,9 +597,6 @@ alias oLF='LF | xargs xdg-open'
 
 # List ANSI colours
 alias colours='for code in {000..255}; do print -P -- "$code: %F{$code}Test%f"; done'
-
-# 'cp' with archive, recursive, human readable, hard links, full progress, dest partial tmp dir
-alias ccp='rsync -arhHP --info=progress2 --no-i-r --partial-dir=.rsync-partial'
 
 # with both in and out
 alias alsamixer='alsamixer -V=all'
@@ -570,28 +612,29 @@ function o(){
 # Sway window JSON tree
 alias swaytree='swaymsg -t get_tree'
 
-# Quick sudo nano
+# Quick sudo nan o
 alias sn='sudo nano -c' # With line numbers
 
 # Quick sudo vim (with $EDITOR=vim)
-alias sv='sudo vim'
+alias sv='sudo $EDITOR'
 
 alias svv='sudoedit '
 compdef svv=sudoedit
 
 # Vim
+alias v='nvim '
+alias vv='vim '
 alias vg='gvim '
-alias v='vim '
 # alias v='vim --servername VIM'
 # alias va='vim --remote +split'
-alias uv='urxvt -e vim'
+alias uv='urxvt -e $EDITOR'
 
 # required pkg: vimpager. use vim (n plugins) to view a file.
 alias vp=vimpager
 
 # Git quickies
 alias g='git show'
-alias gh='git show HEAD'
+alias ghe='git show HEAD'
 alias gis='git status '
 alias gd='git diff --color'
 alias gdc='git diff --color --cached'
@@ -626,8 +669,8 @@ function gc(){
 # Clone and cd into repo
 function gcl(){
   git clone $*;
-  [[ $* =~ "\.git$" ]] && cd `basename $* | head -c -5` && return
-	cd `basename $*`;
+  [[ $* =~ "git$" ]] && cd `basename $* | head -c -5` && return
+  if [[ -d $* ]] && [[ -d $*git ]] then; cd `basename $*`;fi
 }
 
 # Checkout last commit before date argument, in both current and argument directory
@@ -652,14 +695,17 @@ function git {
 alias cdg='cd $(git rev-parse --show-cdup)'
 
 # Color diff
-diff () {
-	if command_exists colordiff ; then
-		colordiff "$@" | less -R
-	else
-		command diff "$@a" | less
-	fi
-}
+# diff () {
+# 	if command_exists colordiff ; then
+# 		colordiff "$@" | less -R
+# 	else
+# 		command diff "$@a" | less
+# 	fi
+# }
 
+
+# audio session manager (NSM based)
+alias rsb="raysession --start-session basic &"
 
 # refresh pulseaudio devices
 alias paref='pacmd unload-module module-udev-detect && pacmd load-module module-udev-detect'
@@ -683,8 +729,8 @@ alias ff="firefox "
 alias trello="google-chrome --app=https://trello.com/b/AdniCH2y/to-do &"
 
 # Game
-alias defrag="quake3 +set fs_game defrag +devmap tr1ckhouse-beta3 +sv_cheats '1' +df_promode '1'"
-alias defrag2="quake3 +set fs_game defrag +devmap longtunnel +sv_cheats '1' +df_promode '1'"
+alias defrag="quake3 +set fs_game defrag +devmap tr1ckhouse-beta3 +sv_cheats '1' +df_promode '1' +r_mode '-1' +r_customwidth '1920' +r_customwidth '1080' +r_customaspect '1' +vm_cgame '0'"
+alias defrag2="quake3 +set fs_game defrag +devmap longtunnel +sv_cheats '1' +df_promode '1' +r_mode '-1' +r_customwidth '1920' +r_customwidth '1080' +r_customaspect '1' +vm_cgame '0'"
 
 
 # Etymology
@@ -706,6 +752,8 @@ function headless(){
 	VBoxHeadless -startvm "$@" &
 }
 
+
+alias xclipc="xclip -selection clipboard "
 
 # A shortcut function that simplifies usage of xclip.
 # - Accepts input from either stdin (pipe), or params.
@@ -744,12 +792,12 @@ cb() {
 # Aliases / functions leveraging the cb() function
 # ------------------------------------------------
 # Copy contents of a file
-function cbf() { cat "$1" | cb; }
+function copyf() { cat "$1" | cb; }
 # Copy SSH public key
-alias cbssh="cb ~/.ssh/id_rsa.pub"
+alias copyssh="cb ~/.ssh/id_rsa.pub"
 # Copy current working directory alias cbwd="pwd | cb"
 # Copy most recent command in bash history
-alias cbhs="cat $HISTFILE | tail -n 1 | cb"
+alias copyhs="cat $HISTFILE | tail -n 1 | cb"
 
 
 # prompt bell hook, sends an urgent signal on return to prompt, which is ignored if the terminal is active
@@ -777,10 +825,13 @@ alias dr='drush'
 
 # Check Awesome window manager config
 alias awK='awesome -k'
-alias awE='vim ~/.config/awesome/rc.lua'
+alias awE='$EDITOR ~/.config/awesome/rc.lua'
+alias awT='$EDITOR ~/.config/awesome/milktheme/theme.lua'
+alias kbF='cd $HOME/dl/firmware/moonlander && LB=`ls --color=never -t1|head -1`&&ls -l $LB&&wally-cli $LB'
 
 
 ### X
+alias xR='$EDITOR ~/.Xresources'
 
 # switch to left mouse and back
 alias lm='xmodmap -e "pointer = 3 2 1"'

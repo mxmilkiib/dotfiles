@@ -1,1 +1,1 @@
- rofi -modi drun -combi-modi 'drun' -show drun -show-icons -width 60 -lines 25 -theme purple.rasi
+ rofi -modi combi -combi-modes 'drun,run' -show combi -matching fuzzy -combi-hide-mode-prefix -show-icons -theme-str 'window {width: env( WIDTH, 40%); height: env( WIDTH, 70%) ;}' -theme purple.rasi

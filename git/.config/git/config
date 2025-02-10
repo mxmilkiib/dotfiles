@@ -1,5 +1,6 @@
 [user]
-	email = github@milkmiruku.com
+	email = git@milkmiruku.com
+	name = Milkii Brewster
 [color]
 	ui = true
 [github]
@@ -12,3 +13,5 @@
 	dsf = "!git diff --color $@ | diff-so-fancy"
 [core]
 	pager = less
+[init]
+	defaultBranch = main
