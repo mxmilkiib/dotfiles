@@ -914,11 +914,7 @@ globalkeys = gears.table.join(
         end,
         {description = "focus previous by index", group = "client"}
     ),
-    awful.key({ modkey,           }, "w", function () 
-        if client.focus then
-            client.focus:kill()
-        end
-    end,
+    awful.key({ modkey,           }, "w", function (c) c:kill() end,
               {description = "close window", group = "client"}),
 
     -- Layout manipulation
@@ -1078,69 +1074,7 @@ globalkeys = gears.table.join(
 
     -- Hue lighting sync
     awful.key({modkey, ctrlkey, altkey}, "h", function () awful.util.spawn("huestacean") end,
-              {description = "open huestacean", group = "launcher"}),
-
-    -- Application launchers
-    awful.key({modkey}, "F12", function() awful.spawn.raise_or_spawn("firefox", nil, create_matcher("firefox"))
-    end, {description = "run firefox", group = "launcher"}),
-
-    awful.key({modkey, shiftkey}, "F12", function() awful.spawn.raise_or_spawn("chromium", nil, create_matcher("chromium"))
-    end, {description = "run chromium", group = "launcher"}),
-
-    awful.key({modkey}, "p", function() awful.spawn.raise_or_spawn("pavucontrol", nil, create_matcher("pavucontrol"))
-    end, {description = "run pavucontrol", group = "launcher"}),
-
-    awful.key({modkey}, "Print", function() awful.spawn.with_shell("flameshot gui", false)
-    end, {description = "take a screenshot with flameshot", group = "launcher"}),
-
-    awful.key({modkey, altkey}, "q", function() awful.spawn.with_shell("xkill", false)
-    end, {description = "xkill to kill a hung gui app", group = "launcher"}),
-
-    awful.key({modkey, altkey}, "c", function() awful.spawn.with_shell("xcolor -s clipboard", false)
-    end, {description = "colour picker to clipboard", group = "launcher"}),
-
-    awful.key({ modkey, ctrlkey }, "a", function() awful.spawn.with_shell("arandr", false) end,
-    {description = "run arandr", group = "launcher"}),
-
-    -- F-key application launchers
-    awful.key({modkey}, "F1", function() awful.spawn.raise_or_spawn("urxvt -e sh -c 'ncmpcpp' -name 'ncmpcpp'", nil, nil, "ncmpcpp")
-    end, {description = "run ncmpcpp in a terminal", group = "launcher"}),
-
-    awful.key({modkey, shiftkey}, "F1", function() awful.spawn.raise_or_spawn("spotify", nil, create_matcher("spotify"), "spotify")
-    end, {description = "run spotify", group = "launcher"}),
-
-    awful.key({modkey}, "F2", function() awful.spawn.raise_or_spawn("raysession", nil, create_matcher("raysession"))
-    end, {description = "run raysession", group = "launcher"}),
-
-    awful.key({modkey, shiftkey}, "F2", function() awful.spawn.raise_or_spawn("urxvt -e sh -c 'nsm'", nil, create_matcher("nsm"), "nsm")
-    end, {description = "run argodejo in a terminal", group = "launcher"}),
-
-    awful.key({modkey}, "F3", function() awful.spawn.raise_or_spawn("qbittorrent", nil, create_matcher("qBittorrent"), "qBittorrent")
-    end, {description = "run qbittorrent", group = "launcher"}),
-
-    awful.key({modkey, shiftkey}, "F3", function() awful.spawn.raise_or_spawn("nicotine", nil, create_matcher("Nicotine"))
-    end, {description = "run nicotine++", group = "launcher"}),
-
-    awful.key({modkey}, "F4", function() awful.spawn.raise_or_spawn("picard", nil, create_matcher("Picard"))
-    end, {description = "run picard", group = "launcher"}),
-
-    awful.key({modkey, shiftkey}, "F4", function() awful.spawn.raise_or_spawn("simplescreenrecorder", nil, create_matcher("simplescreenrecorder"))
-    end, {description = "run simplescreenrecorder", group = "launcher"}),
-
-    awful.key({modkey, shiftkey}, "F6", function() awful.spawn.raise_or_spawn("qseq66", nil, create_matcher("qseq66"))
-    end, {description = "run qseq66", group = "launcher"}),
-
-    awful.key({modkey, shiftkey}, "F7", function() awful.spawn.raise_or_spawn("signal-desktop", nil, create_matcher("signal-desktop"))
-    end, {description = "run signal-desktop", group = "launcher"}),
-
-    awful.key({modkey}, "F8", function() awful.spawn.raise_or_spawn("keepassxc ~/state/nextcloud/sync/keepassxc-mb.kdbx", nil, create_matcher("keepassxc"))
-    end, {description = "run keepassxc", group = "launcher"}),
-
-    awful.key({modkey}, "F9", function() awful.spawn.raise_or_spawn("doublecmd", nil, create_matcher("doublecmd"))
-    end, {description = "run doublecmd", group = "launcher"}),
-
-    awful.key({ modkey }, "F11", function() awful.spawn.raise_or_spawn("quasselclient", nil, nil, "quasselclient") end,
-    { description = "run quasselclient", group = "launcher" })
+              {description = "open huestacean", group = "launcher"})
 )
 
 -- Bind all key numbers to tags.
@@ -3548,7 +3482,69 @@ globalkeys = gears.table.join(globalkeys,
 
     -- Menubar app launcher
     awful.key({modkey, shiftkey}, "space", function() menubar.show() end,
-    { description = "show the menubar", group = "launcher" })
+    { description = "show the menubar", group = "launcher" }),
+
+    -- Application launchers
+    awful.key({modkey}, "F12", function() awful.spawn("firefox")
+    end, {description = "run firefox", group = "launcher"}),
+
+    awful.key({modkey, shiftkey}, "F12", function() awful.spawn.raise_or_spawn("chromium", nil, create_matcher("chromium"))
+    end, {description = "run chromium", group = "launcher"}),
+
+    awful.key({modkey}, "p", function() awful.spawn.raise_or_spawn("pavucontrol", nil, create_matcher("pavucontrol"))
+    end, {description = "run pavucontrol", group = "launcher"}),
+
+    awful.key({modkey}, "Print", function() awful.spawn.with_shell("flameshot gui", false)
+    end, {description = "take a screenshot with flameshot", group = "launcher"}),
+
+    awful.key({modkey, altkey}, "q", function() awful.spawn.with_shell("xkill", false)
+    end, {description = "xkill to kill a hung gui app", group = "launcher"}),
+
+    awful.key({modkey, altkey}, "c", function() awful.spawn.with_shell("xcolor -s clipboard", false)
+    end, {description = "colour picker to clipboard", group = "launcher"}),
+
+    awful.key({ modkey, ctrlkey }, "a", function() awful.spawn.with_shell("arandr", false) end,
+    {description = "run arandr", group = "launcher"}),
+
+    -- F-key application launchers
+    awful.key({modkey}, "F1", function() awful.spawn.raise_or_spawn("urxvt -e sh -c 'ncmpcpp' -name 'ncmpcpp'", nil, nil, "ncmpcpp")
+    end, {description = "run ncmpcpp in a terminal", group = "launcher"}),
+
+    awful.key({modkey, shiftkey}, "F1", function() awful.spawn.raise_or_spawn("spotify", nil, create_matcher("spotify"), "spotify")
+    end, {description = "run spotify", group = "launcher"}),
+
+    awful.key({modkey}, "F2", function() awful.spawn.raise_or_spawn("raysession", nil, create_matcher("raysession"))
+    end, {description = "run raysession", group = "launcher"}),
+
+    awful.key({modkey, shiftkey}, "F2", function() awful.spawn.raise_or_spawn("urxvt -e sh -c 'nsm'", nil, create_matcher("nsm"), "nsm")
+    end, {description = "run argodejo in a terminal", group = "launcher"}),
+
+    awful.key({modkey}, "F3", function() awful.spawn.raise_or_spawn("qbittorrent", nil, create_matcher("qBittorrent"), "qBittorrent")
+    end, {description = "run qbittorrent", group = "launcher"}),
+
+    awful.key({modkey, shiftkey}, "F3", function() awful.spawn.raise_or_spawn("nicotine", nil, create_matcher("Nicotine"))
+    end, {description = "run nicotine++", group = "launcher"}),
+
+    awful.key({modkey}, "F4", function() awful.spawn.raise_or_spawn("picard", nil, create_matcher("Picard"))
+    end, {description = "run picard", group = "launcher"}),
+
+    awful.key({modkey, shiftkey}, "F4", function() awful.spawn.raise_or_spawn("simplescreenrecorder", nil, create_matcher("simplescreenrecorder"))
+    end, {description = "run simplescreenrecorder", group = "launcher"}),
+
+    awful.key({modkey, shiftkey}, "F6", function() awful.spawn.raise_or_spawn("qseq66", nil, create_matcher("qseq66"))
+    end, {description = "run qseq66", group = "launcher"}),
+
+    awful.key({modkey, shiftkey}, "F7", function() awful.spawn.raise_or_spawn("signal-desktop", nil, create_matcher("signal-desktop"))
+    end, {description = "run signal-desktop", group = "launcher"}),
+
+    awful.key({modkey}, "F8", function() awful.spawn.raise_or_spawn("keepassxc ~/state/nextcloud/sync/keepassxc-mb.kdbx", nil, create_matcher("keepassxc"))
+    end, {description = "run keepassxc", group = "launcher"}),
+
+    awful.key({modkey}, "F9", function() awful.spawn.raise_or_spawn("doublecmd", nil, create_matcher("doublecmd"))
+    end, {description = "run doublecmd", group = "launcher"}),
+
+    awful.key({ modkey }, "F11", function() awful.spawn.raise_or_spawn("quasselclient", nil, nil, "quasselclient") end,
+    { description = "run quasselclient", group = "launcher" })
 )
 
 -- Awesome control and layout keybindings
@@ -3604,10 +3600,10 @@ globalkeys = gears.table.join(globalkeys,
     { description = "rotate screens right", group = "screen" }),
 
     -- Tag navigation
-    awful.key({modkey, ctrlkey}, "left", function() move_to_previous_tag() end,
+    awful.key({modkey, ctrlkey}, "left", function(c) move_to_previous_tag() end,
     {description = "move client to prev tag without follow", group = "tag"}),
 
-    awful.key({modkey, ctrlkey}, "right", function() move_to_next_tag() end,
+    awful.key({modkey, ctrlkey}, "right", function(c) move_to_next_tag() end,
     { description = "move client to next tag without follow", group = "tag" })
 )
 
@@ -3728,11 +3724,11 @@ globalkeys = gears.table.join(globalkeys,
 -- Cyclefocus keybindings
 globalkeys = gears.table.join(globalkeys,
     -- Cycle through clients
-    awful.key({modkey}, "Tab", function() cyclefocus.cycle({modifier = "Super_L"}) end,
+    awful.key({modkey}, "Tab", function(c) cyclefocus.cycle({modifier = "Super_L"}) end,
         {description = "cycle through clients", group = "client"}),
 
     -- Cycle backwards through clients
-    awful.key({modkey, shiftkey}, "Tab", function() cyclefocus.cycle({modifier = "Super_L"}) end,
+    awful.key({modkey, shiftkey}, "Tab", function(c) cyclefocus.cycle({modifier = "Super_L"}) end,
         {description = "cycle backward through clients", group = "client"})
 )
 

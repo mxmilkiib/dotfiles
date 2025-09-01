@@ -914,11 +914,7 @@ globalkeys = gears.table.join(
         end,
         {description = "focus previous by index", group = "client"}
     ),
-    awful.key({ modkey,           }, "w", function () 
-        if client.focus then
-            client.focus:kill()
-        end
-    end,
+    awful.key({ modkey,           }, "w", function (c) c:kill() end,
               {description = "close window", group = "client"}),
 
     -- Layout manipulation
@@ -997,7 +993,8 @@ globalkeys = gears.table.join(
               {description = "show the menubar", group = "launcher"}),
 
     -- System controls
-        -- Screen blanking (duplicate removed - using the one above),
+    awful.key({modkey, ctrlkey}, "b", function() os.execute("sleep 1; xset dpms force off") end,
+              {description = "blank screen", group = "system"}),
     awful.key({modkey, altkey}, "r", function() os.execute("monitor_rofi.sh") end,
               {description = "monitor rofi", group = "system"}),
     awful.key({modkey, altkey}, "p", function() os.execute("rofi_power") end,
@@ -1078,69 +1075,7 @@ globalkeys = gears.table.join(
 
     -- Hue lighting sync
     awful.key({modkey, ctrlkey, altkey}, "h", function () awful.util.spawn("huestacean") end,
-              {description = "open huestacean", group = "launcher"}),
-
-    -- Application launchers
-    awful.key({modkey}, "F12", function() awful.spawn.raise_or_spawn("firefox", nil, create_matcher("firefox"))
-    end, {description = "run firefox", group = "launcher"}),
-
-    awful.key({modkey, shiftkey}, "F12", function() awful.spawn.raise_or_spawn("chromium", nil, create_matcher("chromium"))
-    end, {description = "run chromium", group = "launcher"}),
-
-    awful.key({modkey}, "p", function() awful.spawn.raise_or_spawn("pavucontrol", nil, create_matcher("pavucontrol"))
-    end, {description = "run pavucontrol", group = "launcher"}),
-
-    awful.key({modkey}, "Print", function() awful.spawn.with_shell("flameshot gui", false)
-    end, {description = "take a screenshot with flameshot", group = "launcher"}),
-
-    awful.key({modkey, altkey}, "q", function() awful.spawn.with_shell("xkill", false)
-    end, {description = "xkill to kill a hung gui app", group = "launcher"}),
-
-    awful.key({modkey, altkey}, "c", function() awful.spawn.with_shell("xcolor -s clipboard", false)
-    end, {description = "colour picker to clipboard", group = "launcher"}),
-
-    awful.key({ modkey, ctrlkey }, "a", function() awful.spawn.with_shell("arandr", false) end,
-    {description = "run arandr", group = "launcher"}),
-
-    -- F-key application launchers
-    awful.key({modkey}, "F1", function() awful.spawn.raise_or_spawn("urxvt -e sh -c 'ncmpcpp' -name 'ncmpcpp'", nil, nil, "ncmpcpp")
-    end, {description = "run ncmpcpp in a terminal", group = "launcher"}),
-
-    awful.key({modkey, shiftkey}, "F1", function() awful.spawn.raise_or_spawn("spotify", nil, create_matcher("spotify"), "spotify")
-    end, {description = "run spotify", group = "launcher"}),
-
-    awful.key({modkey}, "F2", function() awful.spawn.raise_or_spawn("raysession", nil, create_matcher("raysession"))
-    end, {description = "run raysession", group = "launcher"}),
-
-    awful.key({modkey, shiftkey}, "F2", function() awful.spawn.raise_or_spawn("urxvt -e sh -c 'nsm'", nil, create_matcher("nsm"), "nsm")
-    end, {description = "run argodejo in a terminal", group = "launcher"}),
-
-    awful.key({modkey}, "F3", function() awful.spawn.raise_or_spawn("qbittorrent", nil, create_matcher("qBittorrent"), "qBittorrent")
-    end, {description = "run qbittorrent", group = "launcher"}),
-
-    awful.key({modkey, shiftkey}, "F3", function() awful.spawn.raise_or_spawn("nicotine", nil, create_matcher("Nicotine"))
-    end, {description = "run nicotine++", group = "launcher"}),
-
-    awful.key({modkey}, "F4", function() awful.spawn.raise_or_spawn("picard", nil, create_matcher("Picard"))
-    end, {description = "run picard", group = "launcher"}),
-
-    awful.key({modkey, shiftkey}, "F4", function() awful.spawn.raise_or_spawn("simplescreenrecorder", nil, create_matcher("simplescreenrecorder"))
-    end, {description = "run simplescreenrecorder", group = "launcher"}),
-
-    awful.key({modkey, shiftkey}, "F6", function() awful.spawn.raise_or_spawn("qseq66", nil, create_matcher("qseq66"))
-    end, {description = "run qseq66", group = "launcher"}),
-
-    awful.key({modkey, shiftkey}, "F7", function() awful.spawn.raise_or_spawn("signal-desktop", nil, create_matcher("signal-desktop"))
-    end, {description = "run signal-desktop", group = "launcher"}),
-
-    awful.key({modkey}, "F8", function() awful.spawn.raise_or_spawn("keepassxc ~/state/nextcloud/sync/keepassxc-mb.kdbx", nil, create_matcher("keepassxc"))
-    end, {description = "run keepassxc", group = "launcher"}),
-
-    awful.key({modkey}, "F9", function() awful.spawn.raise_or_spawn("doublecmd", nil, create_matcher("doublecmd"))
-    end, {description = "run doublecmd", group = "launcher"}),
-
-    awful.key({ modkey }, "F11", function() awful.spawn.raise_or_spawn("quasselclient", nil, nil, "quasselclient") end,
-    { description = "run quasselclient", group = "launcher" })
+              {description = "open huestacean", group = "launcher"})
 )
 
 -- Bind all key numbers to tags.
@@ -3360,7 +3295,39 @@ globalkeys = gears.table.join(globalkeys,
     end, {description = "test color cycling", group = "shimmer"})
 )
 
--- Shimmer hotkey bindings (duplicate removed - using the one above)
+-- Shimmer hotkey bindings
+globalkeys = gears.table.join(globalkeys,
+    -- Toggle shimmer modes
+    awful.key({modkey, shiftkey, altkey}, "1", function()
+        set_shimmer_mode("candle")
+        -- naughty.notify({title = "Shimmer Mode", text = "Candle Flicker", timeout = 2})
+    end, {description = "candle shimmer mode", group = "shimmer"}),
+    
+    awful.key({modkey, shiftkey, altkey}, "2", function()
+        set_shimmer_mode("cloud")
+        -- naughty.notify({title = "Shimmer Mode", text = "Cloud Shadows", timeout = 2})
+    end, {description = "cloud shimmer mode", group = "shimmer"}),
+    
+    awful.key({modkey, shiftkey, altkey}, "3", function()
+        set_shimmer_mode("char_flicker")
+        -- naughty.notify({title = "Shimmer Mode", text = "Character Flicker", timeout = 2})
+    end, {description = "character flicker shimmer mode", group = "shimmer"}),
+    
+    awful.key({modkey, shiftkey, altkey}, "4", function()
+        set_shimmer_mode("border_sync")
+        -- naughty.notify({title = "Shimmer Mode", text = "Border Sync", timeout = 2})
+    end, {description = "border sync shimmer mode", group = "shimmer"}),
+    
+    awful.key({modkey, shiftkey, altkey}, "0", function()
+        set_shimmer_mode("off")
+        -- naughty.notify({title = "Shimmer Mode", text = "Off", timeout = 2})
+    end, {description = "turn off shimmer", group = "shimmer"}),
+    
+    awful.key({modkey, shiftkey, altkey}, "5", function()
+        set_shimmer_mode("deep_gold")
+        -- naughty.notify({title = "Shimmer Mode", text = "Deep Gold", timeout = 2})
+    end, {description = "deep gold shimmer mode", group = "shimmer"})
+)
 
 -- Additional client keybindings
 globalkeys = gears.table.join(globalkeys,
@@ -3371,7 +3338,14 @@ globalkeys = gears.table.join(globalkeys,
         c.minimized = true
     end, {description = "minimize", group = "client"}),
     
-    -- Unminimize next window (duplicate removed - using the one above)
+    -- Unminimize next window
+    awful.key({modkey, ctrlkey}, "n", function()
+        local c = awful.client.restore()
+        -- Focus restored client
+        if c then
+            c:emit_signal("request::activate", "key.unminimize", {raise = true})
+        end
+    end, {description = "restore minimized", group = "client"}),
     
     -- Jump to window
     awful.key({modkey, shiftkey}, "n",
@@ -3548,7 +3522,69 @@ globalkeys = gears.table.join(globalkeys,
 
     -- Menubar app launcher
     awful.key({modkey, shiftkey}, "space", function() menubar.show() end,
-    { description = "show the menubar", group = "launcher" })
+    { description = "show the menubar", group = "launcher" }),
+
+    -- Application launchers
+    awful.key({modkey}, "F12", function() awful.spawn.raise_or_spawn("firefox", nil, create_matcher("firefox"))
+    end, {description = "run firefox", group = "launcher"}),
+
+    awful.key({modkey, shiftkey}, "F12", function() awful.spawn.raise_or_spawn("chromium", nil, create_matcher("chromium"))
+    end, {description = "run chromium", group = "launcher"}),
+
+    awful.key({modkey}, "p", function() awful.spawn.raise_or_spawn("pavucontrol", nil, create_matcher("pavucontrol"))
+    end, {description = "run pavucontrol", group = "launcher"}),
+
+    awful.key({modkey}, "Print", function() awful.spawn.with_shell("flameshot gui", false)
+    end, {description = "take a screenshot with flameshot", group = "launcher"}),
+
+    awful.key({modkey, altkey}, "q", function() awful.spawn.with_shell("xkill", false)
+    end, {description = "xkill to kill a hung gui app", group = "launcher"}),
+
+    awful.key({modkey, altkey}, "c", function() awful.spawn.with_shell("xcolor -s clipboard", false)
+    end, {description = "colour picker to clipboard", group = "launcher"}),
+
+    awful.key({ modkey, ctrlkey }, "a", function() awful.spawn.with_shell("arandr", false) end,
+    {description = "run arandr", group = "launcher"}),
+
+    -- F-key application launchers
+    awful.key({modkey}, "F1", function() awful.spawn.raise_or_spawn("urxvt -e sh -c 'ncmpcpp' -name 'ncmpcpp'", nil, nil, "ncmpcpp")
+    end, {description = "run ncmpcpp in a terminal", group = "launcher"}),
+
+    awful.key({modkey, shiftkey}, "F1", function() awful.spawn.raise_or_spawn("spotify", nil, create_matcher("spotify"), "spotify")
+    end, {description = "run spotify", group = "launcher"}),
+
+    awful.key({modkey}, "F2", function() awful.spawn.raise_or_spawn("raysession", nil, create_matcher("raysession"))
+    end, {description = "run raysession", group = "launcher"}),
+
+    awful.key({modkey, shiftkey}, "F2", function() awful.spawn.raise_or_spawn("urxvt -e sh -c 'nsm'", nil, create_matcher("nsm"), "nsm")
+    end, {description = "run argodejo in a terminal", group = "launcher"}),
+
+    awful.key({modkey}, "F3", function() awful.spawn.raise_or_spawn("qbittorrent", nil, create_matcher("qBittorrent"), "qBittorrent")
+    end, {description = "run qbittorrent", group = "launcher"}),
+
+    awful.key({modkey, shiftkey}, "F3", function() awful.spawn.raise_or_spawn("nicotine", nil, create_matcher("Nicotine"))
+    end, {description = "run nicotine++", group = "launcher"}),
+
+    awful.key({modkey}, "F4", function() awful.spawn.raise_or_spawn("picard", nil, create_matcher("Picard"))
+    end, {description = "run picard", group = "launcher"}),
+
+    awful.key({modkey, shiftkey}, "F4", function() awful.spawn.raise_or_spawn("simplescreenrecorder", nil, create_matcher("simplescreenrecorder"))
+    end, {description = "run simplescreenrecorder", group = "launcher"}),
+
+    awful.key({modkey, shiftkey}, "F6", function() awful.spawn.raise_or_spawn("qseq66", nil, create_matcher("qseq66"))
+    end, {description = "run qseq66", group = "launcher"}),
+
+    awful.key({modkey, shiftkey}, "F7", function() awful.spawn.raise_or_spawn("signal-desktop", nil, create_matcher("signal-desktop"))
+    end, {description = "run signal-desktop", group = "launcher"}),
+
+    awful.key({modkey}, "F8", function() awful.spawn.raise_or_spawn("keepassxc ~/state/nextcloud/sync/keepassxc-mb.kdbx", nil, create_matcher("keepassxc"))
+    end, {description = "run keepassxc", group = "launcher"}),
+
+    awful.key({modkey}, "F9", function() awful.spawn.raise_or_spawn("doublecmd", nil, create_matcher("doublecmd"))
+    end, {description = "run doublecmd", group = "launcher"}),
+
+    awful.key({ modkey }, "F11", function() awful.spawn.raise_or_spawn("quasselclient", nil, nil, "quasselclient") end,
+    { description = "run quasselclient", group = "launcher" })
 )
 
 -- Awesome control and layout keybindings
@@ -3564,7 +3600,10 @@ globalkeys = gears.table.join(globalkeys,
     { description = "increase the number of master clients", group = "layout" }),
     awful.key({modkey, shiftkey}, "l", function() awful.tag.incnmaster(-1, nil, true) end,
     { description = "decrease the number of master clients", group = "layout" }),
-    -- Layout column controls (duplicate removed - using the ones above)
+    awful.key({modkey, ctrlkey}, "h", function() awful.tag.incncol(1, nil, true) end,
+    { description = "increase the number of columns", group = "layout"}),
+    awful.key({modkey, ctrlkey}, "l", function() awful.tag.incncol(-1, nil, true) end,
+    { description = "decrease the number of columns", group = "layout" }),
 
     awful.key({modkey}, "r", function() awful.layout.inc(1) end,
     {description = "select next layout", group = "layout"}),
@@ -3604,10 +3643,10 @@ globalkeys = gears.table.join(globalkeys,
     { description = "rotate screens right", group = "screen" }),
 
     -- Tag navigation
-    awful.key({modkey, ctrlkey}, "left", function() move_to_previous_tag() end,
+    awful.key({modkey, ctrlkey}, "left", function(c) move_to_previous_tag() end,
     {description = "move client to prev tag without follow", group = "tag"}),
 
-    awful.key({modkey, ctrlkey}, "right", function() move_to_next_tag() end,
+    awful.key({modkey, ctrlkey}, "right", function(c) move_to_next_tag() end,
     { description = "move client to next tag without follow", group = "tag" })
 )
 
@@ -3623,7 +3662,9 @@ globalkeys = gears.table.join(globalkeys,
     awful.key({ modkey, altkey }, "Return", function () awful.util.spawn("urxvt") end,
     {description = "open urxvt terminal", group = "launcher"}),
 
-    -- Launch Hue lighting sync to screen colours (duplicate removed - using the one above)
+    -- Launch Hue lighting sync to screen colours
+    awful.key({modkey, ctrlkey, altkey}, "h", function () awful.util.spawn("huestacean") end,
+    {description = "open huestacean", group = "launcher"}),
 
     -- Screen focus
     awful.key({modkey}, "o", function() awful.screen.focus_relative(1) end,
@@ -3728,11 +3769,11 @@ globalkeys = gears.table.join(globalkeys,
 -- Cyclefocus keybindings
 globalkeys = gears.table.join(globalkeys,
     -- Cycle through clients
-    awful.key({modkey}, "Tab", function() cyclefocus.cycle({modifier = "Super_L"}) end,
+    awful.key({modkey}, "Tab", function(c) cyclefocus.cycle({modifier = "Super_L"}) end,
         {description = "cycle through clients", group = "client"}),
 
     -- Cycle backwards through clients
-    awful.key({modkey, shiftkey}, "Tab", function() cyclefocus.cycle({modifier = "Super_L"}) end,
+    awful.key({modkey, shiftkey}, "Tab", function(c) cyclefocus.cycle({modifier = "Super_L"}) end,
         {description = "cycle backward through clients", group = "client"})
 )
 
@@ -3943,10 +3984,10 @@ awful.rules.rules = {
         }
       }, properties = { floating = true }},
 
-    -- add titlebars to normal clients and dialogs (disabled)
-    -- { rule_any = {type = { "normal", "dialog" }
-    --   }, properties = { titlebars_enabled = true }
-    -- },
+    -- add titlebars to normal clients and dialogs
+    { rule_any = {type = { "normal", "dialog" }
+      }, properties = { titlebars_enabled = true }
+    },
 
     -- // MARK: --floating-rules
     -- {{{ Floating client rules

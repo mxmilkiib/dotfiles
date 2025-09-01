@@ -81,6 +81,12 @@ theme.collision_focus_bg_center = "#00ff00"
 -- Example:
 --theme.taglist_bg_focus = "#ff0000"
 
+-- Ensure readable title/task text colors
+theme.tasklist_fg_focus = theme.tasklist_fg_focus or "#FFD700"
+theme.tasklist_fg_normal = theme.tasklist_fg_normal or "#FFFFFF"
+theme.titlebar_fg_focus = theme.titlebar_fg_focus or "#FFD700"
+theme.titlebar_fg_normal = theme.titlebar_fg_normal or "#FFFFFF"
+
 
 
 -- Generate taglist squares:

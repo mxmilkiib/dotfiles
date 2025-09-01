@@ -1,0 +1,4445 @@
+--------------------------------------------------
+-- Milkiis rc.lua                                --
+-- https://github.com/mxmilkiib/dotfiles        --
+--------------------------------------------------
+
+-- #region CORE
+-- ################################################################################
+--                                                                     
+--     ,o888888o.        ,o888888o.     8 888888888o.   8 8888888888   
+--    8888     `88.   . 8888     `88.   8 8888    `88.  8 8888         
+-- ,8 8888       `8. ,8 8888       `8b  8 8888     `88  8 8888         
+-- 88 8888           88 8888        `8b 8 8888     ,88  8 8888         
+-- 88 8888           88 8888         88 8 8888.   ,88'  8 888888888888 
+-- 88 8888           88 8888         88 8 888888888P'   8 8888         
+-- 88 8888           88 8888        ,8P 8 8888`8b       8 8888         
+-- `8 8888       .8' `8 8888       ,8P  8 8888 `8b.     8 8888         
+--    8888     ,88'   ` 8888     ,88'   8 8888   `8b.   8 8888         
+--     `8888888P'        `8888888P'     8 8888     `88. 8 888888888888 
+-- ################################################################################
+-- CORE SETUP - Testing and debugging
+-- ################################################################################
+-- ################################################################################
+-- ################################################################################
+-- Run in Xephyr for testing:
+-- Xephyr :1 -ac -br -noreset -screen 1152x720 & DISPLAY=:1.0 awesome -c ~/.config/awesome/rc.lua
+
+-- #region LIBS
+-- ################################################################################
+--                                                      
+-- 8 8888          8 8888 8 888888888o      d888888o.   
+-- 8 8888          8 8888 8 8888    `88.  .`8888:' `88. 
+-- 8 8888          8 8888 8 8888     `88  8.`8888.   Y8 
+-- 8 8888          8 8888 8 8888     ,88  `8.`8888.     
+-- 8 8888          8 8888 8 8888.   ,88'   `8.`8888.    
+-- 8 8888          8 8888 8 8888888888      `8.`8888.   
+-- 8 8888          8 8888 8 8888    `88.     `8.`8888.  
+-- 8 8888          8 8888 8 8888      88 8b   `8.`8888. 
+-- 8 8888          8 8888 8 8888    ,88' `8b.  ;8.`8888 
+-- 8 888888888888  8 8888 8 888888888P    `Y8888P ,88P' 
+-- ################################################################################
+-- LIBRARIES - Core library imports
+-- If LuaRocks is installed, make sure that packages installed through it are found
+pcall(require, "luarocks.loader")
+
+-- Standard awesome libraries
+local gears = require("gears")
+local gmath = require("gears.math")
+local awful = require("awful")
+require("awful.autofocus")
+local wibox = require("wibox")     -- Widget and layout library
+local beautiful = require("beautiful") -- Theme handling library
+local naughty = require("naughty")   -- Notification library
+local menubar = require("menubar")
+local hotkeys_popup = require("awful.hotkeys_popup")
+
+-- Enable hotkeys help widget for VIM and other apps
+-- when client with a matching name is opened:
+-- require("awful.hotkeys_popup.keys")
+
+-- #region VARS
+-- ################################################################################
+--                                                                   
+-- `8.`888b           ,8' .8.          8 888888888o.     d888888o.   
+--  `8.`888b         ,8' .888.         8 8888    `88.  .`8888:' `88. 
+--   `8.`888b       ,8' :88888.        8 8888     `88  8.`8888.   Y8 
+--    `8.`888b     ,8' . `88888.       8 8888     ,88  `8.`8888.     
+--     `8.`888b   ,8' .8. `88888.      8 8888.   ,88'   `8.`8888.    
+--      `8.`888b ,8' .8`8. `88888.     8 888888888P'     `8.`8888.   
+--       `8.`888b8' .8' `8. `88888.    8 8888`8b          `8.`8888.  
+--        `8.`888' .8'   `8. `88888.   8 8888 `8b.    8b   `8.`8888. 
+--         `8.`8' .888888888. `88888.  8 8888   `8b.  `8b.  ;8.`8888 
+--          `8.` .8'       `8. `88888. 8 8888     `88. `Y8888P ,88P' 
+-- ################################################################################
+-- Vars
+-- ################################################################################
+-- Store the previous tag when switching to pavucontrol
+local previous_tag = nil
+
+-- #region ERRORS
+-- ################################################################################
+--                                                                  
+-- 8 8888888888   8 888888888o.   8 888888888o.      ,o888888o.     
+-- 8 8888         8 8888    `88.  8 8888    `88.  . 8888     `88.   
+-- 8 8888         8 8888     `88  8 8888     `88 ,8 8888       `8b  
+-- 8 8888         8 8888     ,88  8 8888     ,88 88 8888        `8b 
+-- 8 888888888888 8 8888.   ,88'  8 8888.   ,88' 88 8888         88 
+-- 8 8888         8 888888888P'   8 888888888P'  88 8888         88 
+-- 8 8888         8 8888`8b       8 8888`8b      88 8888        ,8P 
+-- 8 8888         8 8888 `8b.     8 8888 `8b.    `8 8888       ,8P  
+-- 8 8888         8 8888   `8b.   8 8888   `8b.   ` 8888     ,88'   
+-- 8 888888888888 8 8888     `88. 8 8888     `88.    `8888888P'     
+--                               
+-- 8 888888888o.     d888888o.   
+-- 8 8888    `88.  .`8888:' `88. 
+-- 8 8888     `88  8.`8888.   Y8 
+-- 8 8888     ,88  `8.`8888.     
+-- 8 8888.   ,88'   `8.`8888.    
+-- 8 888888888P'     `8.`8888.   
+-- 8 8888`8b          `8.`8888.  
+-- 8 8888 `8b.    8b   `8.`8888. 
+-- 8 8888   `8b.  `8b.  ;8.`8888 
+-- 8 8888     `88. `Y8888P ,88P' 
+-- ################################################################################
+-- ERROR HANDLING - Startup and runtime error management
+-- Check if awesome encountered an error during startup and fell back to another config
+-- (This code will only ever execute for the fallback config)
+if awesome.startup_errors then
+	naughty.notify({
+		preset = naughty.config.presets.critical,
+		title = "Oops, there were errors during startup!",
+		text = awesome.startup_errors
+	})
+end
+
+-- Handle runtime errors after startup
+do
+	local in_error = false
+	awesome.connect_signal("debug::error", function(err)
+		-- Make sure we don't go into an endless error loop
+		if in_error then return end
+		in_error = true
+
+		naughty.notify({
+			preset = naughty.config.presets.critical,
+			title = "Oops, an error happened!",
+			text = tostring(err)
+		})
+		in_error = false
+	end)
+end
+
+-- #region PHASE1
+-- ################################################################################
+--                                                                    
+-- 8 888888888o   8 8888        8          .8.            d888888o.   
+-- 8 8888    `88. 8 8888        8         .888.         .`8888:' `88. 
+-- 8 8888     `88 8 8888        8        :88888.        8.`8888.   Y8 
+-- 8 8888     ,88 8 8888        8       . `88888.       `8.`8888.     
+-- 8 8888.   ,88' 8 8888        8      .8. `88888.       `8.`8888.    
+-- 8 888888888P'  8 8888        8     .8`8. `88888.       `8.`8888.   
+-- 8 8888         8 8888888888888    .8' `8. `88888.       `8.`8888.  
+-- 8 8888         8 8888        8   .8'   `8. `88888.  8b   `8.`8888. 
+-- 8 8888         8 8888        8  .888888888. `88888. `8b.  ;8.`8888 
+-- 8 8888         8 8888        8 .8'       `8. `88888. `Y8888P ,88P' 
+--                
+-- 8 8888888888   
+-- 8 8888         
+-- 8 8888         
+-- 8 8888         
+-- 8 888888888888 
+-- 8 8888         
+-- 8 8888         
+-- 8 8888         
+-- 8 8888         
+-- 8 888888888888 
+-- ################################################################################
+-- FOUNDATION CONFIGURATION - Basic definitions and settings
+
+-- #region DEFS
+-- ################################################################################
+--                                                               
+-- 8 888888888o.      8 8888888888   8 8888888888    d888888o.   
+-- 8 8888    `^888.   8 8888         8 8888        .`8888:' `88. 
+-- 8 8888        `88. 8 8888         8 8888        8.`8888.   Y8 
+-- 8 8888         `88 8 8888         8 8888        `8.`8888.     
+-- 8 8888          88 8 888888888888 8 888888888888 `8.`8888.    
+-- 8 8888          88 8 8888         8 8888          `8.`8888.   
+-- 8 8888         ,88 8 8888         8 8888           `8.`8888.  
+-- 8 8888        ,88' 8 8888         8 8888       8b   `8.`8888. 
+-- 8 8888    ,o88P'   8 8888         8 8888       `8b.  ;8.`8888 
+-- 8 888888888P'      8 888888888888 8 8888        `Y8888P ,88P' 
+-- ################################################################################
+-- DEFINITIONS - Theme and visual configuration
+beautiful.init(gears.filesystem.get_configuration_dir() .. "milktheme/theme.lua")
+
+-- Theme customization
+beautiful.wallpaper = awful.util.get_configuration_dir() .. "milktheme/background.png"
+
+-- Font settings
+beautiful.hotkeys_font = "Hack Nerd Font 12"
+-- beautiful.hotkeys_description_font = "JetBrains Mono 12"
+-- beautiful.menu_font = "JetBrains Mono 14"
+-- beautiful.menu_font = "Hack 14"  -- Now set in theme file
+beautiful.menu_height = 24
+beautiful.menu_width = 300
+
+-- Color settings
+beautiful.bg_systray = "#000000"
+-- beautiful.bg_systray = "#191919"
+beautiful.notification_bg = "#FFD700"  -- Gold background
+beautiful.notification_fg = "#000000"  -- Black text
+beautiful.hotkeys_modifiers_fg = "#dddddd"
+
+-- Notification settings
+naughty.config.defaults.ontop = true
+-- naughty.config.defaults.timeout = 10
+-- naughty.config.defaults.margin = dpi("16")
+-- naughty.config.defaults.border_width = 0
+naughty.config.defaults.width = 400  -- Width in pixels instead of percentage string
+naughty.config.defaults.position = 'bottom_middle'
+
+-- Notification icon settings
+-- Attempt to constrain the size of large icons in their apps notifications
+beautiful.notification_icon_size = 64  -- Number instead of string
+naughty.config.defaults['icon_size'] = 64
+
+-- #region KEYS
+-- ################################################################################
+--                                                             
+-- 8 8888     ,88' 8 8888888888 `8.`8888.      ,8' d888888o.   
+-- 8 8888    ,88'  8 8888        `8.`8888.    ,8'.`8888:' `88. 
+-- 8 8888   ,88'   8 8888         `8.`8888.  ,8' 8.`8888.   Y8 
+-- 8 8888  ,88'    8 8888          `8.`8888.,8'  `8.`8888.     
+-- 8 8888 ,88'     8 888888888888   `8.`88888'    `8.`8888.    
+-- 8 8888 88'      8 8888            `8. 8888      `8.`8888.   
+-- 8 888888<       8 8888             `8 8888       `8.`8888.  
+-- 8 8888 `Y8.     8 8888              8 8888   8b   `8.`8888. 
+-- 8 8888   `Y8.   8 8888              8 8888   `8b.  ;8.`8888 
+-- 8 8888     `Y8. 8 888888888888      8 8888    `Y8888P ,88P' 
+-- ################################################################################
+-- KEYS - Modifier key definitions
+-- Default modkey (Mod4 is usually the key with a logo between Control and Alt)
+-- To remap, use xmodmap or other tools
+modkey = "Mod4"
+altkey = "Mod1"    -- Alt key
+ctrlkey = "Control" -- Control key
+shiftkey = "Shift"  -- Shift key
+
+-- #region TERM
+-- ################################################################################
+--                                                   
+-- 8888888 8888888888 8 8888888888   8 888888888o.   
+--       8 8888       8 8888         8 8888    `88.  
+--       8 8888       8 8888         8 8888     `88  
+--       8 8888       8 8888         8 8888     ,88  
+--       8 8888       8 888888888888 8 8888.   ,88'  
+--       8 8888       8 8888         8 888888888P'   
+--       8 8888       8 8888         8 8888`8b       
+--       8 8888       8 8888         8 8888 `8b.     
+--       8 8888       8 8888         8 8888   `8b.   
+--       8 8888       8 888888888888 8 8888     `88. 
+--           .         .           
+--          ,8.       ,8.          
+--         ,888.     ,888.         
+--        .`8888.   .`8888.        
+--       ,8.`8888. ,8.`8888.       
+--      ,8'8.`8888,8^8.`8888.      
+--     ,8' `8.`8888' `8.`8888.     
+--    ,8'   `8.`88'   `8.`8888.    
+--   ,8'     `8.`'     `8.`8888.   
+--  ,8'       `8        `8.`8888.  
+-- ,8'         `         `8.`8888. 
+-- ################################################################################
+-- TERMINAL - Terminal and editor definitions
+-- Define default terminal and editor
+terminal = "urxvt"
+-- terminal = "alacritty"
+editor = os.getenv("EDITOR") or "nvim"
+editor_cmd = terminal .. " -e " .. editor
+
+-- Compound terminal command for system monitoring
+terminal_cmd = terminal .. " -e btop;" ..
+               terminal .. " -e journalctl -xeb;" ..
+               terminal .. " -e dmesg"
+
+-- #region VISUAL
+-- ################################################################################
+--                                                              
+-- `8.`888b           ,8'  8 8888    d888888o.   8 8888      88 
+--  `8.`888b         ,8'   8 8888  .`8888:' `88. 8 8888      88 
+--   `8.`888b       ,8'    8 8888  8.`8888.   Y8 8 8888      88 
+--    `8.`888b     ,8'     8 8888  `8.`8888.     8 8888      88 
+--     `8.`888b   ,8'      8 8888   `8.`8888.    8 8888      88 
+--      `8.`888b ,8'       8 8888    `8.`8888.   8 8888      88 
+--       `8.`888b8'        8 8888     `8.`8888.  8 8888      88 
+--        `8.`888'         8 8888 8b   `8.`8888. ` 8888     ,8P 
+--         `8.`8'          8 8888 `8b.  ;8.`8888   8888   ,d8P  
+--          `8.`           8 8888  `Y8888P ,88P'    `Y88888P'   
+--                                      
+--          .8.          8 8888         
+--         .888.         8 8888         
+--        :88888.        8 8888         
+--       . `88888.       8 8888         
+--      .8. `88888.      8 8888         
+--     .8`8. `88888.     8 8888         
+--    .8' `8. `88888.    8 8888         
+--   .8'   `8. `88888.   8 8888         
+--  .888888888. `88888.  8 8888         
+-- .8'       `8. `88888. 8 888888888888 
+-- ################################################################################
+-- VISUAL & UI SETUP - Wallpaper, borders, and visual effects
+
+-- ################################################################################
+-- ################################################################################
+-- ################################################################################
+-- #     #    #    #       #       
+-- #     #   # #   #       #       
+-- #     #  #   #  #       #       
+-- #     # #     # #       #       
+--  #   #  ####### #       #       
+--   # #   #     # #       #       
+--    #    #     # ####### ####### 
+-- ################################################################################
+-- ################################################################################
+-- ################################################################################
+-- WALLPAPER - Wallpaper management and configuration
+-- Define wallpaper function
+local function set_wallpaper(s)
+	-- Wallpaper
+	if beautiful.wallpaper then
+		local wallpaper = beautiful.wallpaper
+		-- If wallpaper is a function, call it with the screen
+		if type(wallpaper) == "function" then
+			wallpaper = wallpaper(s)
+		end
+		gears.wallpaper.maximized(wallpaper, s, true)
+	end
+end
+
+-- Set wallpaper on startup
+for s = 1, screen.count() do
+	gears.wallpaper.maximized(beautiful.wallpaper, s, true)
+end
+
+-- Reset wallpaper when screen geometry changes
+screen.connect_signal("property::geometry", set_wallpaper)
+
+-- ################################################################################
+-- ################################################################################
+-- ################################################################################
+-- ######  ####### ######  ######  ####### ######  
+-- #     # #     # #     # #     # #       #     # 
+-- #     # #     # #     # #     # #       #     # 
+-- ######  #     # ######  #     # #####   ######  
+-- #     # #     # #   #   #     # #       #   #   
+-- #     # #     # #    #  #     # #       #    #  
+-- ######  ####### #     # ######  ####### #     # 
+-- ################################################################################
+-- ################################################################################
+-- ################################################################################
+-- BORDERS - Border properties and window shapes
+-- Set border properties
+beautiful.border_radius = 2
+beautiful.useless_gap = 0  -- window gaps (moved from end of file)
+
+-- Handle client window shapes
+client.connect_signal("manage", function(c)
+    c.shape = function(cr, w, h)
+        gears.shape.rounded_rect(cr, w, h, beautiful.border_radius)
+    end
+end)
+
+-- #region LAYOUT
+-- ################################################################################
+--                                                                  
+-- 8 8888                  .8.   `8.`8888.      ,8'  ,o888888o.     
+-- 8 8888                 .888.   `8.`8888.    ,8'. 8888     `88.   
+-- 8 8888                :88888.   `8.`8888.  ,8',8 8888       `8b  
+-- 8 8888               . `88888.   `8.`8888.,8' 88 8888        `8b 
+-- 8 8888              .8. `88888.   `8.`88888'  88 8888         88 
+-- 8 8888             .8`8. `88888.   `8. 8888   88 8888         88 
+-- 8 8888            .8' `8. `88888.   `8 8888   88 8888        ,8P 
+-- 8 8888           .8'   `8. `88888.   8 8888   `8 8888       ,8P  
+-- 8 8888          .888888888. `88888.  8 8888    ` 8888     ,88'   
+-- 8 888888888888 .8'       `8. `88888. 8 8888       `8888888P'     
+--                                   
+-- 8 8888      88 8888888 8888888888 
+-- 8 8888      88       8 8888       
+-- 8 8888      88       8 8888       
+-- 8 8888      88       8 8888       
+-- 8 8888      88       8 8888       
+-- 8 8888      88       8 8888       
+-- 8 8888      88       8 8888       
+-- ` 8888     ,8P       8 8888       
+--   8888   ,d8P        8 8888       
+--    `Y88888P'         8 8888       
+-- ################################################################################
+-- LAYOUT & NAVIGATION - Layout management and navigation systems
+
+-- ################################################################################
+-- ################################################################################
+-- ################################################################################
+-- #     #    #    #     # 
+-- ##    #   # #   #     # 
+-- # #   #  #   #  #     # 
+-- #  #  # #     # #     # 
+-- #   # # ####### #     # 
+-- #    ## #     #  #   #  
+-- #     # #     #   ###  u
+-- ################################################################################
+-- ################################################################################
+-- ################################################################################
+-- NAVIGATION - Movement and collision detection
+-- Navigation system using collision detection
+require("collision") {
+    -- Vim-style movement keys
+    up    = { "k" },
+    down  = { "j" },
+    left  = { "h" },
+    right = { "l" },
+
+    -- Other configurations (commented out)
+    -- Normal arrow keys
+    -- up    = { "Up"    },
+    -- down  = { "Down"  },
+    -- left  = { "Left"  },
+    -- right = { "Right" },
+
+    -- Multiple key options
+    -- up    = { "Up", "&", "k", "F15" },
+    -- down  = { "Down", "KP_Enter", "j", "F14" },
+    -- left  = { "Left", "#", "h", "F13" },
+    -- right = { "Right", "\"", "l", "F17" },
+}
+
+-- Alt-Tab alternatives (disabled)
+-- local switcher = require("awesome-switcher")
+-- awful.key({ "Mod1" }, "Tab", function() switcher.switch(1, "Alt_L", "Tab", "ISO_Left_Tab") end)
+-- awful.key({ "Mod1", "Shift" }, "Tab", function() switcher.switch(-1, "Alt_L", "Tab", "ISO_Left_Tab") end)
+
+-- Alternative Alt-Tab implementation (disabled)
+-- local alttab = require("gobo.awesome.alttab")
+-- awful.key({ "Mod1" }, "Tab", function() alttab.switch(1, "Alt_L", "Tab", "ISO_Left_Tab") end,
+--    { description = "Switch between windows", group = "awesome" })
+
+-- ################################################################################
+-- ################################################################################
+-- ################################################################################
+-- #     # ####### ######   ##### 
+-- ##   ## #     # #     # #     #
+-- # # # # #     # #     # #      
+-- #  #  # #     # #     #  ##### 
+-- #     # #     # #     #       #
+-- #     # #     # #     # #     #
+-- #     # ####### ######   ##### 
+-- ################################################################################
+-- ################################################################################
+-- ################################################################################
+-- MODULES - Additional layout and utility modules
+-- Layouts, widgets and utilities
+local lain = require("lain")                  -- Layouts, widgets, utilities
+local bling = require("bling")                -- Modern layouts and utilities
+local cyclefocus = require("cyclefocus")       -- Cycle between applications
+local freedesktop = require("freedesktop")      -- Create a menu from .desktop files
+
+-- Custom adaptive layout
+local centerwork_adaptive = require("lain.layout.centerwork_adaptive")
+-- Custom two-thirds layout that gives new window 2/3 screen
+local centerwork_twothirds = require("lain.layout.centerwork_twothirds")
+-- Custom tile.bottom layout with enhanced mouse resize functionality
+local tile_bottom_mouse = require("lain.layout.tile_bottom_mouse")
+
+-- Disabled modules (commented out for reference)
+-- local tyrannical = require("tyrannical")     -- Dynamic desktop tagging
+-- require("tyrannical.shortcut")               -- Optional tyrannical shortcuts
+-- local revelation = require("revelation")     -- App/desktop switching script
+-- revelation.init()
+
+-- ################################################################################
+-- ################################################################################
+-- ################################################################################
+-- #          #    #     # ####### #     # ####### 
+-- #         # #    #   #  #     # #     #    #    
+-- #        #   #    # #   #     # #     #    #    
+-- #       #     #    #    #     # #     #    #    
+-- #       #######    #    #     # #     #    #    
+-- #       #     #    #    #     # #     #    #    
+-- ####### #     #    #    ####### #######    #    
+-- ################################################################################
+-- ################################################################################
+-- ################################################################################
+-- LAYOUTS - Layout definitions and configuration
+-- Active layout scripts
+local treetile = require("treetile")
+
+-- #region WIDGETS
+-- ################################################################################
+--                                                                           
+-- `8.`888b                 ,8'  8 8888 8 888888888o.          ,o888888o.    
+--  `8.`888b               ,8'   8 8888 8 8888    `^888.      8888     `88.  
+--   `8.`888b             ,8'    8 8888 8 8888        `88. ,8 8888       `8. 
+--    `8.`888b     .b    ,8'     8 8888 8 8888         `88 88 8888           
+--     `8.`888b    88b  ,8'      8 8888 8 8888          88 88 8888           
+--      `8.`888b .`888b,8'       8 8888 8 8888          88 88 8888           
+--       `8.`888b8.`8888'        8 8888 8 8888         ,88 88 8888   8888888 
+--        `8.`888`8.`88'         8 8888 8 8888        ,88' `8 8888       .8' 
+--         `8.`8' `8,`'          8 8888 8 8888    ,o88P'      8888     ,88'  
+--          `8.`   `8'           8 8888 8 888888888P'          `8888888P'    
+--                                             
+-- 8 8888888888 8888888 8888888888 d888888o.   
+-- 8 8888             8 8888     .`8888:' `88. 
+-- 8 8888             8 8888     8.`8888.   Y8 
+-- 8 8888             8 8888     `8.`8888.     
+-- 8 888888888888     8 8888      `8.`8888.    
+-- 8 8888             8 8888       `8.`8888.   
+-- 8 8888             8 8888        `8.`8888.  
+-- 8 8888             8 8888    8b   `8.`8888. 
+-- 8 8888             8 8888    `8b.  ;8.`8888 
+-- 8 888888888888     8 8888     `Y8888P ,88P' 
+-- ################################################################################
+-- WIDGETS & INTERFACE - Menus, widgets, and interface elements
+
+-- ################################################################################
+-- ################################################################################
+-- ################################################################################
+-- #     # ####### #     # #     # 
+-- ##   ## #       ##    # #     # 
+-- # # # # #       # #   # #     # 
+-- #  #  # #####   #  #  # #     # 
+-- #     # #       #   # # #     # 
+-- #     # #       #    ## #     # 
+-- #     # ####### #     #  ##### 
+-- ################################################################################
+-- ################################################################################
+-- ################################################################################
+-- MENU - Application menu configuration
+-- Create the awesome submenu contents
+awesomesubmenu = {
+    {"Hotkeys", function() hotkeys_popup.show_help(nil, awful.screen.focused()) end},
+    {"Manual", terminal .. " -e man awesome"},
+    {"Edit config", editor_cmd .. " " .. awesome.conffile},
+    {"Restart", awesome.restart},
+    {"Quit", function() awesome.quit() end}
+}
+
+-- Build the main menu with the submenu, app launcher, and terminal entry
+mymainmenu = freedesktop.menu.build({
+    before = {
+        {"Awesome", awesomesubmenu, beautiful.awesome_icon}
+        -- other triads can be put here
+    },
+    after = {
+        {"Terminal", terminal}
+        -- other triads can be put here
+    }
+})
+
+-- Add icon entries to desktop (disabled)
+-- for s in screen do
+--     freedesktop.desktop.add_icons({screen = s})
+-- end
+
+-- ################################################################################
+-- ################################################################################
+-- ################################################################################
+-- ███╗   ██╗ █████╗ ██╗   ██╗
+-- ████╗  ██║██╔══██╗██║   ██║
+-- ██╔██╗ ██║███████║██║   ██║
+-- ██║╚██╗██║██╔══██║╚██╗ ██╔╝
+-- ██║ ╚████║██║  ██║ ╚███╔╝ 
+-- ╚═╝  ╚═══╝╚═╝  ╚═╝  ╚══╝  
+-- Nav
+-- ################################################################################
+-- ################################################################################
+-- ################################################################################
+-- Navigation system using collision detection
+require("collision") {
+    -- Vim-style movement keys
+    up    = { "k" },
+    down  = { "j" },
+    left  = { "h" },
+    right = { "l" },
+
+    -- Other configurations (commented out)
+    -- Normal arrow keys
+    -- up    = { "Up"    },
+    -- down  = { "Down"  },
+    -- left  = { "Left"  },
+    -- right = { "Right" },
+
+    -- Multiple key options
+    -- up    = { "Up", "&", "k", "F15" },
+    -- down  = { "Down", "KP_Enter", "j", "F14" },
+    -- left  = { "Left", "#", "h", "F13" },
+    -- right = { "Right", "\"", "l", "F17" },
+}
+
+-- Alt-Tab alternatives (disabled)
+-- local switcher = require("awesome-switcher")
+-- awful.key({ "Mod1" }, "Tab", function() switcher.switch(1, "Alt_L", "Tab", "ISO_Left_Tab") end)
+-- awful.key({ "Mod1", "Shift" }, "Tab", function() switcher.switch(-1, "Alt_L", "Tab", "ISO_Left_Tab") end)
+
+-- Alternative Alt-Tab implementation (disabled)
+-- local alttab = require("gobo.awesome.alttab")
+-- awful.key({ "Mod1" }, "Tab", function() alttab.switch(1, "Alt_L", "Tab", "ISO_Left_Tab") end,
+--    { description = "Switch between windows", group = "awesome" })
+-- awful.key({ "Mod1", "Shift" }, "Tab", function() alttab.switch(-1, "Alt_L", "Tab", "ISO_Left_Tab") end,
+--    { description = "Switch between windows backwards", group = "awesome" })
+
+
+
+
+
+-- ################################################################################
+-- ################################################################################
+-- ################################################################################
+-- ██╗      █████╗ ██╗   ██╗ ██████╗ ██╗   ██╗████████╗
+-- ██║     ██╔══██╗╚██╗ ██╔╝██╔═══██╗██║   ██║╚══██╔══╝
+-- ██║     ███████║ ╚████╔╝ ██║   ██║██║   ██║   ██║   
+-- ██║     ██╔══██║  ╚██╔╝  ██║   ██║╚██╗ ██╔╝   ██║   
+-- ███████╗██║  ██║   ██║   ╚██████╔╝ ╚███╔╝    ██║   
+-- ╚══════╝╚═╝  ╚═╝   ╚═╝    ╚═════╝   ╚══╝     ╚═╝   
+-- Layout
+-- ################################################################################
+-- ################################################################################
+-- ################################################################################
+-- Active layout scripts
+local treetile = require("treetile")
+
+-- Disabled/Alternative layout scripts (commented out for reference)
+-- local dovetail = require("awesome-dovetail")
+-- local thrizen = require("thrizen")
+-- local leaved = require("awesome-leaved")
+
+-- Titlebar customization (disabled)
+-- local fenetre = require("fenetre")
+-- fenetre { order = { "max", "ontop", "sticky", "floating", "close" } }
+
+-- Grid-based tag navigation (disabled)
+-- local workspace_grid = require("awesome-workspace-grid")
+-- grid = workspace_grid({
+--     rows = 3,
+--     columns = 4,
+--     cycle = true,
+--     icon_size = 100,
+--     position = "bottom_middle",
+--     visual = true
+-- })
+
+-- Multi-app navigation (disabled)
+-- Unified cross AwesomeWM window / Vim pane / Tmux pane hotkey navigation
+-- require("awesomewm-vim-tmux-navigator"){
+--     up    = {"Up", "k"},
+--     down  = {"Down", "j"},
+--     left  = {"Left", "h"},
+--     right = {"Right", "l"},
+-- }
+
+-- Additional utilities (disabled)
+-- local xrandr = require("xrandr")
+-- local mpris_widget = require("awesome-wm-widgets.mpris-widget")
+-- local mpris_widget = require("plugins.media")
+-- local media_player = require("media-player")
+
+
+
+
+
+
+-- ################################################################################
+-- ################################################################################
+-- ################################################################################
+-- ███████╗███████╗███████╗███████╗██╗ ██████╗ ███╗   ██╗
+-- ██╔════╝██╔════╝██╔════╝██╔════╝██║██╔═══██╗████╗  ██║
+-- ███████╗█████╗  ███████╗███████╗██║██║   ██║██╔██╗ ██║
+-- ╚════██║██╔══╝  ╚════██║╚════██║██║██║   ██║██║╚██╗██║
+-- ███████║███████╗███████║███████║██║╚██████╔╝██║ ╚████║
+-- ╚══════╝╚══════╝╚══════╝╚══════╝╚═╝ ╚═════╝ ╚═╝  ╚═══╝
+-- Session
+-- ################################################################################
+-- ################################################################################
+-- ################################################################################
+-- Reactivate tabs that were active before a restart of awesomewm
+-- For Firefox, might have to disable widget.disable-workspace-management in about:config
+-- https://www.reddit.com/r/awesomewm/comments/syjolb/preserve_previously_used_tag_between_restarts/
+awesome.connect_signal('exit', function(reason_restart)
+	if not reason_restart then return end
+	local file = io.open('/tmp/awesomewm-last-selected-tags', 'w+')
+	for s in screen do
+		file:write(s.selected_tag.index, '\n')
+	end
+	file:close()
+end)
+
+awesome.connect_signal('startup', function()
+	local file = io.open('/tmp/awesomewm-last-selected-tags', 'r')
+	if not file then return end
+	local selected_tags = {}
+	for line in file:lines() do
+		table.insert(selected_tags, tonumber(line))
+	end
+	for s in screen do
+		local i = selected_tags[s.index]
+		local t = s.tags[i]
+		t:view_only()
+	end
+	file:close()
+end)
+
+
+
+
+
+-- ################################################################################
+-- ################################################################################
+-- ################################################################################
+-- LAYOUT DEFINITIONS
+-- ################################################################################
+-- ################################################################################
+-- ################################################################################
+-- Table of layouts to cover with awful.layout.inc, order matters.
+-- https://awesomewm.org/doc/api/libraries/awful.layout.html
+-- https://github.com/lcpz/lain/wiki/Layouts
+awful.layout.layouts = {
+    -- Active layouts in preferred order
+    centerwork_twothirds.horizontal,            -- CUSTOM: Two-thirds for new window
+    centerwork_adaptive.horizontal,             -- CUSTOM: Adaptive centerwork horizontal
+    -- lain.layout.centerwork.horizontal,
+    awful.layout.suit.tile.top,
+    awful.layout.suit.tile.bottom,
+	awful.layout.suit.tile,
+    awful.layout.suit.tile.left,
+    -- tile_bottom_mouse,                          -- CUSTOM: Enhanced tile.bottom with mouse resize
+    -- awful.layout.suit.fair.horizontal,
+	-- bling.layout.horizontal,          -- OPTIONAL: Horizontal master layout  
+    -- lain.layout.termfair.center,
+    -- awful.layout.suit.corner.ne,
+    -- awful.layout.suit.corner.nw,
+	-- awful.layout.suit.spiral,                -- RECOMMENDED: Fibonacci spiral layout
+	treetile,
+	bling.layout.equalarea,              -- RECOMMENDED: Equal area distribution
+	bling.layout.mstab,                -- HIGHLY RECOMMENDED: Master-slave tabbing
+	-- bling.layout.vertical,            -- OPTIONAL: Vertical master layout
+    -- lain.layout.centerwork,
+    -- lain.layout.termfair,
+    awful.layout.suit.magnifier,
+	bling.layout.deck,                -- OPTIONAL: Deck-style stacking layout
+    lain.layout.cascade,                     -- RECOMMENDED: Beautiful cascading windows
+    awful.layout.suit.max,
+	--
+	--    -- BLING LAYOUTS (uncomment if you install Bling):
+    awful.layout.suit.floating,
+	bling.layout.centered,           -- RECOMMENDED: Centered layout
+	--    -- Disabled layouts (commented out for reference)
+	--    -- awful.layout.suit.corner.nw,
+	--    -- awful.layout.suit.corner.ne,
+	--    -- awful.layout.suit.spiral.dwindle,
+	--    awful.layout.suit.max.fullscreen,
+	--    leaved.layout.suit.tile.right,
+	-- 	leaved.layout.suit.tile.left,
+	-- 	leaved.layout.suit.tile.bottom,
+	-- 	leaved.layout.suit.tile.top,
+	trizen, 
+	-- dovetail.layout.right,
+	-- dynamite.layout.conditional,
+	-- dynamite.layout.ratio,
+	-- dynamite.layout.stack,
+	-- dynamite.layout.tabbe
+}
+
+
+
+-- ################################################################################
+-- ################################################################################
+-- ################################################################################
+-- MENU CONFIGURATION
+-- ################################################################################
+-- ################################################################################
+-- ################################################################################
+-- Create the awesome submenu contents
+awesomesubmenu = {
+    {"Hotkeys", function() hotkeys_popup.show_help(nil, awful.screen.focused()) end},
+    {"Manual", terminal .. " -e man awesome"},
+    {"Edit config", editor_cmd .. " " .. awesome.conffile},
+    {"Restart", awesome.restart},
+    {"Quit", function() awesome.quit() end}
+}
+
+-- Build the main menu with the submenu, app launcher, and terminal entry
+mymainmenu = freedesktop.menu.build({
+    before = {
+        {"Awesome", awesomesubmenu, beautiful.awesome_icon}
+        -- other triads can be put here
+    },
+    after = {
+        {"Terminal", terminal}
+        -- other triads can be put here
+    }
+})
+
+-- Add icon entries to desktop (disabled)
+-- for s in screen do
+--     freedesktop.desktop.add_icons({screen = s})
+-- end
+
+
+
+-- ################################################################################
+-- ################################################################################
+-- ################################################################################
+-- ANIMATED BORDERS
+-- ################################################################################
+-- ################################################################################
+-- ################################################################################
+-- Create a cycling rainbow animation for focused window borders
+
+-- Gradient generator function
+-- Adapted from https://krazydad.com/tutorials/makecolors.php
+border_animate_colours = {}
+function makeColorGradient(frequency1, frequency2, frequency3, phase1, phase2, phase3, center, width, len)
+    if center == nil then center = 128 end
+    if width == nil then width = 127 end
+    if len == nil then len = 120 end
+
+    genLoop = 0
+    while genLoop < len do
+        -- Calculate RGB values using sine waves
+        red = string.format("%02x", math.floor(math.sin(frequency1 * genLoop + phase1) * width + center))
+        grn = string.format("%02x", math.floor(math.sin(frequency2 * genLoop + phase2) * width + center))
+        blu = string.format("%02x", math.floor(math.sin(frequency3 * genLoop + phase3) * width + center))
+
+        -- Store the hex color
+        border_animate_colours[genLoop] = "#" .. red .. grn .. blu
+        genLoop = genLoop + 1
+    end
+end
+
+-- Color parameters - final settings
+a = 0.8
+redFrequency = 0.4718/a
+grnFrequency = 0.1618/a
+bluFrequency = 0.1/a
+phase1 = 0
+phase2 = 120
+phase3 = 270
+center = 185
+width = 65
+len = 2600
+
+-- Alternative aesthetics (uncomment to try different effects)
+--
+-- [[ Subtle pastels ]]
+-- a = 1.0
+-- redFrequency = 0.3
+-- grnFrequency = 0.3
+-- bluFrequency = 0.3
+-- phase1 = 0
+-- phase2 = 2
+-- phase3 = 4
+-- center = 210
+-- width = 45
+-- len = 800
+--
+-- [[ High contrast neon ]]
+-- redFrequency = 0.1
+-- grnFrequency = 0.2
+-- bluFrequency = 0.3
+-- phase1 = 0
+-- phase2 = 120
+-- phase3 = 240
+-- center = 128
+-- width = 127
+-- len = 1000
+--
+-- [[ Cyberpunk palette ]]
+-- redFrequency = 0.1
+-- grnFrequency = 0.2
+-- bluFrequency = 0.1
+-- phase1 = 1
+-- phase2 = 260
+-- phase3 = 50
+-- center = 168
+-- width = 88
+-- len = 1500
+--
+-- [[ Monochrome grayscale ]]
+-- redFrequency = 0.3
+-- grnFrequency = 0.3
+-- bluFrequency = 0.3
+-- phase1 = 10
+-- phase2 = 10
+-- phase3 = 10
+-- center = 160
+-- width = 90
+-- len = 1200
+
+-- Generate the color palette with current settings
+makeColorGradient(redFrequency, grnFrequency, bluFrequency, phase1, phase2, phase3, center, width, len)
+
+-- Animation control variables
+local borderLoop = 1
+local borderStep = 1 -- 1 for forward, -1 for reverse
+
+-- Timer for cycling border colors
+border_animation_timer = gears.timer {
+    timeout = 0.15,
+    autostart = false, -- Start only when needed
+    callback = function()
+        local c = client.focus
+        if not c then
+            border_animation_timer:stop() -- Pause when no client is focused
+            return
+        end
+
+        -- Update the color index and handle direction changes
+        borderLoop = borderLoop + borderStep
+        if borderLoop >= len then
+            borderLoop = len
+            borderStep = -1 -- Reverse direction
+        elseif borderLoop <= 1 then
+            borderLoop = 1
+            borderStep = 1 -- Forward direction
+        end
+
+        -- Apply the current color
+        c.border_color = border_animate_colours[borderLoop]
+    end
+}
+
+-- Start animation when a window gets focus
+client.connect_signal("focus", function(c)
+    borderLoop = 0 -- Reset to start
+    borderStep = 1
+    c.border_color = border_animate_colours[borderLoop]
+
+    -- Start the animation timer if not already running
+    if not border_animation_timer.started then
+        border_animation_timer:start()
+    end
+end)
+
+
+-- Stop animation and reset color on unfocus
+client.connect_signal("unfocus", function(c)
+    c.border_color = "#00000000" -- Transparent black
+end)
+
+-- Store widget references for direct updates (moved here to avoid nil reference)
+local active_tag_widgets = {}
+local active_client_widgets = {}
+
+-- Base gold color settings (moved here to avoid nil reference)
+local dark_gold = "#8B6914"   -- Darker, more dramatic gold
+local base_gold = "#FFD700"   -- Base gold color (medium)
+local light_gold = "#FFFACD"  -- Lighter, more vibrant gold
+
+-- Animation modes configuration (moved here to avoid nil reference)
+local shimmer_config = {
+    -- Candle flicker mode - mimics a flickering candle
+    candle = {
+        speed = 0.12,           -- Timer interval in seconds (try 0.08 for faster flicker)
+        intensity = 0.8,        -- How much variation (0-1) (try 0.4 for more dramatic)
+        randomness = 0.8,       -- Random flicker amount (0-1) (try 0.6 for more chaos)
+        base_phase = 0,         -- Current phase
+        random_offset = 0       -- Random offset for flicker
+    },
+    
+    -- Cloud shadow mode - like clouds passing over the sun
+    cloud = {
+        speed = 0.08,           -- Timer interval in seconds (try 0.05 for faster clouds)
+        intensity = 0.7,        -- How much variation (0-1) (try 0.3 for more dramatic)
+        wave_length = 120,      -- Length of the wave cycle (try 80 for shorter waves)
+        base_phase = 0          -- Current phase
+    },
+    
+    -- Character flicker mode - each character shimmers independently
+    char_flicker = {
+        speed = 0.15,           -- Timer interval in seconds (try 0.10 for faster flicker)
+        intensity = 0.6,        -- How much variation (0-1) (try 0.35 for more dramatic)
+        char_phases = {},       -- Individual phases for each character
+        random_factor = 0.9     -- How random the character timing is (increased for more independence)
+    },
+    
+    -- Border sync mode - matches the animated border colors exactly
+    border_sync = {
+        speed = 0.15,           -- Match border animation speed
+        intensity = 1.0         -- Full intensity to match border colors exactly
+    }
+}
+
+-- Current animation mode ('candle', 'cloud', 'char_flicker', 'border_sync', or 'off')
+shimmer_mode = "candle"
+
+-- Function to blend two colors
+local function blend_colors(color1, color2, factor)
+    -- Parse hex colors
+    local r1 = tonumber(color1:sub(2, 3), 16)
+    local g1 = tonumber(color1:sub(4, 5), 16)
+    local b1 = tonumber(color1:sub(6, 7), 16)
+    
+    local r2 = tonumber(color2:sub(2, 3), 16)
+    local g2 = tonumber(color2:sub(4, 5), 16)
+    local b2 = tonumber(color2:sub(6, 7), 16)
+    
+    -- Blend the colors
+    local r = math.floor(r1 + (r2 - r1) * factor)
+    local g = math.floor(g1 + (g2 - g1) * factor)
+    local b = math.floor(b1 + (b2 - b1) * factor)
+    
+    return string.format("#%02x%02x%02x", r, g, b)
+end
+
+-- Generate shimmer color based on mode
+local function get_shimmer_color(mode_config, text_length)
+    local config = shimmer_config[mode_config or shimmer_mode]
+    if not config then return base_gold end
+    
+    local factor = 0.5  -- Start from middle (base gold)
+    
+    if mode_config == "candle" or (not mode_config and shimmer_mode == "candle") then
+        -- Candle flicker: base sine wave + random flicker
+        local base_flicker = math.sin(config.base_phase) * 0.5 + 0.5
+        local random_flicker = config.random_offset
+        local shimmer_amount = (base_flicker * 0.7 + random_flicker * 0.3) * config.intensity
+        factor = 0.5 + (shimmer_amount - 0.5) * 1.0  -- Center around 0.5 (base gold)
+        
+    elseif mode_config == "cloud" or (not mode_config and shimmer_mode == "cloud") then
+        -- Cloud shadow: smooth sine wave
+        local shimmer_amount = (math.sin(config.base_phase * 2 * math.pi / config.wave_length) * 0.5 + 0.5) * config.intensity
+        factor = 0.5 + (shimmer_amount - 0.5) * 1.0  -- Center around 0.5 (base gold)
+        
+    elseif mode_config == "char_flicker" or (not mode_config and shimmer_mode == "char_flicker") then
+        -- For character flicker, we'll return the base color and handle individual chars elsewhere
+        local shimmer_amount = 0.15 * config.intensity
+        factor = 0.5 + (shimmer_amount - 0.5) * 1.0  -- Center around 0.5 (base gold)
+        
+    elseif mode_config == "border_sync" or (not mode_config and shimmer_mode == "border_sync") then
+        -- Border sync mode - use the exact same color as the animated border
+        if border_animate_colours and borderLoop and border_animate_colours[borderLoop] then
+            local color = border_animate_colours[borderLoop]
+            print("Border sync: borderLoop=" .. borderLoop .. ", color=" .. color)
+            return color
+        else
+            -- Fallback to base gold if border colors aren't available
+            print("Border sync fallback: border_animate_colours=" .. tostring(border_animate_colours) .. ", borderLoop=" .. tostring(borderLoop))
+            return base_gold
+        end
+    end
+    
+    -- Clamp factor to 0-1 range
+    factor = math.max(0, math.min(1, factor))
+    
+    -- Use normal shimmer colors (test colors disabled)
+    local color = blend_colors(dark_gold, light_gold, factor)
+    
+    -- Use full range from dark gold to light gold for dramatic effect
+    return color
+end
+
+-- Get character-specific color for flicker mode
+local function get_char_shimmer_color(char_index, text_length)
+    local config = shimmer_config.char_flicker
+    
+    -- Initialize character phase if not exists with much more variation
+    if not config.char_phases[char_index] then
+        -- Give each character a truly unique starting phase
+        config.char_phases[char_index] = (char_index * 1.7 + math.random() * 3.14) * 2 * math.pi
+    end
+    
+    -- Each character has its own phase offset
+    local char_phase = config.char_phases[char_index]
+    
+    -- Use different sine functions for more variation
+    local base_sine = math.sin(char_phase)
+    local secondary_sine = math.cos(char_phase * 1.3)  -- Different frequency
+    local combined_sine = (base_sine * 0.7 + secondary_sine * 0.3) * 0.5 + 0.5
+    
+    local shimmer_amount = combined_sine * config.intensity
+    local factor = 0.5 + (shimmer_amount - 0.5) * 1.0  -- Center around 0.5 (base gold)
+    
+    -- Clamp factor to 0-1 range
+    factor = math.max(0, math.min(1, factor))
+    
+    -- Use full range from dark gold to light gold for dramatic effect
+    return blend_colors(dark_gold, light_gold, factor)
+end
+
+-- Apply shimmer effect to widget
+local function apply_shimmer_to_widget(widget, text, status_symbols)
+    if shimmer_mode == "off" then
+        if widget.set_markup then
+            local full_text = (status_symbols or "") .. text
+            widget:set_markup('<span color="' .. base_gold .. '">' .. full_text .. '</span>')
+        end
+        return
+    end
+    
+    local markup = ""
+    local prefix = status_symbols or ""
+    
+    if shimmer_mode == "char_flicker" then
+        -- Character-by-character flicker - apply to client name only
+        -- Keep status symbols with base color
+        if prefix ~= "" then
+            markup = '<span color="' .. base_gold .. '">' .. prefix .. '</span>'
+        end
+        
+        for i = 1, #text do
+            local char = text:sub(i, i)
+            local color = get_char_shimmer_color(i, #text)
+            markup = markup .. '<span color="' .. color .. '">' .. char .. '</span>'
+        end
+    else
+        -- Uniform shimmer - apply to client name only
+        local color = get_shimmer_color()
+        if prefix ~= "" then
+            markup = '<span color="' .. base_gold .. '">' .. prefix .. '</span><span color="' .. color .. '">' .. text .. '</span>'
+        else
+            markup = '<span color="' .. color .. '">' .. text .. '</span>'
+        end
+    end
+    
+    if widget.set_markup then
+        widget:set_markup(markup)
+    end
+    
+    -- Debug: Print client shimmer application (disabled for cleaner output)
+    -- if text ~= "⚙" then  -- Don't spam with launcher updates
+    --     print("Applied shimmer (" .. shimmer_mode .. ") to '" .. text .. "': " .. markup)
+    -- end
+end
+
+-- Create a shimmering text launcher (moved here to avoid nil reference)
+local launcher_text = wibox.widget {
+    markup = '<span color="' .. base_gold .. '">⚙</span>',  -- Gear icon as text
+    font = "Hack Nerd Font 16",
+    widget = wibox.widget.textbox
+}
+
+-- Make launcher text clickable
+launcher_text:buttons(gears.table.join(
+    awful.button({}, 1, function() mymainmenu:toggle() end),
+    awful.button({}, 3, function() mymainmenu:toggle() end)
+))
+
+-- Update launcher text with shimmer (moved here to avoid nil reference)
+local function update_launcher_shimmer()
+    if shimmer_mode ~= "off" then
+        apply_shimmer_to_widget(launcher_text, "⚙", nil)
+    else
+        launcher_text:set_markup('<span color="' .. base_gold .. '">⚙</span>')
+    end
+end
+
+-- Handle client focus changes for shimmer animation
+client.connect_signal("focus", function(c)
+    print("Client focus changed to: " .. (c.name or c.class or "unknown"))
+    -- Reset all client widgets to base color first
+    for s in screen do
+        local client_widgets = active_client_widgets[s.index] or {}
+        for _, widget in pairs(client_widgets) do
+            if widget.textbox and widget.textbox.set_markup and widget.client and widget.client.valid then
+                local client_name = widget.client.name or widget.client.class or ""
+                local status_prefix = ""
+                
+                -- Build status symbols based on client properties
+                local symbols = {}
+                local c = widget.client
+                if c.floating then table.insert(symbols, "✈") end
+                if c.maximized then table.insert(symbols, "+")
+                elseif c.maximized_horizontal then table.insert(symbols, "⬌")
+                elseif c.maximized_vertical then table.insert(symbols, "⬍") end
+                if c.sticky then table.insert(symbols, "▪") end
+                if c.ontop then table.insert(symbols, "⌃")
+                elseif c.above then table.insert(symbols, "▴")
+                elseif c.below then table.insert(symbols, "▾") end
+                
+                if #symbols > 0 then
+                    status_prefix = table.concat(symbols, "") .. " "
+                end
+                
+                -- Set to base gold for unfocused clients
+                widget.textbox:set_markup('<span color="' .. base_gold .. '">' .. status_prefix .. client_name .. '</span>')
+            end
+        end
+    end
+    
+    -- Apply shimmer to the newly focused client
+    if shimmer_mode ~= "off" then
+        local client_name = c.name or c.class or ""
+        local status_prefix = ""
+        
+        -- Build status symbols based on client properties
+        local symbols = {}
+        if c.floating then table.insert(symbols, "✈") end
+        if c.maximized then table.insert(symbols, "+")
+        elseif c.maximized_horizontal then table.insert(symbols, "⬌")
+        elseif c.maximized_vertical then table.insert(symbols, "⬍") end
+        if c.sticky then table.insert(symbols, "▪") end
+        if c.ontop then table.insert(symbols, "⌃")
+        elseif c.above then table.insert(symbols, "▴")
+        elseif c.below then table.insert(symbols, "▾") end
+        
+        if #symbols > 0 then
+            status_prefix = table.concat(symbols, "") .. " "
+        end
+        
+        -- Find and update the focused client's widget
+        local s = c.screen
+        local client_widgets = active_client_widgets[s.index] or {}
+        for _, widget in pairs(client_widgets) do
+            if widget.client and widget.client.valid and widget.client == c then
+                apply_shimmer_to_widget(widget.textbox, client_name, status_prefix)
+                break
+            end
+        end
+    end
+end)
+
+-- ################################################################################
+-- ################################################################################
+-- ################################################################################
+-- GOLD SHIMMER ANIMATION SYSTEM
+-- ################################################################################
+-- ################################################################################
+-- ################################################################################
+-- Create animated gold colors for taskbar elements
+
+-- ===== SHIMMER CONFIGURATION =====
+-- Customize these values to adjust the shimmer effects
+
+-- Base gold color settings (already declared above)
+-- local dark_gold = "#DAA520"   -- Dark gold color (darkest) - less dark than before
+-- local base_gold = "#FFD700"   -- Base gold color (medium)
+-- local light_gold = "#FFFFE0"  -- Lighter gold/cream color (brightest)
+
+-- More dramatic color range for better visibility (already declared above)
+-- local dark_gold = "#8B6914"   -- Darker, more dramatic gold
+-- local base_gold = "#FFD700"   -- Base gold color (medium)
+-- local light_gold = "#FFFACD"  -- Lighter, more vibrant gold
+
+local gold_shimmer_colors = {}
+
+-- Animation modes configuration (already declared above)
+-- You can adjust these values to customize the shimmer effects:
+-- - speed: Lower values = faster animation (0.05-0.3 recommended)
+-- - intensity: Higher values = more dramatic color changes (0.1-0.5 recommended)
+-- - Candle mode: Adds randomness for flickering candle effect
+-- - Cloud mode: Smooth wave-like transitions
+-- - Character flicker: Each character shimmers independently
+
+-- local shimmer_config = { ... } -- Already declared above
+-- local shimmer_mode = "candle" -- Already declared above
+
+-- Function to blend two colors (already declared above)
+-- local function blend_colors(color1, color2, factor) { ... } -- Already declared above
+
+-- Generate shimmer color based on mode (already declared above)
+-- local function get_shimmer_color(mode_config, text_length) { ... } -- Already declared above
+
+-- Get character-specific color for flicker mode (already declared above)
+-- local function get_char_shimmer_color(char_index, text_length) { ... } -- Already declared above
+
+-- Apply shimmer effect to widget (already declared above)
+-- local function apply_shimmer_to_widget(widget, text, status_symbols) { ... } -- Already declared above
+
+-- Store widget references for direct updates (already declared above)
+
+-- Debug: Test notification system at startup (disabled)
+-- naughty.notify({
+--     title = "Shimmer System Starting",
+--     text = "Initializing shimmer timer...",
+--     timeout = 3
+-- })
+
+-- Simple test timer removed - shimmer is working
+
+-- Global timer counter
+local timer_count = 0
+
+-- Timer for shimmer animation
+shimmer_timer = gears.timer {
+    timeout = 0.12, -- Default speed, will be updated dynamically
+    autostart = false, -- Start manually after test
+    callback = function()
+        if shimmer_mode == "off" then
+            shimmer_timer:stop()
+            return
+        end
+        
+        local config = shimmer_config[shimmer_mode]
+        if not config then
+            return
+        end
+        
+        -- Update timer speed if it changed
+        if config.speed and shimmer_timer.timeout ~= config.speed then
+            shimmer_timer.timeout = config.speed
+        end
+        
+        -- Update animation states
+        if shimmer_mode == "candle" then
+            config.base_phase = config.base_phase + 0.1
+            if math.random() < 0.3 then  -- 30% chance for new random flicker
+                config.random_offset = (math.random() - 0.5) * config.randomness
+            end
+            
+        elseif shimmer_mode == "cloud" then
+            config.base_phase = config.base_phase + 1
+            if config.base_phase >= config.wave_length then
+                config.base_phase = 0
+            end
+            
+        elseif shimmer_mode == "char_flicker" then
+            -- Update individual character phases with much more randomness
+            for i, phase in pairs(config.char_phases) do
+                -- Each character gets its own random speed and direction
+                local random_speed = 0.05 + math.random() * 0.15  -- Random speed between 0.05 and 0.20
+                local random_direction = (math.random() - 0.5) * config.random_factor * 0.3
+                config.char_phases[i] = phase + random_speed + random_direction
+            end
+        end
+        
+        -- Debug: Print current shimmer state (only occasionally)
+        if math.floor(config.base_phase or 0) % 10 == 0 then
+            print("Shimmer update - mode:", shimmer_mode, "phase:", config.base_phase or "N/A", "focused client:", client.focus and (client.focus.name or client.focus.class or "unknown") or "none")
+        end
+        
+        -- Update all screens
+        for s in screen do
+            -- Update active tag shimmer
+            if s.selected_tag then
+                local tag_name = s.selected_tag.name or ""
+                local tag_widgets = active_tag_widgets[s.index] or {}
+                for _, widget in pairs(tag_widgets) do
+                    if widget.tag == s.selected_tag then
+                        apply_shimmer_to_widget(widget.textbox, tag_name, nil)
+                    end
+                end
+            end
+            
+            -- Apply shimmer to focused client every timer tick
+            if client.focus and client.focus.screen == s then
+                local client_widgets = active_client_widgets[s.index] or {}
+                
+                for _, widget in pairs(client_widgets) do
+                    if widget.client and widget.client.valid and widget.client == client.focus then
+                        local client_name = widget.client.name or widget.client.class or ""
+                        apply_shimmer_to_widget(widget.textbox, client_name, "")
+                        break -- Only update the first matching widget
+                    end
+                end
+            end
+        end
+        
+        -- Update launcher shimmer
+        update_launcher_shimmer()
+    end
+}
+
+-- Start shimmer timer immediately instead of delay (notifications disabled)
+if shimmer_timer then
+    local success, err = pcall(function() 
+        shimmer_timer:start() 
+    end)
+    -- Success/error notifications disabled for cleaner startup
+end
+
+-- Function to change shimmer mode
+function set_shimmer_mode(mode)
+    print("Setting shimmer mode to: " .. mode)
+    shimmer_mode = mode
+    if mode == "off" then
+        shimmer_timer:stop()
+        -- Reset all widgets to base gold
+        for s in screen do
+            -- Reset tag widgets
+            if s.mytaglist then s.mytaglist:emit_signal("widget::redraw_needed") end
+            
+            -- Reset client widgets
+            local client_widgets = active_client_widgets[s.index] or {}
+            for _, widget in pairs(client_widgets) do
+                if widget.textbox and widget.textbox.set_markup and widget.client and widget.client.valid then
+                    local client_name = widget.client.name or widget.client.class or ""
+                    local status_prefix = ""
+                    
+                    -- Build status symbols based on client properties
+                    local symbols = {}
+                    local c = widget.client
+                    if c.floating then table.insert(symbols, "✈") end
+                    if c.maximized then table.insert(symbols, "+")
+                    elseif c.maximized_horizontal then table.insert(symbols, "⬌")
+                    elseif c.maximized_vertical then table.insert(symbols, "⬍") end
+                    if c.sticky then table.insert(symbols, "▪") end
+                    if c.ontop then table.insert(symbols, "⌃")
+                    elseif c.above then table.insert(symbols, "▴")
+                    elseif c.below then table.insert(symbols, "▾") end
+                    
+                    if #symbols > 0 then
+                        status_prefix = table.concat(symbols, "") .. " "
+                    end
+                    
+                    widget.textbox:set_markup('<span color="' .. base_gold .. '">' .. status_prefix .. client_name .. '</span>')
+                end
+            end
+            
+            if s.mytasklist then s.mytasklist:emit_signal("widget::redraw_needed") end
+        end
+    else
+        -- Reset character phases when switching to character flicker for fresh independence
+        if mode == "char_flicker" then
+            shimmer_config.char_flicker.char_phases = {}
+        end
+        
+        shimmer_timer.timeout = shimmer_config[mode].speed
+        if not shimmer_timer.started then
+            shimmer_timer:start()
+        end
+        
+        -- Apply shimmer to currently focused client if any
+        if client.focus then
+            local c = client.focus
+            local client_name = c.name or c.class or ""
+            local status_prefix = ""
+            
+            -- Build status symbols based on client properties
+            local symbols = {}
+            if c.floating then table.insert(symbols, "✈") end
+            if c.maximized then table.insert(symbols, "+")
+            elseif c.maximized_horizontal then table.insert(symbols, "⬌")
+            elseif c.maximized_vertical then table.insert(symbols, "⬍") end
+            if c.sticky then table.insert(symbols, "▪") end
+            if c.ontop then table.insert(symbols, "⌃")
+            elseif c.above then table.insert(symbols, "▴")
+            elseif c.below then table.insert(symbols, "▾") end
+            
+            if #symbols > 0 then
+                status_prefix = table.concat(symbols, "") .. " "
+            end
+            
+            -- Find and update the focused client's widget
+            local s = c.screen
+            local client_widgets = active_client_widgets[s.index] or {}
+            for _, widget in pairs(client_widgets) do
+                if widget.client == c then
+                    apply_shimmer_to_widget(widget.textbox, client_name, status_prefix)
+                    break
+                end
+            end
+        end
+    end
+end
+
+-- Hotkeys to control shimmer mode
+globalkeys = gears.table.join(globalkeys,
+    -- Toggle shimmer modes
+    awful.key({modkey, "Shift", altkey}, "1", function()
+        set_shimmer_mode("candle")
+        naughty.notify({title = "Shimmer Mode", text = "Candle Flicker", timeout = 2})
+    end, {description = "candle shimmer mode", group = "shimmer"}),
+    
+    awful.key({modkey, "Shift", altkey}, "2", function()
+        set_shimmer_mode("cloud")
+        naughty.notify({title = "Shimmer Mode", text = "Cloud Shadows", timeout = 2})
+    end, {description = "cloud shimmer mode", group = "shimmer"}),
+    
+    awful.key({modkey, "Shift", altkey}, "3", function()
+        set_shimmer_mode("char_flicker")
+        naughty.notify({title = "Shimmer Mode", text = "Character Flicker", timeout = 2})
+    end, {description = "character flicker shimmer mode", group = "shimmer"}),
+    
+    awful.key({modkey, "Shift", altkey}, "4", function()
+        set_shimmer_mode("border_sync")
+        naughty.notify({title = "Shimmer Mode", text = "Border Sync", timeout = 2})
+    end, {description = "border sync shimmer mode", group = "shimmer"}),
+    
+    awful.key({modkey, "Shift", altkey}, "0", function()
+        set_shimmer_mode("off")
+        naughty.notify({title = "Shimmer Mode", text = "Off", timeout = 2})
+    end, {description = "turn off shimmer", group = "shimmer"}),
+    
+    -- Debug hotkey to test color cycling
+    awful.key({modkey, ctrlkey, altkey}, "t", function()
+        test_launcher_color_cycle()
+        naughty.notify({title = "Color Test", text = "Cycling launcher colors", timeout = 1})
+    end, {description = "test color cycling", group = "shimmer"}),
+    
+    awful.key({modkey, "Shift", altkey}, "d", function()
+        naughty.notify({
+            title = "Shimmer Debug",
+            text = "Current mode: " .. shimmer_mode .. "\nTimer running: " .. tostring(shimmer_timer.started) .. "\nBorder loop: " .. tostring(borderLoop),
+            timeout = 5
+        })
+    end, {description = "debug shimmer system", group = "shimmer"}),
+    
+    -- Debug hotkey to manually update focused client shimmer
+    awful.key({modkey, ctrlkey, altkey}, "f", function()
+        if client.focus then
+            local c = client.focus
+            local client_name = c.name or c.class or ""
+            local s = c.screen
+            local client_widgets = active_client_widgets[s.index] or {}
+            
+            naughty.notify({
+                title = "Shimmer Debug", 
+                text = "Found " .. #client_widgets .. " widgets for client: " .. client_name,
+                timeout = 3
+                         })
+             
+             for _, widget in pairs(client_widgets) do
+                 if widget.client and widget.client.valid and widget.client == c then
+                     apply_shimmer_to_widget(widget.textbox, client_name, "")
+                     naughty.notify({
+                         title = "Shimmer Applied", 
+                         text = "Applied shimmer to: " .. client_name,
+                         timeout = 2
+                     })
+                     break
+                 end
+             end
+        else
+            naughty.notify({title = "No Focus", text = "No focused client", timeout = 2})
+        end
+    end, {description = "manually test focused client shimmer", group = "shimmer"}),
+
+    -- Shimmer mode toggle keybinding
+    awful.key({ modkey, "Shift" }, "s",
+        function ()
+            local modes = {"candle", "cloud", "char_flicker", "off"}
+            local current_index = 1
+            for i, mode in ipairs(modes) do
+                if mode == shimmer_mode then
+                    current_index = i
+                    break
+                end
+            end
+            
+            local next_index = (current_index % #modes) + 1
+            local new_mode = modes[next_index]
+            
+            -- Use set_shimmer_mode instead of restart_shimmer
+            set_shimmer_mode(new_mode)
+            
+            naughty.notify({
+                title = "Shimmer Mode Changed",
+                text = "Mode: " .. shimmer_mode .. "\nSpeed: " .. shimmer_config[shimmer_mode].speed .. "s",
+                timeout = 2
+            })
+        end,
+        {description = "toggle shimmer animation mode", group = "custom"}
+    )
+)
+
+
+-- setup launcher wih icon and menu
+mylauncher = awful.widget.launcher({
+	image = beautiful.awesome_icon,
+	menu = mymainmenu
+})
+
+-- Create a shimmering text launcher (already declared above)
+-- local launcher_text = wibox.widget { ... } -- Already declared above
+-- launcher_text:buttons(...) -- Already declared above
+
+-- Update launcher text with shimmer (already declared above)
+-- local function update_launcher_shimmer() { ... } -- Already declared above
+
+-- Simple test function to cycle through obvious colors
+local test_colors = {"#FF0000", "#00FF00", "#0000FF", "#FFFF00", "#FF00FF", "#00FFFF"}
+local test_color_index = 1
+local function test_launcher_color_cycle()
+    local color = test_colors[test_color_index]
+    launcher_text:set_markup('<span color="' .. color .. '">⚙</span>')
+    test_color_index = test_color_index + 1
+    if test_color_index > #test_colors then
+        test_color_index = 1
+    end
+end
+
+-- Debug: Add a simple test to show shimmer is working
+local shimmer_debug_counter = 0
+
+-- The shimmer timer callback already handles all widget updates directly
+
+-- menubar configuration
+-- menubar.utils.terminal = terminal -- set the terminal for applications that require it
+
+
+-- keyboard map indicator and switcher
+mykeyboardlayout = awful.widget.keyboardlayout()
+
+-- create a textclock widget
+mytextclock = wibox.widget.textclock()
+
+local textclock_clr = wibox.widget.background()
+textclock_clr:set_widget(mytextclock)
+textclock_clr:set_fg("#ffffff")
+textclock_clr:set_bg("#623997")
+
+-- Create a wibox for each tag and add it
+local taglist_buttons = gears.table.join(
+awful.button({}, 1, function(t) t:view_only() end),
+awful.button({modkey}, 1, function(t)
+	if client.focus then client.focus:move_to_tag(t) end
+end), awful.button({}, 3, awful.tag.viewtoggle),
+awful.button({modkey}, 3, function(t)
+	if client.focus then client.focus:toggle_tag(t) end
+end), awful.button({}, 4, function(t) awful.tag.viewnext(t.screen) end),
+awful.button({}, 5, function(t)
+	awful.tag.viewprev(t.screen)
+end)
+)
+
+-- ################################################################################
+-- ################################################################################
+-- ################################################################################
+-- TASKLIST CONFIGURATION
+-- ################################################################################
+-- ################################################################################
+-- ################################################################################
+-- Create mouse button bindings for the tasklist
+local tasklist_buttons = gears.table.join(
+    -- Left click: minimize focused window, focus minimized window
+    awful.button({}, 1, function(c)
+        if c == client.focus then
+            c.minimized = true
+        else
+            c:emit_signal("request::activate", "tasklist", {raise = true})
+        end
+    end),
+    -- Middle click: minimize window
+    awful.button({}, 2, function(c) c.minimized = true end),
+    -- Right click: show client list menu
+    awful.button({}, 3, function() awful.menu.client_list({theme = {width = 200}}) end),
+    -- Scroll wheel: cycle through windows
+    awful.button({}, 4, function() awful.client.focus.byidx(-1) end),
+    awful.button({}, 5, function() awful.client.focus.byidx(1) end),
+    -- Extra mouse buttons
+    awful.button({}, 8, awful.client.movetoscreen),
+    awful.button({}, 9, function(c) c:kill() end)
+)
+
+-- Set fallback icon in the taskbar when no app icon is found
+client.connect_signal("manage", function(c)
+    local cairo = require("lgi").cairo
+    local default_icon = "/usr/share/icons/hicolor/32x32/apps/displaycal-scripting-client.png"
+
+    if c and c.valid and not c.icon then
+        local s = gears.surface(default_icon)
+        local img = cairo.ImageSurface.create(cairo.Format.ARGB32,
+                                            s:get_width(), s:get_height())
+        local cr = cairo.Context(img)
+        cr:set_source_surface(s, 0, 0)
+        cr:paint()
+        c.icon = img._native
+    end
+end)
+
+
+
+-- ################################################################################
+-- ################################################################################
+-- ################################################################################
+-- ████████╗ █████╗  ██████╗ ███╗   ██╗ █████╗ ██╗   ██╗
+-- ╚══██╔══╝██╔══██╗██╔════╝ ████╗  ██║██╔══██╗██║   ██║
+--    ██║   ███████║██║  ███╗██╔██╗ ██║███████║██║   ██║
+--    ██║   ██╔══██║██║   ██║██║╚██╗██║██╔══██║╚██╗ ██╔╝
+--    ██║   ██║  ██║╚██████╔╝██║ ╚████║██║  ██║ ╚███╔╝ 
+--    ╚═╝   ╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═══╝╚═╝  ╚═╝  ╚══╝  
+-- Tags
+-- ################################################################################
+-- ################################################################################
+-- ################################################################################
+-- Functions to move clients between tags
+-- Source: https://www.reddit.com/r/awesomewm/comments/gu4uek/how_to_move_client_to_nextprevious_tag
+
+-- Move client to previous tag
+local function move_to_previous_tag()
+    local c = client.focus
+    if not c then return end
+
+    local t = c.screen.selected_tag
+    local tags = c.screen.tags
+    local idx = t.index
+    local newtag = tags[gmath.cycle(#tags, idx - 1)]
+
+    c:move_to_tag(newtag)
+    -- awful.tag.viewprev()  -- Uncomment to also view the tag after moving
+end
+
+-- Move client to next tag
+local function move_to_next_tag()
+    local c = client.focus
+    if not c then return end
+
+    local t = c.screen.selected_tag
+    local tags = c.screen.tags
+    local idx = t.index
+    local newtag = tags[gmath.cycle(#tags, idx + 1)]
+
+    c:move_to_tag(newtag)
+    -- awful.tag.viewnext()  -- Uncomment to also view the tag after moving
+end
+
+
+-- ################################################################################
+-- ################################################################################
+-- ################################################################################
+-- ██╗    ██╗██╗██████╗  ██████╗ ███████╗████████╗███████╗
+-- ██║    ██║██║██╔══██╗██╔════╝ ██╔════╝╚══██╔══╝██╔════╝
+-- ██║ █╗ ██║██║██║  ██║██║  ███╗█████╗     ██║   ███████╗
+-- ██║███╗██║██║██║  ██║██║   ██║██╔══╝     ██║   ╚════██║
+-- ╚███╔███╔╝██║██████╔╝╚██████╔╝███████╗   ██║   ███████║
+--  ╚══╝╚══╝ ╚═╝╚═════╝  ╚═════╝ ╚══════╝   ╚═╝   ╚══════╝
+-- Widgets
+-- ################################################################################
+-- ################################################################################
+-- ################################################################################
+-- Optional widgets (currently disabled)
+-- Battery widget configuration (commented out)
+-- local battery_widget = require("battery-widget")
+-- local BAT0 = battery_widget { adapter = "BAT0", ac = "AC" }  -- Simple version
+
+-- Advanced battery widget configuration
+-- local BAT0 = battery_widget {
+--     ac = "AC",
+--     adapter = "BAT0",
+--     ac_prefix = " AC",
+--     battery_prefix = "Bat",
+--     percent_colors = {
+--         { 25, "red"   },
+--         { 50, "orange"},
+--         {999, "green" },
+--     },
+--     listen = true,
+--     timeout = 10,
+--     widget_text = "${color_on}${AC_BAT}${percent}%${color_off} ",
+--     widget_font = "Hack Regular 9",
+--     tooltip_text = "Battery ${state}${time_est}\nCapacity: ${capacity_percent}%",
+--     alert_threshold = 10,
+-- }
+awful.screen.connect_for_each_screen(function(s)
+    -- Set wallpaper for this screen
+    set_wallpaper(s)
+
+    -- {{{ Quake terminal
+    -- Create a dropdown terminal that appears from the top of the screen
+    s.quake = lain.util.quake(
+        {app = terminal},
+        {settings = function(c) c.followtag = true end}
+    )
+    -- Alternative configurations (commented out)
+    -- s.quake = lain.util.quake()
+    -- s.quake = quake({
+    --     app = "urxvt",
+    --     argname = "-name %s",
+    --     extra = "-title QuakeDD -e tmux new-session -A -s quake",
+    --     visible = true,
+    --     height = 0.9
+    -- })
+    
+
+    -- {{{ Tags
+    -- Each screen has its own tag table
+    -- Default numeric tags
+    awful.tag(
+        {"1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "-", "="},
+        s,
+        awful.layout.layouts[1]
+    )
+
+    -- Alternative tag configurations (commented out)
+    -- Tags with padding
+    -- awful.tag({" 1 ", " 2 ", " 3 ", " 4 ", " 5 ", " 6 ", " 7 ", " 8 ", " 9 ", " 0 ", " - ", " = "}, s, awful.layout.layouts[1])
+
+    -- Roman numeral tags
+    -- tags = {} -- Generates tags with custom names
+    -- for s = 1, screen.count() do
+    --     tags[s] = awful.tag({ "I", "II", "III", "IV", "V", "VI", "VII", "IX" })
+    -- end
+    
+
+    -- {{{ Screen widgets
+    -- Create a promptbox for each screen
+    s.mypromptbox = awful.widget.prompt()
+
+    -- Create a layoutbox widget (shows current layout)
+    s.mylayoutbox = awful.widget.layoutbox(s)
+    s.mylayoutbox:buttons(gears.table.join(
+        awful.button({}, 1, function() awful.layout.inc(-1) end),
+        awful.button({}, 3, function() awful.layout.inc(1) end),
+        awful.button({}, 4, function() awful.layout.inc(-1) end),
+        awful.button({}, 5, function() awful.layout.inc(1) end)
+    ))
+
+    -- Create a taglist widget (shows all tags/workspaces)
+    s.mytaglist = awful.widget.taglist {
+        screen = s,
+        filter = awful.widget.taglist.filter.noempty,  -- Only show tags with clients
+        buttons = taglist_buttons,  -- Use the buttons defined earlier
+        widget_template = {
+            {
+                {
+                    {
+                        id = 'text_role',
+                        widget = wibox.widget.textbox
+                    },
+                    -- Separator removed - keeping only the purple layout box separator
+                    layout = wibox.layout.fixed.horizontal
+                },
+                left = 8,
+                right = 8,
+                widget = wibox.container.margin
+            },
+            id = 'background_role',
+            widget = wibox.container.background,
+            
+            -- Register textbox for shimmer updates
+            create_callback = function(self, t, index, objects)
+                local text_widget = self:get_children_by_id('text_role')[1]
+                if text_widget then
+                    -- Initialize screen widgets table
+                    if not active_tag_widgets[s.index] then
+                        active_tag_widgets[s.index] = {}
+                    end
+                    
+                    -- Store widget reference
+                    table.insert(active_tag_widgets[s.index], {
+                        tag = t,
+                        textbox = text_widget
+                    })
+                    
+                    -- Set initial shimmer if tag is selected
+                    if t.selected then
+                        apply_shimmer_to_widget(text_widget, t.name or "", nil)
+                    end
+                end
+            end
+        }
+    }
+
+    -- Create a tasklist widget (shows running applications)
+    s.mytasklist = awful.widget.tasklist {
+        screen = s,
+        filter = awful.widget.tasklist.filter.currenttags,  -- Only show clients in current tag
+        buttons = tasklist_buttons,  -- Use the buttons defined earlier
+        widget = wibox.container.margin,
+        layout = {
+            layout = wibox.layout.flex.horizontal,  -- Horizontal layout
+            spacing = 1,  -- Add small spacing for separator
+            -- spacing = 10,  -- Uncomment to add spacing between task buttons
+        },
+
+        -- Template for task items (application buttons)
+        widget_template = {{{{{
+			     	id = 'icon_role',
+			    	forced_width = 16,
+				    widget = wibox.widget.imagebox
+		      },
+			    margins = 4,
+			    widget = wibox.container.margin
+		    },
+		   { id = 'text_role', widget = wibox.widget.textbox},
+		   -- Separator removed - keeping only the purple layout box separator
+		   layout = wibox.layout.fixed.horizontal
+
+	   },
+	   left = 2,
+	   right = 2,
+	   widget = wibox.container.margin
+   },
+   id = 'background_role',
+   widget = wibox.container.background,
+   
+   -- Register textbox for shimmer updates
+   create_callback = function(self, c, index, objects)
+       local text_widget = self:get_children_by_id('text_role')[1]
+       if text_widget then
+           print("Registering client widget for: " .. (c.name or c.class or "unknown"))
+           -- Initialize screen widgets table
+           if not active_client_widgets[s.index] then
+               active_client_widgets[s.index] = {}
+           end
+           
+           -- Store widget reference
+           table.insert(active_client_widgets[s.index], {
+               client = c,
+               textbox = text_widget
+           })
+           
+           -- Debug notification when client widgets are registered (disabled)
+           -- naughty.notify({
+           --     title = "Widget Registered",
+           --     text = "Registered widget for: " .. (c.name or c.class or "unknown") .. "\nTotal widgets: " .. #active_client_widgets[s.index],
+           --     timeout = 3
+           -- })
+           
+           -- Set initial shimmer if client is focused
+           if client.focus and c.window == client.focus.window then
+               local client = c
+               local text = client.name or client.class or ""
+               local status_prefix = ""
+               
+               -- Build status symbols based on client properties
+               local symbols = {}
+               
+               if client.floating then
+                   table.insert(symbols, "✈")
+               end
+               if client.maximized then
+                   table.insert(symbols, "+")
+               elseif client.maximized_horizontal then
+                   table.insert(symbols, "⬌")
+               elseif client.maximized_vertical then
+                   table.insert(symbols, "⬍")
+               end
+               if client.sticky then
+                   table.insert(symbols, "▪")
+               end
+               if client.ontop then
+                   table.insert(symbols, "⌃")
+               elseif client.above then
+                   table.insert(symbols, "▴")
+               elseif client.below then
+                   table.insert(symbols, "▾")
+               end
+               
+               if #symbols > 0 then
+                   status_prefix = table.concat(symbols, "") .. " "
+               end
+               
+               apply_shimmer_to_widget(text_widget, text, status_prefix)
+           end
+       end
+   end
+	}
+}
+
+
+
+    -- Create the wibox (top panel)
+    s.mywibox = awful.wibar({position = "top", screen = s})
+
+    -- Add widgets to the wibox
+    s.mywibox:setup{
+        layout = wibox.layout.align.horizontal,
+        { -- Left widgets section
+            layout = wibox.layout.fixed.horizontal,
+            s.mytaglist,  -- Layout switcher
+            wibox.container.margin(s.mylayoutbox, 1, 0, 0, 0, "#333", false),  -- Layout switcher
+            -- s.mylayoutbox,  -- Layout switcher
+            wibox.container.margin(launcher_text, 1, 1, 0, 0, "#333", false),  -- Shimmering menu launcher
+            -- launcher_text,  -- Shimmering menu launcher
+            titlebar,  -- Window title
+            -- Additional widgets (commented out)
+            -- s.mypromptbox,  -- Command prompt
+            -- mykeyboardlayout,  -- Keyboard layout indicator
+        },
+        s.mytasklist,  -- Middle section: Task list (running applications)
+        { -- Right widgets section
+            layout = wibox.layout.fixed.horizontal,
+            -- wibox.container.margin(wibox.widget.systray(), 1, 1, 0, 0, "#000", false),  -- System tray
+            -- textclock_clr,  -- Clock widget with custom colors
+            wibox.container.margin(textclock_clr, 0, 3, 0, 0, "#000", false),  -- Clock widget with custom colors
+            wibox.widget.systray(),  -- System tray
+            -- Additional widgets (commented out)
+            -- wibox.widget.systray(),  -- Alternative system tray setup
+            -- mylauncher,  -- Alternative menu launcher position
+            -- mytextclock,  -- Alternative clock widget
+            -- BAT0,  -- Battery widget (requires battery-widget module)
+        }
+    }
+      -- End screen widgets
+
+		milkdefault = lain.layout.termfair.center
+
+		-- tyrannical.tags = {
+		--   {
+		--     name        = "1 Term",                 -- Call the tag "Term"
+		--     init        = true,                   -- Load the tag on startup
+		--     exclusive   = true,                   -- Refuse any other type of clients (by classes)
+		--     screen      = {1,2},                  -- Create this tag on screen 1 and screen 3
+		--     layout      = milkdefault,
+		--     instance    = {"dev", "ops"},         -- Accept the following instances. This takes precedence over 'class'
+		--     class       = { --Accept the following classes, refuse everything else (because of "exclusive=true")
+		--       "xterm" , "urxvt" , "aterm","URxvt","XTerm","konsole","terminator","gnome-terminal","alacritty"
+		--     }
+		--   } ,
+		--   {
+		--     name        = "2 Music",
+		--     init        = true,
+		--     exclusive   = true,
+		--     screen      = 1,
+		--     layout      = awful.layout.suit.max                          ,
+		--     single_instance_id = { "ncmpcpp" },
+		--     class = {
+		--     "*" },
+		--   } ,
+		--   {
+		--     name        = "3 Media",
+		--     init        = true,
+		--     exclusive   = true,
+		--     screen      = 1,
+		--     layout      = awful.layout.suit.max                          ,
+		--     class = {
+		--     "mpv" },
+		--   } ,
+		--   {
+		--     name        = "4 Share",
+		--     init        = true,
+		--     exclusive   = true,
+		--     screen      = 1,
+		--     layout      = awful.layout.suit.max                          ,
+		--     class ={
+		--     "qBittorrent", "Nicotine" }
+		--   } ,
+		--   {
+		--     name        = "5 Other",
+		--     init        = true,
+		--     exclusive   = true,
+		--     screen      = 1,
+		--     layout      = awful.layout.suit.max                          ,
+		--     class ={
+		--     "" }
+		--   } ,
+		--   {
+		--     name        = "6 Files",
+		--     init        = true,
+		--     exclusive   = true,
+		--     screen      = 1,
+		--     layout      = awful.layout.suit.tile,
+		--     -- exec_once   = {"doublecmd"}, --When the tag is accessed for the first time, execute this command
+		--     class  = {
+		--       "Thunar", "Konqueror", "Dolphin", "ark", "Nautilus","emelfm", "Doublecmd"
+		--     }
+		--   } ,
+		--   {
+		--     name        = "7 Stuff",
+		--     init        = true,
+		--     exclusive   = true,
+		--     screen      = 1,
+		--     layout      = awful.layout.suit.max                          ,
+		--     class ={
+		--     "" }
+		--   } ,
+		--           {
+		--     name        = "8 Pass",
+		--     init        = true,
+		--     exclusive   = true,
+		--     screen      = 1,
+		--     layout      = awful.layout.suit.max                          ,
+		--     class ={
+		--     "keepassxc" }
+		--   } ,
+		--   {
+		--     name        = "9 Vol",
+		--     init        = true,
+		--     exclusive   = true,
+		--     screen      = 1,
+		--     layout      = awful.layout.suit.max                          ,
+		--     class = {
+		--     "Pavucontrol", "Jack_mixer" }
+		--   } ,
+		--   {
+		--     name        = "0 Sys",
+		--     init        = true,
+		--     exclusive   = true,
+		--     screen      = 1,
+		--     layout      = awful.layout.suit.max                          ,
+		--     class ={
+		--     "" }
+		--   } ,
+		--   {
+		--     name        = "- Chat",
+		--     init        = true,
+		--     exclusive   = true,
+		--     screen      = 1,
+		--     layout      = awful.layout.suit.max                          ,
+		--     class ={
+		--     "quassel" }
+		--   } ,
+		--   {
+		--     name        = "= Web",
+		--     init        = true,
+		--     exclusive   = true,
+		--     -- icon        = "~net.png",                 -- Use this icon for the tag (uncomment with a real path)
+		--     -- screen      = screen.count()>1 and 2 or 1,-- Setup on screen 2 if there is more than 1 screen, else on screen 1
+		--     screen      = 1,
+		--     layout      = awful.layout.suit.max,      -- Use the max layout
+		--     class = {
+		--       "Opera"         , "Firefox"        , "Rekonq"    , "Dillo"        , "Arora",
+		--     "Chromium"      , "nightly"        , "minefield" , "Firefox-esr"     }
+		--   } ,
+		--   }
+		--
+		--
+		--
+		-- -- Ignore the tag "exclusive" property for the following clients (matched by classes)
+		-- tyrannical.properties.intrusive = {
+		--   "ksnapshot"     , "pinentry"       , "gtksu"     , "kcalc"        , "xcalc"               ,
+		--   "feh"           , "Gradient editor", "About KDE" , "Paste Special", "Background color"    ,
+		--   "kcolorchooser" , "plasmoidviewer" , "Xephyr"    , "kruler"       , "plasmaengineexplorer",
+		-- }
+		--
+		-- -- Ignore the tiled layout for the matching clients
+		-- tyrannical.properties.floating = {
+		--   "MPlayer"      , "pinentry"        , "ksnapshot"  , "pinentry"     , "gtksu"          ,
+		--   "xine"         , "feh"             , "kmix"       , "kcalc"        , "xcalc"          ,
+		--   "yakuake"      , "Select Color$"   , "kruler"     , "kcolorchooser", "Paste Special"  ,
+		--   "New Form"     , "Insert Picture"  , "kcharselect", "mythfrontend" , "plasmoidviewer"
+		-- }
+		--
+		-- -- Make the matching clients (by classes) on top of the default layout
+		-- tyrannical.properties.ontop = {
+		--   "Xephyr"       , "ksnapshot"       , "kruler"
+		-- }
+		--
+		-- -- Force the matching clients (by classes) to be centered on the screen on init
+		-- tyrannical.properties.placement = {
+		--   kcalc = awful.placement.centered
+		-- }
+		--
+		-- tyrannical.settings.block_children_focus_stealing = true --Block popups ()
+		-- tyrannical.settings.group_children = true --Force popups/dialogs to have the same tags as the parent client
+		--
+
+		-- Setup the media player widget for the alternative wibar
+		-- local media_player2 = media_player({
+		--     -- icons  = {
+		--     --     play   = theme.play,
+		--     --     pause  = theme.pause
+		--     -- },
+		--     -- font         = theme.font,
+		--     name         = "mpd", -- target media player
+		--     refresh_rate = 1 -- interval between widget update calls
+		--   }).widget
+
+
+		-- the alt wibox
+		s.myaltwibox = awful.wibar({
+			position = "top",
+			screen = s,
+			height = 23,
+			visible = false
+		})
+
+		-- Add widgets to the wibox
+		s.myaltwibox:setup{
+			layout = wibox.layout.align.horizontal,
+			expand = "none",
+			{
+				-- Left widgets
+				layout = wibox.layout.fixed.horizontal
+			},
+			-- Middle widget
+			-- media_player2,
+			{
+				-- Right widgets
+				layout = wibox.layout.fixed.horizontal
+			}
+		}
+
+	end)
+
+
+	-- {{{ Mouse bindings
+	root.buttons(gears.table.join(awful.button({}, 3,
+	function() mymainmenu:toggle() end)
+	-- awful.button({ }, 4, awful.tag.viewnext),
+	-- awful.button({ }, 5, awful.tag.viewprev)
+	))
+
+	-- matcher generator for rules
+	local create_matcher = function(class_name)
+		return function(c) return awful.rules.match(c, {class = class_name}) end
+	end
+
+	-- https://www.reddit.com/r/awesomewm/comments/izn34y/awesomewmlua_noob_confirmation_on_quit_using
+	confirmQuitmenu = awful.menu({
+		items = {
+			{"Cancel", function() do end end},
+			{"Quit", function() awesome.quit() end}
+		}
+	})
+
+
+	tag_nav_mod_keys = {modkey, altkey}
+
+
+	-- https://github.com/awesomeWM/awesome/issues/3277#issuecomment-1026811823
+	function rotate_screens(direction)
+		local current_screen = awful.screen.focused()
+		local initial_scren = current_screen
+		while (true) do
+			awful.screen.focus_relative(direction)
+			local next_screen = awful.screen.focused()
+			if next_screen == initial_scren then
+				return
+			end
+
+			local current_screen_tag_name = current_screen.selected_tag.name
+			local next_screen_tag_name = next_screen.selected_tag.name
+
+			for _, t in ipairs(current_screen.tags) do
+				local fallback_tag = awful.tag.find_by_name(next_screen, t.name)
+				local self_clients = t:clients()
+				local other_clients
+
+				if not fallback_tag then
+					-- if not available, use first tag
+					fallback_tag = next_screen.tags[1]
+					other_clients = {}
+				else
+					other_clients = fallback_tag:clients()
+				end
+
+				for _, c in ipairs(self_clients) do
+					c:move_to_tag(fallback_tag)
+				end
+
+				for _, c in ipairs(other_clients) do
+					c:move_to_tag(t)
+				end
+			end
+			awful.tag.find_by_name(next_screen, current_screen_tag_name):view_only()
+			awful.tag.find_by_name(current_screen, next_screen_tag_name):view_only()
+			current_screen = next_screen
+		end
+	end
+
+
+-- Function to cycle through tags with clients (including minimized ones)
+local function cycle_tags_with_clients(direction)
+    local current_screen = awful.screen.focused()
+    local all_tags = current_screen.tags
+
+    -- Get the current tag index
+    local current_tag = current_screen.selected_tag
+    local current_index = gears.table.hasitem(all_tags, current_tag)
+
+    -- Cycle through tags, wrap around when reaching the end/start
+    for i = 1, #all_tags do
+        local idx
+        if direction == "next" then
+            idx = (current_index + i - 1) % #all_tags + 1
+        else
+            idx = (current_index - i - 1) % #all_tags + 1
+        end
+        local tag = all_tags[idx]
+
+        -- Check if the tag has clients (including minimized ones)
+        if #tag:clients() > 0 then
+            tag:view_only()
+            return
+        end
+    end
+end
+
+
+
+
+-- #region HOTKEYS
+-- ################################################################################
+--                                                                   
+-- 8 8888        8     ,o888888o. 8888888 8888888888 8 8888     ,88' 
+-- 8 8888        8  . 8888     `88.     8 8888       8 8888    ,88'  
+-- 8 8888        8 ,8 8888       `8b    8 8888       8 8888   ,88'   
+-- 8 8888        8 88 8888        `8b   8 8888       8 8888  ,88'    
+-- 8 8888        8 88 8888         88   8 8888       8 8888 ,88'     
+-- 8 8888        8 88 8888         88   8 8888       8 8888 88'      
+-- 8 8888888888888 88 8888        ,8P   8 8888       8 888888<       
+-- 8 8888        8 `8 8888       ,8P    8 8888       8 8888 `Y8.     
+-- 8 8888        8  ` 8888     ,88'     8 8888       8 8888   `Y8.   
+-- 8 8888        8     `8888888P'       8 8888       8 8888     `Y8. 
+--                                             
+-- 8 8888888888 `8.`8888.      ,8' d888888o.   
+-- 8 8888        `8.`8888.    ,8'.`8888:' `88. 
+-- 8 8888         `8.`8888.  ,8' 8.`8888.   Y8 
+-- 8 8888          `8.`8888.,8'  `8.`8888.     
+-- 8 888888888888   `8.`88888'    `8.`8888.    
+-- 8 8888            `8. 8888      `8.`8888.   
+-- 8 8888             `8 8888       `8.`8888.  
+-- 8 8888              8 8888   8b   `8.`8888. 
+-- 8 8888              8 8888   `8b.  ;8.`8888 
+-- 8 888888888888      8 8888    `Y8888P ,88P' 
+-- ################################################################################
+-- HOTKEYS - Global keybindings and input management
+-- Global keybindings are organized by functionality
+	-- Sections:
+	-- 1. AwesomeWM control (reload, quit, etc.)
+	-- 2. Tag and workspace management
+	-- 3. Client focus and window management
+	-- 4. Layout control
+	-- 5. Applications and launchers
+	-- 6. System controls (volume, brightness, etc.)
+	-- 7. Special functions and utilities
+
+globalkeys = gears.table.join(
+	-- =====================================================
+	-- 1. AwesomeWM control
+	-- =====================================================
+
+	-- Show hotkey help popup dialog window
+	awful.key({modkey}, "s", hotkeys_popup.show_help,
+		{description = "show help", group = "awesome"}),
+
+	-- Blank screen temporarily
+	awful.key({modkey, ctrlkey}, "b", function() os.execute("sleep 1; xset dpms force off")
+		end, {description = "blank screen(s) temporarily", group = "awesome"}),
+
+	-- Monitor management
+	awful.key({modkey, altkey}, "r", function() os.execute("monitor_rofi.sh") end,
+		{description = "monitor Rofi menu", group = "awesome"}),
+
+	-- Power menu
+	awful.key({modkey, altkey}, "p", function() os.execute("rofi_power") end,
+  { description = "power Rofi menu", group = "awesome" }),
+
+
+-- Tags related keybindings
+
+  -- Switch to prev/next tag
+  -- awful.key({ modkey,           }, "Left",   awful.tag.viewprev,
+  -- {description = "view previous", group = "tag"}),
+  -- awful.key({ modkey,           }, "Right",  awful.tag.viewnext,
+  -- {description = "view next", group = "tag"}),
+  -- awful.key({ modkey,           }, "Escape", awful.tag.history.restore,
+  -- {description = "go back", group = "tag"}),
+
+	-- Cycle back and forth through tags with clients
+	awful.key({modkey}, "Left", function() cycle_tags_with_clients("prev") end,
+		{description = "cycle to previous tag with clients", group = "tag"}),
+
+	awful.key({modkey}, "Right", function() cycle_tags_with_clients("next") end,
+		{description = "cycle to next tag with clients", group = "tag"}),
+
+	-- Cycle back and forth only through tags with unminimized clients
+	awful.key({modkey, ctrlkey}, "Left", function()
+		-- tag_view_nonempty(-1)
+		local focused = awful.screen.focused()
+		for i = 1, #focused.tags do
+			awful.tag.viewidx(-1, focused)
+			if #focused.clients > 0 then
+				return
+			end
+		end
+		end,
+		{description = "view previous non-empty tag", group = "tag"}),
+
+	awful.key({modkey, ctrlkey}, "Right", function()
+		-- tag_view_nonempty(1)
+		local focused = awful.screen.focused()
+		for i = 1, #focused.tags do
+			awful.tag.viewidx(1, focused)
+			if #focused.clients > 0 then
+				return
+			end
+		end
+		end,
+		{description = "view next non-empty tag", group = "tag"}),
+
+	-- Default AwesomeWM tag navigation (commented out but kept for reference)
+	-- awful.key({modkey}, "Left", awful.tag.viewprev,
+	-- 	{description = "view previous", group = "tag"}),
+	-- awful.key({modkey}, "Right", awful.tag.viewnext,
+	-- 	{description = "view next", group = "tag"}),
+	-- awful.key({modkey}, "Escape", awful.tag.history.restore,
+	-- 	{description = "go back", group = "tag"}),
+
+	-- Grid navigation (commented out but kept for reference)
+	-- awful.key(tag_nav_mod_keys, "Up", function() grid:navigate("up") end, {description = "Up", group = "Tag"}),
+	-- awful.key(tag_nav_mod_keys, "Down", function() grid:navigate("down") end, {description = "Down", group = "Tag"}),
+	-- awful.key(tag_nav_mod_keys, "Left", function() grid:navigate("left") end, {description = "Left", group = "Tag"}),
+	-- awful.key(tag_nav_mod_keys, "Right", function() grid:navigate("right") end, {description = "Right", group = "Tag"}),
+
+
+  -- modkey+Tab: cycle through all clients.
+  -- awful.key({modkey}, "Tab", function(c) cyclefocus.cycle({modifier = "Super_L"}) end,
+  -- { description = "cycle through clients", group = "client" }),
+
+  -- modkey+Shift+Tab: backwards
+  -- awful.key({modkey, shiftkey}, "Tab", function(c) cyclefocus.cycle({modifier = "Super_L"}) end,
+  -- { description = "cycle backward through clients", group = "client" }),
+
+
+	-- =====================================================
+	-- 3. Client focus and window management
+	-- =====================================================
+
+	-- Cycle through all clients (Alt-Tab replacement)
+	awful.key({modkey}, "Tab", function(c) cyclefocus.cycle({modifier = "Super_L"}) end,
+		{description = "cycle through clients", group = "client"}),
+
+	-- Cycle backwards through clients
+	awful.key({modkey, shiftkey}, "Tab", function(c) cyclefocus.cycle({modifier = "Super_L"}) end,
+		{description = "cycle backward through clients", group = "client"}),
+
+	-- Cycle through minimized windows
+	awful.key({modkey}, ";", function()
+		if client.focus then
+			local c = client.focus
+			local nxt = nil
+			for x in awful.client.iterate(function(x)
+				return x.minimized
+			end) do
+				if nxt then
+					nxt:swap(x)
+				else
+					nxt = x
+				end
+			end
+			c.minimized = true
+			nxt.minimized = false
+			c:swap(nxt)
+			client.focus = nxt
+			nxt:raise()
+		end
+	end,
+	{description = "cycle minimized windows", group = "client"}),
+
+	-- Restore all minimized windows
+	awful.key({modkey, altkey}, ";", function()
+		for _, c in ipairs(client.get()) do
+			if c.minimized then
+				c:activate{
+					raise = true
+				}
+				c.minimized = false
+			end
+		end
+	end, {description = "restore all minimized windows", group = "client"}),
+
+
+	-- Jump between current and previous window on whatever tag
+	awful.key({modkey}, "Escape", awful.tag.history.restore,
+		{description = "go back", group = "tag"}),
+
+	-- Trigger revelation script to display and number all windows for quick switch (commented out)
+	-- awful.key({modkey, ctrlkey}, "space", revelation,
+	-- 	{description = "revelation window switcher", group = "awesome"}),
+
+	-- Show main menu (commented out)
+	-- awful.key({modkey, ctrl}, "w", function() mymainmenu:show() end,
+	-- 	{description = "show main menu", group = "awesome"}),
+
+	-- =====================================================
+	-- 4. Layout control and window swapping
+	-- =====================================================
+
+	-- Client swap by index
+	awful.key({modkey, shiftkey}, "j", function() awful.client.swap.byidx(1) end,
+		{description = "swap with next client by index", group = "client"}),
+
+	awful.key({modkey, shiftkey}, "k", function() awful.client.swap.byidx(-1) end,
+		{description = "swap with previous client by index", group = "client"}),
+
+	-- Alternative focus by direction (commented out)
+	-- awful.key({modkey}, "h", function()
+	-- 	awful.client.focus.bydirection("left")
+	-- 	if client.focus then client.focus:raise() end
+	-- end),
+	-- awful.key({modkey}, "l", function()
+	-- 	awful.client.focus.bydirection("right")
+	-- 	if client.focus then client.focus:raise() end
+	-- end),
+
+	-- Direct tag access
+	awful.key({modkey}, "0", function() awful.tag.viewidx(10) end,
+		{description = "view tag #10", group = "tag"}),
+
+	-- =====================================================
+	-- 5. Applications and launchers
+	-- =====================================================
+
+	-- Screenshot taking (commented out)
+	-- awful.key({modkey}, "a", function() awful.util.spawn("xsnap -file ~/screenshots/$(date +%Y-%m-%d-%H-%M-%S).png") end,
+	-- 	{description = "take a screenshot", group = "awesome"}),
+
+	-- Launch terminal
+	awful.key({modkey}, "Return", function() awful.spawn(terminal) end,
+	{description = "open a terminal", group = "launcher"}),
+
+	-- Launch floating terminal
+	awful.key({modkey, shiftkey}, "Return", function() awful.spawn(terminal, {floating = true, placement = awful.placement.centered}) end,
+	{description = "open a floating terminal", group = "launcher"}),
+
+	-- Launch terminal in current working directory
+	awful.key({ modkey, ctrlkey }, "Return", function () awful.util.spawn("sh -c 'alacritty --working-directory \"$(lastcwd)\"'") end,
+	{description = "open a terminal in same directory", group = "launcher"}),
+
+	-- Launch urxvt terminal
+	awful.key({ modkey, altkey }, "Return", function () awful.util.spawn("urxvt") end,
+	{description = "open urxvt terminal", group = "launcher"}),
+
+	-- Launch Hue lighting sync to screen colours
+	awful.key({modkey, ctrlkey, altkey}, "h", function () awful.util.spawn("huestacean") end,
+	{description = "open huestacean", group = "launcher"}),
+
+	-- =====================================================
+	-- 6. System controls (volume, brightness, etc.)
+	-- =====================================================
+
+	-- Audio and multimedia controls (commented out but preserved for reference)
+	-- Audio volume controls
+awful.key({}, "XF86AudioRaiseVolume", function() awful.util.spawn("amixer -q set Master 5%+") end,
+	{description = "raise volume", group = "audio"}),
+
+awful.key({}, "XF86AudioLowerVolume", function() awful.util.spawn("amixer -q set Master 5%-") end,
+	{description = "lower volume", group = "audio"}),
+
+awful.key({}, "XF86AudioMute", function() awful.util.spawn("amixer -q set Master toggle") end,
+	{description = "mute volume", group = "audio"}),
+
+-- =====================================================
+-- 7. Special functions and utilities
+-- =====================================================
+
+-- Screen focus
+awful.key({modkey}, "o", function() awful.screen.focus_relative(1) end,
+	{description = "focus the next screen", group = "screen"}),
+awful.key({modkey}, "u", function() awful.screen.focus_relative(-1) end,
+	{description = "focus the previous screen", group = "screen"}),
+
+-- Move window between monitor outputs
+-- awful.key({ modkey, shiftkey  }, "o",      function (c) c:move_to_screen()               end,
+-- awful.key({modkey, shiftkey}, "o", awful.client.movetoscreen,
+-- {description = "move to next screen", group = "client"}),
+
+-- awful.key({ modkey, ctrlkey, shiftkey }, "k", function (c) c:move_to_screen(c.screen.index - 1) end,
+-- {description = "move to screen left", group = "client"}),
+-- awful.key({ modkey, ctrlkey, shiftkey }, "j", function (c) c:move_to_screen(c.screen.index + 1) end,
+-- { description = "move to screen right", group = "client"}),
+
+
+awful.key({modkey, altkey}, "j", function() rotate_screens(1) end,
+{description = "rotate screens left", group = "screen"}),
+
+awful.key({modkey, altkey}, "k", function() rotate_screens(-1) end,
+{ description = "rotate screens right", group = "screen" }),
+
+
+awful.key({modkey}, "u", awful.client.urgent.jumpto,
+{ description = "jump to urgent client", group = "client" }),
+
+
+-- emulate alt-tab behaviour
+-- awful.key({"Mod1"}, "Tab", function() switcher.switch(1, "Mod1", "Alt_L", "Shift", "Tab") end,
+-- { description = "alt-tab between clients", group = "client" }),
+--
+-- awful.key({"Mod1", "Shift"}, "Tab", function() switcher.switch(-1, "Mod1", "Alt_L", "Shift", "Tab") end,
+-- { description = "reverse alt-tab between clients", group = "client" }),
+
+
+-- awful.key({ modkey,           }, "Tab",
+--     function ( )
+--         awful.client.focus.history.previous()
+--         if client.focus then
+--             client.focus:raise()
+--         end
+--     end,
+--     {description = "go back", group = "client"}),
+
+
+-- awful.key({ modkey, shiftkey }, "left", function (c) move_to_previous_tag() end, awful.tag.viewprev,
+-- {description = "move client to previous tag", group = "tag"}),
+--
+-- awful.key({ modkey, shiftkey }, "right", function (c) move_to_next_tag() end, awful.tag.viewnext,
+-- {description = "move client to next tag", group = "tag"}),
+
+
+awful.key({modkey, ctrlkey}, "left", function(c) move_to_previous_tag() end,
+{description = "move client to prev tag without follow", group = "tag"}),
+
+awful.key({modkey, ctrlkey}, "right", function(c) move_to_next_tag() end,
+{ description = "move cliet to next tag without follow", group = "tag" }),
+
+
+-- Standard program
+
+-- Restart awesome
+-- awful.key({modkey, ctrlkey}, "r", function()
+--     awful.util.spawn("echo 'awesome.restart()' | awesome-client")
+-- end, {description = "reload awesome", group = "awesome"}),
+-- awful.key({modkey, ctrlkey}, "r", function()
+--     naughty.notify({title = "Debug", text = "Hotkey triggered"})
+--     awful.util.spawn("echo 'awesome.restart()' | awesome-client")
+-- end, {description = "reload awesome", group = "awesome"}),
+
+--
+-- awful.key({modkey, ctrlkey}, "r", function()
+--     local success, err = pcall(function()
+--         awful.util.spawn("echo 'awesome.restart()' | awesome-client", false)
+--     end)
+--     if not success then
+--         naughty.notify({
+--             preset = naughty.config.presets.critical,
+--             title = "Spawn Error",
+--             text = "Failed to execute: " .. tostring(err)
+--         })
+--     else
+--         naughty.notify({title = "Success", text = "Command executed"})
+--     end
+-- end, {description = "reload awesome", group = "awesome"}),
+
+awful.key({modkey, ctrlkey}, "r", function()
+    awful.util.spawn_with_shell("echo 'awesome.restart()' | /usr/bin/awesome-client")
+end, {description = "reload awesome", group = "awesome"}),
+
+-- Quit awesome
+awful.key({modkey, ctrlkey, shiftkey}, "q", function() confirmQuitmenu:show() end, {
+description = "Confirm Awesome wm exit", group = "awesome" }),
+
+
+-- awful.key({ modkey,           }, "l",     function () awful.tag.incmwfact( 0.05)          end,
+-- {description = "increase master width factor", group = "layout"}),
+-- awful.key({ modkey,           }, "h",     function () awful.tag.incmwfact(-0.05)          end,
+-- {description = "decrease master width factor", group = "layout"}),
+
+
+awful.key({modkey, "Shift"}, "h", function() awful.tag.incnmaster(1, nil, true) end,
+{ description = "increase the number of master clients", group = "layout" }),
+awful.key({modkey, shiftkey}, "l", function() awful.tag.incnmaster(-1, nil, true) end,
+{ description = "decrease the number of master clients", group = "layout" }),
+awful.key({modkey, ctrlkey}, "h", function() awful.tag.incncol(1, nil, true) end,
+{ description = "increase the number of columns", group = "layout"}),
+awful.key({modkey, ctrlkey}, "l", function() awful.tag.incncol(-1, nil, true) end,
+{ description = "decrease the number of columns", group = "layout" }),
+
+awful.key({modkey}, "r", function() awful.layout.inc(1) end,
+{description = "select next layout", group = "layout"}),
+awful.key({modkey, shiftkey}, "r", function() awful.layout.inc(-1) end,
+{description = "select previous layout", group = "layout"}),
+
+
+-- Toggle floating window to the corner, half works
+awful.key({modkey, shiftkey}, "w", function()
+	-- local c = awful.client.restore()
+	local c = client.focus
+	awful.client.floating.toggle()
+	if c.floating then
+		c.floating = false
+		c.ontop = false
+		c.sticky = false
+	else
+		c.floating = true
+		c.ontop = true
+		c.sticky = true
+		c.width = 633
+		c.height = 400
+		awful.placement.top_right(client.focus)
+	end
+end, {description = "ontop floating right corner", group = "client"}),
+
+
+-- https://www.reddit.com/r/awesomewm/comments/jc6j8d/video_floating_on_all_tags
+-- awful.key({ modkey, shiftkey }, "w", function (c)
+--   awful.client.floating.toggle()
+--   if c.floating then
+--     c.ontop=true
+--     c.sticky=true
+--     c.width=533
+--     c.height=300
+--     awful.placement.top_right(client.focus)
+--   else
+--     c.ontop=false
+--     c.sticky=false
+--   end
+-- end,
+-- {description = "ontop floating right corner", group = "client"}),
+
+
+-- Apps
+awful.key({modkey, shiftkey}, "e", function() awful.spawn.raise_or_spawn("urxvt -e sh -c '$EDITOR ~/.config/awesome/rc.lua'", nil, nil, "awesomeconf")
+end, {description = "edit awesome config", group = "launcher"}),
+
+
+awful.key({modkey}, "F1", function() awful.spawn.raise_or_spawn("urxvt -e sh -c 'ncmpcpp' -name 'ncmpcpp'", nil, create_matcher("ncmpcpp"), "ncmpcpp")
+end, {description = "run ncmpcpp in a terminal", group = "launcher"}),
+
+awful.key({modkey, shiftkey}, "F1", function() awful.spawn.raise_or_spawn("spotify", nil, create_matcher("spotify"), "spotify")
+end, {description = "run spotify", group = "launcher"}),
+
+-- awful.key({ modkey,},            "F1",      function () awful.spawn.raise_or_spawn("urxvt -e sh -c 'ncmpcpp' -name 'ncmpcpp'",nil,nil,"ncmpcpp") end, { description = "run ncmpcpp in a terminal", group = "launcher" }),
+-- awful.key({ modkey,},            "F1",      function () awful.spawn.raise_or_spawn("nsm",nil,create_matcher("Agordejo"),"Agordejo") end, { description = "NSM manager and launcher", group = "launcher" }),
+
+awful.key({modkey}, "F2", function() awful.spawn.raise_or_spawn("raysession", nil, create_matcher("raysession"))
+end, {description = "run raysession", group = "launcher"}),
+
+awful.key({modkey, shiftkey}, "F2", function() awful.spawn.raise_or_spawn("urxvt -e sh -c 'nsm'", nil, create_matcher("nsm"), "nsm")
+end, {description = "run argodejo in a terminal", group = "launcher"}),
+-- awful.key({ modkey, ctrlkey },    "F2",      function () awful.spawn.raise_or_spawn("",nil,nil,"studio-controls") end, { description = "run studio-controls", group = "launcher" }),
+
+awful.key({modkey}, "F3", function() awful.spawn.raise_or_spawn("qbittorrent", nil, create_matcher("qBittorrent"), "qBittorrent")
+end, {description = "run qbittorrent", group = "launcher"}),
+
+awful.key({modkey, shiftkey}, "F3", function() awful.spawn.raise_or_spawn("nicotine", nil, create_matcher("Nicotine"))
+end, {description = "run nicotine++", group = "launcher"}),
+
+awful.key({modkey}, "F4", function() awful.spawn.raise_or_spawn("picard", nil, create_matcher("Picard"))
+end, {description = "run picard", group = "launcher"}),
+
+awful.key({modkey, shiftkey}, "F4", function() awful.spawn.raise_or_spawn("simplescreenrecorder", nil, create_matcher("simplescreenrecorder"))
+end, {description = "run simplescreenrecorder", group = "launcher"}),
+
+-- awful.key({modkey}, "F5", function() awful.spawn.raise_or_spawn("studio-controls", nil, create_matcher("studio-controls"))
+--   end, {description = "run studio-controls", group = "launcher"}),
+
+awful.key({modkey, shiftkey}, "F6", function() awful.spawn.raise_or_spawn("qseq66", nil, create_matcher("qseq66"))
+end, {description = "run qseq66", group = "launcher"}),
+
+awful.key({modkey, shiftkey}, "F7", function() awful.spawn.raise_or_spawn("signal-desktop", nil, create_matcher("signal-desktop"))
+end, {description = "run signal-desktop", group = "launcher"}),
+
+awful.key({modkey}, "F8", function() awful.spawn.raise_or_spawn("keepassxc ~/state/nextcloud/sync/keepassxc-mb.kdbx", nil, create_matcher("keepassxc"))
+end, {description = "run keepassxc", group = "launcher"}),
+
+awful.key({modkey}, "F9", function() awful.spawn.raise_or_spawn("doublecmd", nil, create_matcher("doublecmd"))
+end, {description = "run doublecmd", group = "launcher"}),
+
+awful.key({ modkey },            "F11",     function () awful.spawn.raise_or_spawn("quasselclient",nil,nil,"quasselclient") end, { description = "run quasselclient", group = "launcher" }),
+
+-- awful.key({modkey}, "F11", function() awful.spawn.raise_or_spawn("quasselclient", nil, create_matcher("quassel"))
+-- end, {description = "run quasselclient", group = "launcher"}),
+
+awful.key({modkey}, "F12", function() awful.spawn.raise_or_spawn("firefox", nil, create_matcher("firefox"))
+end, {description = "run firefox", group = "launcher"}),
+
+awful.key({modkey, shiftkey}, "F12", function() awful.spawn.raise_or_spawn("chromium", nil, create_matcher("chromium"))
+end, {description = "run chromium", group = "launcher"}),
+
+
+awful.key({modkey}, "p", function() awful.spawn.raise_or_spawn("pavucontrol", nil, create_matcher("pavucontrol"))
+end, {description = "run pavucontrol", group = "launcher"}),
+
+
+-- awful.key({modkey}, "Print", function() awful.spawn.with_shell("scrot -e 'mv $f ~/media/images/screenshots/' $(hostname --short)_$(date +%Y-%m-%d-%T).png 2>/dev/null", false) end),
+awful.key({modkey}, "Print", function() awful.spawn.with_shell("flameshot gui", false)
+end, {description = "take a screenshot with flameshot", group = "launcher"}),
+-- awful.key({ modkey,   }, "Print", function () awful.spawn.with_shell("import -window root '~/media/images/screenshots/$(hostname --short)_$(date +%Y-%m-%d-%T).png'",false) end),
+
+
+-- awful.key({modkey, altkey}, "F10", function() awful.spawn.with_shell("ooo_06-screen-below-only.sh", false)
+--   end, {description = "screen below only", group = "launcher"}),
+
+-- awful.key({modkey, altkey}, "F11", function() awful.spawn.with_shell("ooo_04-laptop-only.sh", false)
+--   end, {description = "laptop screen only", group = "launcher"}),
+
+-- awful.key({modkey, altkey}, "F12", function() awful.spawn.with_shell("ooo_08-screen-above-only.sh", false)
+--   end, {description = "laptop screen only", group = "launcher"}),
+
+-- awful.key({modkey, altkey}, "F1", function() awful.spawn.with_shell("ooo_111-laptop-and-screen-above-primary.sh", false)
+--   end, {description = "laptop screen only", group = "launcher"}),
+
+-- awful.key({modkey, altkey}, "F4", function() awful.spawn.with_shell("ooo_112-laptop-and-screen-above-and-below-as-clones.sh", false)
+--   end, {description = "laptop screen only", group = "launcher"}),
+
+-- awful.key({modkey, altkey}, "F7", function() awful.spawn.with_shell("ooo_121-laptop-primary-and-screen-above-right.sh", false)
+--   end, {description = "laptop screen only", group = "launcher"}),
+
+-- awful.key({ modkey, altkey },            "F2",        function () awful.spawn.with_shell("", false) end, {description = "laptop screen only", group = "launcher"}),
+-- awful.key({ modkey, altkey },            "F2",       function () awful.spawn.with_shell("11-laptop-and-screen-above.sh", false) end, {description = "laptop screen only", group = "launcher"}),
+
+
+-- awful.key({ modkey, shiftkey   }, "F3", function () awful.spawn(terminal_cmd) end,
+-- {description = "open various terminal apps", group = "launcher"}),
+
+awful.key({modkey, altkey}, "q", function() awful.spawn.with_shell("xkill", false)
+end, {description = "xkill to kill a hung gui app", group = "launcher"}),
+
+awful.key({modkey, altkey}, "c", function() awful.spawn.with_shell("xcolor -s clipboard", false)
+end, {description = "colour picker to clipboard", group = "launcher"}),
+
+
+awful.key({ modkey, ctrlkey }, "a", function() awful.spawn.with_shell("arandr", false) end),
+
+
+-- Volume Keys
+-- awful.key({}, "XF86AudioLowerVolume", function () awful.util.spawn("pactl -- set-sink-volume @DEFAULT_SINK@ -5%", false) end),
+-- awful.key({}, "XF86AudioRaiseVolume", function () awful.util.spawn("pactl -- set-sink-volume @DEFAULT_SINK@ +5%", false) end),
+-- awful.key({}, "XF86AudioLowerVolume", function() awful.util.spawn("wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-", false) end),
+-- awful.key({}, "XF86AudioRaiseVolume", function() awful.util.spawn("wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+", false) end),
+
+awful.key({}, "XF86AudioLowerVolume", function() awful.spawn.with_shell("vol-dec-all-3.sh", false) end),
+awful.key({}, "XF86AudioRaiseVolume", function() awful.spawn.with_shell("vol-inc-all-3.sh", false) end),
+
+awful.key({}, "XF86AudioMute", function() awful.util.spawn("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle", false) end),
+
+
+-- Control amplifier hardware
+awful.key({ modkey, ctrlkey, altkey }, "b", function() awful.util.spawn("funiculi --host 192.168.1.24 up", false) end,
+{ description = "Denon amp increase volume", group = "hotkeys" }),
+awful.key({ modkey, ctrlkey, altkey }, "g", function() awful.util.spawn("funiculi --host 192.168.1.24 down", false) end,
+{ description = "Denon amp decrease volume", group = "hotkeys" }),
+
+awful.key({ modkey, ctrlkey, altkey }, "v", function() awful.util.spawn("denon_toggle_source.sh", false) end,
+{ description = "Denon amp source set toggle", group = "hotkeys" }),
+awful.key({ modkey, ctrlkey, altkey }, "r", function() awful.util.spawn("denon_toggle_power.sh", false) end,
+{ description = "Denon amp power toggle", group = "hotkeys" }),
+
+
+-- Media keys with Winamp style hotkeys qwerty: z / pre, x / play, c / (play-)pause, v / stop, b / next
+-- Media keys with Winamp style hotkeys colemak: z / pre, x / play, c / (play-)pause, d / stop, v / next
+awful.key({ modkey, ctrlkey }, "z", function() awful.util.spawn("playerctl previous", false) end,
+{ description = "media backwards", group = "mediakeys" }),
+awful.key({}, "XF86AudioPrev", function() awful.util.spawn("playerctl previous", false) end,
+{ description = "media backwards", group = "mediakeys"}),
+
+awful.key({ modkey, ctrlkey }, "x",function() awful.util.spawn("playerctl play", false) end,
+{ description = "media play", group = "mediakeys"}),
+awful.key({}, "XF86AudioPlay", function() awful.util.spawn("playerctl play", false) end,
+{ description = "media play", group = "mediakeys"}),
+
+awful.key({ modkey, ctrlkey }, "c", function() awful.util.spawn("playerctl play-pause", false) end,
+{ description = "media pause", group = "mediakeys"}),
+awful.key({}, "XF86AudioPause", function() awful.util.spawn("playerctl play-pause", false) end,
+{ description = "media pause", group = "mediakeys"}),
+
+awful.key({ modkey, ctrlkey }, "d", function() awful.util.spawn("playerctl stop", false) end,
+{ description = "media stop", group = "mediakeys"}),
+awful.key({}, "XF86AudioStop", function() awful.util.spawn("playerctl stop", false) end,
+{ description = "media stop", group = "mediakeys"}),
+
+awful.key({ modkey, ctrlkey }, "v", function() awful.util.spawn("playerctl next", false) end,
+{ description = "media next", group = "mediakeys"}),
+awful.key({}, "XF86AudioNext", function() awful.util.spawn("playerctl next", false) end,
+{ description = "media next", group = "mediakeys"}),
+
+
+-- Brightness
+awful.key({}, "XF86MonBrightnessDown", function() os.execute("brillo -U 10") end,
+{ description = "decrease brightness", group = "hotkeys" }),
+
+awful.key({ modkey }, "XF86AudioLower Volume", function() os.execute("brillo -U 10") end,
+{ description = "decrease brightness", group = "hotkeys" }),
+
+awful.key({}, "XF86MonBrightnessUp", function() os.execute("brillo -A 10") end,
+{description = "increase brightness", group = "hotkeys"}),
+
+awful.key({ modkey }, "XF86AudioRaiseVolume", function() os.execute("brillo -A 10") end,
+{description = "increase brightness", group = "hotkeys"}),
+
+
+-- Application launcher
+-- awful.key({ modkey },            "r",     function () awful.screen.focused().mypromptbox:run() end,
+awful.key({modkey}, "space", function() awful.util.spawn("/home/milk/bin/rofi_nice") end,
+{description = "run rofi app launcher", group = "launcher"}),
+
+awful.key({modkey, altkey}, "space", function() awful.util.spawn("/home/milk/bin/rofi_nice_run") end,
+{description = "run rofi cmd launcher", group = "launcher"}),
+
+
+-- Emoji picker
+awful.key({modkey, altkey}, "e", function() awful.util.spawn("emote") end,
+{description = "run emote emoji picker", group = "launcher"}),
+
+
+awful.key({ modkey, altkey }, "v", treetile.vertical),
+awful.key({ modkey, altkey }, "h", treetile.horizontal),
+
+-- awful.key({ modkey }, "o", leaved.keys.shiftOrder),
+-- awful.key({ modkey, "Shift" }, "h", leaved.keys.splitH), --split next horizontal
+-- awful.key({ modkey, "Shift" }, "v", leaved.keys.splitV), --split next vertical
+-- awful.key({ modkey, "Shift" }, "o", leaved.keys.splitOpp), --split in opposing direction
+-- awful.key({ modkey, "Shift" }, "t", leaved.keys.shiftStyle),
+-- awful.key({ modkey, "Shift" }, "]", leaved.keys.scaleV(-5)),
+-- awful.key({ modkey, "Shift" }, "[", leaved.keys.scaleV(5)),
+-- awful.key({ modkey }, "]", leaved.keys.scaleH(-5)),
+-- awful.key({ modkey }, "[", leaved.keys.scaleH(5)),
+
+
+-- doesnt work? error xrandr.lua:120 attempts to cal a nill value format (global 'unpack')
+-- awful.key({ modkey, shiftkey }, "s",
+--   function() xrandr.xrandr() end,
+--   {description = "multimonitors"}),
+
+
+-- Popup box to enter lua code to run
+awful.key({modkey, shiftkey}, "x", function()
+	awful.prompt.run {
+		prompt = "Run Lua code: ",
+		textbox = awful.screen.focused().mypromptbox.widget,
+		exe_callback = awful.util.eval,
+		history_path = awful.util.get_cache_dir() .. "/history_eval"
+	}
+end, {description = "lua execute prompt", group = "awesome"}),
+
+
+-- Hide the statusbar, resizing the window space
+awful.key({modkey}, "v", function()
+	myscreen = awful.screen.focused()
+	myscreen.mywibox.visible = not myscreen.mywibox.visible
+end, {description = "toggle statusbar", group = "awesome"}),
+
+-- Hide the status bar, not resizing the window space
+awful.key({modkey, altkey}, "v", function()
+	for s in screen do
+		s.mywibox.visible = not s.mywibox.visible
+		if s.myaltwibox then
+			s.myaltwibox.visible = not s.myaltwibox.visible
+		end
+	end
+end, {description = "toggle wibox", group = "awesome"}),
+
+
+-- Menubar app launcher
+awful.key({modkey, shiftkey}, "space", function() menubar.show() end,
+{ description = "show the menubar", group = "launcher" }));
+
+-- =====================================================
+-- Client-specific keybindings (clientkeys)
+-- =====================================================
+
+clientkeys = gears.table.join(
+	-- Toggle window fullscreen
+	awful.key({modkey}, "f", function(c)
+		c.fullscreen = not c.fullscreen
+		c:raise()
+	end, {description = "toggle fullscreen", group = "client"}),
+
+	-- Quit current window app
+	awful.key({modkey}, "w", function(c) c:kill() end,
+		{description = "close", group = "client"}),
+
+
+-- Toggle window floating
+awful.key({modkey}, "z", function(c) c.floating = not c.floating end,
+{description = "toggle floating", group = "client"}),
+
+awful.key({modkey, shiftkey}, "m", function(c) c:swap(awful.client.getmaster()) end,
+{description = "move to master", group = "client"}),
+
+-- Centre a floating window
+awful.key({modkey, "Shift"}, "z",
+awful.placement.centered), {
+	description = "centre floating window",
+	group = "client"
+}, -- Make a window floating and centre is for zen reading experience
+
+awful.key({modkey}, "a", function(c)
+	c.floating = not c.floating
+	c.width = c.screen.geometry.width * 3 / 5
+	c.x = c.screen.geometry.x + (c.screen.geometry.width / 5)
+	c.height = c.screen.geometry.height * 0.93
+  c.y = c.screen.geometry.height * 0.04
+end), {description = "large centre floating window", group = "client" },
+
+
+-- Toggle window on-top
+awful.key({modkey}, "t", function(c) c.ontop = not c.ontop end,
+{ description = "toggle keep on top", group = "client" }),
+-- Window z-index
+-- Send window to the behind plane
+awful.key({modkey}, "comma", function(c) c.below = not c.below end,
+{description = "behind", group = "client"}),
+
+-- Send window to the middle plane
+-- awful.key({ modkey,           }, "period",      function (c) c.below = false     end,
+--   {description = "behind", group = "client"}),
+
+-- Send window to the above plane
+awful.key({modkey}, "slash", function(c) c.above = not c.above end,
+{ description = "behind", group = "client" }),
+-- Sticky window, stays on all tags
+awful.key({modkey}, "x", function(c) c.sticky = not c.sticky end),
+
+
+-- Minimize current window
+awful.key({modkey}, "n", function(c)
+	-- The client currently has the input focus, so it cannot be
+	-- minimized, since minimized clients cant have the focus.
+	c.minimized = true
+end, {description = "minimize", group = "client"}),
+-- Unminimize next window
+awful.key({modkey, ctrlkey}, "n", function()
+	local c = awful.client.restore()
+	-- Focus restored client
+	if c then
+		c:emit_signal("request::activate", "key.unminimize", {raise = true})
+	end
+end, {description = "restore minimized", group = "client"}),
+-- Jump to window
+awful.key({modkey, shiftkey}, "n",
+function() awful.util.spawn("/home/milk/bin/rofi_jumpwindow") end,
+{description = "jump to window", group = "client"}),
+
+-- Maximise toggle for current window
+awful.key({modkey}, "m", function(c)
+	c.maximized = not c.maximized
+	c:raise()
+end, {description = "(un)maximize", group = "client"}),
+
+-- Maximise vertivally toggle for current window
+awful.key({modkey, ctrlkey}, "m", function(c)
+	c.maximized_vertical = not c.maximized_vertical
+	c:raise()
+end, {description = "(un)maximize vertically", group = "client"}),
+
+-- Maximise horizontally toggle for current window
+awful.key({modkey, shiftkey}, "m", function(c)
+	c.maximized_horizontal = not c.maximized_horizontal
+	c:raise()
+end, {description = "(un)maximize horizontally", group = "client"})
+-- awful.key({ modkey, shiftkey }, "z",  awful.client.position. ,
+--         {description = "toggle floating", group = "client"})
+)
+
+
+
+-- Define tag keybinding combinations in a table for clarity
+local tag_keybindings = {
+    { mods = {modkey}, action = function(tag) tag:view_only() end, desc = "view tag #%d" },
+    { mods = {modkey, altkey}, action = function(tag) awful.tag.viewtoggle(tag) end, desc = "toggle tag #%d" },
+    { mods = {modkey, ctrlkey}, action = function(tag) client.focus:move_to_tag(tag) end, desc = "move client to tag #%d" },
+    { mods = {modkey, shiftkey}, action = function(tag) client.focus:move_to_tag(tag); tag:view_only() end, desc = "move client and follow to tag #%d" },
+    { mods = {modkey, ctrlkey, shiftkey}, action = function(tag) client.focus:toggle_tag(tag) end, desc = "toggle client on tag #%d" },
+}
+
+-- Generate keybindings for tags 1-12
+for i = 1, 12 do
+    for _, binding in ipairs(tag_keybindings) do
+        globalkeys = gears.table.join(globalkeys,
+            awful.key(binding.mods, "#" .. i + 9, function()
+                local s = awful.screen.focused()
+                local tag = s.tags[i]
+                if tag and (not client.focus or binding.mods[2] ~= ctrlkey) then
+                    binding.action(tag)
+                end
+            end, {description = binding.desc:format(i), group = "tag"})
+        )
+    end
+end
+
+-- Anti-warp resize function that prevents cursor from jumping to another monitor
+local function resize_no_warp(c)
+    c:emit_signal("request::activate", "mouse_click", {raise = true})
+
+    -- Check if client is floating or if current layout has mouse_resize_handler
+    local layout = awful.layout.get(c.screen)
+    
+    -- Debug: Always print layout info
+    print("resize_no_warp called - Layout:", layout.name or "unknown", "Floating:", c.floating, "Has handler:", layout.mouse_resize_handler and "yes" or "no")
+    
+    -- If client is not floating and layout has mouse_resize_handler, use it
+    if not c.floating and layout.mouse_resize_handler then
+        print("Using layout mouse resize handler for:", layout.name or "unknown layout")
+        
+        local initial_coords = mouse.coords()
+        local geo = c:geometry()
+        
+        -- Determine corner based on mouse position relative to client center  
+        local corner
+        if initial_coords.y < geo.y + geo.height/2 then
+            if initial_coords.x < geo.x + geo.width/2 then
+                corner = "top_left"
+            else
+                corner = "top_right"
+            end
+        else
+            if initial_coords.x < geo.x + geo.width/2 then
+                corner = "bottom_left"
+            else
+                corner = "bottom_right"
+            end
+        end
+        
+        -- Call the layout's mouse resize handler
+        layout.mouse_resize_handler(c, corner, initial_coords.x, initial_coords.y)
+        return
+    end
+
+    -- Fallback to floating window resize for floating clients or layouts without mouse handler
+    -- Store initial cursor position
+    local initial_coords = mouse.coords()
+
+    -- Store initial client geometry
+    local geo = c:geometry()
+
+    -- Get the current screen's geometry
+    local g = screen[c.screen].geometry
+
+    -- Compute possible directions based on mouse position relative to client center
+    local corner
+    if initial_coords.y < geo.y + geo.height/2 then
+        if initial_coords.x < geo.x + geo.width/2 then
+            corner = "top_left"
+        else
+            corner = "top_right"
+        end
+    else
+        if initial_coords.x < geo.x + geo.width/2 then
+            corner = "bottom_left"
+        else
+            corner = "bottom_right"
+        end
+    end
+
+    -- Start the mouse grabber without warping the cursor
+    local prev_coords = initial_coords
+    mousegrabber.run(function(m)
+        if not c.valid then return false end
+
+        -- Calculate offset from previous position
+        local dx = m.x - prev_coords.x
+        local dy = m.y - prev_coords.y
+
+        -- Update previous position
+        prev_coords = {x = m.x, y = m.y}
+
+        -- Calculate new dimensions and position
+        local ng = {}
+
+        if corner == "top_left" then
+            ng.x = geo.x + dx
+            ng.y = geo.y + dy
+            ng.width = math.max(1, geo.width - dx)
+            ng.height = math.max(1, geo.height - dy)
+        elseif corner == "top_right" then
+            ng.y = geo.y + dy
+            ng.width = math.max(1, geo.width + dx)
+            ng.height = math.max(1, geo.height - dy)
+        elseif corner == "bottom_left" then
+            ng.x = geo.x + dx
+            ng.width = math.max(1, geo.width - dx)
+            ng.height = math.max(1, geo.height + dy)
+        else  -- bottom_right
+            ng.width = math.max(1, geo.width + dx)
+            ng.height = math.max(1, geo.height + dy)
+        end
+
+        -- Check if all dimensions are valid
+        if ng.width and ng.height then
+            if ng.x then geo.x = ng.x end
+            if ng.y then geo.y = ng.y end
+            geo.width = ng.width
+            geo.height = ng.height
+            c:geometry(geo)
+        end
+
+        return m.buttons[3]  -- Continue as long as right button is pressed
+    end, "fleur")
+
+    -- Update center position for our center-locked resizing
+    -- once resize is complete
+    if c.floating and window_centers then
+        local new_geo = c:geometry()
+        window_centers[c] = {
+            x = new_geo.x + new_geo.width / 2,
+            y = new_geo.y + new_geo.height / 2
+        }
+    end
+end
+
+-- =====================================================
+-- Mouse button bindings (clientbuttons)
+-- =====================================================
+
+clientbuttons = gears.table.join(
+    -- Left click to activate window
+    awful.button({}, 1, function(c)
+        c:emit_signal("request::activate", "mouse_click", {raise = true})
+    end),
+
+    -- Mod4 + Left click to move window
+    awful.button({modkey}, 1, function(c)
+        c:emit_signal("request::activate", "mouse_click", {raise = true})
+        awful.mouse.client.move(c)
+    end),
+
+    -- Mod4 + Right click to resize window (using custom function to prevent cursor warping)
+    awful.button({modkey}, 3, function(c)
+        resize_no_warp(c)
+    end)
+)
+-- awful.button({modkey, shiftkey}, 4, function(c) move_to_previous_tag() end)
+-- awful.button({modkey, shiftkey}, 5, function(c) move_to_next_tag() end),
+
+
+-- awful.button({ modkey }, 1,
+-- function (c)
+--      c.maximized_horizontal = false
+--      c.maximized_vertical   = false
+--      c.maximized            = false
+--      c.fullscreen           = false
+--      awful.mouse.client.move(c)
+-- end
+
+-- awful.button({ modkey, ctrlkey, altkey }, "4", function() awful.util.spawn("funiculi --host 192.168.1.24 up", false) end),
+-- awful.button({ modkey, ctrlkey, altkey }, "5", function() awful.util.spawn("funiculi --host 192.168.1.24 down", false) end)
+-- )
+
+-- root.buttons(awful.util.table.join(
+-- awful.button({ modkey, ctrlkey, altkey }, "4", function() awful.util.spawn("funiculi --host 192.168.1.24 up", false) end),
+-- awful.button({ modkey, ctrlkey, altkey }, "5", function() awful.util.spawn("funiculi --host 192.168.1.24 down", false) end)
+-- ))
+
+
+-- middle mouse
+awful.button({}, 0, function(c)
+	if c == client.focus then
+		c.minimized = true
+	else
+		client.focus = c
+		c:raise()
+	end
+end)
+
+
+
+-- Add shimmer mode toggle hotkey (after all other keys to avoid conflicts)
+globalkeys = gears.table.join(globalkeys,
+    awful.key({modkey}, "F10", function()
+        local modes = {"candle", "cloud", "char_flicker", "border_sync", "off"}
+        local current_index = 1
+        for i, mode in ipairs(modes) do
+            if mode == shimmer_mode then
+                current_index = i
+                break
+            end
+        end
+        
+        local next_index = (current_index % #modes) + 1
+        local new_mode = modes[next_index]
+        set_shimmer_mode(new_mode)
+        
+        local mode_names = {
+            candle = "Candle Flicker",
+            cloud = "Cloud Shadows", 
+            char_flicker = "Character Flicker",
+            border_sync = "Border Sync",
+            off = "Off"
+        }
+        
+        naughty.notify({
+            title = "Shimmer Mode",
+            text = mode_names[new_mode] or new_mode,
+            timeout = 2
+        })
+    end, {description = "cycle shimmer modes", group = "shimmer"})
+)
+
+-- set keys
+root.keys(globalkeys)
+
+-- Start shimmer system
+set_shimmer_mode("candle")  -- Start with candle mode
+
+-- Debug: Test shimmer system on startup
+gears.timer.start_new(3, function()
+    naughty.notify({
+        title = "Shimmer Debug - Startup Test", 
+        text = "Testing shimmer system...\nShimmer mode: " .. shimmer_mode,
+        timeout = 5
+    })
+    
+    -- Test if focused client shimmer works
+    if client.focus then
+        local c = client.focus
+        local client_name = c.name or c.class or "unknown"
+        local s = c.screen
+        local client_widgets = active_client_widgets[s.index] or {}
+        
+        naughty.notify({
+            title = "Shimmer Debug - Client Test", 
+            text = "Focused client: " .. client_name .. "\nFound " .. #client_widgets .. " widgets",
+            timeout = 5
+        })
+        
+                 -- Try to apply shimmer manually
+         for _, widget in pairs(client_widgets) do
+             if widget.client and widget.client.valid and widget.client == c then
+                apply_shimmer_to_widget(widget.textbox, client_name, "TEST ")
+                naughty.notify({
+                    title = "Shimmer Applied", 
+                    text = "Applied test shimmer to: " .. client_name,
+                    timeout = 3
+                })
+                break
+            end
+        end
+    else
+        naughty.notify({
+            title = "Shimmer Debug", 
+            text = "No focused client found",
+            timeout = 3
+        })
+    end
+    
+    return false  -- Don't repeat
+end)
+
+-- ===== SHIMMER HOTKEYS =====
+-- Use these key combinations to control the shimmer effects:
+-- Super+Ctrl+Alt+1 = Candle flicker mode
+-- Super+Ctrl+Alt+2 = Cloud shadow mode  
+-- Super+Ctrl+Alt+3 = Character flicker mode
+-- Super+Ctrl+Alt+0 = Turn off shimmer
+-- 
+-- The shimmer effects apply to:
+-- - Active tag names in the tag list
+-- - Active client names in the task list
+-- - The launcher gear icon
+-- 
+-- You can customize colors and animation speeds by editing the configuration
+-- section at the top of the shimmer code.40
+
+
+
+
+-- #region WINDOWS
+-- ################################################################################
+--                                                                          
+-- `8.`888b                 ,8'  8 8888 b.             8 8 888888888o.      
+--  `8.`888b               ,8'   8 8888 888o.          8 8 8888    `^888.   
+--   `8.`888b             ,8'    8 8888 Y88888o.       8 8 8888        `88. 
+--    `8.`888b     .b    ,8'     8 8888 .`Y888888o.    8 8 8888         `88 
+--     `8.`888b    88b  ,8'      8 8888 8o. `Y888888o. 8 8 8888          88 
+--      `8.`888b .`888b,8'       8 8888 8`Y8o. `Y88888o8 8 8888          88 
+--       `8.`888b8.`8888'        8 8888 8   `Y8o. `Y8888 8 8888         ,88 
+--        `8.`888`8.`88'         8 8888 8      `Y8o. `Y8 8 8888        ,88' 
+--         `8.`8' `8,`'          8 8888 8         `Y8o.` 8 8888    ,o88P'   
+--          `8.`   `8'           8 8888 8            `Yo 8 888888888P'      
+--                                                          
+--     ,o888888o.  `8.`888b                 ,8' d888888o.   
+--  . 8888     `88. `8.`888b               ,8'.`8888:' `88. 
+-- ,8 8888       `8b `8.`888b             ,8' 8.`8888.   Y8 
+-- 88 8888        `8b `8.`888b     .b    ,8'  `8.`8888.     
+-- 88 8888         88  `8.`888b    88b  ,8'    `8.`8888.    
+-- 88 8888         88   `8.`888b .`888b,8'      `8.`8888.   
+-- 88 8888        ,8P    `8.`888b8.`8888'        `8.`8888.  
+-- `8 8888       ,8P      `8.`888`8.`88'     8b   `8.`8888. 
+--  ` 8888     ,88'        `8.`8' `8,`'      `8b.  ;8.`8888 
+--     `8888888P'           `8.`   `8'        `Y8888P ,88P' 
+-- ################################################################################
+-- WINDOW MANAGEMENT - Client rules, behaviors, and window handling
+
+-- ################################################################################
+-- ################################################################################
+-- ################################################################################
+-- ######  #     # #       ####### ##### 
+-- #     # #     # #       #      #     #
+-- #     # #     # #       #      #      
+-- ######  #     # #       #####   ##### 
+-- #   #   #     # #       #            #
+-- #    #  #     # #       #      #     #
+-- #     #  #####  ####### #######  ##### 
+-- ################################################################################
+-- ################################################################################
+-- ################################################################################
+-- RULES - Client window management rules
+-- Rules to apply to new clients (through the "manage" signal).
+awful.rules.rules = {
+    -- All clients will match this rule (global defaults)
+    {
+        rule = {},
+        properties = {
+            border_width = beautiful.border_width,
+            border_color = beautiful.border_normal,
+            -- focus = awful.client.focus.filter,  -- Uncomment to enable focus filtering
+            -- raise = true,  -- Uncomment to auto-raise windows
+            keys = clientkeys,  -- Apply the client keybindings
+            buttons = clientbuttons,  -- Apply the client mouse buttons
+            screen = awful.screen.preferred,  -- Use preferred screen
+            placement = awful.placement.no_overlap +  -- Prevent overlap
+                        awful.placement.no_offscreen,  -- Keep on screen
+            size_hints_honor = false,  -- Ignore size hints
+            titlebars_enabled = false  -- Disable titlebars by default
+        }
+    },
+
+    -- Uncomment to enable titlebars for dialogs and normal windows
+    -- { rule_any = { type = { "dialog", "normal" } }, properties = { titlebars_enabled = true } },
+
+    -- {{{ Floating client rules
+    -- Applications that should always be floating windows
+    -- Search marker: floatingggggggggg
+    {
+        rule_any = {
+            -- Match by instance name
+            instance = {
+                "DTA",         -- Firefox addon DownThemAll
+                "copyq",       -- Clipboard manager (includes session name in class)
+                "pinentry",    -- Password entry dialog
+                "ncmpcpp",     -- Music player
+                "firefox"      -- Firefox dialogs
+            },
+
+            -- Match by class name (organized by category)
+            class = {
+                -- System utilities
+                "Arandr", "Blueman-manager", "Lxappearance", "Gsmartcontrol",
+                "hp-toolbox", "Protonvpn-gui", "Syncthing GTK", "netctl-gui",
+                "Solaar", "Font-manager", "Font Manager", "qt5ct", "Deskflow",
+
+                -- Audio/Video tools
+                "Cadence", "qjackctl", "Studio-controls", "QjackCtl",
+                "kmix", "Pavucontrol", "pwvucontrol", "Goodvibes",
+                "Drumstick MIDI Monitor", "Audio/MIDI Setup", "Mixer",
+                "seq64", "qseq66", "patroneo", "Agordejo", "radium_compessor",
+                "Vlc", "vokoscreenNG", "SimpleScreenRecorder",
+
+                -- Image & Graphics
+                "Gpick", "Kruler", "emulsion", "Sxiv", "qimgv", "qView",
+                "Image Lounge", "Image Menu", "spectacle", "flameshot",
+
+                -- Security & Privacy
+                "KeePassXC", "Tor Browser", -- Tor needs fixed window size to avoid fingerprinting
+
+                -- Misc applications
+                "MessageWin",  -- kalarm
+                "copyq", "* Copying", "krunner", "xtightvncviewer",
+                "scrcpy", "Gnaural", "kdeconnect.sms", "Mattermost",
+                "Onboard", "gammy", "Flirc", "isoimagewriter", "Xdotoolgui.py",
+                "mpd218 editor.exe"
+            },
+
+            -- Match by window name (when class/instance isn't reliable)
+            -- Note: The name property might be set slightly after client creation
+            name = {
+                "Event Tester",        -- xev
+                "Choose an application", -- DoubleCMD dialog
+                "File operations",      -- DoubleCMD dialog
+                "Blender Preferences",
+                "Options",
+                "Tree View Menu",
+                "menu"                  -- Rekordbox
+            },
+
+            -- Match by window role
+            role = {
+                "AlarmWindow",   -- Thunderbird calendar
+                "ConfigManager", -- Thunderbird about:config
+                "pop-up",       -- e.g., Chrome's Developer Tools
+                "page-info",    -- Firefox page info dialog
+                "TfrmFileOp"    -- DoubleCMD file transfer
+            }
+        },
+        properties = {
+            floating = true,  -- Make these windows floating
+            placement = awful.placement.centered +       -- Center on screen
+                        awful.placement.no_overlap +     -- Prevent overlap
+                        awful.placement.no_offscreen     -- Keep on screen
+        }
+    },
+
+    -- Focus filter rule
+    {rule = {}, properties = {focus = awful.client.focus.filter}},
+    -- Alternative: {rule = {}, properties = {focus = true}},
+    
+
+    -- {{{ Application-specific tag assignments
+    -- Custom callback to set class
+    {
+        rule = {class = "URxvt", instance = "ncmpcpp"},
+        callback = function(c) c.overwrite_class = "urxvt:dev" end
+    },
+
+    -- Tag 2: Audio production
+    { rule = {instance = "Agordejo"}, properties = {tag = "2"} },
+    { rule = {instance = "raysession"}, properties = {tag = "2"} },
+
+    -- Tag 3: File sharing & media management
+    { rule = {instance = "Nicotine"}, properties = {tag = "3"} },
+    { rule = {instance = "qbittorrent"}, properties = {tag = "3"} },
+    { rule = {class = "Picard"}, properties = {tag = "3"} },
+
+    -- Tag 4: DJ software
+    { rule = {class = "Mixxx"}, properties = {tag = "4"} },
+
+    -- Tag 8: Music & video playback
+    { rule = {instance = "ncmpcpp"}, properties = {tag = "8"} },
+    { rule = {instance = "spotify"}, properties = {tag = "8"} },
+    { rule = {instance = "Spotify"}, properties = {tag = "8"} },
+    { rule = {class = "mpv"}, properties = {screen = 1, tag = "8", switch_to_tags = true} },
+
+    -- Tag 9: File managers
+    { rule = {instance = "Double Commander"}, properties = {tag = "9"} },
+    { rule = {instance = "doublecmd"}, properties = {tag = "9"} },
+
+    -- Tag "-": Chat applications
+    { rule = {instance = "quassel"}, properties = {tag = "-", switch_to_tags = true} },
+
+    -- Tag "=": Web browsers
+    { rule_any = {instance = "firefox"}, properties = {tag = "=", switch_to_tags = true} },
+    { rule = {class = "firefox"}, properties = {tag = "=", switch_to_tags = true} },
+    { rule = {class = "Firefox"}, properties = {tag = "=", switch_to_tags = true} },
+    { rule = {class = "Chromium"}, properties = {tag = "=", switch_to_tags = true} },
+    { rule = {class = "Navigator"}, properties = {tag = "=", switch_to_tags = true} },
+    
+    -- More Tag assignments
+    { rule = {instance = "jack_mixer"}, properties = {tag = "3"} },
+    { rule = {instance = "radium_compressor"}, properties = {tag = "2"} },
+    { rule = {instance = "qseq64"}, properties = {tag = "3"} },
+    { rule = {instance = "qseq66"}, properties = {tag = "3"} },
+
+    -- {{{ Window size management rules
+    -- Dialogs and windows that should open at larger sizes than default
+    
+    -- Screenshot and image-related dialogs
+    {
+        rule_any = {
+            name = {
+                "Save screenshot", "Save Screenshot", "Screenshot", "Save Image",
+                "Save As", "Save File", "Export Image", "Export Screenshot",
+                "Image Properties", "Image Info", "Screenshot Options"
+            }
+        },
+        properties = {
+            floating = true,
+            width = 800,
+            height = 600,
+            placement = awful.placement.centered + awful.placement.no_overlap + awful.placement.no_offscreen
+        }
+    },
+
+    -- File operation dialogs
+    {
+        rule_any = {
+            name = {
+                "Save As", "Open File", "Choose File", "File Operations",
+                "Copy Files", "Move Files", "Delete Files", "File Properties",
+                "Folder Properties", "Create Folder", "Rename"
+            }
+        },
+        properties = {
+            floating = true,
+            width = 900,
+            height = 700,
+            placement = awful.placement.centered + awful.placement.no_overlap + awful.placement.no_offscreen
+        }
+    },
+
+    -- Application preferences and settings dialogs
+    {
+        rule_any = {
+            name = {
+                "Preferences", "Settings", "Options", "Configuration",
+                "Properties", "Advanced Settings", "User Preferences",
+                "Application Settings", "System Preferences"
+            }
+        },
+        properties = {
+            floating = true,
+            width = 850,
+            height = 650,
+            placement = awful.placement.centered + awful.placement.no_overlap + awful.placement.no_offscreen
+        }
+    },
+
+    -- Print and export dialogs
+    {
+        rule_any = {
+            name = {
+                "Print", "Print Setup", "Print Options", "Print Preview",
+                "Export", "Export As", "Export Options", "Save for Web",
+                "Print to File", "Print Settings"
+            }
+        },
+        properties = {
+            floating = true,
+            width = 750,
+            height = 550,
+            placement = awful.placement.centered + awful.placement.no_overlap + awful.placement.no_offscreen
+        }
+    },
+
+    -- Error and confirmation dialogs
+    {
+        rule_any = {
+            name = {
+                "Error", "Warning", "Confirmation", "Confirm Action",
+                "Delete Confirmation", "Overwrite Confirmation", "Exit Confirmation",
+                "Unsaved Changes", "Save Changes", "Discard Changes"
+            }
+        },
+        properties = {
+            floating = true,
+            width = 500,
+            height = 300,
+            placement = awful.placement.centered + awful.placement.no_overlap + awful.placement.no_offscreen
+        }
+    },
+
+    -- Browser dialogs (Firefox, Chrome, etc.)
+    {
+        rule_any = {
+            name = {
+                "Downloads", "Download Manager", "Bookmarks", "History",
+                "Add Bookmark", "Edit Bookmark", "Page Info", "Security Info",
+                "Developer Tools", "Inspect Element", "Console"
+            }
+        },
+        properties = {
+            floating = true,
+            width = 800,
+            height = 600,
+            placement = awful.placement.centered + awful.placement.no_overlap + awful.placement.no_offscreen
+        }
+    },
+
+    -- Media player dialogs
+    {
+        rule_any = {
+            name = {
+                "Media Info", "Track Info", "Album Info", "Playlist",
+                "Add to Playlist", "Create Playlist", "Media Properties",
+                "Audio Settings", "Video Settings", "Subtitle Settings"
+            }
+        },
+        properties = {
+            floating = true,
+            width = 700,
+            height = 500,
+            placement = awful.placement.centered + awful.placement.no_overlap + awful.placement.no_offscreen
+        }
+    },
+
+    -- Development and coding dialogs
+    {
+        rule_any = {
+            name = {
+                "Debug", "Debug Console", "Output", "Terminal",
+                "Build Output", "Compile Output", "Error List",
+                "Find in Files", "Replace in Files", "Search Results"
+            }
+        },
+        properties = {
+            floating = true,
+            width = 900,
+            height = 700,
+            placement = awful.placement.centered + awful.placement.no_overlap + awful.placement.no_offscreen
+        }
+    },
+
+    -- Generic large dialogs (catch-all for other dialogs)
+    {
+        rule_any = {
+            type = { "dialog" }
+        },
+        properties = {
+            floating = true,
+            width = 600,
+            height = 400,
+            placement = awful.placement.centered + awful.placement.no_overlap + awful.placement.no_offscreen
+        }
+    }
+    
+}
+-- End of rules }}}}
+
+-- ################################################################################
+-- ################################################################################
+-- ################################################################################
+--  █████╗ ██╗  ████████╗███████╗██████╗ ███╗   ██╗ █████╗ ████████╗██╗██╗   ██╗███████╗
+-- ██╔══██╗██║  ╚══██╔══╝██╔════╝██╔══██╗████╗  ██║██╔══██╗╚══██╔══╝██║██║   ██║██╔════╝
+-- ███████║██║     ██║   █████╗  ██████╔╝██╔██╗ ██║███████║   ██║   ██║██║   ██║█████╗  
+-- ██╔══██║██║     ██║   ██╔══╝  ██╔══██╗██║╚██╗██║██╔══██║   ██║   ██║╚██╗ ██╔╝██╔══╝  
+-- ██║  ██║███████╗██║   ███████╗██║  ██║██║ ╚████║██║  ██║   ██║   ██║ ╚███╔╝ ███████╗
+-- ╚═╝  ╚═╝╚══════╝╚═╝   ╚══════╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚══╝  ╚══════╝
+-- Alt
+-- ################################################################################
+-- ################################################################################
+-- ################################################################################
+-- Alternative/complex client rule examples (commented out)
+-- Example: Open sound mixer but keep tag visible without switching to it
+-- {rule = {instance = "pavucontrol"}, properties = {tag = "9", toggle_tag = true}}
+
+-- Alternative rule implementation with callback to keep tag visible
+-- rule {
+--     rule = { class = "pavucontrol" },
+--     properties = {
+--         tag = "9" -- this puts the client on the tag
+--     },
+--     callback = function(c)
+--         -- Show the tag on screen *without* selecting it
+--         local s = c.screen or screen.primary
+--         local t = my_tag or awful.tag.find_by_name(s, "9")
+--
+--         if t and not t.selected then
+--             awful.tag.viewtoggle(t)
+--         end
+--     end
+-- }
+
+-- Helper function for complex rules (commented out)
+-- -- Get screen under mouse without moving cursor
+-- local function get_mouse_screen()
+--     local coords = mouse.coords()
+--     for s in screen do
+--         if coords.x >= s.geometry.x and coords.x < s.geometry.x + s.geometry.width and
+--            coords.y >= s.geometry.y and coords.y < s.geometry.y + s.geometry.height then
+--             return s
+--         end
+--     end
+--     return screen.primary
+-- end
+
+
+-- -- Handle new pavucontrol instances
+-- client.connect_signal("manage", function(c)
+--     if c.class == "Pavucontrol" then
+--         -- Mark this pavucontrol as just opened
+--         pavucontrol_just_opened[c] = true
+
+--         -- Debug: let's see what's happening
+--         local mouse_screen = get_mouse_screen()
+--         local current_screen = c.screen
+
+--         -- Always move to mouse screen first, before any tag operations
+--         if current_screen ~= mouse_screen then
+--             c:move_to_screen(mouse_screen)
+--         end
+
+--         -- Now work with the correct screen
+--         local target_screen = c.screen  -- Use the screen the client is actually on
+--         local tag9 = target_screen.tags[9]
+
+--         if tag9 then
+--             -- Store current state if tag 9 isn't already selected
+--             if not tag9.selected then
+--                 local current_tags = target_screen.selected_tags
+--                 if #current_tags > 0 then
+--                     previous_tag = current_tags[1]
+--                 end
+
+--                 -- Keep current tags selected and add tag 9
+--                 for _, tag in ipairs(current_tags) do
+--                     tag.selected = true
+--                 end
+--                 tag9.selected = true
+--             end
+
+--             c:move_to_tag(tag9)
+--         end
+
+--         -- Clear the flag after a delay
+--         gears.timer.start_new(0.5, function()
+--             pavucontrol_just_opened[c] = nil
+--             return false
+--         end)
+--     end
+-- end)
+
+-- -- Handle existing pavucontrol being focused from different screen
+-- client.connect_signal("focus", function(c)
+--     if c.class == "Pavucontrol" and not pavucontrol_just_opened[c] then
+--         local target_screen = get_mouse_screen()
+
+--         -- Only move if pavucontrol is on a different screen than the mouse
+--         if c.screen ~= target_screen then
+--             c:move_to_screen(target_screen)
+
+--             local tag9 = target_screen.tags[9]
+--             if tag9 then
+--                 if not tag9.selected then
+--                     local current_tags = target_screen.selected_tags
+--                     if #current_tags > 0 then
+--                         previous_tag = current_tags[1]
+--                     end
+
+--                     -- Keep current tags selected and add tag 9
+--                     for _, tag in ipairs(current_tags) do
+--                         tag.selected = true
+--                     end
+--                     tag9.selected = true
+--                 end
+--                 c:move_to_tag(tag9)
+--             end
+--         end
+--     end
+-- end)
+
+-- -- Handle existing pavucontrol being clicked on different screen
+-- client.connect_signal("button::press", function(c)
+--     if c.class == "Pavucontrol" then
+--         local target_screen = get_mouse_screen()
+
+--         -- Only move if pavucontrol is on a different screen than the mouse
+--         if c.screen ~= target_screen then
+--             c:move_to_screen(target_screen)
+
+--             local tag9 = target_screen.tags[9]
+--             if tag9 then
+--                 if not tag9.selected then
+--                     local current_tags = target_screen.selected_tags
+--                     if #current_tags > 0 then
+--                         previous_tag = current_tags[1]
+--                     end
+
+--                     -- Keep current tags selected and add tag 9
+--                     for _, tag in ipairs(current_tags) do
+--                         tag.selected = true
+--                     end
+--                     tag9.selected = true
+--                 end
+--                 c:move_to_tag(tag9)
+--             end
+--         end
+--     end
+-- end)
+
+-- -- Clean up when pavucontrol closes
+-- client.connect_signal("unmanage", function(c)
+--     if c.class == "Pavucontrol" then
+--         -- Clean up the tracking table
+--         pavucontrol_just_opened[c] = nil
+
+--         -- Restore previous tag if needed
+--         if previous_tag then
+--             previous_tag:view_only()
+--             previous_tag = nil
+--         end
+--     end
+-- end)
+
+
+
+
+
+
+
+	-- Add titlebars to normal clients and dialogs (commented out - orphaned rule)
+	-- { rule_any = {type = { "normal", "dialog" }
+	--   }, properties = { titlebars_enabled = true }
+	-- },
+
+	-- Set Firefox to always map on the tag named "=" on screen 1.
+	-- { rule = { class = "firefox" }, properties = { screen = 1, tag = "=" }},
+	-- { rule = { class = "firefox" }, properties = { screen = 2, tag = "=" }},
+
+
+
+-- #region RUNTIME
+-- ################################################################################
+--                                                                           
+-- 8 888888888o.  8 8888      88 b.             8 8888888 8888888888  8 8888 
+-- 8 8888    `88. 8 8888      88 888o.          8       8 8888        8 8888 
+-- 8 8888     `88 8 8888      88 Y88888o.       8       8 8888        8 8888 
+-- 8 8888     ,88 8 8888      88 .`Y888888o.    8       8 8888        8 8888 
+-- 8 8888.   ,88' 8 8888      88 8o. `Y888888o. 8       8 8888        8 8888 
+-- 8 888888888P'  8 8888      88 8`Y8o. `Y88888o8       8 8888        8 8888 
+-- 8 8888`8b      8 8888      88 8   `Y8o. `Y8888       8 8888        8 8888 
+-- 8 8888 `8b.    ` 8888     ,8P 8      `Y8o. `Y8       8 8888        8 8888 
+-- 8 8888   `8b.    8888   ,d8P  8         `Y8o.`       8 8888        8 8888 
+-- 8 8888     `88.   `Y88888P'   8            `Yo       8 8888        8 8888 
+--           .         .                          
+--          ,8.       ,8.          8 8888888888   
+--         ,888.     ,888.         8 8888         
+--        .`8888.   .`8888.        8 8888         
+--       ,8.`8888. ,8.`8888.       8 8888         
+--      ,8'8.`8888,8^8.`8888.      8 888888888888 
+--     ,8' `8.`8888' `8.`8888.     8 8888         
+--    ,8'   `8.`88'   `8.`8888.    8 8888         
+--   ,8'     `8.`'     `8.`8888.   8 8888         
+--  ,8'       `8        `8.`8888.  8 8888         
+-- ,8'         `         `8.`8888. 8 888888888888 
+-- ################################################################################
+-- RUNTIME - Signals, session management, and event handling
+
+-- ################################################################################
+-- ################################################################################
+-- ################################################################################
+--  #####  ###  #####  #     #    #    #       ##### 
+-- #     #  #  #     # ##    #   # #   #      #     #
+-- #        #  #       # #   #  #   #  #      #      
+--  #####   #  #  #### #  #  # #     # #       ##### 
+--       #  #  #     # #   # # ####### #            #
+-- #     #  #  #     # #    ## #     # #      #     #
+--  #####  ###  #####  #     # #     # #######  ##### 
+-- ################################################################################
+-- ################################################################################
+-- ################################################################################
+-- SIGNALS - Client behavior and event handling
+
+-- ################################################################################
+-- ################################################################################
+-- ################################################################################
+-- ██╗    ██╗██╗███╗   ██╗██████╗  ██████╗ ██╗    ██╗███████╗
+-- ██║    ██║██║████╗  ██║██╔══██╗██╔═══██╗██║    ██║██╔════╝
+-- ██║ █╗ ██║██║██╔██╗ ██║██║  ██║██║   ██║██║ █╗ ██║███████╗
+-- ██║███╗██║██║██║╚██╗██║██║  ██║██║   ██║██║███╗██║╚════██║
+-- ╚███╔███╔╝██║██║ ╚████║██████╔╝╚██████╔╝╚███╔███╔╝███████║
+--  ╚══╝╚══╝ ╚═╝╚═╝  ╚═══╝╚═════╝  ╚═════╝  ╚══╝╚══╝ ╚══════╝
+-- Windows
+-- ################################################################################
+-- ################################################################################
+-- ################################################################################
+-- Window behavior and management
+
+-- Prevent Firefox from auto-maximizing on start
+client.connect_signal("property::maximized", function(c)
+    if c.maximized and (c.class == "Navigator" or c.class == "firefox" or c.class == "Firefox") then
+        c.maximized = false
+    end
+end)
+
+-- Signal function to execute when a new client appears
+client.connect_signal("manage", function(c)
+    -- Set the windows at the slave,
+    -- i.e., put it at the end of others instead of setting it master
+    if not awesome.startup then
+        awful.client.setslave(c)
+    end
+
+    if awesome.startup and
+       not c.size_hints.user_position and
+       not c.size_hints.program_position then
+        -- Prevent clients from being unreachable after screen count changes
+        awful.placement.no_offscreen(c)
+    end
+end)
+
+-- Make floating windows appear on top by default
+client.connect_signal("manage", function(client)
+    if client.floating then
+        client.ontop = true
+    end
+end)
+
+-- Dynamic window sizing based on window names
+client.connect_signal("manage", function(c)
+    -- Wait a moment for the window name to be set
+    gears.timer.delayed_call(function()
+        if not c.valid then return end
+        
+        local name = c.name or ""
+        local class = c.class or ""
+        
+        -- Screenshot and image dialogs
+        if name:match("Save screenshot") or name:match("Save Screenshot") or 
+           name:match("Screenshot") or name:match("Save Image") or
+           name:match("Export Image") or name:match("Export Screenshot") then
+            c.floating = true
+            c.width = 800
+            c.height = 600
+            awful.placement.centered(c)
+        
+        -- File operation dialogs
+        elseif name:match("Save As") or name:match("Open File") or 
+               name:match("Choose File") or name:match("File Operations") or
+               name:match("Copy Files") or name:match("Move Files") then
+            c.floating = true
+            c.width = 900
+            c.height = 700
+            awful.placement.centered(c)
+        
+        -- Preferences and settings dialogs
+        elseif name:match("Preferences") or name:match("Settings") or 
+               name:match("Options") or name:match("Configuration") or
+               name:match("Properties") then
+            c.floating = true
+            c.width = 850
+            c.height = 650
+            awful.placement.centered(c)
+        
+        -- Print and export dialogs
+        elseif name:match("Print") or name:match("Export") or 
+               name:match("Print Setup") or name:match("Export As") then
+            c.floating = true
+            c.width = 750
+            c.height = 550
+            awful.placement.centered(c)
+        
+        -- Error and confirmation dialogs
+        elseif name:match("Error") or name:match("Warning") or 
+               name:match("Confirmation") or name:match("Confirm") then
+            c.floating = true
+            c.width = 500
+            c.height = 300
+            awful.placement.centered(c)
+        
+        -- Browser dialogs
+        elseif name:match("Downloads") or name:match("Bookmarks") or 
+               name:match("History") or name:match("Page Info") or
+               name:match("Developer Tools") then
+            c.floating = true
+            c.width = 800
+            c.height = 600
+            awful.placement.centered(c)
+        
+        -- Media player dialogs
+        elseif name:match("Media Info") or name:match("Track Info") or 
+               name:match("Playlist") or name:match("Audio Settings") then
+            c.floating = true
+            c.width = 700
+            c.height = 500
+            awful.placement.centered(c)
+        
+        -- Development dialogs
+        elseif name:match("Debug") or name:match("Output") or 
+               name:match("Terminal") or name:match("Build Output") or
+               name:match("Error List") then
+            c.floating = true
+            c.width = 900
+            c.height = 700
+            awful.placement.centered(c)
+        
+        -- Generic dialog catch-all (for any dialog type window)
+        elseif c.type == "dialog" then
+            c.floating = true
+            c.width = 600
+            c.height = 400
+            awful.placement.centered(c)
+        end
+    end)
+end)
+
+-- Avoid Firefox Picture-in-Picture popping window up/down when PiP meets screen edges
+client.connect_signal("property::struts", function(c)
+    local struts = c:struts()
+    if struts.left ~= 0 or struts.right ~= 0 or
+       struts.top ~= 0 or struts.bottom ~= 0 then
+        c:struts({left = 0, right = 0, top = 0, bottom = 0})
+    end
+end)
+
+-- Handle window name changes for dynamic sizing
+client.connect_signal("property::name", function(c)
+    if not c.valid then return end
+    
+    local name = c.name or ""
+    
+    -- Screenshot and image dialogs
+    if name:match("Save screenshot") or name:match("Save Screenshot") or 
+       name:match("Screenshot") or name:match("Save Image") or
+       name:match("Export Image") or name:match("Export Screenshot") then
+        c.floating = true
+        c.width = 800
+        c.height = 600
+        awful.placement.centered(c)
+    
+    -- File operation dialogs
+    elseif name:match("Save As") or name:match("Open File") or 
+           name:match("Choose File") or name:match("File Operations") or
+           name:match("Copy Files") or name:match("Move Files") then
+        c.floating = true
+        c.width = 900
+        c.height = 700
+        awful.placement.centered(c)
+    
+    -- Preferences and settings dialogs
+    elseif name:match("Preferences") or name:match("Settings") or 
+           name:match("Options") or name:match("Configuration") or
+           name:match("Properties") then
+        c.floating = true
+        c.width = 850
+        c.height = 650
+        awful.placement.centered(c)
+    
+    -- Print and export dialogs
+    elseif name:match("Print") or name:match("Export") or 
+           name:match("Print Setup") or name:match("Export As") then
+        c.floating = true
+        c.width = 750
+        c.height = 550
+        awful.placement.centered(c)
+    
+    -- Error and confirmation dialogs
+    elseif name:match("Error") or name:match("Warning") or 
+           name:match("Confirmation") or name:match("Confirm") then
+        c.floating = true
+        c.width = 500
+        c.height = 300
+        awful.placement.centered(c)
+    
+    -- Browser dialogs
+    elseif name:match("Downloads") or name:match("Bookmarks") or 
+           name:match("History") or name:match("Page Info") or
+           name:match("Developer Tools") then
+        c.floating = true
+        c.width = 800
+        c.height = 600
+        awful.placement.centered(c)
+    
+    -- Media player dialogs
+    elseif name:match("Media Info") or name:match("Track Info") or 
+           name:match("Playlist") or name:match("Audio Settings") then
+        c.floating = true
+        c.width = 700
+        c.height = 500
+        awful.placement.centered(c)
+    
+    -- Development dialogs
+    elseif name:match("Debug") or name:match("Output") or 
+           name:match("Terminal") or name:match("Build Output") or
+           name:match("Error List") then
+        c.floating = true
+        c.width = 900
+        c.height = 700
+        awful.placement.centered(c)
+    end
+end)
+
+-- Alternative window placement (commented out)
+-- Center new floating windows
+-- client.connect_signal("request::manage", function(client, context)
+--     -- https://www.reddit.com/r/awesomewm/comments/ic7vqt/center_floating_windows_on_screen
+--     if client.floating and context == "new" then
+--       client.placement = awful.placement.centered + awful.placement.no_overlap
+--     end
+-- end)
+
+-- ################################################################################
+-- ################################################################################
+-- ################################################################################
+-- ████████╗██╗████████╗██╗     ███████╗██████╗  █████╗ ██████╗ 
+-- ╚══██╔══╝██║╚══██╔══╝██║     ██╔════╝██╔══██╗██╔══██╗██╔══██╗
+--    ██║   ██║   ██║   ██║     █████╗  ██████╔╝███████║██████╔╝
+--    ██║   ██║   ██║   ██║     ██╔══╝  ██╔══██╗██╔══██║██╔══██╗
+--    ██║   ██║   ██║   ███████╗███████╗██████╔╝██║  ██║██║  ██║
+--    ╚═╝   ╚═╝   ╚═╝   ╚══════╝╚══════╝╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝
+-- Title
+-- ################################################################################
+-- ################################################################################
+-- ################################################################################
+-- Titlebar configuration
+-- Add a titlebar if titlebars_enabled is set to true in the rules
+client.connect_signal("request::titlebars", function(c)
+    -- Buttons for the titlebar
+    local buttons = gears.table.join(
+        awful.button({}, 1, function()
+            c:emit_signal("request::activate", "titlebar", {raise = true})
+            awful.mouse.client.move(c)
+        end),
+        awful.button({}, 3, function()
+            c:emit_signal("request::activate", "titlebar", {raise = true})
+            awful.mouse.client.resize(c)
+        end)
+    )
+
+    awful.titlebar(c):setup{
+        { -- Left
+            awful.titlebar.widget.iconwidget(c),
+            buttons = buttons,
+            layout = wibox.layout.fixed.horizontal
+        },
+        { -- Middle
+            {
+                align = "center",
+                widget = awful.titlebar.widget.titlewidget(c)
+            },
+            buttons = buttons,
+            layout = wibox.layout.flex.horizontal
+        },
+        { -- Right
+            awful.titlebar.widget.floatingbutton(c),
+            awful.titlebar.widget.maximizedbutton(c),
+            awful.titlebar.widget.stickybutton(c),
+            awful.titlebar.widget.ontopbutton(c),
+            awful.titlebar.widget.closebutton(c),
+            layout = wibox.layout.fixed.horizontal()
+        },
+        layout = wibox.layout.align.horizontal
+    }
+end)
+
+-- ################################################################################
+-- ################################################################################
+-- ################################################################################
+-- ███████╗ ██████╗  ██████╗██╗   ██╗███████╗
+-- ██╔════╝██╔═══██╗██╔════╝██║   ██║██╔════╝
+-- █████╗  ██║   ██║██║     ██║   ██║███████╗
+-- ██╔══╝  ██║   ██║██║     ██║   ██║╚════██║
+-- ██║     ╚██████╔╝╚██████╗╚██████╔╝███████║
+-- ╚═╝      ╚═════╝  ╚═════╝ ╚═════╝ ╚══════╝
+-- Focus
+-- ################################################################################
+-- ################################################################################
+-- ################################################################################
+-- Focus and activation handling
+
+-- Handle window activation requests (restore minimized windows)
+client.connect_signal("request::activate", function(c, context, hints)
+    if not awesome.startup then
+        if c.minimized then
+            c.minimized = false
+        end
+        awful.ewmh.activate(c, context, hints)
+    end
+end)
+
+-- Automatic border width control based on layout and window count (commented out)
+-- screen.connect_signal("arrange", function (s)
+--   if s.selected_tag then local max = s.selected_tag.layout.name == "max" end
+--   local only_one = #s.tiled_clients == 1 -- use tiled_clients so that other floating windows don't affect the count
+--   -- but iterate over clients instead of tiled_clients as tiled_clients doesn't include maximized windows
+--   for _, c in pairs(s.clients) do
+--     if (max or only_one) and not c.floating or c.maximized then
+--       c.border_width = 0
+--     else
+--       c.border_width = beautiful.border_width
+--     end
+--   end
+-- end)
+
+-- Enable sloppy focus (focus follows mouse) (commented out)
+-- client.connect_signal("mouse::enter", function(c)
+--     c:emit_signal("request::activate", "mouse_enter", {raise = false})
+-- end)
+
+-- Standard border color handling (commented out)
+-- client.connect_signal("focus", function(c) c.border_color = beautiful.border_focus end)
+-- client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)
+
+
+-- ################################################################################
+-- ################################################################################
+-- ################################################################################
+-- ██████╗ ███████╗███████╗██╗███████╗██╗███╗   ██╗ ██████╗ 
+-- ██╔══██╗██╔════╝██╔════╝██║╚══███╔╝██║████╗  ██║██╔════╝ 
+-- ██████╔╝█████╗  ███████╗██║  ███╔╝ ██║██╔██╗ ██║██║  ███╗
+-- ██╔══██╗██╔══╝  ╚════██║██║ ███╔╝  ██║██║╚██╗██║██║   ██║
+-- ██║  ██║███████╗███████║██║███████╗██║██║ ╚████║╚██████╔╝
+-- ╚═╝  ╚═╝╚══════╝╚══════╝╚═╝╚══════╝╚═╝╚═╝  ╚═══╝ ╚═════╝ 
+-- Resize
+-- ################################################################################
+-- ################################################################################
+-- ################################################################################
+-- Center-locked resizing
+-- Maintains the center position of floating windows when they are resized
+
+-- Table to store original centers of windows and whether they're being dragged
+local window_centers = {}
+local dragging_clients = {}
+
+-- Keep track of which clients are being dragged
+client.connect_signal("request::activate", function(c, context, hints)
+    if context == "mouse_click" then
+        dragging_clients[c] = true
+    end
+end)
+
+-- Function to check if a client is being dragged by checking mouse buttons state
+local function is_client_being_dragged(c)
+    -- If we've explicitly recorded it as being dragged
+    if dragging_clients[c] then
+        -- Check if mouse button is still down
+        local buttons = mouse.coords().buttons
+        if not buttons or not buttons[1] then
+            -- Mouse button released, no longer dragging
+            dragging_clients[c] = nil
+            -- Store new center position after drag
+            local geo = c:geometry()
+            window_centers[c] = {
+                x = geo.x + geo.width / 2,
+                y = geo.y + geo.height / 2
+            }
+        end
+        return true
+    end
+    return false
+end
+
+-- Track when a floating window's size changes
+client.connect_signal("property::size", function(c)
+    -- Skip if not floating
+    if not c.floating then return end
+
+    -- Skip if being dragged
+    if is_client_being_dragged(c) then return end
+
+    -- Record center point on first detection
+    if not window_centers[c] then
+        local geo = c:geometry()
+        window_centers[c] = {
+            x = geo.x + geo.width / 2,
+            y = geo.y + geo.height / 2
+        }
+        return
+    end
+
+    -- Get current geometry and maintain center position
+    local geo = c:geometry()
+    c:geometry({
+        x = window_centers[c].x - geo.width / 2,
+        y = window_centers[c].y - geo.height / 2
+    })
+end)
+
+-- Clean up when windows are closed
+client.connect_signal("unmanage", function(c)
+    window_centers[c] = nil
+    dragging_clients[c] = nil
+end)
+
+-- End of client signals section }}}
+
+-- ################################################################################
+-- ################################################################################
+-- ################################################################################
+--  █████╗ ██████╗ ██████╗ ███████╗ █████╗ ██████╗  █████╗ ███╗   ██╗ ██████╗███████╗
+-- ██╔══██╗██╔══██╗██╔══██╗██╔════╝██╔══██╗██╔══██╗██╔══██╗████╗  ██║██╔════╝██╔════╝
+-- ███████║██████╔╝██████╔╝█████╗  ███████║██████╔╝███████║██╔██╗ ██║██║     █████╗  
+-- ██╔══██║██╔═══╝ ██╔═══╝ ██╔══╝  ██╔══██║██╔══██╗██╔══██║██║╚██╗██║██║     ██╔══╝  
+-- ██║  ██║██║     ██║     ███████╗██║  ██║██║  ██║██║  ██║██║ ╚████║╚██████╗███████╗
+-- ╚═╝  ╚═╝╚═╝     ╚═╝     ╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝ ╚═════╝╚══════╝
+-- Appear
+-- ################################################################################
+-- ################################################################################
+-- ################################################################################
+-- Window appearance
+-- Window gaps
+beautiful.useless_gap = 0
+
+-- Alternative titlebar processing (commented out)
+-- local titlebar = fenetre {
+--     title_edit = function()
+--         -- Remove " - Mozilla Firefox" from the ends of Firefox titles
+--         local firefox = " - Mozilla Firefox"
+--         local pri_brow = firefox .. " (Private Browsing)"
+--         if title:sub(-firefox:len()) == firefox or title:sub(-pri_brow:len()) == pri_brow then
+--             title = title:gsub(" %- Mozilla Firefox", "")
+--         end
+--     end,
+--     max_vert_button = "Shift",
+--     max_horiz_button = "Control",
+
+--
+--     order = { "max", "ontop", "sticky", "floating", "title" }
+
+-- require("smart_borders") {
+--     show_button_tooltips = true,
+--     positions = {"top"},
+--     -- button_positions = {"top"},
+--     -- buttons = {"floating", "minimize", "maximize", "close"},
+--     --
+--     -- layout = "fixed",
+--     -- align_horizontal = "center",
+--     -- button_size = 40,
+--     -- button_floating_size = 60,
+--     -- button_close_size = 60,
+--     -- border_width = 6,
+--     --
+--     -- color_close_normal = {
+--     --     type = "linear",
+--     --     from = {0, 0},
+--     --     to = {60, 0},
+--     --     stops = {{0, "#fd8489"}, {1, "#56666f"}}
+--     -- },
+--     -- color_close_focus = {
+--     --     type = "linear",
+--     --     from = {0, 0},
+--     --     to = {60, 0},
+--     --     stops = {{0, "#fd8489"}, {1, "#a1bfcf"}}
+--     -- },
+--     -- color_close_hover = {
+--     --     type = "linear",
+--     --     from = {0, 0},
+--     --     to = {60, 0},
+--     --     stops = {{0, "#FF9EA3"}, {1, "#a1bfcf"}}
+--     -- },
+--     -- color_floating_normal = {
+--     --     type = "linear",
+--     --     from = {0, 0},
+--     --     to = {40, 0},
+--     --     stops = {{0, "#56666f"}, {1, "#ddace7"}}
+--     -- },
+--     -- color_floating_focus = {
+--     --     type = "linear",
+--     --     from = {0, 0},
+--     --     to = {40, 0},
+--     --     stops = {{0, "#a1bfcf"}, {1, "#ddace7"}}
+--     -- },
+--     -- color_floating_hover = {
+--     --     type = "linear",
+--     --     from = {0, 0},
+--     --     to = {40, 0},
+--     --     stops = {{0, "#a1bfcf"}, {1, "#F7C6FF"}}
+--     -- },
+--     --
+--     -- snapping = false,
+--     -- snapping_center_mouse = true,
+--     --
+--     -- -- custom control example:
+--     -- button_back = function(c)
+--     --     -- set client as master
+--     --     c:swap(awful.client.getmaster())
+--     -- end
+-- }
+
+-- clientbuttons = awful.util.table.join(
+--     awful.button({ modkey }, 2, function (c) c:kill() end))
+--
+-- awful.rules.rules = {
+--     { rule = { },
+--       properties = { buttons = clientbuttons } }
+-- }
+
+-- #region START
+-- ################################################################################
+--                                                                
+--    d888888o. 8888888 8888888888   .8.          8 888888888o.   
+--  .`8888:' `88.     8 8888        .888.         8 8888    `88.  
+--  8.`8888.   Y8     8 8888       :88888.        8 8888     `88  
+--  `8.`8888.         8 8888      . `88888.       8 8888     ,88  
+--   `8.`8888.        8 8888     .8. `88888.      8 8888.   ,88'  
+--    `8.`8888.       8 8888    .8`8. `88888.     8 888888888P'   
+--     `8.`8888.      8 8888   .8' `8. `88888.    8 8888`8b       
+-- 8b   `8.`8888.     8 8888  .8'   `8. `88888.   8 8888 `8b.     
+-- `8b.  ;8.`8888     8 8888 .888888888. `88888.  8 8888   `8b.   
+--  `Y8888P ,88P'     8 8888.8'       `8. `88888. 8 8888     `88. 
+--                    
+-- 8888888 8888888888 
+--       8 8888       
+--       8 8888       
+--       8 8888       
+--       8 8888       
+--       8 8888       
+--       8 8888       
+--       8 8888       
+--       8 8888       
+--       8 8888       
+-- ################################################################################
+-- START - Autostart applications
+
+-- Run programs on startup
+awful.spawn.with_shell("pgrep -u $USER -x picom > /dev/null || picom --config ~/.config/picom.conf &")
+
+-- Screen layouts
+-- awful.spawn.with_shell("~/.screenlayout/new/31-laptop-tv-side.sh")
+
+-- Network manager applet
+-- awful.spawn.with_shell("nm-applet")
+
+-- Bluetooth applet
+-- awful.spawn.with_shell("blueman-applet")
+
+-- Volume control
+-- awful.spawn.with_shell("volumeicon")
+
+-- Clipboard manager
+-- awful.spawn.with_shell("clipit")
+
+-- Notifications daemon
+-- awful.spawn.with_shell("dunst")
+
+-- Uncomment any of the above or add your own autostart applications
+
+-- Function to restart shimmer timer (useful for debugging)
+local function restart_shimmer()
+    if shimmer_timer then
+        shimmer_timer:stop()
+        shimmer_timer.timeout = shimmer_config[shimmer_mode].speed
+        shimmer_timer:again()
+        print("Shimmer timer restarted with mode:", shimmer_mode, "speed:", shimmer_config[shimmer_mode].speed)
+    end
+end
+
+-- Restart shimmer timer after configuration changes
+restart_shimmer()
+
+-- #endregion START
+-- #endregion RUNTIME  
+-- #endregion WINDOWS
+-- #endregion HOTKEYS
+-- #endregion WIDGETS
+-- #endregion LAYOUT
+-- #endregion VISUAL
+-- #endregion TERM
+-- #endregion KEYS
+-- #endregion DEFS
+-- #endregion PHASE1
+-- #endregion ERRORS
+-- #endregion VARS
+-- #endregion LIBS
+-- #endregion CORE

@@ -914,11 +914,7 @@ globalkeys = gears.table.join(
         end,
         {description = "focus previous by index", group = "client"}
     ),
-    awful.key({ modkey,           }, "w", function () 
-        if client.focus then
-            client.focus:kill()
-        end
-    end,
+    awful.key({ modkey,           }, "w", function (c) c:kill() end,
               {description = "close window", group = "client"}),
 
     -- Layout manipulation
@@ -3604,10 +3600,10 @@ globalkeys = gears.table.join(globalkeys,
     { description = "rotate screens right", group = "screen" }),
 
     -- Tag navigation
-    awful.key({modkey, ctrlkey}, "left", function() move_to_previous_tag() end,
+    awful.key({modkey, ctrlkey}, "left", function(c) move_to_previous_tag() end,
     {description = "move client to prev tag without follow", group = "tag"}),
 
-    awful.key({modkey, ctrlkey}, "right", function() move_to_next_tag() end,
+    awful.key({modkey, ctrlkey}, "right", function(c) move_to_next_tag() end,
     { description = "move client to next tag without follow", group = "tag" })
 )
 
@@ -3728,11 +3724,11 @@ globalkeys = gears.table.join(globalkeys,
 -- Cyclefocus keybindings
 globalkeys = gears.table.join(globalkeys,
     -- Cycle through clients
-    awful.key({modkey}, "Tab", function() cyclefocus.cycle({modifier = "Super_L"}) end,
+    awful.key({modkey}, "Tab", function(c) cyclefocus.cycle({modifier = "Super_L"}) end,
         {description = "cycle through clients", group = "client"}),
 
     -- Cycle backwards through clients
-    awful.key({modkey, shiftkey}, "Tab", function() cyclefocus.cycle({modifier = "Super_L"}) end,
+    awful.key({modkey, shiftkey}, "Tab", function(c) cyclefocus.cycle({modifier = "Super_L"}) end,
         {description = "cycle backward through clients", group = "client"})
 )
 
