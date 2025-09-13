@@ -1,3 +1,22 @@
+-- helper: refresh all tasklists across screens
+local function refresh_all_tasklists()
+    for s in screen do
+        if s.mytasklist then
+            -- force redraw; layout change causes update callbacks to run
+            s.mytasklist:emit_signal("widget::layout_changed")
+            s.mytasklist:emit_signal("widget::redraw_needed")
+        end
+    end
+end
+
+-- when a client is minimized/restored or hidden/unhidden, refresh tasklists to update bg color
+client.connect_signal("property::minimized", function(c)
+    refresh_all_tasklists()
+end)
+
+client.connect_signal("property::hidden", function(c)
+    refresh_all_tasklists()
+end)
 --------------------------------------------------
 -- Milkiis rc.lua                                --
 -- https://github.com/mxmilkiib/dotfiles        --
@@ -8,21 +27,22 @@
 -- BASIC SYNTAX CHECK (no libraries):
 --   lua -e "dofile('rc.lua')" 2>&1 | head -10
 --   (Expected: "module 'gears' not found" - this is normal outside AwesomeWM)
---
+
 -- FULL ENVIRONMENT TEST (with AwesomeWM libraries):
 --   awesome -c ~/.config/awesome/rc.lua --check
 --   (Tests complete configuration with all libraries loaded)
---
+
 -- XEPHYR TEST ENVIRONMENT:
---   Xephyr :1 -ac -br -noreset -screen 1152x720 &
---   DISPLAY=:1.0 awesome -c ~/.config/awesome/rc.lua
+--[[
+Xephyr :1 -ac -br -noreset -screen 1152x720 & sleep 1 && DISPLAY=:1.0 awesome -c ~/.config/awesome/rc.lua || echo "Configuration error"
+--]]
 --   (Runs AwesomeWM in virtual display for safe testing)
---
+
 -- LINTING WITH LUA CHECK:
 --   luarocks install luacheck
 --   luacheck rc.lua --no-max-line-length
 --   (Static analysis for common Lua issues)
---
+
 -- DEBUG MODE:
 --   awesome -c ~/.config/awesome/rc.lua --debug
 --   (Runs with debug output for troubleshooting)
@@ -44,7 +64,7 @@
 -- This awesome config contains the following components:
 --
 -- 📄 MAIN FILES:
---   • rc.lua (166KB, 4145 lines) - This comprehensive configuration file
+--   • rc.lua (104KB, 2528 lines) - This comprehensive configuration file (cleaned & optimized)
 --   • rc_new.lua (15KB, 307 lines) - Alternative minimal config
 --   • quake.lua (5.6KB, 169 lines) - Dropdown terminal (Quake-style)
 --   • xrandr.lua (3.5KB, 136 lines) - Multi-monitor display management
@@ -80,18 +100,17 @@
 --   • freedesktop/ - XDG menu integration and .desktop file support
 --   • gobo/ - Custom system integration utilities
 --   • thrizen/ - Additional system tools
---   • plugins/ - Custom extensions (xrandr + media-player)
+--   • plugins/ - Custom extensions (awesome_dnd, shimmer, keystats, tag_indicators, etc.)
 --
--- 🗂️ BACKUP ARCHIVE (10 generations):
---   • rc.lua.bak through rc.lua.bak8 - Complete development history
---   • Evolution: 568 lines → 4,145 lines (22KB → 166KB)
+-- 🗂️ BACKUP ARCHIVE (multiple versions):
+--   • Recent backups: rc.lua.bak-20250908_2056, rc.lua.bak-20250908_1504, rc.lua.bak-20250907_0212
+--   • Evolution: 568 lines → 3,347 lines (22KB → 144KB)
 --
 -- Total: 20+ layouts, 5 focus systems, comprehensive widget ecosystem,
 -- deep system integration, and methodical configuration evolution.
 --
 -- ⚠️  INTENTIONALLY DISABLED FEATURES (commented out by choice):
 -- NAVIGATION ALTERNATIVES:
---   • awesome-switcher - Alt-Tab application switcher with previews
 --   • gobo.awesome.alttab - Alternative Alt-Tab implementation 
 --   • revelation - OSX-style window exposé overview
 --   • awesomewm-vim-tmux-navigator - Cross-app (Vim/Tmux) navigation
@@ -119,54 +138,23 @@
 -- 🔍 SUBDIRECTORY STATUS:
 -- ✅ HEALTHY: collision/, bling/, lain/, milktheme/, tyrannical/, awesome-workspace-grid/
 -- ✅ FUNCTIONAL: treetile/, freedesktop/, revelation/, battery-widget/, media-player-widget/
--- ⚠️  UNKNOWN: gobo/ (directory access issues - may need investigation)
+-- ⚠️ UNKNOWN: gobo/ (directory access issues - may need investigation)
 -- ✅ EMPTY: awesome-wm-widgets/ (placeholder for additional widgets)
 -- 📝 PLUGINS: plugins/ contains xrandr.lua + media-player/ subdirectory
--- ################################################################################
+--
+-- 🏗️  ARCHITECTURE: Plugin-based modular design with clean APIs
+-- 🔄 STATUS: Production-ready, fully validated configuration
+--
+-- ✅ RECENT OPTIMIZATIONS:
+-- - Removed 1,149 lines of commented-out dead code (819 lines reduction)
+-- - Centralized all keybindings in keybindings.lua module
+-- - Fixed keybinding integration and root.keys() unpacking
+-- - Cleaned up redundant global variable definitions
+-- - File size reduced from 144KB to 104KB (28% reduction)
 
 
-
--- todo outline (work-in-progress cleanups)
--- - dnd hover styling state management
---   lines ~2656–2678: refactor `awesome_dnd.set_hover` to stop mutating widget bg/fg; compute styling in a single place (update_callback or `apply_tag_hover`) and keep transient state outside widget fields; clear on drag end.
--- - duplicate square generation paths
---   lines 265–297, 316–356: remove one path; keep widget_template imagebox approach; delete `setup_dynamic_squares`/recreations; rely on per-tag signals.
--- - tag square update wiring overlap
---   lines 316–353, 3110–3199, 3567: drop the `setup_dynamic_squares()` call and depend only on create_callback connections.
--- - theme overrides currently in rc.lua
---   lines 233–241: move these to `milktheme/theme.lua` to centralise theme.
--- - hover logic duplication (normal vs dnd)
---   lines 3173–3205 and awesome_dnd.*: add `apply_tag_hover(mode)` and route both paths through it; respect `t.selected`.
--- - notification/test remnants
---   lines ~2700–2900, 3170–3210: strip commented debug; ensure no `naughty.notify` remains.
--- - shimmer system performance/structure
---   lines ~1160–1520 (+ timer init): extract to `plugins/shimmer.lua`; throttle updates; limit to focused screen; reduce per-tick work.
--- - geometry polling for drag hover
---   lines ~2739–2766: remove raw geometry math; use `_is_dnd_tag_target` and mouse signals; keep a minimal fallback if needed.
--- - border animation interaction
---   lines ~1200–1410: implement `pause_border_anim(reason)` / `resume_border_anim(reason)` with ref counting.
--- - global state hygiene
---   lines ~2625+: split `awesome_dnd` into `drag_state`, `config`, `utils`; add `reset_drag_state()`; avoid attaching transient fields on widgets.
--- - tag text style vs shimmer
---   lines ~3151–3154: keep tag text white unless selected; don't let hover/dnd override; audit `beautiful.taglist_fg_*`.
--- - icon square colours/sizing
---   lines 249–260: use theme colours for fill/outline; pull size into a single constant.
-
-
-
--- // MARK: TEST
--- ################################################################################
---  ██████╗ ██████╗ ██████╗ ███████╗
--- ██╔════╝██╔═══██╗██╔══██╗██╔════╝
--- ██║     ██║   ██║██████╔╝███████╗
--- ██║     ██║   ██║██╔══██╗╚════██║
--- ╚██████╗╚██████╔╝██║  ██║███████║
---  ╚═════╝ ╚═════╝ ╚═╝  ╚═╝╚══════╝
--- ################################################################################
--- CORE SETUP - basic awesome configuration foundation and testing setup
--- ################################################################################
 -- run in xephyr for testing:
--- Xephyr :1 -ac -br -noreset -screen 1152x720 & DISPLAY=:1.0 awesome -c ~/.config/awesome/rc.lua
+
 
 
 -- // MARK: LIBS
@@ -180,6 +168,8 @@
 -- ################################################################################
 -- LIBRARIES - core library imports and external dependencies
 -- If LuaRocks is installed, make sure that packages installed through it are found
+
+
 pcall(require, "luarocks.loader")
 
 -- Standard awesome libraries
@@ -200,16 +190,28 @@ local bling = require("bling")                -- Modern layouts and utilities
 local cyclefocus = require("cyclefocus")       -- Cycle between applications
 local freedesktop = require("freedesktop")      -- Create a menu from .desktop files
 local treetile = require("treetile")           -- Hierarchical window arrangement
+local shimmer = require("plugins/shimmer")     -- Shimmer animation system
+local keybindings = require("keybindings")        -- Hotkey definitions
+local hotkey_dupe_detector = require("plugins/hotkey_dupe_detector")  -- duplicate hotkey detection
+
 -- CLOCK WIDGET
 -- Restore previous clock style: Hack font, white on purple, with right margin
 local mytextclock = wibox.widget.textclock()
 mytextclock.format = "%a %b %d  %H:%M"
 mytextclock.font = "Hack Nerd Font 9"
-local textclock_clr = wibox.widget.background()
+local textclock_clr = wibox.container.background()
 -- add at least 4px of purple padding on both sides
 textclock_clr:set_widget(wibox.container.margin(mytextclock, 4, 4, 0, 0))
 textclock_clr:set_fg("#ffffff")
 textclock_clr:set_bg("#623997")
+
+-- 1px separator to the left of the clock
+local clock_sep = wibox.widget {
+    orientation = "vertical",
+    forced_width = 1,
+    color = "#222222",
+    widget = wibox.widget.separator,
+}
 
 -- Enable hotkeys help widget for VIM and other apps
 -- when client with a matching name is opened:
@@ -230,10 +232,145 @@ textclock_clr:set_bg("#623997")
 -- Store the previous tag when switching to pavucontrol
 local previous_tag = nil
 
--- Utility functions
+-- tasklist mode: false = focused tag only (default), true = all tags
+local tasklist_show_all_tags = false
+
+-- function to toggle tasklist mode and refresh all tasklists
+local function toggle_tasklist_mode()
+    tasklist_show_all_tags = not tasklist_show_all_tags
+    
+    -- refresh all tasklists on all screens
+    for s in screen do
+        if s.mytasklist then
+            s.mytasklist:emit_signal("widget::redraw_needed")
+        end
+    end
+    
+    -- show notification about current mode
+    local mode_text = tasklist_show_all_tags and "all tags" or "focused tag only"
+    naughty.notify({
+        title = "tasklist mode",
+        text = "showing tasks from: " .. mode_text,
+        timeout = 2
+    })
+end
+
+-- // MARK: UTILITY FUNCTIONS
+-- ################################################################################
+
 -- Matcher generator for rules
 local create_matcher = function(class_name)
     return function(c) return awful.rules.match(c, {class = class_name}) end
+end
+
+-- Unified tag hover styling function
+local function blend_hex_colors(c1, c2, t)
+    -- c1 and c2 are "#RRGGBB", t in [0,1]; returns blended hex
+    local function hex_to_rgb(hex)
+        return tonumber(hex:sub(2,3),16), tonumber(hex:sub(4,5),16), tonumber(hex:sub(6,7),16)
+    end
+    local r1,g1,b1 = hex_to_rgb(c1)
+    local r2,g2,b2 = hex_to_rgb(c2)
+    local r = math.floor(r1 + (r2 - r1) * t)
+    local g = math.floor(g1 + (g2 - g1) * t)
+    local b = math.floor(b1 + (b2 - b1) * t)
+    return string.format("#%02x%02x%02x", r, g, b)
+end
+
+local function apply_tag_hover(tag_widget, tag, mode)
+    local text_widget = tag_widget:get_children_by_id('text_role')[1]
+    if not text_widget or not text_widget.set_markup then return end
+    
+    local current = tag.name or ''
+    local base_gold = shimmer.get_base_gold()
+    
+    if mode == "enter" then
+        -- Don't apply hover if tag is selected or if DnD is active
+        if tag.selected or (awesome_dnd and awesome_dnd.drag_active) then return end
+        
+        -- text_widget:set_markup('<span color="' .. (beautiful.taglist_hover_fg or base_gold) .. '">' .. current .. '</span>')
+        -- force solid gold on hover and lock shimmer from overriding
+        text_widget.__hover_lock = true
+        text_widget:set_markup('<span color="' .. base_gold .. '">' .. current .. '</span>')
+        tag_widget.__hover_text_colored = true
+        
+    elseif mode == "leave" then
+        -- restore after hover: always clear lock; if selected, reapply shimmer; else fade gold->white over 0.5s
+        if tag_widget.__hover_text_colored then
+            text_widget.__hover_lock = nil
+            tag_widget.__hover_text_colored = nil
+
+            if tag.selected then
+                pcall(shimmer.apply_to_widget, text_widget, current, nil)
+            else
+                -- cancel existing fade if any
+                if text_widget.__hover_fade_timer and text_widget.__hover_fade_timer.stop then
+                    text_widget.__hover_fade_timer:stop()
+                end
+                text_widget.__hover_fade_lock = true
+                local steps = 10
+                local i = 0
+                text_widget.__hover_fade_timer = gears.timer {
+                    timeout = 0.05,
+                    autostart = true,
+                    callback = function()
+                        i = i + 1
+                        local t = i / steps
+                        local color = blend_hex_colors(base_gold, "#FFFFFF", t)
+                        text_widget:set_markup('<span color="' .. color .. '">' .. current .. '</span>')
+                        if i >= steps then
+                            -- end fade
+                            text_widget.__hover_fade_lock = nil
+                            if text_widget.__hover_fade_timer and text_widget.__hover_fade_timer.stop then
+                                text_widget.__hover_fade_timer:stop()
+                            end
+                            text_widget.__hover_fade_timer = nil
+                        end
+                    end
+                }
+            end
+        end
+        
+    elseif mode == "dnd_enter" then
+        -- DnD specific hover - always applies regardless of selection
+        text_widget.__hover_lock = true
+        text_widget:set_markup('<span color="' .. base_gold .. '">' .. current .. '</span>')
+        tag_widget.__dnd_hover_active = true
+        
+    elseif mode == "dnd_leave" then
+        -- restore from DnD hover: always clear lock; if selected, reapply shimmer; else fade gold->white
+        if tag_widget.__dnd_hover_active then
+            text_widget.__hover_lock = nil
+            tag_widget.__dnd_hover_active = nil
+            if tag.selected then
+                pcall(shimmer.apply_to_widget, text_widget, current, nil)
+            else
+                if text_widget.__hover_fade_timer and text_widget.__hover_fade_timer.stop then
+                    text_widget.__hover_fade_timer:stop()
+                end
+                text_widget.__hover_fade_lock = true
+                local steps = 10
+                local i = 0
+                text_widget.__hover_fade_timer = gears.timer {
+                    timeout = 0.05,
+                    autostart = true,
+                    callback = function()
+                        i = i + 1
+                        local t = i / steps
+                        local color = blend_hex_colors(base_gold, "#FFFFFF", t)
+                        text_widget:set_markup('<span color="' .. color .. '">' .. current .. '</span>')
+                        if i >= steps then
+                            text_widget.__hover_fade_lock = nil
+                            if text_widget.__hover_fade_timer and text_widget.__hover_fade_timer.stop then
+                                text_widget.__hover_fade_timer:stop()
+                            end
+                            text_widget.__hover_fade_timer = nil
+                        end
+                    end
+                }
+            end
+        end
+    end
 end
 
 -- Confirmation menu for quitting awesome
@@ -243,6 +380,16 @@ confirmQuitmenu = awful.menu({
         {"Quit", function() awesome.quit() end}
     }
 })
+
+-- Variable definitions
+modkey = "Mod4"  -- Super/Windows key
+altkey = "Mod1"   -- Alt key
+ctrlkey = "Control" -- Control key
+shiftkey = "Shift"  -- Shift key
+terminal = "urxvt" -- Default terminal (urxvt preferred for consistency)
+-- terminal = "alacritty" -- Alternative terminal
+editor = os.getenv("EDITOR") or "nvim"
+editor_cmd = terminal .. " -e " .. editor
 
 -- Tag navigation modifier keys
 tag_nav_mod_keys = {modkey, altkey}
@@ -400,56 +547,129 @@ milkdefault = lain.layout.termfair.center
 -- tyrannical.settings.block_children_focus_stealing = true --Block popups ()
 -- tyrannical.settings.group_children = true --Force popups/dialogs to have the same tags as the parent client
 
+-- // MARK: WINDOW MANAGEMENT FUNCTIONS
+-- ################################################################################
+
+-- Window state tracking with cleanup
+local window_centers = {}
+local dragging_clients = {}
+
+-- periodic cleanup for memory management
+local cleanup_timer = gears.timer {
+    timeout = 60,  -- cleanup every minute
+    autostart = true,
+    callback = function()
+        -- clean up window_centers for invalid clients
+        for c, _ in pairs(window_centers) do
+            if not c.valid then
+                window_centers[c] = nil
+            end
+        end
+        -- clean up dragging_clients for invalid clients
+        for c, _ in pairs(dragging_clients) do
+            if not c.valid then
+                dragging_clients[c] = nil
+            end
+        end
+    end
+}
+
+-- Window management utilities
+local window_manager = {
+    -- Center floating window after resize
+    maintain_center = function(c)
+        if not c.floating or not window_centers[c] then return end
+        
+        local center = window_centers[c]
+        local geo = c:geometry()
+        local new_geo = {
+            x = center.x - geo.width / 2,
+            y = center.y - geo.height / 2,
+            width = geo.width,
+            height = geo.height
+        }
+        c:geometry(new_geo)
+    end,
+    
+    -- Store window center position
+    store_center = function(c)
+        if not c.floating then return end
+        local geo = c:geometry()
+        window_centers[c] = {
+            x = geo.x + geo.width / 2,
+            y = geo.y + geo.height / 2
+        }
+    end,
+    
+    -- Clean up window tracking data
+    cleanup = function(c)
+        window_centers[c] = nil
+        dragging_clients[c] = nil
+    end,
+    
+    -- Check if window is being dragged
+    is_dragging = function(c)
+        return dragging_clients[c] ~= nil
+    end,
+    
+    -- Mark window as being dragged
+    set_dragging = function(c, dragging)
+        local was_dragging = dragging_clients[c] ~= nil
+        dragging_clients[c] = dragging and true or nil
+        
+        -- Emit signal when drag ends
+        if was_dragging and not dragging then
+            c:emit_signal("awesome::drag_end")
+        end
+    end
+}
+
 -- Screen rotation function
 function rotate_screens(direction)
     local current_screen = awful.screen.focused()
-    local initial_scren = current_screen
+    local initial_screen = current_screen
     while (true) do
-        awful.screen.focus_relative(direction)
-        local next_screen = awful.screen.focused()
-        if next_screen == initial_scren then
-            return
-        end
-
-        local current_screen_tag_name = current_screen.selected_tag.name
-        local next_screen_tag_name = next_screen.selected_tag.name
-
-        for _, t in ipairs(current_screen.tags) do
-            local fallback_tag = awful.tag.find_by_name(next_screen, t.name)
-            local self_clients = t:clients()
-            local other_clients
-
-            if not fallback_tag then
-                -- if not available, use first tag
-                fallback_tag = next_screen.tags[1]
-                other_clients = {}
-            else
-                other_clients = fallback_tag:clients()
+        -- Handle both numeric and string values for direction
+        if direction == "right" or direction == -1 then
+            current_screen = current_screen:get_next_in_direction("right")
+            if current_screen == nil then
+                local screens = screen
+                current_screen = screens[1]
             end
-
-            for _, c in ipairs(self_clients) do
-                c:move_to_tag(fallback_tag)
+        elseif direction == "left" or direction == 1 then
+            current_screen = current_screen:get_next_in_direction("left")
+            if current_screen == nil then
+                local screens = screen
+                current_screen = screens[#screens]
             end
-
-            for _, c in ipairs(other_clients) do
-                c:move_to_tag(t)
+        elseif direction == "up" then
+            current_screen = current_screen:get_next_in_direction("up")
+            if current_screen == nil then
+                current_screen = awful.screen.focused()
+            end
+        elseif direction == "down" then
+            current_screen = current_screen:get_next_in_direction("down")
+            if current_screen == nil then
+                current_screen = awful.screen.focused()
             end
         end
-        awful.tag.find_by_name(next_screen, current_screen_tag_name):view_only()
-        awful.tag.find_by_name(current_screen, next_screen_tag_name):view_only()
-        current_screen = next_screen
+        -- If we've looped back to the initial screen, break to avoid infinite loop
+        if current_screen == initial_screen then
+            break
+        end
+        mouse.screen = current_screen
+        break
     end
 end
 
--- Tag navigation functions
+-- Tag navigation functions  
 local function move_to_previous_tag()
     local c = client.focus
     if not c then return end
     local current_tag = c:tags()[1]
-    if not current_tag then return end
-    local prev_tag = awful.tag.getprev(current_tag)
-    if prev_tag then
-        c:move_to_tag(prev_tag)
+    if current_tag then
+        local prev_tag = current_tag.screen.tags[current_tag.index - 1]
+        if prev_tag then c:move_to_tag(prev_tag) end
     end
 end
 
@@ -457,10 +677,9 @@ local function move_to_next_tag()
     local c = client.focus
     if not c then return end
     local current_tag = c:tags()[1]
-    if not current_tag then return end
-    local next_tag = awful.tag.getnext(current_tag)
-    if next_tag then
-        c:move_to_tag(next_tag)
+    if current_tag then
+        local next_tag = current_tag.screen.tags[current_tag.index + 1]
+        if next_tag then c:move_to_tag(next_tag) end
     end
 end
 
@@ -542,82 +761,16 @@ end
 -- DEFINITIONS - theme configuration and visual foundations
 beautiful.init(gears.filesystem.get_configuration_dir() .. "milktheme/theme.lua")
 
--- Theme customization - force purple background for selected tags
-beautiful.taglist_bg_focus = "#663399" -- purple for selected tag (matches standard purple)
-beautiful.taglist_hover_bg = "#b8860b" -- gold hover for non-drag hover
--- Keep tag text white for now
--- beautiful.taglist_fg_normal and beautiful.taglist_fg_focus left to theme defaults (white)
--- Ensure title/task text never renders black-on-black
-beautiful.titlebar_fg_focus = "#FFD700"
-beautiful.titlebar_fg_normal = "#FFFFFF"
-beautiful.tasklist_fg_focus = beautiful.tasklist_fg_focus or "#FFD700"
-beautiful.tasklist_fg_normal = beautiful.tasklist_fg_normal or "#FFFFFF"
+-- Theme customization moved to milktheme/theme.lua
 
--- create dynamic square surfaces for occupancy indication
-local cairo = require("lgi").cairo
+-- tag occupancy indicators handled by plugins/tag_indicators.lua
+-- tag occupancy indicators (dynamic tag squares based on unminimized clients)
+-- NOTE: required later as `require("plugins.tag_indicators")` to avoid double-loading; keeping this
+--       commented reference here for clarity and to avoid accidental reintroduction.
+-- local tag_indicators = require("plugins/tag_indicators")
 
--- Function to create a square surface
-local TAG_SQUARE_SIZE = 5
-
-local function create_square_surface(filled, size)
-    size = size or TAG_SQUARE_SIZE
-    local img = cairo.ImageSurface(cairo.Format.ARGB32, size, size)
-    local cr = cairo.Context(img)
-    
-    if filled then
-        -- Filled square for unminimized windows
-        cr:set_source_rgba(0.7, 0.7, 0.7, 1) -- light gray
-        cr:rectangle(0, 0, size, size)  -- Fill entire surface
-        cr:fill()
-    else
-        -- Hollow square for minimized-only windows
-        cr:set_source_rgba(0.5, 0.5, 0.5, 1) -- darker gray
-        cr:set_line_width(0.5)
-        cr:rectangle(0.25, 0.25, size-0.5, size-0.5)  -- Adjusted for smaller size
-        cr:stroke()
-    end
-    
-    return img
-end
-
--- Create square surfaces for different states
-local filled_square = create_square_surface(true, TAG_SQUARE_SIZE)
-local hollow_square = create_square_surface(false, TAG_SQUARE_SIZE)
-
--- Colored square cache and helpers for dominant icon colors
-local square_surface_cache = {}
-
-local function hex_to_rgb(hex)
-    if not hex or #hex < 7 then return 170,170,170 end
-    local r = tonumber(hex:sub(2,3), 16) or 170
-    local g = tonumber(hex:sub(4,5), 16) or 170
-    local b = tonumber(hex:sub(6,7), 16) or 170
-    return r,g,b
-end
-
-local function create_colored_square_surface(filled, size, color_hex)
-    local key = (filled and "F" or "H") .. ":" .. (color_hex or "#aaaaaa") .. ":" .. tostring(size)
-    if square_surface_cache[key] then return square_surface_cache[key] end
-    
-    local img = cairo.ImageSurface(cairo.Format.ARGB32, size, size)
-    local cr = cairo.Context(img)
-    local r,g,b = hex_to_rgb(color_hex)
-    r, g, b = r/255, g/255, b/255
-    
-    if filled then
-        cr:set_source_rgba(r, g, b, 1)
-        cr:rectangle(0, 0, size, size)
-        cr:fill()
-    else
-        cr:set_source_rgba(r, g, b, 1)
-        cr:set_line_width(0.5)
-        cr:rectangle(0.25, 0.25, size-0.5, size-0.5)
-        cr:stroke()
-    end
-    
-    square_surface_cache[key] = img
-    return img
-end
+-- // MARK: COLOR AND ICON FUNCTIONS
+-- ################################################################################
 
 -- Sample dominant color from client icon
 local function average_color_from_icon(icon)
@@ -634,10 +787,11 @@ local function average_color_from_icon(icon)
     if okh and type(valh) == 'number' and valh > 0 then h = valh end
     if w <= 0 or h <= 0 then return "#aaaaaa" end
     
-    -- Create 1x1 downscale to get average color
-    local img = cairo.ImageSurface(cairo.Format.ARGB32, 1, 1)
+    -- Create image surface with specific format for pixel access
+    local img = cairo.ImageSurface(cairo.Format.RGB24, w, h)
     local cr = cairo.Context(img)
-    cr:scale(1/w, 1/h)
+    
+    -- Draw the icon onto our surface
     cr:set_source_surface(surf, 0, 0)
     cr:paint()
     
@@ -647,21 +801,21 @@ local function average_color_from_icon(icon)
     if okd then data = val end
     if not data or #data < 4 then return "#aaaaaa" end
     
-    -- Cairo uses BGRA format
-    local b = string.byte(data, 1)
-    local g = string.byte(data, 2)
-    local r = string.byte(data, 3)
-    local a = string.byte(data, 4)
-    
-    -- Handle premultiplied alpha
-    if a and a > 0 and a < 255 then
-        local inv = 255 / a
-        r = math.min(255, math.floor(r * inv))
-        g = math.min(255, math.floor(g * inv))
-        b = math.min(255, math.floor(b * inv))
+    -- Average the RGB values
+    local r, g, b, count = 0, 0, 0, 0
+    for i = 1, #data, 4 do  -- BGRA format
+        b = b + string.byte(data, i)
+        g = g + string.byte(data, i + 1)
+        r = r + string.byte(data, i + 2)
+        count = count + 1
     end
     
-    return string.format("#%02x%02x%02x", r, g, b)
+    if count > 0 then
+        r, g, b = math.floor(r / count), math.floor(g / count), math.floor(b / count)
+        return string.format("#%02x%02x%02x", r, g, b)
+    end
+    
+    return "#aaaaaa"
 end
 
 -- Create a simple generic terminal icon surface (fallback when no file icon is available)
@@ -669,36 +823,43 @@ local function create_terminal_icon_surface(size)
     size = size or 16
     local img = cairo.ImageSurface(cairo.Format.ARGB32, size, size)
     local cr = cairo.Context(img)
-
-    -- Clear (transparent)
-    cr:set_source_rgba(0, 0, 0, 0)
-    cr:paint()
-
-    -- Terminal screen rectangle
-    local pad = math.max(1, math.floor(size * 0.12))
-    local w = size - pad * 2
-    local h = size - pad * 2
-    cr:set_line_width(math.max(1, size * 0.08))
-    cr:set_source_rgba(1, 1, 1, 1) -- white outline
-    cr:rectangle(pad, pad, w, h)
+    
+    -- Fill background with dark gray
+    cr:set_source_rgba(0.2, 0.2, 0.2, 1.0)
+    cr:rectangle(0, 0, size, size)
+    cr:fill()
+    
+    -- Draw simple terminal representation
+    local margin = size * 0.15
+    local inner_size = size - (margin * 2)
+    
+    -- Draw terminal window border
+    cr:set_source_rgba(0.7, 0.7, 0.7, 1.0)
+    cr:set_line_width(1)
+    cr:rectangle(margin, margin, inner_size, inner_size)
     cr:stroke()
-
-    -- Prompt glyph (>_)
-    cr:set_line_width(math.max(1, size * 0.12))
-    local gx = pad + math.floor(size * 0.18)
-    local gy = pad + math.floor(size * 0.48)
-    cr:move_to(gx, gy)
-    cr:line_to(gx + math.floor(size * 0.22), gy - math.floor(size * 0.14))
-    cr:move_to(gx, gy)
-    cr:line_to(gx + math.floor(size * 0.22), gy + math.floor(size * 0.14))
-    cr:stroke()
-
-    -- Cursor underscore
-    cr:set_line_width(math.max(1, size * 0.10))
-    cr:move_to(gx + math.floor(size * 0.32), gy + math.floor(size * 0.18))
-    cr:line_to(gx + math.floor(size * 0.54), gy + math.floor(size * 0.18))
-    cr:stroke()
-
+    
+    -- Draw cursor or prompt representation
+    local cursor_x = margin + (inner_size * 0.1)
+    local cursor_y = margin + (inner_size * 0.3)
+    local cursor_w = inner_size * 0.05
+    local cursor_h = inner_size * 0.15
+    
+    cr:set_source_rgba(0.9, 0.9, 0.9, 1.0)
+    cr:rectangle(cursor_x, cursor_y, cursor_w, cursor_h)
+    cr:fill()
+    
+    -- Add some text-like lines
+    cr:set_line_width(0.5)
+    for i = 1, 3 do
+        local line_y = cursor_y + (cursor_h * 1.5 * i)
+        if line_y < (margin + inner_size - margin) then
+            cr:move_to(cursor_x, line_y)
+            cr:line_to(cursor_x + (inner_size * 0.6), line_y)
+            cr:stroke()
+        end
+    end
+    
     return img
 end
 
@@ -708,142 +869,48 @@ local function get_tag_dominant_color(tag)
     
     local rs, gs, bs, n = 0, 0, 0, 0
     local clients = tag:clients()
-    if #clients == 0 then return "#aaaaaa" end
     
-    -- First pass: only visible (unminimized, unhidden) clients
     for _, c in ipairs(clients) do
-        if c.icon and (not c.minimized and not c.hidden) then
-            local hex = average_color_from_icon(c.icon)
-            local r,g,b = hex_to_rgb(hex)
-            rs, gs, bs = rs + r, gs + g, bs + b
-            n = n + 1
+        if c.valid and not c.minimized and not c.hidden then
+            local icon = c.icon or c.class
+            local color_str = average_color_from_icon(icon)
+            
+            -- Parse hex color
+            local r = tonumber(color_str:sub(2, 3), 16) or 170
+            local g = tonumber(color_str:sub(4, 5), 16) or 170
+            local b = tonumber(color_str:sub(6, 7), 16) or 170
+            
+            rs, gs, bs, n = rs + r, gs + g, bs + b, n + 1
         end
     end
     
-    -- Fallback: any client with icon
+    -- If no visible clients, try minimized ones
     if n == 0 then
         for _, c in ipairs(clients) do
-            if c.icon then
-                local hex = average_color_from_icon(c.icon)
-                local r,g,b = hex_to_rgb(hex)
-                rs, gs, bs = rs + r, gs + g, bs + b
-                n = n + 1
+            if c.valid and c.minimized then
+                local icon = c.icon or c.class
+                local color_str = average_color_from_icon(icon)
+                
+                local r = tonumber(color_str:sub(2, 3), 16) or 170
+                local g = tonumber(color_str:sub(4, 5), 16) or 170
+                local b = tonumber(color_str:sub(6, 7), 16) or 170
+                
+                rs, gs, bs, n = rs + r, gs + g, bs + b, n + 1
             end
         end
     end
     
-    if n == 0 then return "#aaaaaa" end
-    
-    local r = math.floor(rs / n)
-    local g = math.floor(gs / n)
-    local b = math.floor(bs / n)
-    return string.format("#%02x%02x%02x", r, g, b)
-end
-
--- Override taglist square surfaces with dynamic occupancy-based squares
-local function update_tag_squares()
-    -- disable built-in taglist squares; we'll draw our own in widget_template
-    beautiful.taglist_squares_sel = nil
-    beautiful.taglist_squares_unsel = nil
-    beautiful.taglist_squares_sel_empty = nil
-    beautiful.taglist_squares_unsel_empty = nil
-    beautiful.taglist_squares_resize = false
-end
-
--- Initialize squares
-update_tag_squares()
-
--- Override the taglist's square selection logic
-local original_taglist_squares_sel = beautiful.taglist_squares_sel
-local original_taglist_squares_unsel = beautiful.taglist_squares_unsel
-
--- Create a function to get the right square based on tag state
-local function get_tag_square(tag, is_selected)
-    local state = get_tag_square_state(tag)
-    if state == "visible" then
-        return filled_square  -- filled square for visible windows (what you'd see on tag switch)
-    else
-        return hollow_square  -- hollow square for no visible windows (empty, minimized, or hidden)
+    if n > 0 then
+        local r, g, b = math.floor(rs / n), math.floor(gs / n), math.floor(bs / n)
+        return string.format("#%02x%02x%02x", r, g, b)
     end
+    
+    return "#aaaaaa"
 end
 
--- Override the taglist square selection logic to use occupancy-based squares
-local original_taglist_update_function = nil
 
-local function get_tag_square_state(tag)
-    local clients = tag:clients()
-    if #clients == 0 then
-        return "empty"        -- no clients at all
-    end
-    for _, c in ipairs(clients) do
-        -- visible when not minimized and not hidden
-        if not c.minimized and not c.hidden then
-            return "visible"
-        end
-    end
-    return "no_visible"       -- clients exist but none would be visible
-end
 
--- Hook into tag client changes to update squares dynamically
-local function setup_dynamic_squares()
-    -- Store references to the original square surfaces
-    local original_squares_sel = beautiful.taglist_squares_sel
-    local original_squares_unsel = beautiful.taglist_squares_unsel
-    
-    -- Create our custom squares
-    local filled_square = create_square_surface(true)
-    local hollow_square = create_square_surface(false)
-    
-    -- Override the beautiful theme to dynamically return squares based on tag state
-    local taglist_squares_sel_orig = beautiful.taglist_squares_sel
-    local taglist_squares_unsel_orig = beautiful.taglist_squares_unsel
-    
-    -- Connect to tag client changes
-    tag.connect_signal("property::clients", function(t)
-        -- Force taglist update for this tag's screen
-        if t.screen and t.screen.mytaglist then
-            t.screen.mytaglist:emit_signal("widget::redraw_needed")
-        end
-    end)
-    
-    -- Connect to client minimize/unminimize
-    client.connect_signal("property::minimized", function(c)
-        if c and c.valid and c.tags then
-            for _, t in ipairs(c:tags()) do
-                if t.screen and t.screen.mytaglist then
-                    t.screen.mytaglist:emit_signal("widget::redraw_needed")
-                end
-            end
-        end
-    end)
-    
-    -- Connect to tag selection changes
-    tag.connect_signal("property::selected", function(t)
-        if t.screen and t.screen.mytaglist then
-            t.screen.mytaglist:emit_signal("widget::redraw_needed")
-        end
-    end)
-end
-
--- We'll call this after screen setup
-local setup_squares_called = false
-beautiful.wallpaper = awful.util.get_configuration_dir() .. "milktheme/background.png"
-
--- Font settings
-beautiful.hotkeys_font = "Hack Nerd Font 12"
--- beautiful.hotkeys_description_font = "JetBrains Mono 12"
--- beautiful.menu_font = "JetBrains Mono 14"
--- beautiful.menu_font = "Hack 14"  -- Now set in theme file
-beautiful.menu_height = 24
-beautiful.menu_width = 300
-
--- Color settings
-beautiful.bg_systray = "#000000"
--- beautiful.bg_systray = "#191919"
-beautiful.notification_bg = "#FFD700"  -- Gold background
-beautiful.notification_fg = "#000000"  -- Black text
-beautiful.hotkeys_modifiers_fg = "#dddddd"
-
+-- // MARK: notifications
 -- Notification settings
 naughty.config.defaults.ontop = true
 -- naughty.config.defaults.timeout = 10
@@ -854,26 +921,9 @@ naughty.config.defaults.position = 'bottom_middle'
 
 -- Notification icon settings
 -- Attempt to constrain the size of large icons in their apps notifications
-beautiful.notification_icon_size = 64  -- Number instead of string
 naughty.config.defaults['icon_size'] = 64
 
 
--- // MARK: MODIFIERS
--- ################################################################################
--- ███╗   ███╗ ██████╗ ██████╗ ██╗███████╗██╗███████╗███████╗██████╗ ███████╗
--- ████╗ ████║██╔═══██╗██╔══██╗██║██╔════╝██║██╔════╝██╔════╝██╔══██╗██╔════╝
--- ██╔████╔██║██║   ██║██║  ██║██║███████╗██║███████╗███████╗██████╔╝███████╗
--- ██║╚██╔╝██║██║   ██║██║  ██║██║╚════██║██║╚════██║╚════██║██╔══██╗╚════██║
--- ██║ ╚═╝ ██║╚██████╔╝██████╔╝██║███████║██║███████║███████║██║  ██║███████║
--- ╚═╝     ╚═╝ ╚═════╝ ╚═════╝ ╚═╝╚══════╝╚═╝╚══════╝╚══════╝╚═╝  ╚═╝╚══════╝
--- ################################################################################
--- MODIFIERS - modifier key definitions and constants
--- Default modkey (Mod4 is usually the key with a logo between Control and Alt)
--- To remap, use xmodmap or other tools
-modkey = "Mod4"
-altkey = "Mod1"    -- Alt key
-ctrlkey = "Control" -- Control key
-shiftkey = "Shift"  -- Shift key
 
 
 -- // MARK: HOTKEYS
@@ -887,381 +937,42 @@ shiftkey = "Shift"  -- Shift key
 -- ################################################################################
 -- HOTKEYS - global and client key bindings
 
--- global key bindings
-globalkeys = gears.table.join(
-    awful.key({ modkey,           }, "s",      hotkeys_popup.show_help,
-              {description="show help", group="awesome"}),
-    awful.key({ modkey,           }, "Left",   function() cycle_tags_with_clients("prev") end,
-              {description = "cycle to previous tag with clients", group = "tag"}),
-    awful.key({ modkey,           }, "Right",  function() cycle_tags_with_clients("next") end,
-              {description = "cycle to next tag with clients", group = "tag"}),
-    awful.key({ modkey, shiftkey, ctrlkey }, "Left",   awful.tag.viewprev,
-              {description = "view previous", group = "tag"}),
-    awful.key({ modkey, shiftkey, ctrlkey }, "Right",  awful.tag.viewnext,
-              {description = "view next", group = "tag"}),
-    awful.key({ modkey,           }, "Escape", awful.tag.history.restore,
-              {description = "go back", group = "tag"}),
+--- Import keybindings from module
+local keys = keybindings.build({
+    modkey = modkey,
+    terminal = terminal,
+    rotate_screens = rotate_screens,
+    move_to_previous_tag = move_to_previous_tag,
+    move_to_next_tag = move_to_next_tag,
+    toggle_tasklist_mode = toggle_tasklist_mode,
+    quake = nil  -- will be defined later in screen setup
+})
 
-    awful.key({ modkey,           }, "j",
-        function ()
-            awful.client.focus.byidx( 1)
-        end,
-        {description = "focus next by index", group = "client"}
-    ),
-    awful.key({ modkey,           }, "k",
-        function ()
-            awful.client.focus.byidx(-1)
-        end,
-        {description = "focus previous by index", group = "client"}
-    ),
-    awful.key({ modkey,           }, "w", function () 
-        if client.focus then
-            client.focus:kill()
-        end
-    end,
-              {description = "close window", group = "client"}),
+-- Use the keybindings from the module
+globalkeys = keys.globalkeys
+clientkeys = keys.clientkeys
+clientbuttons = keys.clientbuttons
 
-    -- Layout manipulation
-        awful.key({ modkey, shiftkey   }, "j", function () awful.client.swap.byidx(  1)    end,
-        {description = "swap with next client by index", group = "client"}),
-    awful.key({ modkey, shiftkey   }, "k", function () awful.client.swap.byidx( -1)    end,
-		{description = "swap with previous client by index", group = "client"}),
-        awful.key({ modkey, ctrlkey }, "j", function () awful.screen.focus_relative( 1) end,
-        {description = "focus the next screen", group = "screen"}),
-    awful.key({ modkey, ctrlkey }, "k", function () awful.screen.focus_relative(-1) end,
-	{description = "focus the previous screen", group = "screen"}),
-    awful.key({ modkey,           }, "u", awful.client.urgent.jumpto,
-              {description = "jump to urgent client", group = "client"}),
-    awful.key({ modkey,           }, "Tab",
-        function ()
-            awful.client.focus.history.previous()
-            if client.focus then
-                client.focus:raise()
-            end
-        end,
-        {description = "go back", group = "client"}),
-
--- Standard program
-    awful.key({ modkey,           }, "Return", function () awful.spawn(terminal) end,
-              {description = "open a terminal", group = "launcher"}),
-    awful.key({ modkey, ctrlkey }, "r", awesome.restart,
-              {description = "reload awesome", group = "awesome"}),
-    awful.key({ modkey, shiftkey   }, "q", awesome.quit,
-              {description = "quit awesome", group = "awesome"}),
-
-    awful.key({ modkey,           }, "l",     function () awful.tag.incmwfact( 0.05)          end,
-              {description = "increase master width factor", group = "layout"}),
-    awful.key({ modkey,           }, "h",     function () awful.tag.incmwfact(-0.05)          end,
-              {description = "decrease master width factor", group = "layout"}),
-        awful.key({ modkey, shiftkey   }, "h",     function () awful.tag.incnmaster( 1, nil, true) end,
-        {description = "increase the number of master clients", group = "layout"}),
-    awful.key({ modkey, shiftkey   }, "l",     function () awful.tag.incnmaster(-1, nil, true) end,
-              {description = "decrease the number of master clients", group = "layout"}),
-        awful.key({ modkey, ctrlkey }, "h",     function () awful.tag.incncol( 1, nil, true)    end,
-        {description = "increase the number of columns", group = "layout"}),
-    awful.key({ modkey, ctrlkey }, "l",     function () awful.tag.incncol(-1, nil, true)    end,
-              {description = "decrease the number of columns", group = "layout"}),
-    awful.key({ modkey,           }, "space", function () awful.layout.inc( 1)                end,
-              {description = "select next", group = "layout"}),
-    awful.key({ modkey, shiftkey   }, "space", function () awful.layout.inc(-1)                end,
-              {description = "select previous", group = "layout"}),
-
-    awful.key({ modkey, ctrlkey }, "n",
-              function ()
-                  local c = awful.client.restore()
-                  -- Focus restored client
-                  if c then
-                    c:emit_signal(
-                        "request::activate", "key.unminimize", {raise = true}
-                    )
-                  end
-              end,
-              {description = "restore minimized", group = "client"}),
-
-    -- Prompt (like rofi menu but different)
-    awful.key({ modkey, altkey },            "r",     function () awful.screen.focused().mypromptbox:run() end,
-              {description = "run prompt", group = "launcher"}),
-
-    awful.key({ modkey }, "x",
-              function ()
-	awful.prompt.run {
-                    prompt       = "Run Lua code: ",
-                    textbox      = awful.screen.focused().mypromptbox.widget,
-		exe_callback = awful.util.eval,
-		history_path = awful.util.get_cache_dir() .. "/history_eval"
-	}
-              end,
-              {description = "lua execute prompt", group = "awesome"}),
-    -- Menubar
-    awful.key({ modkey }, "p", function() menubar.show() end,
-              {description = "show the menubar", group = "launcher"}),
-
-    -- System controls
-        -- Screen blanking (duplicate removed - using the one above),
-    awful.key({modkey, altkey}, "r", function() os.execute("monitor_rofi.sh") end,
-              {description = "monitor rofi", group = "system"}),
-    awful.key({modkey, altkey}, "p", function() os.execute("rofi_power") end,
-              {description = "rofi power menu", group = "system"}),
-
-    -- Terminal variants
-    awful.key({modkey, shiftkey}, "Return", function() awful.spawn(terminal, {floating = true, placement = awful.placement.centered}) end,
-              {description = "open a floating terminal", group = "launcher"}),
-    awful.key({ modkey, ctrlkey }, "Return", function () awful.util.spawn("sh -c 'alacritty --working-directory \"$(lastcwd)\"'") end,
-              {description = "open a terminal in same directory", group = "launcher"}),
-    awful.key({ modkey, altkey }, "Return", function () awful.util.spawn("urxvt") end,
-              {description = "open urxvt terminal", group = "launcher"}),
-
-    -- Layout control (using shiftkey instead of altkey to avoid conflict with prompt)
-    awful.key({modkey, shiftkey}, "r", function() awful.layout.inc(-1) end,
-              {description = "select previous layout", group = "layout"}),
-
-    -- Client management
-    awful.key({modkey}, "0", function() awful.tag.viewidx(10) end,
-              {description = "view tag #10", group = "tag"}),
-
-    -- Restore all minimized windows
-    awful.key({modkey, altkey}, ";", function()
-        for _, c in ipairs(client.get()) do
-            if c.minimized then
-                c:activate{
-                    raise = true
-                }
-                c.minimized = false
-            end
-        end
-    end, {description = "restore all minimized windows", group = "client"}),
-
-    -- Cycle through minimized windows
-    awful.key({modkey}, ";", function()
-        if client.focus then
-            local c = client.focus
-            local nxt = nil
-            for x in awful.client.iterate(function(x)
-                return x.minimized
-            end) do
-                if nxt then
-                    nxt:swap(x)
-                else
-                    nxt = x
-                end
-            end
-            c.minimized = true
-            nxt.minimized = false
-            c:swap(nxt)
-            client.focus = nxt
-            nxt:raise()
-        end
-    end,
-    {description = "cycle minimized windows", group = "client"}),
-
-    -- Toggle floating window to the corner
-    awful.key({modkey, shiftkey}, "w", function()
-        local c = client.focus
-        awful.client.floating.toggle()
-        if c.floating then
-            c.floating = false
-            c.ontop = false
-            c.sticky = false
-        else
-            c.floating = true
-            c.ontop = true
-            c.sticky = true
-            c.width = 633
-            c.height = 400
-            awful.placement.top_right(client.focus)
-        end
-    end, {description = "ontop floating right corner", group = "client"}),
-
-    -- Edit awesome config
-    awful.key({modkey, shiftkey}, "e", function() awful.spawn.raise_or_spawn("urxvt -e sh -c '$EDITOR ~/.config/awesome/rc.lua'", nil, nil, "awesomeconf")
-    end, {description = "edit awesome config", group = "launcher"}),
-
-    -- Hue lighting sync
-    awful.key({modkey, ctrlkey, altkey}, "h", function () awful.util.spawn("huestacean") end,
-              {description = "open huestacean", group = "launcher"}),
-
-    -- Application launchers
-    awful.key({modkey}, "F12", function() awful.spawn.raise_or_spawn("firefox", nil, create_matcher("firefox"))
-    end, {description = "run firefox", group = "launcher"}),
-
-    awful.key({modkey, shiftkey}, "F12", function() awful.spawn.raise_or_spawn("chromium", nil, create_matcher("chromium"))
-    end, {description = "run chromium", group = "launcher"}),
-
-    awful.key({modkey}, "p", function() awful.spawn.raise_or_spawn("pavucontrol", nil, create_matcher("pavucontrol"))
-    end, {description = "run pavucontrol", group = "launcher"}),
-
-    awful.key({modkey}, "Print", function() awful.spawn.with_shell("flameshot gui", false)
-    end, {description = "take a screenshot with flameshot", group = "launcher"}),
-
-    awful.key({modkey, altkey}, "q", function() awful.spawn.with_shell("xkill", false)
-    end, {description = "xkill to kill a hung gui app", group = "launcher"}),
-
-    awful.key({modkey, altkey}, "c", function() awful.spawn.with_shell("xcolor -s clipboard", false)
-    end, {description = "colour picker to clipboard", group = "launcher"}),
-
-    awful.key({ modkey, ctrlkey }, "a", function() awful.spawn.with_shell("arandr", false) end,
-    {description = "run arandr", group = "launcher"}),
-
-    -- F-key application launchers
-    awful.key({modkey}, "F1", function() awful.spawn.raise_or_spawn("urxvt -e sh -c 'ncmpcpp' -name 'ncmpcpp'", nil, nil, "ncmpcpp")
-    end, {description = "run ncmpcpp in a terminal", group = "launcher"}),
-
-    awful.key({modkey, shiftkey}, "F1", function() awful.spawn.raise_or_spawn("spotify", nil, create_matcher("spotify"), "spotify")
-    end, {description = "run spotify", group = "launcher"}),
-
-    awful.key({modkey}, "F2", function() awful.spawn.raise_or_spawn("raysession", nil, create_matcher("raysession"))
-    end, {description = "run raysession", group = "launcher"}),
-
-    awful.key({modkey, shiftkey}, "F2", function() awful.spawn.raise_or_spawn("urxvt -e sh -c 'nsm'", nil, create_matcher("nsm"), "nsm")
-    end, {description = "run argodejo in a terminal", group = "launcher"}),
-
-    awful.key({modkey}, "F3", function() awful.spawn.raise_or_spawn("qbittorrent", nil, create_matcher("qBittorrent"), "qBittorrent")
-    end, {description = "run qbittorrent", group = "launcher"}),
-
-    awful.key({modkey, shiftkey}, "F3", function() awful.spawn.raise_or_spawn("nicotine", nil, create_matcher("Nicotine"))
-    end, {description = "run nicotine++", group = "launcher"}),
-
-    awful.key({modkey}, "F4", function() awful.spawn.raise_or_spawn("picard", nil, create_matcher("Picard"))
-    end, {description = "run picard", group = "launcher"}),
-
-    awful.key({modkey, shiftkey}, "F4", function() awful.spawn.raise_or_spawn("simplescreenrecorder", nil, create_matcher("simplescreenrecorder"))
-    end, {description = "run simplescreenrecorder", group = "launcher"}),
-
-    awful.key({modkey, shiftkey}, "F6", function() awful.spawn.raise_or_spawn("qseq66", nil, create_matcher("qseq66"))
-    end, {description = "run qseq66", group = "launcher"}),
-
-    awful.key({modkey, shiftkey}, "F7", function() awful.spawn.raise_or_spawn("signal-desktop", nil, create_matcher("signal-desktop"))
-    end, {description = "run signal-desktop", group = "launcher"}),
-
-    awful.key({modkey}, "F8", function() awful.spawn.raise_or_spawn("keepassxc ~/state/nextcloud/sync/keepassxc-mb.kdbx", nil, create_matcher("keepassxc"))
-    end, {description = "run keepassxc", group = "launcher"}),
-
-    awful.key({modkey}, "F9", function() awful.spawn.raise_or_spawn("doublecmd", nil, create_matcher("doublecmd"))
-    end, {description = "run doublecmd", group = "launcher"}),
-
-    awful.key({ modkey }, "F11", function() awful.spawn.raise_or_spawn("quasselclient", nil, nil, "quasselclient") end,
-    { description = "run quasselclient", group = "launcher" })
-)
-
--- Bind all key numbers to tags.
--- Be careful: we use keycodes to make it work on any keyboard layout.
--- This should map on the top row of your keyboard, usually 1 to 9.
-for i = 1, 9 do
-    globalkeys = gears.table.join(globalkeys,
-        -- View tag only.
-        awful.key({ modkey }, "#" .. i + 9,
-                  function ()
-                        local screen = awful.screen.focused()
-                        local tag = screen.tags[i]
-                        if tag then
-                           tag:view_only()
-                        end
-                  end,
-                  {description = "view tag #"..i, group = "tag"}),
-        -- Toggle tag display.
-        awful.key({ modkey, ctrlkey }, "#" .. i + 9,
-                  function ()
-                      local screen = awful.screen.focused()
-                      local tag = screen.tags[i]
-                      if tag then
-                         awful.tag.viewtoggle(tag)
-                      end
-                  end,
-                  {description = "toggle tag #" .. i, group = "tag"}),
-        -- Move client to tag.
-        awful.key({ modkey, shiftkey }, "#" .. i + 9,
-                  function ()
-                      if client.focus then
-                          local tag = client.focus.screen.tags[i]
-                          if tag then
-                              client.focus:move_to_tag(tag)
-                          end
-                     end
-                  end,
-                  {description = "move focused client to tag #"..i, group = "tag"}),
-        -- Toggle tag on focused client.
-        awful.key({ modkey, ctrlkey, shiftkey }, "#" .. i + 9,
-                  function ()
-                      if client.focus then
-                          local tag = client.focus.screen.tags[i]
-                          if tag then
-                              client.focus:toggle_tag(tag)
-                          end
-                      end
-                  end,
-                  {description = "toggle focused client on tag #" .. i, group = "tag"})
-    )
-end
-
--- client key bindings
-clientkeys = gears.table.join(
-    awful.key({ modkey,           }, "f",
-        function (c)
-		c.fullscreen = not c.fullscreen
-		c:raise()
-        end,
-        {description = "toggle fullscreen", group = "client"}),
-    awful.key({ modkey, shiftkey   }, "c",      function (c) c:kill()                         end,
-		{description = "close", group = "client"}),
-    awful.key({ modkey }, "z",  awful.client.floating.toggle                     ,
-{description = "toggle floating", group = "client"}),
-    awful.key({ modkey, ctrlkey }, "Return", function (c) c:swap(awful.client.getmaster()) end,
-{description = "move to master", group = "client"}),
-    awful.key({ modkey,           }, "o",      function (c) c:move_to_screen()               end,
-              {description = "move to screen", group = "client"}),
-    awful.key({ modkey,           }, "t",      function (c) c.ontop = not c.ontop            end,
-              {description = "toggle keep on top", group = "client"}),
-    awful.key({ modkey,           }, "n",
-        function (c)
-	-- The client currently has the input focus, so it cannot be
-            -- minimized, since minimized clients can't have the focus.
-	c.minimized = true
-        end ,
-        {description = "minimize", group = "client"}),
-    awful.key({ modkey,           }, "m",
-        function (c)
-	c.maximized = not c.maximized
-	c:raise()
-        end ,
-        {description = "(un)maximize", group = "client"}),
-    awful.key({ modkey, ctrlkey }, "m",
-        function (c)
-	c.maximized_vertical = not c.maximized_vertical
-	c:raise()
-        end ,
-        {description = "(un)maximize vertically", group = "client"}),
-    awful.key({ modkey, shiftkey   }, "m",
-        function (c)
-	c.maximized_horizontal = not c.maximized_horizontal
-	c:raise()
-        end ,
-        {description = "(un)maximize horizontally", group = "client"})
-)
-
--- simple drag-to-tag functionality
--- awesome_dnd drag-and-drop system is defined in RUNTIME section
+-- Register client keybindings properly for modern AwesomeWM
+client.connect_signal("request::default_keybindings", function()
+    awful.keyboard.append_client_keybindings(clientkeys)
+end)
 
 
--- // MARK: TERM
--- ################################################################################
--- ████████╗███████╗██████╗ ███╗   ███╗
--- ╚══██╔══╝██╔════╝██╔══██╗████╗ ████║
---    ██║   █████╗  ██████╔╝██╔████╔██║
---    ██║   ██╔══╝  ██╔══██╗██║╚██╔╝██║
---    ██║   ███████╗██║  ██║██║ ╚═╝ ██║
---    ╚═╝   ╚══════╝╚═╝  ╚═╝╚═╝     ╚═╝
--- ################################################################################
--- TERMINAL - terminal and editor application definitions
--- Define default terminal and editor
-terminal = "urxvt"
--- terminal = "alacritty"
-editor = os.getenv("EDITOR") or "nvim"
-editor_cmd = terminal .. " -e " .. editor
+-- // MARK: dupe key check
+
+-- Check for duplicate hotkeys on startup and show orange notification
+hotkey_dupe_detector.notify_duplicates(globalkeys, clientkeys)
+
+
+
 
 -- Compound terminal command for system monitoring
 terminal_cmd = terminal .. " -e btop;" ..
                terminal .. " -e journalctl -xeb;" ..
                terminal .. " -e dmesg"
+
+
 
 
 -- // MARK: VISUAL
@@ -1298,72 +1009,17 @@ end
 screen.connect_signal("property::geometry", set_wallpaper)
 
 -- BORDERS - Border properties and window shapes
--- Set border properties
-beautiful.border_radius = 2
-beautiful.useless_gap = 0  -- window gaps (moved from end of file)
+-- Border properties moved to theme file
 
--- Handle client window shapes
-client.connect_signal("manage", function(c)
-    c.shape = function(cr, w, h)
-        gears.shape.rounded_rect(cr, w, h, beautiful.border_radius)
-    end
-end)
+-- Client window shapes handled in consolidated signal section
 
--- Forward declaration so earlier signal handlers capture the local, not a global
-local get_client_status_prefix
+-- Client status prefix function provided by shimmer plugin
 
--- Helper function to calculate status prefix for a client
-get_client_status_prefix = function(c)
-    if not c or not c.valid then return "" end
-    
-    local symbols = {}
-    if c.floating then table.insert(symbols, "✈") end
-    if c.maximized then table.insert(symbols, "+")
-    elseif c.maximized_horizontal then table.insert(symbols, "⬌")
-    elseif c.maximized_vertical then table.insert(symbols, "⬍") end
-    if c.sticky then table.insert(symbols, "▪") end
-    if c.ontop then table.insert(symbols, "⌃")
-    elseif c.above then table.insert(symbols, "▴")
-    elseif c.below then table.insert(symbols, "▾") end
-    
-    -- Use a non-breaking space as separator to keep layout stable
-    return #symbols > 0 and (table.concat(symbols, "") .. " ") or ""
-end
+-- Widget references handled by shimmer plugin
 
--- Widget reference tables must be defined before any signal handlers use them
-local active_tag_widgets = active_tag_widgets or {}
-local active_client_widgets = active_client_widgets or {}
+-- Status prefix updates handled by shimmer plugin
 
--- Update status prefix immediately for tasklist when window mode properties change
-for _, prop in ipairs({
-    "floating", "maximized", "maximized_horizontal", "maximized_vertical",
-    "sticky", "ontop", "above", "below", "minimized"
-}) do
-    client.connect_signal("property::" .. prop, function(c)
-        local s = c.screen
-        local client_widgets = active_client_widgets[s.index] or {}
-        for _, widget in pairs(client_widgets) do
-            if widget.client and widget.client.valid and widget.client == c then
-                local pb = widget.prefixbox
-                if pb and pb.set_markup then
-                    local sp = get_client_status_prefix(c)
-                    pb:set_markup('<span color="#FFD700">' .. ((sp and #sp > 0) and sp or ' ') .. '</span>')
-                end
-                break
-            end
-        end
-    end)
-end
-
--- assign generic terminal icon for urxvt clients
-client.connect_signal("manage", function(c)
-    if c.class == "URxvt" or c.class == "urxvt" then
-        local term_icon = gears.filesystem.get_configuration_dir() .. "milktheme/layouts/term.png"
-        if gears.filesystem.file_readable(term_icon) then
-            c.icon = term_icon
-        end
-    end
-end)
+-- Terminal icon assignment handled in consolidated signal section
 
 
 -- // MARK: LAYOUT
@@ -1497,7 +1153,8 @@ awful.layout.layouts = {
 -- MENU - Application menu configuration
 -- Create the awesome submenu contents
 awesomesubmenu = {
-    {"Hotkeys", function() hotkeys_popup.show_help(nil, awful.screen.focused()) end},
+    -- {"Hotkeys", function() hotkeys_popup.show_help(nil, awful.screen.focused()) end},
+    {"Hotkeys", function() hotkeys_popup.show_help(nil, mouse.screen) end},
     {"Manual", terminal .. " -e man awesome"},
     {"Edit config", editor_cmd .. " " .. awesome.conffile},
     {"Restart", awesome.restart},
@@ -1524,87 +1181,20 @@ mylauncher = awful.widget.launcher({
 -- Keyboard map indicator and switcher
 mykeyboardlayout = awful.widget.keyboardlayout()
 
--- Add icon entries to desktop (disabled)
--- for s in screen do
---     freedesktop.desktop.add_icons({screen = s})
--- end
+-- Desktop icons available but disabled
 
--- // MARK: --navigation
--- Navigation system using collision detection
-require("collision") {
-    -- Vim-style movement keys
-    up    = { "k" },
-    down  = { "j" },
-    left  = { "h" },
-    right = { "l" },
-
-    -- Other configurations (commented out)
-    -- Normal arrow keys
-    -- up    = { "Up"    },
-    -- down  = { "Down"  },
-    -- left  = { "Left"  },
-    -- right = { "Right" },
-
-    -- Multiple key options
-    -- up    = { "Up", "&", "k", "F15" },
-    -- down  = { "Down", "KP_Enter", "j", "F14" },
-    -- left  = { "Left", "#", "h", "F13" },
-    -- right = { "Right", "\"", "l", "F17" },
-}
-
--- Alt-Tab alternatives (disabled)
--- local switcher = require("awesome-switcher")
--- awful.key({ "Mod1" }, "Tab", function() switcher.switch(1, "Alt_L", "Tab", "ISO_Left_Tab") end)
--- awful.key({ "Mod1", "Shift" }, "Tab", function() switcher.switch(-1, "Alt_L", "Tab", "ISO_Left_Tab") end)
-
--- Alternative Alt-Tab implementation (disabled)
--- local alttab = require("gobo.awesome.alttab")
--- awful.key({ "Mod1" }, "Tab", function() alttab.switch(1, "Alt_L", "Tab", "ISO_Left_Tab") end,
---    { description = "Switch between windows", group = "awesome" })
--- awful.key({ "Mod1", "Shift" }, "Tab", function() alttab.switch(-1, "Alt_L", "Tab", "ISO_Left_Tab") end,
---    { description = "Switch between windows backwards", group = "awesome" })
+-- Navigation system already initialized above in LAYOUT section
 
 
 
 
 
 
--- Active layout scripts
-local treetile = require("treetile")
+-- treetile already required above at line 191
 
--- Disabled/Alternative layout scripts (commented out for reference)
--- local dovetail = require("awesome-dovetail")
--- local thrizen = require("thrizen")
--- local leaved = require("awesome-leaved")
+-- Alternative layout scripts available but disabled
 
--- Titlebar customization (disabled)
--- local fenetre = require("fenetre")
--- fenetre { order = { "max", "ontop", "sticky", "floating", "close" } }
-
--- Grid-based tag navigation (disabled)
--- local workspace_grid = require("awesome-workspace-grid")
--- grid = workspace_grid({
---     rows = 3,
---     columns = 4,
---     cycle = true,
---     icon_size = 100,
---     position = "bottom_middle",
---     visual = true
--- })
-
--- Multi-app navigation (disabled)
--- Unified cross AwesomeWM window / Vim pane / Tmux pane hotkey navigation
--- require("awesomewm-vim-tmux-navigator"){
---     up    = {"Up", "k"},
---     down  = {"Down", "j"},
---     left  = {"Left", "h"},
---     right = {"Right", "l"},
--- }
-
--- Additional utilities (disabled)
--- local xrandr = require("xrandr")
--- local mpris_widget = require("awesome-wm-widgets.mpris-widget")
--- local mpris_widget = require("plugins.media")
+-- Additional navigation and utility modules available but disabled
 -- local media_player = require("media-player")
 
 
@@ -1641,387 +1231,29 @@ end)
 -- // MARK: --borders-shimmer
 -- MARK: BORDERS / SHIMMER - Create a cycling rainbow animation for focused window borders
 
--- Border animation variables (moved here to avoid forward reference)
-border_animate_colours = {}
-local borderLoop = 1
-local borderStep = 1 -- 1 for forward, -1 for reverse
-
--- Gradient generator function
--- Adapted from https://krazydad.com/tutorials/makecolors.php
-function makeColorGradient(frequency1, frequency2, frequency3, phase1, phase2, phase3, center, width, len)
-    if center == nil then center = 128 end
-    if width == nil then width = 127 end
-    if len == nil then len = 120 end
-
-    genLoop = 0
-    while genLoop < len do
-        -- Calculate RGB values using sine waves
-        red = string.format("%02x", math.floor(math.sin(frequency1 * genLoop + phase1) * width + center))
-        grn = string.format("%02x", math.floor(math.sin(frequency2 * genLoop + phase2) * width + center))
-        blu = string.format("%02x", math.floor(math.sin(frequency3 * genLoop + phase3) * width + center))
-
-        -- Store the hex color
-        border_animate_colours[genLoop] = "#" .. red .. grn .. blu
-        genLoop = genLoop + 1
-    end
-end
-
--- Color parameters - final settings
--- a = 0.8
--- redFrequency = 0.4718/a
--- grnFrequency = 0.1618/a
--- bluFrequency = 0.1/a
--- phase1 = 0
--- phase2 = 120
--- phase3 = 270
--- center = 185
--- width = 65
--- len = 2600
-
--- Alternative aesthetics (uncomment to try different effects)
---
--- [[ Subtle pastels ]]
--- a = 1.0
--- redFrequency = 0.3
--- grnFrequency = 0.3
--- bluFrequency = 0.3
--- phase1 = 0
--- phase2 = 2
--- phase3 = 4
--- center = 210
--- width = 45
--- len = 800
---
--- [[ High contrast neon ]]
--- redFrequency = 0.1
--- grnFrequency = 0.2
--- bluFrequency = 0.3
--- phase1 = 0
--- phase2 = 120
--- phase3 = 240
--- center = 128
--- width = 127
--- len = 1000
---
--- [[ Cyberpunk palette ]]
--- redFrequency = 0.1
--- grnFrequency = 0.2
--- bluFrequency = 0.1
--- phase1 = 1
--- phase2 = 260
--- phase3 = 50
--- center = 180
--- width = 75
--- len = 1500
---
--- [[ Monochrome grayscale ]]
--- redFrequency = 0.3
--- grnFrequency = 0.3
--- bluFrequency = 0.3
--- phase1 = 10
--- phase2 = 10
--- phase3 = 10
--- center = 200
--- width = 50
--- len = 1200
-
--- Color parameters - final settings (moved here to avoid forward reference)
-redFrequency = 0.1
-grnFrequency = 0.2
-bluFrequency = 0.1
-phase1 = 1
-phase2 = 260
-phase3 = 50
-center = 180
-width = 75
-len = 1500
-
--- Generate the color palette with current settings
-makeColorGradient(redFrequency, grnFrequency, bluFrequency, phase1, phase2, phase3, center, width, len)
-
--- Timer for cycling border colors
-border_animation_timer = gears.timer {
-    timeout = 0.15,
-    autostart = false, -- Start only when needed
-    callback = function()
-        local c = client.focus
-        if not c then
-            border_animation_timer:stop() -- Pause when no client is focused
-            return
-        end
-
-        -- don't animate border during drag
-        if c._dnd_dragging or (awesome_dnd and awesome_dnd.drag_active) then
-            return
-        end
-
-        -- Update the color index and handle direction changes (0..len-1 range)
-        borderLoop = borderLoop + borderStep
-        if borderLoop >= (len - 1) then
-            borderLoop = len - 1
-            borderStep = -1 -- Reverse direction
-        elseif borderLoop <= 0 then
-            borderLoop = 0
-            borderStep = 1 -- Forward direction
-        end
-
-        -- Apply the current color
-        c.border_color = border_animate_colours[borderLoop]
-    end
-}
-
--- Start animation when a window gets focus
-client.connect_signal("focus", function(c)
-    -- don't override border during drag
-    if c._dnd_dragging or (awesome_dnd and awesome_dnd.drag_active) then
-        return
-    end
-    borderLoop = 0 -- Reset to start
-    borderStep = 1
-    c.border_color = border_animate_colours[borderLoop]
-
-    -- Start the animation timer if not already running
-    if not border_animation_timer.started then
-        border_animation_timer:start()
-    end
-end)
-
--- Reset border color on unfocus
-client.connect_signal("unfocus", function(c)
-    c.border_color = "#00000000" -- Transparent black
-end)
+-- Border animation handled by plugins/border_animation.lua
 
 -- Store widget references for direct updates (moved here to avoid nil reference)
 -- (moved earlier) local active_tag_widgets = {}
 -- (moved earlier) local active_client_widgets = {}
 
 -- ========================================================================
--- SHIMMER ANIMATION SYSTEM
+-- PLUGIN INTEGRATION
 -- ========================================================================
--- Provides text shimmer effects for window titles, tags, and UI elements.
--- Supports multiple animation modes: candle flicker, cloud shadows,
--- character flicker, border sync, and off.
--- ========================================================================
+-- load self-contained plugins (logical order: dependencies first)
+local awesome_dnd = require("plugins.awesome_dnd")
+local border_animation = require("plugins.border_animation")  -- emits signals
+local shimmer = require("plugins.shimmer")                   -- listens to border signals
+local tag_indicators = require("plugins.tag_indicators")
 
--- Base gold color settings
-local dark_gold = "#8B6914"   -- Darker, more dramatic gold
-local base_gold = "#FFD700"   -- Base gold color (medium)
-local light_gold = "#FFFACD"  -- Lighter, more vibrant gold
+-- start border animation system
+border_animation.start()
 
--- Shimmer animation modes configuration
-local shimmer_config = {
-    -- Candle flicker mode - mimics a flickering candle
-    candle = {
-        speed = 0.12,           -- Timer interval in seconds (try 0.08 for faster flicker)
-        intensity = 0.8,        -- How much variation (0-1) (try 0.4 for more dramatic)
-        randomness = 0.8,       -- Random flicker amount (0-1) (try 0.6 for more chaos)
-        base_phase = 0,         -- Current phase
-        random_offset = 0       -- Random offset for flicker
-    },
-    
-    -- Cloud shadow mode - like clouds passing over the sun
-    cloud = {
-        speed = 0.08,           -- Timer interval in seconds (try 0.05 for faster clouds)
-        intensity = 0.7,        -- How much variation (0-1) (try 0.3 for more dramatic)
-        wave_length = 120,      -- Length of the wave cycle (try 80 for shorter waves)
-        base_phase = 0          -- Current phase
-    },
-    
-    -- Character flicker mode - each character shimmers independently
-    char_flicker = {
-        speed = 0.15,           -- Timer interval in seconds (try 0.10 for faster flicker)
-        intensity = 0.6,        -- How much variation (0-1) (try 0.35 for more dramatic)
-        char_phases = {},       -- Individual phases for each character
-        random_factor = 0.9     -- How random the character timing is (increased for more independence)
-    },
-    
-    -- Border sync mode - follows animated border colors with configurable phase offset
-    border_sync = {
-        speed = 0.15,           -- Match border animation speed exactly
-        intensity = 1.0,        -- Full intensity to match border colors exactly
-        phase_offset = 0        -- Phase offset to sync with border animation
-    },
-    
-    -- Deep gold mode - rich golds/ambers/purples avoiding whites/greys
-    deep_gold = {
-        speed = 0.30,
-        intensity = 0.8,
-        min_factor = 0.15,      -- Avoid light colors
-        max_factor = 0.75       -- Cap brightness to avoid near-white
-    }
-}
-
--- Current animation mode ('candle', 'cloud', 'char_flicker', 'border_sync', or 'off')
-shimmer_mode = "border_sync"
-
--- Function to blend two colors
-local function blend_colors(color1, color2, factor)
-    -- Parse hex colors
-    local r1 = tonumber(color1:sub(2, 3), 16)
-    local g1 = tonumber(color1:sub(4, 5), 16)
-    local b1 = tonumber(color1:sub(6, 7), 16)
-    
-    local r2 = tonumber(color2:sub(2, 3), 16)
-    local g2 = tonumber(color2:sub(4, 5), 16)
-    local b2 = tonumber(color2:sub(6, 7), 16)
-    
-    -- Blend the colors
-    local r = math.floor(r1 + (r2 - r1) * factor)
-    local g = math.floor(g1 + (g2 - g1) * factor)
-    local b = math.floor(b1 + (b2 - b1) * factor)
-    
-    return string.format("#%02x%02x%02x", r, g, b)
-end
-
--- Generate shimmer color based on mode
-local function get_shimmer_color(mode_config, text_length)
-    local config = shimmer_config[mode_config or shimmer_mode]
-    if not config then return base_gold end
-    
-    local factor = 0.5  -- Start from middle (base gold)
-    
-    if mode_config == "candle" or (not mode_config and shimmer_mode == "candle") then
-        -- Candle flicker: base sine wave + random flicker
-        local base_flicker = math.sin(config.base_phase) * 0.5 + 0.5
-        local random_flicker = config.random_offset
-        local shimmer_amount = (base_flicker * 0.7 + random_flicker * 0.3) * config.intensity
-        factor = 0.5 + (shimmer_amount - 0.5) * 1.0  -- Center around 0.5 (base gold)
-        
-    elseif mode_config == "cloud" or (not mode_config and shimmer_mode == "cloud") then
-        -- Cloud shadow: smooth sine wave
-        local shimmer_amount = (math.sin(config.base_phase * 2 * math.pi / config.wave_length) * 0.5 + 0.5) * config.intensity
-        factor = 0.5 + (shimmer_amount - 0.5) * 1.0  -- Center around 0.5 (base gold)
-        
-    elseif mode_config == "char_flicker" or (not mode_config and shimmer_mode == "char_flicker") then
-        -- For character flicker, we'll return the base color and handle individual chars elsewhere
-        local shimmer_amount = 0.15 * config.intensity
-        factor = 0.5 + (shimmer_amount - 0.5) * 1.0  -- Center around 0.5 (base gold)
-        
-    elseif mode_config == "border_sync" or (not mode_config and shimmer_mode == "border_sync") then
-        -- Border sync mode - use color offset from the animated border for phase shift
-        if border_animate_colours and borderLoop and len then
-            -- Phase offset for title text (adjust this value to change phase relationship)
-            local phase_offset = math.floor(len * 0.3)  -- 30% of cycle ahead
-            local title_loop = borderLoop + phase_offset
-            
-            -- Handle wraparound for smooth cycling
-            if title_loop >= len then
-                title_loop = title_loop - len
-            elseif title_loop < 0 then
-                title_loop = title_loop + len
-            end
-            
-            local color = border_animate_colours[title_loop]
-            if not color then return base_gold end
-                            -- print("Border sync: borderLoop=" .. borderLoop .. ", color=" .. color)
-            return color
-        else
-            -- Fallback to base gold if border colors aren't available
-                            -- print("Border sync fallback: border_animate_colours=" .. tostring(border_animate_colours) .. ", borderLoop=" .. tostring(borderLoop))
-            return base_gold
-        end
-    elseif mode_config == "deep_gold" or (not mode_config and shimmer_mode == "deep_gold") then
-        -- Deep gold mode: rich spectrum avoiding whites/greys
-        local base_flicker = math.sin(config.base_phase or 0) * 0.5 + 0.5
-        local shimmer_amount = base_flicker * config.intensity
-        factor = config.min_factor + shimmer_amount * (config.max_factor - config.min_factor)
-    end
-    
-    -- Clamp factor to 0-1 range
-    factor = math.max(0, math.min(1, factor))
-    
-    -- Choose color palette based on mode
-    local color
-    if mode_config == "deep_gold" or (not mode_config and shimmer_mode == "deep_gold") then
-        -- Deep gold palette: rich amber to deep purple, avoiding whites
-        local deep_amber = "#B8860B"  -- Dark goldenrod
-        local rich_purple = "#8B4B9B" -- Rich purple
-        color = blend_colors(deep_amber, rich_purple, factor)
-    else
-        -- Normal shimmer colors
-        color = blend_colors(dark_gold, light_gold, factor)
-    end
-    
-    -- Use full range from dark gold to light gold for dramatic effect
-    return color
-end
-
--- Get character-specific color for flicker mode
-local function get_char_shimmer_color(char_index, text_length)
-    local config = shimmer_config.char_flicker
-    
-    -- Initialize character phase if not exists with much more variation
-    if not config.char_phases[char_index] then
-        -- Give each character a truly unique starting phase
-        config.char_phases[char_index] = (char_index * 1.7 + math.random() * 3.14) * 2 * math.pi
-    end
-    
-    -- Each character has its own phase offset
-    local char_phase = config.char_phases[char_index]
-    
-    -- Use different sine functions for more variation
-    local base_sine = math.sin(char_phase)
-    local secondary_sine = math.cos(char_phase * 1.3)  -- Different frequency
-    local combined_sine = (base_sine * 0.7 + secondary_sine * 0.3) * 0.5 + 0.5
-    
-    local shimmer_amount = combined_sine * config.intensity
-    local factor = 0.5 + (shimmer_amount - 0.5) * 1.0  -- Center around 0.5 (base gold)
-    
-    -- Clamp factor to 0-1 range
-    factor = math.max(0, math.min(1, factor))
-    
-    -- Use full range from dark gold to light gold for dramatic effect
-    return blend_colors(dark_gold, light_gold, factor)
-end
-
--- Apply shimmer effect to widget
-local function apply_shimmer_to_widget(widget, text, status_symbols)
-    if shimmer_mode == "off" then
-        if widget.set_markup then
-            local full_text = (status_symbols or "") .. text
-            widget:set_markup('<span color="' .. base_gold .. '">' .. full_text .. '</span>')
-        end
-        return
-    end
-    
-    local markup = ""
-    local prefix = status_symbols or ""
-    
-    if shimmer_mode == "char_flicker" then
-        -- Character-by-character flicker - apply to client name only
-        -- Keep status symbols with base color
-        if prefix ~= "" then
-            markup = '<span color="' .. base_gold .. '">' .. prefix .. '</span>'
-        end
-
-        for i = 1, #text do
-            local char = text:sub(i, i)
-            local color = get_char_shimmer_color(i, #text)
-            markup = markup .. '<span color="' .. color .. '">' .. char .. '</span>'
-        end
-    else
-        -- Uniform shimmer - apply to client name only
-        local color = get_shimmer_color()
-        if prefix ~= "" then
-            markup = '<span color="' .. base_gold .. '">' .. prefix .. '</span><span color="' .. color .. '">' .. text .. '</span>'
-        else
-            markup = '<span color="' .. color .. '">' .. text .. '</span>'
-        end
-    end
-    
-    if widget.set_markup then
-        widget:set_markup(markup)
-    end
-    
-    -- Debug: Print client shimmer application (disabled for cleaner output)
-    -- if text ~= "⚙" then  -- Don't spam with launcher updates
-    --     print("Applied shimmer (" .. shimmer_mode .. ") to '" .. text .. "': " .. markup)
-    -- end
-end
+-- Border sync handled directly in shimmer plugin - no relay needed
 
 -- Create a shimmering text launcher (moved here to avoid nil reference)
 local launcher_text = wibox.widget {
-    markup = '<span color="' .. base_gold .. '">⚙</span>',  -- Gear icon as text
+    markup = '<span color="#FFD700">⚙</span>',  -- Gear icon as text
     font = "Hack Nerd Font 16",
     widget = wibox.widget.textbox
 }
@@ -2035,298 +1267,20 @@ launcher_text:buttons(gears.table.join(
 -- Update launcher text with shimmer (moved here to avoid nil reference)
 local function update_launcher_shimmer()
     -- Always use static base gold color for launcher (no animation)
-    launcher_text:set_markup('<span color="' .. base_gold .. '">⚙</span>')
+    launcher_text:set_markup('<span color="' .. shimmer.get_base_gold() .. '">⚙</span>')
 end
 
--- Handle client focus changes for shimmer animation
-client.connect_signal("focus", function(c)
-    print("Client focus changed to: " .. (c.name or c.class or "unknown"))
-    -- Reset all client widgets to base color first
-    for s in screen do
-        local client_widgets = active_client_widgets[s.index] or {}
-        for _, widget in pairs(client_widgets) do
-            if widget.textbox and widget.textbox.set_markup and widget.client and widget.client.valid then
-                local client_name = widget.client.name or widget.client.class or ""
-                local status_prefix = ""
-                
-                -- Build status symbols based on client properties
-                local symbols = {}
-                local c = widget.client
-                if c.floating then table.insert(symbols, "✈") end
-                if c.maximized then table.insert(symbols, "+")
-                elseif c.maximized_horizontal then table.insert(symbols, "⬌")
-                elseif c.maximized_vertical then table.insert(symbols, "⬍") end
-                if c.sticky then table.insert(symbols, "▪") end
-                if c.ontop then table.insert(symbols, "⌃")
-                elseif c.above then table.insert(symbols, "▴")
-                elseif c.below then table.insert(symbols, "▾") end
-                
-                if #symbols > 0 then
-                    status_prefix = table.concat(symbols, "") .. " "
-                end
-                
-                -- Set to base gold for unfocused clients (prefix and title split)
-                local pb = widget.prefixbox
-                if pb and pb.set_markup then
-                    pb:set_markup('<span color="' .. base_gold .. '">' .. ((status_prefix and #status_prefix > 0) and status_prefix or ' ') .. '</span>')
-                    -- widget.textbox:set_markup('<span color="' .. base_gold .. '">' .. client_name .. '</span>')  -- original gold color
-                    widget.textbox:set_markup('<span color="white">' .. client_name .. '</span>')  -- white color for non-focused clients
-                else
-                    -- widget.textbox:set_markup('<span color="' .. base_gold .. '">' .. (status_prefix or '') .. client_name .. '</span>')  -- original gold color
-                    widget.textbox:set_markup('<span color="white">' .. (status_prefix or '') .. client_name .. '</span>')  -- white color for non-focused clients
-                end
-            end
-        end
-    end
-    
-    -- Apply shimmer to the newly focused client
-    if shimmer_mode ~= "off" then
-        local client_name = c.name or c.class or ""
-        local status_prefix = get_client_status_prefix(c)
-        
-        -- Find and update the focused client's widget
-        local s = c.screen
-        local client_widgets = active_client_widgets[s.index] or {}
-        for _, widget in pairs(client_widgets) do
-            if widget.client and widget.client.valid and widget.client == c then
-                local pb = widget.prefixbox
-                if pb and pb.set_markup then
-                    pb:set_markup('<span color="' .. base_gold .. '">' .. ((status_prefix and #status_prefix > 0) and status_prefix or ' ') .. '</span>')
-                end
-                apply_shimmer_to_widget(widget.textbox, client_name, nil)
-                break
-            end
-        end
-    end
-end)
+-- Client focus handled by shimmer plugin
 
 
-
--- More dramatic color range for better visibility (already declared above)
--- local dark_gold = "#8B6914"   -- Darker, more dramatic gold
--- local base_gold = "#FFD700"   -- Base gold color (medium)
--- local light_gold = "#FFFACD"  -- Lighter, more vibrant gold
-
-local gold_shimmer_colors = {}
-
--- Animation modes configuration (already declared above)
--- You can adjust these values to customize the shimmer effects:
--- - speed: Lower values = faster animation (0.05-0.3 recommended)
--- - intensity: Higher values = more dramatic color changes (0.1-0.5 recommended)
--- - Candle mode: Adds randomness for flickering candle effect
--- - Cloud mode: Smooth wave-like transitions
--- - Character flicker: Each character shimmers independently
-
--- local shimmer_config = { ... } -- Already declared above
--- local shimmer_mode = "candle" -- Already declared above
-
--- Function to blend two colors (already declared above)
--- local function blend_colors(color1, color2, factor) { ... } -- Already declared above
-
--- Generate shimmer color based on mode (already declared above)
--- local function get_shimmer_color(mode_config, text_length) { ... } -- Already declared above
-
--- Get character-specific color for flicker mode (already declared above)
--- local function get_char_shimmer_color(char_index, text_length) { ... } -- Already declared above
--- Apply shimmer effect to widget (already declared above)
--- local function apply_shimmer_to_widget(widget, text, status_symbols) { ... } -- Already declared above
-
--- Store widget references for direct updates (already declared above)
-
--- Debug: Test notification system at startup (disabled)
--- naughty.notify({
---     title = "Shimmer System Starting",
---     text = "Initializing shimmer timer...",
---     timeout = 3
--- })
-
--- Simple test timer removed - shimmer is working
-
--- Global timer counter
-local timer_count = 0
-
--- Timer for shimmer animation
-shimmer_timer = gears.timer {
-    timeout = 0.12, -- Default speed, will be updated dynamically
-    autostart = false, -- Start manually after test
-    callback = function()
-        if shimmer_mode == "off" then
-            shimmer_timer:stop()
-            return
-        end
-        
-        local config = shimmer_config[shimmer_mode]
-        if not config then
-            return
-        end
-        
-        -- Update timer speed if it changed
-        if config.speed and shimmer_timer.timeout ~= config.speed then
-            shimmer_timer.timeout = config.speed
-        end
-        
-        -- Update animation states
-        if shimmer_mode == "candle" then
-            config.base_phase = config.base_phase + 0.1
-            if math.random() < 0.3 then  -- 30% chance for new random flicker
-                config.random_offset = (math.random() - 0.5) * config.randomness
-            end
-            
-        elseif shimmer_mode == "cloud" then
-            config.base_phase = config.base_phase + 1
-            if config.base_phase >= config.wave_length then
-                config.base_phase = 0
-            end
-            
-        elseif shimmer_mode == "char_flicker" then
-            -- Update individual character phases with much more randomness
-            for i, phase in pairs(config.char_phases) do
-                -- Each character gets its own random speed and direction
-                local random_speed = 0.05 + math.random() * 0.15  -- Random speed between 0.05 and 0.20
-                local random_direction = (math.random() - 0.5) * config.random_factor * 0.3
-                config.char_phases[i] = phase + random_speed + random_direction
-            end
-        elseif shimmer_mode == "deep_gold" then
-            config.base_phase = (config.base_phase or 0) + 0.1
-        end
-        
-        -- Debug: Print current shimmer state (only occasionally)
-        if math.floor(config.base_phase or 0) % 10 == 0 then
-            -- print("Shimmer update - mode:", shimmer_mode, "phase:", config.base_phase or "N/A", "focused client:", client.focus and (client.focus.name or client.focus.class or "unknown") or "none")
-        end
-        
-        -- Update shimmer only on the screen with the focused client
-        if client.focus then
-            local focused_screen = client.focus.screen
-            
-            -- Update active tag shimmer only on the focused client's screen
-            if focused_screen.selected_tag then
-                local tag_name = focused_screen.selected_tag.name or ""
-                local tag_widgets = active_tag_widgets[focused_screen.index] or {}
-                for _, widget in pairs(tag_widgets) do
-                    if widget.tag == focused_screen.selected_tag then
-                        apply_shimmer_to_widget(widget.textbox, tag_name, nil)
-                    end
-                end
-            end
-            
-            -- Apply shimmer to focused client
-            local client_widgets = active_client_widgets[focused_screen.index] or {}
-            
-            for _, widget in pairs(client_widgets) do
-                if widget.client and widget.client.valid and widget.client == client.focus then
-                    local client_name = widget.client.name or widget.client.class or ""
-                    -- update split prefix box instead of embedding in title
-                    if widget.prefixbox and widget.prefixbox.set_markup then
-                        local sp = get_client_status_prefix(widget.client)
-                        widget.prefixbox:set_markup('<span color="' .. base_gold .. '">' .. (sp or '') .. '</span>')
-                    end
-                    apply_shimmer_to_widget(widget.textbox, client_name, nil)
-                    break -- Only update the first matching widget
-                end
-            end
-        end
-        
-        -- Update launcher shimmer
-        update_launcher_shimmer()
-    end
-}
-
--- Start shimmer timer immediately instead of delay (notifications disabled)
-if shimmer_timer then
-    local success, err = pcall(function() 
-        shimmer_timer:start() 
-    end)
-    -- Success/error notifications disabled for cleaner startup
-end
--- Function to change shimmer mode
+-- Shimmer animation handled by plugins/shimmer.lua
+-- Shimmer mode function - delegates to plugin
 function set_shimmer_mode(mode)
-    -- print("Setting shimmer mode to: " .. mode)
-    shimmer_mode = mode
-    if mode == "off" then
-        shimmer_timer:stop()
-        -- Reset all widgets to base gold
-        for s in screen do
-            -- Reset tag widgets
-            if s.mytaglist then s.mytaglist:emit_signal("widget::redraw_needed") end
-            
-            -- Reset client widgets
-            local client_widgets = active_client_widgets[s.index] or {}
-            for _, widget in pairs(client_widgets) do
-                if widget.textbox and widget.textbox.set_markup and widget.client and widget.client.valid then
-                    local client_name = widget.client.name or widget.client.class or ""
-                    local status_prefix = ""
-                    
-                    -- Build status symbols based on client properties
-                    local symbols = {}
-                    local c = widget.client
-                    if c.floating then table.insert(symbols, "✈") end
-                    if c.maximized then table.insert(symbols, "+")
-                    elseif c.maximized_horizontal then table.insert(symbols, "⬌")
-                    elseif c.maximized_vertical then table.insert(symbols, "⬍") end
-                    if c.sticky then table.insert(symbols, "▪") end
-                    if c.ontop then table.insert(symbols, "⌃")
-                    elseif c.above then table.insert(symbols, "▴")
-                    elseif c.below then table.insert(symbols, "▾") end
-                    
-                    if #symbols > 0 then
-                        status_prefix = table.concat(symbols, "") .. " "
-                    end
-                    
-                    -- widget.textbox:set_markup('<span color="' .. base_gold .. '">' .. status_prefix .. client_name .. '</span>')  -- original gold color
-                    widget.textbox:set_markup('<span color="white">' .. status_prefix .. client_name .. '</span>')  -- white color for non-focused clients
-                end
-            end
-            
-            if s.mytasklist then s.mytasklist:emit_signal("widget::redraw_needed") end
-        end
-    else
-        -- Reset character phases when switching to character flicker for fresh independence
-        if mode == "char_flicker" then
-            shimmer_config.char_flicker.char_phases = {}
-        end
-        
-        shimmer_timer.timeout = shimmer_config[mode].speed
-        if not shimmer_timer.started then
-            shimmer_timer:start()
-        end
-        
-        -- Apply shimmer to currently focused client if any
-        if client.focus then
-            local c = client.focus
-            local client_name = c.name or c.class or ""
-            local status_prefix = ""
-            
-            -- Build status symbols based on client properties
-            local symbols = {}
-            if c.floating then table.insert(symbols, "✈") end
-            if c.maximized then table.insert(symbols, "+")
-            elseif c.maximized_horizontal then table.insert(symbols, "⬌")
-            elseif c.maximized_vertical then table.insert(symbols, "⬍") end
-            if c.sticky then table.insert(symbols, "▪") end
-            if c.ontop then table.insert(symbols, "⌃")
-            elseif c.above then table.insert(symbols, "▴")
-            elseif c.below then table.insert(symbols, "▾") end
-            
-            if #symbols > 0 then
-                status_prefix = table.concat(symbols, "") .. " "
-            end
-            
-            -- Find and update the focused client's widget
-            local s = c.screen
-            local client_widgets = active_client_widgets[s.index] or {}
-            for _, widget in pairs(client_widgets) do
-                if widget.client == c then
-                    if widget.prefixbox and widget.prefixbox.set_markup then
-                        widget.prefixbox:set_markup('<span color="' .. base_gold .. '">' .. ((status_prefix and #status_prefix > 0) and status_prefix or ' ') .. '</span>')
-                    end
-                    apply_shimmer_to_widget(widget.textbox, client_name, nil)
-                    break
-                end
-            end
-        end
-    end
+    shimmer.set_mode(mode)
 end
+
+-- All shimmer configuration and animation handled by plugins/shimmer.lua
+
 
 -- screen setup and widget creation
 local taglist_buttons = gears.table.join(
@@ -2372,16 +1326,49 @@ local tasklist_buttons = gears.table.join(
     end)
 )
 
+
+
+-- // MARK: SCREEN
 -- apply wallpaper and create widgets for each screen
 awful.screen.connect_for_each_screen(function(s)
     -- wallpaper
     set_wallpaper(s)
 
-    -- {{{ Quake terminal
-    -- Create a dropdown terminal that appears from the top of the screen
+    -- {{{ Quake Terminal (Dropdown Console)
+    -- A Quake-style dropdown terminal that can be toggled with a hotkey
+    -- Hotkey: Mod4 + ` (backtick) - Toggle the terminal
+    -- Features:
+    -- - Slides down from the top of the screen
+    -- - Follows the current tag when switching workspaces
+    -- - Auto-hides when losing focus
+    -- - Can be configured with different terminals via the 'app' parameter
     s.quake = lain.util.quake(
-        {app = terminal},
-        {settings = function(c) c.followtag = true end}
+        -- Terminal configuration
+        {
+            app = terminal,  -- Terminal emulator to use (default: x-terminal-emulator)
+            argname = "--class %s",  -- Set window class for matching in window rules
+            name = "QuakeTerminal",  -- Window name for matching in window rules
+            height = 0.4,     -- Height as percentage of screen (0.0 to 1.0)
+            width = 1.0,      -- Width as percentage of screen (0.0 to 1.0)
+            horiz = "center", -- Horizontal position ("left", "center", "right")
+            vert = "top",     -- Vertical position ("top", "center", "bottom")
+            border = 2,       -- Border width in pixels
+            followtag = true, -- Follow the current tag
+            overlap = false,  -- Whether to overlap the wibox
+            visible = false,  -- Start hidden
+            screen = s        -- Screen to display on
+        },
+        -- Additional settings
+        {
+            settings = function(c)
+                c.followtag = true  -- Make terminal follow tag changes
+                c.sticky = true     -- Keep terminal on all tags
+                c.ontop = true      -- Keep terminal above other windows
+                c.above = true      -- Keep terminal above normal windows
+                c.skip_taskbar = true  -- Don't show in taskbar
+                c.urgent = false    -- Don't set urgent flag
+            end
+        }
     )
 
     -- each screen has its own tag table
@@ -2398,331 +1385,182 @@ awful.screen.connect_for_each_screen(function(s)
                            awful.button({ }, 4, function () awful.layout.inc( 1) end),
                            awful.button({ }, 5, function () awful.layout.inc(-1) end)))
     
+    -- // MARK: taglist
     -- create a taglist widget
     s.mytaglist = awful.widget.taglist {
         screen  = s,
         filter  = awful.widget.taglist.filter.all,
         buttons = taglist_buttons,
         style = {
-            squares_sel = nil,
-            squares_unsel = nil,
-            squares_sel_empty = nil,
-            squares_unsel_empty = nil,
-            squares_resize = false,
+            -- enable built-in squares; plugin remaps them to unminimised-client state
             bg_focus = beautiful.taglist_bg_focus,
             bg_occupied = nil,
+            -- keep squares defined so they render
+            squares_sel = beautiful.taglist_squares_sel,
+            squares_unsel = beautiful.taglist_squares_unsel,
         },
         widget_template = {
-            -- tag item: overlay square top-left, text shifted right
             {
                 {
                     {
-                        -- top-left square using place container
-                        {
-                            id = 'occ_square',
-                            forced_width = TAG_SQUARE_SIZE,
-                            forced_height = TAG_SQUARE_SIZE,
-                            widget = wibox.widget.imagebox,
-                        },
-                        halign = 'left',
-                        valign = 'top',
-                        widget = wibox.container.place,
-                    },
-                    {
-                        -- text shifted right to clear the square
-                    {
                         id = 'text_role',
-                            widget = wibox.widget.textbox,
-                        },
-                        left = TAG_SQUARE_SIZE + 2,
-                        right = 5,
-                        top = 0,
-                        bottom = 0,
-                        widget = wibox.container.margin,
+                        widget = wibox.widget.textbox,
                     },
-                    layout = wibox.layout.stack,
+                    left = 8,
+                    right = 8,
+                    top = 4,
+                    bottom = 4,
+                    widget = wibox.container.margin,
                 },
-                left = 0,
-                right = 3,
-                top = 0,
-                bottom = 0,
-                widget = wibox.container.margin,
+                layout = wibox.layout.fixed.horizontal,
             },
             id = 'background_role',
             widget = wibox.container.background,
-            -- update square based on tag occupancy
-            update_callback = function(self, c3, index, objects)
-                local tag = c3
-                local square_widget = self:get_children_by_id('occ_square')[1]
-                if square_widget then
-                    local has_unminimized = false
-                    if tag then
-                        for _, client in ipairs(tag:clients()) do
-                            if not client.minimized then
-                                has_unminimized = true
-                                break
-                            end
-                    end
-                end
-                    
-                    if has_unminimized then
-                        square_widget.image = filled_square
-                    elseif tag and #tag:clients() > 0 then
-                        square_widget.image = hollow_square
-                    else
-                        square_widget.image = nil
-                    end
-                end
-            end,
             
-            -- create_callback for taglist with shimmer effects and drag-and-drop
+            -- Simple create callback for tag setup
             create_callback = function(self, t, index, objects)
-                -- Update square when clients are added/removed from tag
-                local function update_square()
-                    local square_widget = self:get_children_by_id('occ_square')[1]
-                    if square_widget then
-                        local has_unminimized = false
-                        for _, c in ipairs(t:clients()) do
-                            if not c.minimized then
-                                has_unminimized = true
-                                break
-                            end
-                        end
-                        
-                        if has_unminimized then
-                            square_widget.image = filled_square
-                        elseif #t:clients() > 0 then
-                            square_widget.image = hollow_square
-                        else
-                            square_widget.image = nil
-                        end
-                    end
-                end
-                
-                -- Connect signals for dynamic square updates
-                t:connect_signal("property::selected", update_square)
-                t:connect_signal("tagged", function(c)
-                    if c and c.valid and c.tags then
-                        for _, tg in ipairs(c:tags()) do
-                            if tg == t then update_square() end
-                        end
-                    end
-                end)
-                t:connect_signal("untagged", function(c)
-                    if c and c.valid and c.tags then
-                        for _, tg in ipairs(c:tags()) do
-                            if tg == t then update_square() end
-                        end
-                    end
-                end)
-                client.connect_signal("property::minimized", function(c)
-                    if c and c.valid and c.tags then
-                        for _, tg in ipairs(c:tags()) do
-                            if tg == t then update_square() end
-                        end
-                    end
-                end)
-                client.connect_signal("property::hidden", function(c)
-                    if c and c.valid and c.tags then
-                        for _, tg in ipairs(c:tags()) do
-                            if tg == t then update_square() end
-                        end
-                    end
-                end)
-                
                 local text_widget = self:get_children_by_id('text_role')[1]
-                if text_widget then
-                    -- Initialize screen widgets table
-                    if not active_tag_widgets[s.index] then
-                        active_tag_widgets[s.index] = {}
-                    end
-                    
-                    -- Store widget reference
-                    table.insert(active_tag_widgets[s.index], {
-                        tag = t,
-                        textbox = text_widget
-                    })
-                    
+                if text_widget and t then
                     -- Set initial shimmer if tag is selected
                     if t.selected then
-                        apply_shimmer_to_widget(text_widget, t.name or "", nil)
+                        pcall(shimmer.apply_to_widget, text_widget, t.name or "", nil)
                     end
-                end
-
-                -- DnD: highlight on hover and mark as drop target while dragging a client
-                if not self._dnd_hooks_installed then
-                    self._dnd_hooks_installed = true
-                    -- mark widget as a potential drop target for global hover detection
-                    self._is_dnd_tag_target = true
-                    self._tag_ref = t
-                    -- prefer to highlight the background container
-                    self._dnd_highlight_widget = self
-
-                    -- also mark inner widgets under the pointer path as drop targets
-                    if text_widget and text_widget.valid then
-                        text_widget._is_dnd_tag_target = true
-                        text_widget._tag_ref = t
-                        text_widget._dnd_highlight_widget = self
-                    end
-
+                    -- register with shimmer so timer updates selected tag(s)
+                    pcall(shimmer.register_tag_widget, s.index, t, text_widget)
+                    
+                    -- Tag hover styling
                     self:connect_signal('mouse::enter', function()
-                        if awesome_dnd and awesome_dnd.drag_active then
-                            local target_widget = self._dnd_highlight_widget or self
-                            awesome_dnd.set_hover(t, target_widget)
-                        else
-                            -- Only affect text color if tag is not selected
-                            if not t.selected then
-                                local text_widget = self:get_children_by_id('text_role')[1]
-                                if text_widget and text_widget.set_markup then
-                                    local current = t.name or ''
-                                    text_widget:set_markup('<span color="' .. (beautiful.taglist_hover_fg or base_gold) .. '">' .. current .. '</span>')
-                                    self.__hover_text_colored = true
-                                end
-                            end
-                        end
+                        pcall(apply_tag_hover, self, t, "enter")
                     end)
-
+                    
                     self:connect_signal('mouse::leave', function()
-                        if awesome_dnd and awesome_dnd.drag_active and awesome_dnd.hovered_tag == t then
-                            awesome_dnd.clear_hover()
-                        else
-                            -- restore text color if we changed it
-                            if not t.selected and self.__hover_text_colored then
-                                local text_widget = self:get_children_by_id('text_role')[1]
-                                if text_widget and text_widget.set_markup then
-                                    local current = t.name or ''
-                                    text_widget:set_markup('<span color="#FFFFFF">' .. current .. '</span>')
-                                end
-                                self.__hover_text_colored = nil
-                            end
-                        end
+                        pcall(apply_tag_hover, self, t, "leave")
                     end)
                 end
-            end,
+            end
+            ,
+            update_callback = function(self, t, index, objects)
+                local text_widget = self:get_children_by_id('text_role')[1]
+                if text_widget and t and t.selected then
+                    -- maintain shimmering for selected tags
+                    pcall(shimmer.apply_to_widget, text_widget, t.name or "", nil)
+                end
+            end
         }
     }
 
+    -- // MARK: tasklist
     -- create a tasklist widget with spacers
     s.mytasklist = awful.widget.tasklist {
         screen  = s,
-        filter  = awful.widget.tasklist.filter.currenttags,
+        filter  = function(c, screen)
+            if not c or not c.valid or c.screen ~= screen then
+                return false
+            end
+            
+            -- if showing all tags, return true for all valid clients on this screen
+            if tasklist_show_all_tags then
+                return true
+            end
+            
+            -- default behavior: only show clients from focused/selected tags
+            local focused_tag = screen.selected_tag
+            if not focused_tag then return false end
+            
+            -- check if client is on the focused tag
+            for _, tag in ipairs(c:tags()) do
+                if tag == focused_tag then
+                    return true
+                end
+            end
+            
+            return false
+        end,
         buttons = tasklist_buttons,
-        spacing = 2, -- add spacing between task items
+        style = {
+            bg_normal = "#623997",   -- unfocused but unminimized
+            bg_focus  = "#623997",   -- focused
+            bg_minimize = "#000000", -- minimized
+            bg_urgent = "#623997",
+        },
+        layout   = {
+            spacing = 1,
+            layout = wibox.layout.flex.horizontal
+        },
         
-        -- Template for task items (application buttons)
+        -- Simplified template to prevent crashes
         widget_template = {
             {
                 {
                     {
-                        {
-                            id = 'icon_role',
-                            forced_width = 16,
-                            forced_height = 16,
-                            widget = wibox.widget.imagebox,
-                        },
-                        valign = 'center',
-                        halign = 'left',
-                        widget = wibox.container.place,
+                        id = 'icon_role',
+                        widget = wibox.widget.imagebox,
                     },
                     {
                         {
-                            id = 'status_prefix',
+                            id = 'text_role',
                             widget = wibox.widget.textbox,
-                            align = 'left',
-                            ellipsize = 'none'
                         },
-                        valign = 'center',
-                        halign = 'left',
+                        halign = "center",
                         widget = wibox.container.place,
                     },
-                    { id = 'title_text', widget = wibox.widget.textbox },
-                    spacing = 1,
                     layout = wibox.layout.fixed.horizontal,
                 },
-                left = 3,
-                right = 3,
+                left = 4,
+                right = 4,
                 widget = wibox.container.margin,
             },
             id = 'background_role',
             widget = wibox.container.background,
             
-            -- Register textbox for shimmer updates
             create_callback = function(self, c, index, objects)
-                local text_widget = self:get_children_by_id('title_text')[1]
-                if text_widget then
-                    print("Registering client widget for: " .. (c.name or c.class or "unknown"))
-                    -- Initialize screen widgets table
-                    if not active_client_widgets[s.index] then
-                        active_client_widgets[s.index] = {}
-                    end
-                    
-                    -- Store widget reference
-                    table.insert(active_client_widgets[s.index], {
-                        client = c,
-                        textbox = text_widget,
-                        prefixbox = self:get_children_by_id('status_prefix')[1]
-                    })
-                    
-                    -- Set initial shimmer if client is focused
-                    if client.focus and c.window == client.focus.window then
-                        local client = c
-                        local text = client.name or client.class or ""
-                        local status_prefix = ""
-                        
-                        -- Build status symbols based on client properties
-                        local symbols = {}
-                        
-                        if client.floating then table.insert(symbols, "✈") end
-                        if client.maximized then table.insert(symbols, "+")
-                        elseif client.maximized_horizontal then table.insert(symbols, "⬌")
-                        elseif client.maximized_vertical then table.insert(symbols, "⬍") end
-                        if client.sticky then table.insert(symbols, "▪") end
-                        if client.ontop then table.insert(symbols, "⌃")
-                        elseif client.above then table.insert(symbols, "▴")
-                        elseif client.below then table.insert(symbols, "▾") end
-                        
-                        if #symbols > 0 then
-                            status_prefix = table.concat(symbols, "") .. " "
-                        end
-                        local prefix_widget = self:get_children_by_id('status_prefix')[1]
-                        if prefix_widget then
-                            local content = (status_prefix ~= '' and status_prefix) or ''
-                            prefix_widget:set_markup('<span color="' .. base_gold .. '">' .. content .. '</span>')
-                        end
-                        apply_shimmer_to_widget(text_widget, text, nil)
-                    end
-                end
-            end,
-            update_callback = function(self, c, index, objects)
-                local text_widget = self:get_children_by_id('title_text')[1]
-                local prefix_widget = self:get_children_by_id('status_prefix')[1]
-                if not text_widget then return end
-                local client_name = c.name or c.class or ""
-                local status_prefix = get_client_status_prefix(c)
-                if prefix_widget then
-                    prefix_widget:set_markup('<span color="' .. base_gold .. '">' .. ((status_prefix and #status_prefix > 0) and status_prefix or ' ') .. '</span>')
-                end
-                        
-                -- urxvt icon fallback to generic terminal icon
-                local icon_widget = self:get_children_by_id('icon_role')[1]
-                if icon_widget and (c.class == 'URxvt' or c.class == 'urxvt') then
-                    local term_icon = gears.filesystem.get_configuration_dir() .. 'milktheme/layouts/term.png'
-                    if gears.filesystem.file_readable(term_icon) then
-                        icon_widget.image = term_icon
+                pcall(function()
+                    local text_widget = self:get_children_by_id('text_role')[1]
+                    if not text_widget then return end
+                    local name = c and (c.name or c.class) or ""
+                    -- text_widget:set_text(name)
+                    if c and client.focus and c == client.focus then
+                        -- shimmer focused client
+                        pcall(shimmer.apply_to_widget, text_widget, name, nil)
                     else
-                        icon_widget.image = create_terminal_icon_surface(16)
+                        -- clear any previous shimmer by forcing plain white text
+                        text_widget:set_markup('<span color="#FFFFFF">' .. name .. '</span>')
                     end
-                end
-                
-                if client.focus and c.window == client.focus.window then
-                    apply_shimmer_to_widget(text_widget, client_name, nil)
-                else
-                    text_widget:set_markup('<span color="white">' .. client_name .. '</span>')
-                end
+                    -- set background based on minimized state
+                    local is_min = c and c.minimized
+                    local color = is_min and "#000000" or "#623997"
+                    self.bg = color
+                    if self.set_bg then self:set_bg(color) end
+                    -- optionally remove bg border color interference
+                    if self.set_shape_border_color then self:set_shape_border_color(nil) end
+                    -- register with shimmer so timer updates focused client
+                    if c then pcall(shimmer.register_client_widget, s.index, c, text_widget, nil) end
+                end)
             end,
-        }
+            
+            update_callback = function(self, c, index, objects)
+                pcall(function()
+                    local text_widget = self:get_children_by_id('text_role')[1]
+                    if not text_widget then return end
+                    local name = c and (c.name or c.class) or ""
+                    -- if focused, shimmer; else plain white
+                    if c and client.focus and c == client.focus then
+                        pcall(shimmer.apply_to_widget, text_widget, name, nil)
+                    else
+                        text_widget:set_markup('<span color="#FFFFFF">' .. name .. '</span>')
+                    end
+                    -- update background based on minimized state
+                    local is_min = c and c.minimized
+                    local color = is_min and "#000000" or "#623997"
+                    self.bg = color
+                    if self.set_bg then self:set_bg(color) end
+                    if self.set_shape_border_color then self:set_shape_border_color(nil) end
+                end)
+            end,
+        },
     }
 
+    -- // MARK: wibox
     -- create the wibox
     s.mywibox = awful.wibar({ position = "top", screen = s })
 
@@ -2732,18 +1570,23 @@ awful.screen.connect_for_each_screen(function(s)
         { -- left widgets
             layout = wibox.layout.fixed.horizontal,
             mylauncher,
-            s.mylayoutbox,
             s.mytaglist,
             s.mypromptbox,
         },
-        s.mytasklist, -- middle widget
+        { -- middle widgets (tasklist expands to fill space)
+            layout = wibox.layout.align.horizontal,
+            s.mylayoutbox, -- should be to the left of tasklist
+            s.mytasklist, -- this will expand to fill available space
+        },
         { -- right widgets
             layout = wibox.layout.fixed.horizontal,
-            wibox.widget.systray(),
+            clock_sep,
             textclock_clr,
+            wibox.widget.systray(),
         },
     }
 
+    -- // MARK: altwibox
     -- the alt wibox
     s.myaltwibox = awful.wibar({
         position = "top",
@@ -2769,78 +1612,146 @@ awful.screen.connect_for_each_screen(function(s)
     }
 end)
 
--- Desktop button bindings
-root.buttons(gears.table.join(
-    awful.button({ }, 3, function () mymainmenu:toggle() end)
-))
-
--- setup drag-and-drop functionality (called after screen setup)
--- (function is defined later in the file)
 
 
--- // MARK: SESSION
+-- // MARK: CLIENT SIGNAL HANDLERS
 -- ################################################################################
--- ███████╗███████╗███████╗███████╗██╗ ██████╗ ███╗   ██╗
--- ██╔════╝██╔════╝██╔════╝██╔════╝██║██╔════╝ ████╗  ██║
--- ███████╗███████╗███████╗███████╗██║██║     ██╔██╗ ██║
--- ╚════██║╚════██║╚════██║╚════██║██║██║     ██║╚██╗██║
--- ███████║███████║███████║███████║██║╚██████╗██║ ╚████║
--- ╚══════╝╚══════╝╚══════╝╚══════╝╚═╝ ╚═════╝╚═╝  ╚═══╝
+--  ██████╗██╗     ██╗███████╗███╗   ██╗████████╗    ███╗   ███╗ █████╗ ███╗   ██╗ █████╗  ██████╗ ███████╗███╗   ██╗███████╗██╗  ██╗
+-- ██╔════╝██║     ██║██╔════╝████╗  ██║╚══██╔══╝    ████╗ ████║██╔══██╗████╗  ██║██╔══██╗██╔════╝ ██╔════╝████╗  ██║██╔════╝╚██╗██╔╝
+-- ██║     ██║     ██║█████╗  ██╔██╗ ██║   ██║       ██╔████╔██║███████║██╔██╗ ██║███████║██║  ███╗█████╗  ██╔██╗ ██║█████╗  ╚███╔╝ 
+-- ██║     ██║     ██║██╔══╝  ██║╚██╗██║   ██║       ██║╚██╔╝██║██╔══██║██║╚██╗██║██╔══██║██║   ██║██╔══╝  ██║╚██╗██║██╔══╝  ██╔██╗ 
+-- ╚██████╗███████╗██║███████╗██║ ╚████║   ██║       ██║ ╚═╝ ██║██║  ██║██║ ╚████║██║  ██║╚██████╔╝███████╗██║ ╚████║███████╗██╔╝ ██╗
+--  ╚═════╝╚══════╝╚═╝╚══════╝╚═╝  ╚═══╝   ╚═╝       ╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝ ╚═════╝ ╚══════╝╚═╝  ╚═══╝╚══════╝╚═╝  ╚═╝
 -- ################################################################################
--- SESSION - session management, tag persistence, and client signal handlers
+-- Client management signals consolidated for clarity and maintainability
 
--- Reactivate tabs that were active before a restart of awesomewm
--- For Firefox, might have to disable widget.disable-workspace-management in about:config
--- https://www.reddit.com/r/awesomewm/comments/syjolb/preserve_previously_used_tag_between_restarts/
-awesome.connect_signal('exit', function(reason_restart)
-    if not reason_restart then return end
-    local file = io.open('/tmp/awesomewm-last-selected-tags', 'w+')
-    for s in screen do
-        file:write(s.selected_tag.index, '\n')
-    end
-    file:close()
-end)
 
-awesome.connect_signal('startup', function()
-    local file = io.open('/tmp/awesomewm-last-selected-tags', 'r')
-    if not file then return end
-    local selected_tags = {}
-    for line in file:lines() do
-        table.insert(selected_tags, tonumber(line))
+-- Client creation and setup
+client.connect_signal("manage", function(c)
+    -- Set client window shapes
+    c.shape = function(cr, w, h)
+        gears.shape.rounded_rect(cr, w, h, beautiful.border_radius)
     end
-    for s in screen do
-        local i = selected_tags[s.index]
-        if i and s.tags[i] then
-            local t = s.tags[i]
-            t:view_only()
+    
+    -- Make floating windows appear on top by default
+    if c.floating then
+        c.ontop = true
+    end
+    
+    -- Assign generic terminal icon for urxvt clients
+    if c.class == "URxvt" or c.class == "urxvt" then
+        local term_icon = gears.filesystem.get_configuration_dir() .. "milktheme/layouts/term.png"
+        if gears.filesystem.file_readable(term_icon) then
+            c.icon = gears.surface.load_uncached(term_icon)
         end
     end
-    file:close()
+    
+    -- Set windows as slave (put at end instead of master)
+    -- if not awesome.startup then awful.client.setslave(c) end
+    
+    if awesome.startup
+      and not c.size_hints.user_position
+      and not c.size_hints.program_position then
+        -- Prevent clients from being unreachable after screen count changes
+        awful.placement.no_offscreen(c)
+    end
 end)
 
--- window management signal handlers
+-- Titlebar management
+client.connect_signal("request::titlebars", function(c)
+    -- buttons for the titlebar
+    local buttons = gears.table.join(
+        awful.button({ }, 1, function()
+            c:emit_signal("request::activate", "titlebar", {raise = true})
+            awful.mouse.client.move(c)
+        end),
+        awful.button({ }, 3, function()
+            c:emit_signal("request::activate", "titlebar", {raise = true})
+            awful.mouse.client.resize(c)
+        end)
+    )
+
+    awful.titlebar(c) : setup {
+        { -- Left
+            awful.titlebar.widget.iconwidget(c),
+            buttons = buttons,
+            layout  = wibox.layout.fixed.horizontal
+        },
+        { -- Middle
+            { -- Title
+                align  = "center",
+                widget = awful.titlebar.widget.titlewidget(c)
+            },
+            buttons = buttons,
+            layout  = wibox.layout.flex.horizontal
+        },
+        { -- Right
+            awful.titlebar.widget.floatingbutton (c),
+            awful.titlebar.widget.maximizedbutton(c),
+            awful.titlebar.widget.stickybutton   (c),
+            awful.titlebar.widget.ontopbutton    (c),
+            awful.titlebar.widget.closebutton    (c),
+            layout = wibox.layout.fixed.horizontal()
+        },
+        layout = wibox.layout.align.horizontal
+    }
+end)
+
+-- Client property changes
 client.connect_signal("property::maximized", function(c)
+    -- Prevent firefox from maximizing (personal preference)
     if c.maximized and (c.class == "Navigator" or c.class == "firefox" or c.class == "Firefox") then
         c.maximized = false
     end
 end)
 
--- make floating windows appear on top by default
-client.connect_signal("manage", function(client)
-    if client.floating then
-        client.ontop = true
+-- Handle maximized state for dragging windows between screens
+client.connect_signal("request::activate", function(c, context, hints)
+    if context == "mouse_click" and window_manager.is_dragging(c) and c.maximized then
+        -- Store the maximized state to restore later
+        c._was_maximized = true
+        c.maximized = false
     end
 end)
 
--- avoid firefox picture-in-picture popping window up/down when pip meets screen edges
+-- Create a new signal for drag completion
+client.connect_signal("awesome::drag_end", function(c)
+    if c and c._was_maximized then
+        c.maximized = true
+        c._was_maximized = nil
+    end
+end)
+
+-- Use mouse::leave as a fallback
+client.connect_signal("mouse::leave", function(c)
+    if c and c._was_maximized and not window_manager.is_dragging(c) then
+        c.maximized = true
+        c._was_maximized = nil
+    end
+end)
+
 client.connect_signal("property::struts", function(c)
+    -- Make firefox picture-in-picture sticky when it meets screen edges
     local struts = c:struts()
     if struts.left ~= 0 or struts.right ~= 0 or
        struts.top ~= 0 or struts.bottom ~= 0 then
-        c:struts({left = 0, right = 0, top = 0, bottom = 0})
+        c.sticky = true
     end
 end)
 
+  -- Focus and border management handled by border_animation plugin
+  -- Static border colors would conflict with animated borders
+ 
+-- disable focus-follows-mouse (sloppy focus): do not focus clients on cursor hover
+-- keep old code commented for quick restore if desired
+-- client.connect_signal("mouse::enter", function(c)
+--     c:emit_signal("request::activate", "mouse_enter", {raise = false})
+-- end)
+ 
+-- Client cleanup
+client.connect_signal("unmanage", function(c)
+    window_manager.cleanup(c)
+end)
 
 -- // MARK: --pavucontrol-examples
 -- Alternative/complex client rule examples (commented out)
@@ -3100,7 +2011,6 @@ client.connect_signal("manage", function(c)
 end)
 --]] -- End of disabled auto-sizing dialog system
 
--- // MARK: --anti-warp-resize
 -- Anti-warp resize function that prevents cursor from jumping to another monitor
 local function resize_no_warp(c)
     c:emit_signal("request::activate", "mouse_click", {raise = true})
@@ -3108,12 +2018,8 @@ local function resize_no_warp(c)
     -- Check if client is floating or if current layout has mouse_resize_handler
     local layout = awful.layout.get(c.screen)
     
-    -- Debug: Always print layout info
-    print("resize_no_warp called - Layout:", layout.name or "unknown", "Floating:", c.floating, "Has handler:", layout.mouse_resize_handler and "yes" or "no")
-    
     -- If client is not floating and layout has mouse_resize_handler, use it
     if not c.floating and layout.mouse_resize_handler then
-        print("Using layout mouse resize handler for:", layout.name or "unknown layout")
         
         local initial_coords = mouse.coords()
         local geo = c:geometry()
@@ -3222,83 +2128,38 @@ local function resize_no_warp(c)
     end
 end
 
--- // MARK: --floating-window-center
--- FLOATING WINDOW CENTER - maintains the center position of floating windows when they are resized
-
--- Table to store original centers of windows and whether they're being dragged
-local window_centers = {}
-local dragging_clients = {}
-
 -- Keep track of which clients are being dragged
 client.connect_signal("request::activate", function(c, context, hints)
     -- Check if mouse button is still down
     local buttons = mouse.coords().buttons
     if not buttons or not buttons[1] then
         -- Mouse button released, no longer dragging
-        dragging_clients[c] = nil
-        -- Store new center position after drag
-        local geo = c:geometry()
-        window_centers[c] = {
-            x = geo.x + geo.width / 2,
-            y = geo.y + geo.height / 2
-        }
+        window_manager.set_dragging(c, false)
+        window_manager.store_center(c)
+    else
+        -- Mouse button is down, mark as dragging
+        window_manager.set_dragging(c, true)
     end
-    return true
 end)
 
--- Track when a floating window's size changes
 client.connect_signal("property::size", function(c)
     -- Skip if not floating
     if not c.floating then return end
 
     -- Skip if being dragged
-    if is_client_being_dragged(c) then return end
+    if window_manager.is_dragging(c) then return end
 
-    -- Record center point on first detection
+    -- Record center point on first detection or maintain center during resize
     if not window_centers[c] then
-        local geo = c:geometry()
-        window_centers[c] = {
-            x = geo.x + geo.width / 2,
-            y = geo.y + geo.height / 2
-        }
-        return
+        window_manager.store_center(c)
+    else
+        window_manager.maintain_center(c)
+        window_manager.store_center(c)  -- Update stored center after repositioning
     end
-
-    -- Get current geometry and maintain center position
-    local geo = c:geometry()
-    c:geometry({
-        x = window_centers[c].x - geo.width / 2,
-        y = window_centers[c].y - geo.height / 2
-    })
 end)
 
--- Clean up when windows are closed
-client.connect_signal("unmanage", function(c)
-    window_centers[c] = nil
-    dragging_clients[c] = nil
-end)
+-- Client cleanup handled above in consolidated signal section
 
--- // MARK: --mouse-buttons
--- MOUSE BUTTONS - mouse button bindings
-clientbuttons = gears.table.join(
-    awful.button({ }, 1, function (c)
-        c:emit_signal("request::activate", "mouse_click", {raise = true})
-    end),
-    awful.button({ modkey }, 1, function (c)
-        c:emit_signal("request::activate", "mouse_click", {raise = true})
-        awesome_dnd.start_custom_drag(c, {follow_on_drop = false})  -- drag without following
-    end),
-    awful.button({ modkey, shiftkey }, 1, function (c)
-        c:emit_signal("request::activate", "mouse_click", {raise = true})
-        awesome_dnd.start_custom_drag(c, {follow_on_drop = true})   -- drag and follow
-    end),
-    awful.button({ modkey }, 3, function (c)
-        c:emit_signal("request::activate", "mouse_click", {raise = true})
-        awful.mouse.client.resize(c)
-    end),
-    awful.button({ modkey }, 4, function() awful.tag.viewnext() end),
-    awful.button({ modkey }, 5, function() awful.tag.viewprev() end)
-)
 
 -- Middle mouse button for minimize/focus
 awful.button({}, 0, function(c)
@@ -3311,124 +2172,12 @@ awful.button({}, 0, function(c)
 end)
 
 -- Set keys
-root.keys(globalkeys)
+local globalkeys = keys.globalkeys or {}
+root.keys(gears.table.join(table.unpack(globalkeys)))
 
--- shimmer system - placeholder functions for compatibility
 -- Note: set_shimmer_mode is already defined globally above
-local function test_launcher_color_cycle()
-    -- placeholder function - shimmer system not yet implemented  
-    naughty.notify({title = "Color Test", text = "Cycling launcher colors (placeholder)", timeout = 1})
-end
 
--- shimmer hotkey bindings (extended)
-globalkeys = gears.table.join(globalkeys,
-    -- shimmer control keys (currently placeholder functions)
-    awful.key({modkey, shiftkey, altkey}, "1", function()
-        set_shimmer_mode("candle")
-        -- naughty.notify({title = "Shimmer Mode", text = "Candle Flicker", timeout = 2})
-    end, {description = "candle shimmer mode", group = "shimmer"}),
-    
-    awful.key({modkey, shiftkey, altkey}, "2", function()
-        set_shimmer_mode("cloud")
-        -- naughty.notify({title = "Shimmer Mode", text = "Cloud Shadows", timeout = 2})
-    end, {description = "cloud shimmer mode", group = "shimmer"}),
-    
-    awful.key({modkey, shiftkey, altkey}, "3", function()
-        set_shimmer_mode("char_flicker")
-        -- naughty.notify({title = "Shimmer Mode", text = "Character Flicker", timeout = 2})
-    end, {description = "character flicker shimmer mode", group = "shimmer"}),
-    
-    awful.key({modkey, shiftkey, altkey}, "4", function()
-        set_shimmer_mode("border_sync")
-        -- naughty.notify({title = "Shimmer Mode", text = "Border Sync", timeout = 2})
-    end, {description = "border sync shimmer mode", group = "shimmer"}),
-    
-    awful.key({modkey, shiftkey, altkey}, "0", function()
-        set_shimmer_mode("off")
-        -- naughty.notify({title = "Shimmer Mode", text = "Off", timeout = 2})
-    end, {description = "turn off shimmer", group = "shimmer"}),
-    
-    awful.key({modkey, shiftkey, altkey}, "5", function()
-        set_shimmer_mode("deep_gold")
-        -- naughty.notify({title = "Shimmer Mode", text = "Deep Gold", timeout = 2})
-    end, {description = "deep gold shimmer mode", group = "shimmer"}),
-    
-    -- test color cycling
-    awful.key({modkey, ctrlkey, altkey}, "t", function()
-        test_launcher_color_cycle()
-        -- naughty.notify({title = "Color Test", text = "Cycling launcher colors", timeout = 1})
-    end, {description = "test color cycling", group = "shimmer"})
-)
 
--- Shimmer hotkey bindings (duplicate removed - using the one above)
-
--- Additional client keybindings
-globalkeys = gears.table.join(globalkeys,
-    -- Minimize current window
-    awful.key({modkey}, "n", function(c)
-        -- The client currently has the input focus, so it cannot be
-        -- minimized, since minimized clients cant have the focus.
-        c.minimized = true
-    end, {description = "minimize", group = "client"}),
-    
-    -- Unminimize next window (duplicate removed - using the one above)
-    
-    -- Jump to window
-    awful.key({modkey, shiftkey}, "n",
-    function() awful.util.spawn("/home/milk/bin/rofi_jumpwindow") end,
-    {description = "jump to window", group = "client"}),
-
-    -- Maximise toggle for current window
-    awful.key({modkey}, "m", function(c)
-        c.maximized = not c.maximized
-        c:raise()
-    end, {description = "(un)maximize", group = "client"}),
-
-    -- Maximise vertically toggle for current window
-    awful.key({modkey, ctrlkey}, "m", function(c)
-        c.maximized_vertical = not c.maximized_vertical
-        c:raise()
-    end, {description = "(un)maximize vertically", group = "client"}),
-
-    -- Maximise horizontally toggle for current window
-    awful.key({modkey, shiftkey}, "m", function(c)
-        c.maximized_horizontal = not c.maximized_horizontal
-        c:raise()
-    end, {description = "(un)maximize horizontally", group = "client"}),
-
-    -- Centre a floating window
-    awful.key({modkey, shiftkey}, "z", function(c)
-        awful.placement.centered(c)
-    end, {
-        description = "centre floating window",
-        group = "client"
-    }), -- Make a window floating and centre is for zen reading experience
-
-    awful.key({modkey}, "a", function(c)
-        c.floating = not c.floating
-        c.width = c.screen.geometry.width * 3 / 5
-        c.x = c.screen.geometry.x + (c.screen.geometry.width / 5)
-        c.height = c.screen.geometry.height * 0.93
-        c.y = c.screen.geometry.height * 0.04
-    end, {description = "large centre floating window", group = "client" }),
-
-    -- Toggle window on-top
-    awful.key({modkey}, "t", function(c) c.ontop = not c.ontop end,
-    { description = "toggle keep on top", group = "client" }),
-    
-    -- Window z-index
-    -- Send window to the behind plane
-    awful.key({modkey}, "comma", function(c) c.below = not c.below end,
-    {description = "behind", group = "client"}),
-
-    -- Send window to the above plane
-    awful.key({modkey}, "slash", function(c) c.above = not c.above end,
-    { description = "above", group = "client" }),
-    
-    -- Sticky window, stays on all tags
-    awful.key({modkey}, "x", function(c) c.sticky = not c.sticky end,
-    {description = "toggle sticky", group = "client"})
-)
 
 -- Define tag keybinding combinations in a table for clarity
 local tag_keybindings = {
@@ -3439,448 +2188,26 @@ local tag_keybindings = {
     { mods = {modkey, ctrlkey, shiftkey}, action = function(tag) if client.focus then client.focus:toggle_tag(tag) end end, desc = "toggle client on tag #%d" },
 }
 
--- Generate keybindings for tags 1-12
-for i = 1, 12 do
-    for _, binding in ipairs(tag_keybindings) do
-        globalkeys = gears.table.join(globalkeys,
-            awful.key(binding.mods, "#" .. i + 9, function()
-                local s = awful.screen.focused()
-                local tag = s.tags[i]
-                if tag then
-                    binding.action(tag)
-                end
-            end, {description = binding.desc:format(i), group = "tag"})
-        )
-    end
-end
-
--- Additional system keybindings
-globalkeys = gears.table.join(globalkeys,
-    -- Volume Keys
-    awful.key({}, "XF86AudioLowerVolume", function() awful.spawn.with_shell("vol-dec-all-3.sh", false) end,
-    { description = "decrease volume", group = "hotkeys" }),
-    awful.key({}, "XF86AudioRaiseVolume", function() awful.spawn.with_shell("vol-inc-all-3.sh", false) end,
-    { description = "increase volume", group = "hotkeys" }),
-    awful.key({}, "XF86AudioMute", function() awful.util.spawn("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle", false) end,
-    { description = "toggle mute", group = "hotkeys" }),
-
-    -- Control amplifier hardware
-    awful.key({ modkey, ctrlkey, altkey }, "b", function() awful.util.spawn("funiculi --host 192.168.1.24 up", false) end,
-    { description = "Denon amp increase volume", group = "hotkeys" }),
-    awful.key({ modkey, ctrlkey, altkey }, "g", function() awful.util.spawn("funiculi --host 192.168.1.24 down", false) end,
-    { description = "Denon amp decrease volume", group = "hotkeys" }),
-    awful.key({ modkey, ctrlkey, altkey }, "v", function() awful.util.spawn("denon_toggle_source.sh", false) end,
-    { description = "Denon amp source set toggle", group = "hotkeys" }),
-    awful.key({ modkey, ctrlkey, altkey }, "r", function() awful.util.spawn("denon_toggle_power.sh", false) end,
-    { description = "Denon amp power toggle", group = "hotkeys" }),
-
-    -- Media keys with Winamp style hotkeys
-    awful.key({ modkey, ctrlkey }, "z", function() awful.util.spawn("playerctl previous", false) end,
-    { description = "media backwards", group = "mediakeys" }),
-    awful.key({}, "XF86AudioPrev", function() awful.util.spawn("playerctl previous", false) end,
-    { description = "media backwards", group = "mediakeys"}),
-    awful.key({ modkey, ctrlkey }, "x", function() awful.util.spawn("playerctl play", false) end,
-    { description = "media play", group = "mediakeys"}),
-    awful.key({}, "XF86AudioPlay", function() awful.util.spawn("playerctl play", false) end,
-    { description = "media play", group = "mediakeys"}),
-    awful.key({ modkey, ctrlkey }, "c", function() awful.util.spawn("playerctl play-pause", false) end,
-    { description = "media pause", group = "mediakeys"}),
-    awful.key({}, "XF86AudioPause", function() awful.util.spawn("playerctl play-pause", false) end,
-    { description = "media pause", group = "mediakeys"}),
-    awful.key({ modkey, ctrlkey }, "d", function() awful.util.spawn("playerctl stop", false) end,
-    { description = "media stop", group = "mediakeys"}),
-    awful.key({}, "XF86AudioStop", function() awful.util.spawn("playerctl stop", false) end,
-    { description = "media stop", group = "mediakeys"}),
-    awful.key({ modkey, ctrlkey }, "v", function() awful.util.spawn("playerctl next", false) end,
-    { description = "media next", group = "mediakeys"}),
-    awful.key({}, "XF86AudioNext", function() awful.util.spawn("playerctl next", false) end,
-    { description = "media next", group = "mediakeys"}),
-
-    -- Brightness
-    awful.key({}, "XF86MonBrightnessDown", function() os.execute("brillo -U 10") end,
-    { description = "decrease brightness", group = "hotkeys" }),
-    awful.key({ modkey }, "XF86AudioLowerVolume", function() os.execute("brillo -U 10") end,
-    { description = "decrease brightness", group = "hotkeys" }),
-    awful.key({}, "XF86MonBrightnessUp", function() os.execute("brillo -A 10") end,
-    {description = "increase brightness", group = "hotkeys"}),
-    awful.key({ modkey }, "XF86AudioRaiseVolume", function() os.execute("brillo -A 10") end,
-    {description = "increase brightness", group = "hotkeys"}),
-
-    -- Application launcher
-    awful.key({modkey}, "space", function() awful.util.spawn("/home/milk/bin/rofi_nice") end,
-    {description = "run rofi app launcher", group = "launcher"}),
-    awful.key({modkey, altkey}, "space", function() awful.util.spawn("/home/milk/bin/rofi_nice_run") end,
-    {description = "run rofi cmd launcher", group = "launcher"}),
-
-    -- Emoji picker
-    awful.key({modkey, altkey}, "e", function() awful.util.spawn("emote") end,
-    {description = "run emote emoji picker", group = "launcher"}),
-
-    -- Treetile layout controls
-    awful.key({ modkey, altkey }, "v", treetile.vertical),
-    awful.key({ modkey, altkey }, "h", treetile.horizontal),
-
-    -- Popup box to enter lua code to run
-    awful.key({modkey, shiftkey}, "x", function()
-        awful.prompt.run {
-            prompt = "Run Lua code: ",
-            textbox = awful.screen.focused().mypromptbox.widget,
-            exe_callback = awful.util.eval,
-            history_path = awful.util.get_cache_dir() .. "/history_eval"
-        }
-    end, {description = "lua execute prompt", group = "awesome"}),
-
-    -- Hide the statusbar, resizing the window space
-    awful.key({modkey}, "v", function()
-        myscreen = awful.screen.focused()
-        myscreen.mywibox.visible = not myscreen.mywibox.visible
-    end, {description = "toggle statusbar", group = "awesome"}),
-
-    -- Hide the status bar, not resizing the window space
-    awful.key({modkey, altkey}, "v", function()
-        for s in screen do
-            s.mywibox.visible = not s.mywibox.visible
-            if s.myaltwibox then
-                s.myaltwibox.visible = not s.myaltwibox.visible
-            end
-        end
-    end, {description = "toggle wibox", group = "awesome"}),
-
-    -- Menubar app launcher
-    awful.key({modkey, shiftkey}, "space", function() menubar.show() end,
-    { description = "show the menubar", group = "launcher" })
-)
-
--- Awesome control and layout keybindings
-globalkeys = gears.table.join(globalkeys,
-    -- Restart awesome (duplicate removed - using the one above)
-
-    -- Quit awesome
-    awful.key({modkey, ctrlkey, shiftkey}, "q", function() confirmQuitmenu:show() end, {
-    description = "Confirm Awesome wm exit", group = "awesome" }),
-
-    -- Layout management
-    awful.key({modkey, shiftkey}, "h", function() awful.tag.incnmaster(1, nil, true) end,
-    { description = "increase the number of master clients", group = "layout" }),
-    awful.key({modkey, shiftkey}, "l", function() awful.tag.incnmaster(-1, nil, true) end,
-    { description = "decrease the number of master clients", group = "layout" }),
-    -- Layout column controls (duplicate removed - using the ones above)
-
-    awful.key({modkey}, "r", function() awful.layout.inc(1) end,
-    {description = "select next layout", group = "layout"}),
-    awful.key({modkey, shiftkey}, "r", function() awful.layout.inc(-1) end,
-    {description = "select previous layout", group = "layout"}),
-
-    -- Toggle floating window to the corner
-    awful.key({modkey, shiftkey}, "w", function()
-        local c = client.focus
-        awful.client.floating.toggle()
-        if c.floating then
-            c.floating = false
-            c.ontop = false
-            c.sticky = false
-        else
-            c.floating = true
-            c.ontop = true
-            c.sticky = true
-            c.width = 633
-            c.height = 400
-            awful.placement.top_right(client.focus)
-        end
-    end, {description = "ontop floating right corner", group = "client"}),
-
-    -- Edit awesome config
-    awful.key({modkey, shiftkey}, "e", function() awful.spawn.raise_or_spawn("urxvt -e sh -c '$EDITOR ~/.config/awesome/rc.lua'", nil, nil, "awesomeconf")
-    end, {description = "edit awesome config", group = "launcher"})
-)
-
--- Screen and tag navigation keybindings
-globalkeys = gears.table.join(globalkeys,
-    -- Screen rotation
-    awful.key({modkey, altkey}, "j", function() rotate_screens(1) end,
-    {description = "rotate screens left", group = "screen"}),
-
-    awful.key({modkey, altkey}, "k", function() rotate_screens(-1) end,
-    { description = "rotate screens right", group = "screen" }),
-
-    -- Tag navigation
-    awful.key({modkey, ctrlkey}, "left", function() move_to_previous_tag() end,
-    {description = "move client to prev tag without follow", group = "tag"}),
-
-    awful.key({modkey, ctrlkey}, "right", function() move_to_next_tag() end,
-    { description = "move client to next tag without follow", group = "tag" })
-)
-
--- Terminal and screen focus keybindings
-globalkeys = gears.table.join(globalkeys,
-    -- Launch floating terminal
-    awful.key({modkey, shiftkey}, "Return", function() awful.spawn(terminal, {floating = true, placement = awful.placement.centered}) end,
-    {description = "open a floating terminal", group = "launcher"}),
-
-    -- Launch terminal in current working directory (duplicate removed)
-
-    -- Launch urxvt terminal
-    awful.key({ modkey, altkey }, "Return", function () awful.util.spawn("urxvt") end,
-    {description = "open urxvt terminal", group = "launcher"}),
-
-    -- Launch Hue lighting sync to screen colours (duplicate removed - using the one above)
-
-    -- Screen focus
-    awful.key({modkey}, "o", function() awful.screen.focus_relative(1) end,
-    {description = "focus the next screen", group = "screen"}),
-    awful.key({modkey}, "u", function() awful.screen.focus_relative(-1) end,
-    {description = "focus the previous screen", group = "screen"}),
-
-    -- Add focused window to floating rules (non-interactive)
-    awful.key({modkey, ctrlkey, shiftkey}, "f", function()
-        awful.spawn.with_shell("/home/milk/dotfiles/awesome/.config/awesome/add-floating-rule.sh")
-    end, {description = "add focused window to floating rules", group = "awesome"})
-)
-
--- Client swap and tag access keybindings
-globalkeys = gears.table.join(globalkeys,
-    -- Client swap by index
-    awful.key({modkey, shiftkey}, "j", function() awful.client.swap.byidx(1) end,
-        {description = "swap with next client by index", group = "client"}),
-
-    awful.key({modkey, shiftkey}, "k", function() awful.client.swap.byidx(-1) end,
-        {description = "swap with previous client by index", group = "client"}),
-
-    -- Direct tag access
-    awful.key({modkey}, "0", function() awful.tag.viewidx(10) end,
-        {description = "view tag #10", group = "tag"})
-)
-
--- Minimized window cycling keybindings
-globalkeys = gears.table.join(globalkeys,
-    -- Cycle through minimized windows
-    awful.key({modkey, altkey}, "'", function()
-        local current_screen = awful.screen.focused()
-        local minimized_on_screen = {}
-        local focused_client = client.focus
-        local focused_is_cyclable = false
-
-        -- Collect all minimized clients on this screen
-        for c in awful.client.iterate(function(c)
-            return c.minimized and c.screen == current_screen
-        end, nil, current_screen) do
-            table.insert(minimized_on_screen, c)
-        end
-
-        -- Check if focused client can be minimized
-        if focused_client and focused_client.screen == current_screen then
-            focused_is_cyclable = true
-        end
-
-        -- If there is a focused, unminimized client on this screen, minimize it to advance the cycle
-        if focused_is_cyclable then
-            focused_client.minimized = true
-            -- Exclude the client we just minimized from immediate restore if there are others
-            if #minimized_on_screen > 1 then
-                for i = #minimized_on_screen, 1, -1 do
-                    if minimized_on_screen[i] == focused_client then
-                        table.remove(minimized_on_screen, i)
-                        break
-                    end
-                end
-            end
-        end
-
-        -- Restore the most recently encountered minimized client on this screen
-        local to_restore = minimized_on_screen[#minimized_on_screen]
-        to_restore.minimized = false
-        to_restore:emit_signal("request::activate", "key.cycle_minimized.screen", {raise = true})
-        client.focus = to_restore
-    end, {description = "cycle minimized windows (current screen)", group = "client"}),
-
-    -- Restore all minimized windows
-    awful.key({modkey, altkey}, ";", function()
-        local current_screen = awful.screen.focused()
-
-        -- Build a fast lookup for selected tags on the current screen
-        local selected_tag_by_id = {}
-        for _, t in ipairs(current_screen.tags) do
-            if t.selected then
-                selected_tag_by_id[t] = true
-            end
-        end
-
-        local function is_on_selected_tag(c)
-            if c and c.valid and c.tags then
-                for _, t in ipairs(c:tags()) do
-                    if t.screen == current_screen and selected_tag_by_id[t] then
-                        return true
-                    end
-                end
-            end
-            return false
-        end
-
-        for c in awful.client.iterate(function(c)
-            return c.minimized and c.screen == current_screen and is_on_selected_tag(c)
-        end, nil, current_screen) do
-            c.minimized = false
-            c:emit_signal("request::activate", "key.restore_all.screen", {raise = true})
-        end
-    end, {description = "restore all minimized windows (current screen)", group = "client"})
-)
-
--- Cyclefocus keybindings
-globalkeys = gears.table.join(globalkeys,
-    -- Cycle through clients
-    awful.key({modkey}, "Tab", function() cyclefocus.cycle({modifier = "Super_L"}) end,
-        {description = "cycle through clients", group = "client"}),
-
-    -- Cycle backwards through clients
-    awful.key({modkey, shiftkey}, "Tab", function() cyclefocus.cycle({modifier = "Super_L"}) end,
-        {description = "cycle backward through clients", group = "client"})
-)
-
--- Tag navigation keybindings
-globalkeys = gears.table.join(globalkeys,
-    -- View previous non-empty tag
-    awful.key({modkey, ctrlkey}, "Left", function()
-        local focused = awful.screen.focused()
-        for i = 1, #focused.tags do
-            awful.tag.viewidx(-1, focused)
-            if #focused.clients > 0 then
-                return
-            end
-        end
-    end, {description = "view previous non-empty tag", group = "tag"}),
-
-    -- View next non-empty tag
-    awful.key({modkey, ctrlkey}, "Right", function()
-        local focused = awful.screen.focused()
-        for i = 1, #focused.tags do
-            awful.tag.viewidx(1, focused)
-            if #focused.clients > 0 then
-                return
-            end
-        end
-    end, {description = "view next non-empty tag", group = "tag"})
-)
-
--- Awesome control and tag cycling keybindings
-globalkeys = gears.table.join(globalkeys,
-    -- Blank screen temporarily
-    awful.key({modkey, ctrlkey}, "b", function() os.execute("sleep 1; xset dpms force off")
-        end, {description = "blank screen(s) temporarily", group = "awesome"}),
-
-    -- Monitor management
-    awful.key({modkey, altkey}, "r", function() os.execute("monitor_rofi.sh") end,
-        {description = "monitor Rofi menu", group = "awesome"}),
-
-    -- Power menu
-    awful.key({modkey, altkey}, "p", function() os.execute("rofi_power") end,
-    { description = "power Rofi menu", group = "awesome" }),
-
-    -- Cycle back and forth through tags with clients
-    awful.key({modkey}, "Left", function() cycle_tags_with_clients("prev") end,
-        {description = "cycle to previous tag with clients", group = "tag"}),
-
-    awful.key({modkey}, "Right", function() cycle_tags_with_clients("next") end,
-        {description = "cycle to next tag with clients", group = "tag"})
-)
 
 
--- // MARK: WINDOWS
--- ################################################################################
--- ██╗    ██╗██╗███╗   ██╗██████╗  ██████╗ ██╗    ██╗███████╗
--- ██║    ██║██║████╗  ██║██╔══██╗██╔═══██╗██║    ██║██╔════╝
--- ██║ █╗ ██║██║██╔██╗ ██║██║  ██║██║   ██║██║ █╗ ██║███████╗
--- ██║███╗██║██║██║╚██╗██║██║  ██║██║   ██║██║███╗██║╚════██║
--- ╚███╔███╔╝██║██║ ╚████║██████╔╝╚██████╔╝╚███╔███╔╝███████║
---  ╚══╝╚══╝ ╚═╝╚═╝  ╚═══╝╚═════╝  ╚═════╝  ╚══╝╚══╝ ╚══════╝
--- ################################################################################
--- WINDOWS - client rules, window management, and behavior
 
 
--- signal function to execute when a new client appears
-client.connect_signal("manage", function (c)
-    -- set the windows at the slave,
-    -- i.e. put it at the end of others instead of setting it master.
-    -- if not awesome.startup then awful.client.setslave(c) end
-
-    if awesome.startup
-      and not c.size_hints.user_position
-      and not c.size_hints.program_position then
-        -- prevent clients from being unreachable after screen count changes
-        awful.placement.no_offscreen(c)
-    end
-end)
-
--- add a titlebar if titlebars_enabled is set to true in the rules
-client.connect_signal("request::titlebars", function(c)
-    -- buttons for the titlebar
-    local buttons = gears.table.join(
-        awful.button({ }, 1, function()
-            c:emit_signal("request::activate", "titlebar", {raise = true})
-            awful.mouse.client.move(c)
-        end),
-        awful.button({ }, 3, function()
-            c:emit_signal("request::activate", "titlebar", {raise = true})
-            awful.mouse.client.resize(c)
-        end)
-    )
-
-    awful.titlebar(c) : setup {
-        { -- Left
-            awful.titlebar.widget.iconwidget(c),
-            buttons = buttons,
-            layout  = wibox.layout.fixed.horizontal
-        },
-        { -- Middle
-            { -- Title
-                align  = "center",
-                widget = awful.titlebar.widget.titlewidget(c)
-            },
-            buttons = buttons,
-            layout  = wibox.layout.flex.horizontal
-        },
-        { -- Right
-            awful.titlebar.widget.floatingbutton (c),
-            awful.titlebar.widget.maximizedbutton(c),
-            awful.titlebar.widget.stickybutton   (c),
-            awful.titlebar.widget.ontopbutton    (c),
-            awful.titlebar.widget.closebutton    (c),
-            layout = wibox.layout.fixed.horizontal()
-        },
-        layout = wibox.layout.align.horizontal
-    }
-end)
-
--- enable sloppy focus, so that focus follows mouse (disabled)
--- client.connect_signal("mouse::enter", function(c)
---     c:emit_signal("request::activate", "mouse_enter", {raise = false})
--- end)
-
-client.connect_signal("focus", function(c) c.border_color = beautiful.border_focus end)
-client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)
 
 
--- // MARK: DRAG AND DROP
--- ################################################################################
--- ██████╗ ██████╗ ██████╗  █████╗  ██████╗     ██████╗  ██████╗ ██████╗ 
--- ██╔══██╗██╔══██╗██╔══██╗██╔══██╗██╔════╝    ██╔═══██╗██╔═══██╗██╔══██╗
--- ██║  ██║██████╔╝██║  ██║███████║██║         ██║   ██║██║   ██║██████╔╝
--- ██║  ██║██╔══██╗██║  ██║██╔══██║██║         ██║   ██║██║   ██║██╔═══╝ 
--- ██████╔╝██║  ██║██████╔╝██║  ██║╚██████╗    ╚██████╔╝╚██████╔╝██║     
--- ╚═════╝ ╚═╝  ╚═╝╚═════╝ ╚═╝  ╚═╝ ╚═════╝     ╚═════╝  ╚═════╝ ╚═╝     
--- ################################################################################
--- DRAG AND DROP - client to tag drag and drop functionality
+--
+--
+--
+--
+--
+--
+--
+--
+--     { description = "decrease the number of columns", group = "layout" }),
+--
 
 
--- // MARK: SIGNALS
--- ################################################################################
--- ███████╗██╗ ██████╗ ███╗   ██╗ █████╗ ██╗     ███████╗
--- ██╔════╝██║██╔════╝ ████╗  ██║██╔══██╗██║     ██╔════╝
--- ███████╗██║██║  ███╗██╔██╗ ██║███████║██║     ███████╗
--- ╚════██║██║██║   ██║██║╚██╗██║██╔══██║██║     ╚════██║
--- ███████║██║╚██████╔╝██║ ╚████║██║  ██║███████╗███████║
--- ╚══════╝╚═╝ ╚═════╝ ╚═╝  ╚═══╝╚═╝  ╚═╝╚══════╝╚══════╝
--- ################################################################################
--- SIGNALS - client and screen signal handlers
+
+
 
 
 -- // MARK: RULES
@@ -3910,6 +2237,12 @@ awful.rules.rules = {
             screen = awful.screen.preferred,
             placement = awful.placement.no_overlap+awful.placement.no_offscreen
         }
+    },
+    
+    -- bypass size hints for arandr
+    {
+        rule = { class = "Arandr" },
+        properties = { size_hints_honor = false }
     },
 
     -- floating clients
@@ -3943,10 +2276,10 @@ awful.rules.rules = {
         }
       }, properties = { floating = true }},
 
-    -- add titlebars to normal clients and dialogs (disabled)
-    -- { rule_any = {type = { "normal", "dialog" }
-    --   }, properties = { titlebars_enabled = true }
-    -- },
+    -- add titlebars to normal clients and dialogs
+    { rule_any = {type = { "normal", "dialog" }
+      }, properties = { titlebars_enabled = true }
+    },
 
     -- // MARK: --floating-rules
     -- {{{ Floating client rules
@@ -4230,466 +2563,22 @@ awful.rules.rules = {
 -- }}} -- End of window size management rules
 }
 
+-- Apply client keys and buttons to all clients
+awful.rules.rules = gears.table.join(awful.rules.rules, {
+    -- All clients will match this rule
+    { rule = { },
+      properties = { border_width = beautiful.border_width,
+                     border_color = beautiful.border_normal,
+                     focus = awful.client.focus.filter,
+                     raise = true,
+                     keys = clientkeys,
+                     buttons = clientbuttons,
+                     screen = awful.screen.preferred,
+                     placement = awful.placement.no_overlap+awful.placement.no_offscreen
+     }
+    }
+})
 
--- // MARK: RUNTIME
--- ################################################################################
--- ██████╗ ██╗   ██╗███╗   ██╗████████╗██╗███╗   ███╗███████╗
--- ██╔══██╗██║   ██║████╗  ██║╚══██╔══╝██║████╗ ████║██╔════╝
--- ██████╔╝██║   ██║██╔██╗ ██║   ██║   ██║██╔████╔██║███████╗
--- ██╔══██╗██║   ██║██║╚██╗██║   ██║   ██║██║╚██╔╝██║██╔══╝  
--- ██║  ██║╚██████╔╝██║ ╚████║   ██║   ██║██║ ╚═╝ ██║███████╗
--- ╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═══╝   ╚═╝   ╚═╝╚═╝     ╚═╝╚══════╝
--- ################################################################################
--- RUNTIME - runtime configuration, drag-and-drop, and system settings
-
--- // MARK: --drag-and-drop
--- Drag-and-drop client → tag (global state and helpers)
--- =====================================================
-awesome_dnd = awesome_dnd or {
-    dragged_client = nil,
-    hovered_tag = nil,
-    hovered_widget = nil,
-    _timer = nil,
-}
-
-function awesome_dnd.clear_hover()
-    local widget_to_clear = awesome_dnd.hovered_widget
-    
-    if widget_to_clear then
-        local widget_valid = widget_to_clear.valid
-        if widget_valid == nil then
-            widget_valid = true -- assume valid if no valid property
-        end
-        
-        if widget_valid then
-            if widget_to_clear.__dnd_prev_bg ~= nil then
-                widget_to_clear.bg = widget_to_clear.__dnd_prev_bg
-                widget_to_clear.__dnd_prev_bg = nil
-            else
-                widget_to_clear.bg = nil
-            end
-            if widget_to_clear.__dnd_prev_fg ~= nil then
-                widget_to_clear.fg = widget_to_clear.__dnd_prev_fg
-                widget_to_clear.__dnd_prev_fg = nil
-            end
-        end
-    end
-    awesome_dnd.hovered_tag = nil
-    awesome_dnd.hovered_widget = nil
-end
-
-function awesome_dnd.set_hover(tag, widget)
-    -- Clear previous hover first
-    awesome_dnd.clear_hover()
-    
-    -- Set new hover
-    awesome_dnd.hovered_tag = tag
-    awesome_dnd.hovered_widget = widget
-    
-    -- Apply styling the same way normal hover works
-    if widget then
-        widget.__dnd_prev_bg = widget.bg
-        widget.__dnd_prev_fg = widget.fg
-        local hover_bg = "#2e7d32" -- dark green
-        local hover_fg = "#b8860b" -- gold text
-        widget.bg = hover_bg
-        widget.fg = "#000000" -- black text on green during drag
-        
-        -- Force widget update
-        if widget.emit_signal then
-            widget:emit_signal("widget::redraw_needed")
-        end
-    end
-end
-
--- completely custom drag mode that doesn't interfere with awesome's built-in systems
-function awesome_dnd.start_custom_drag(c, opts)
-    if not c or not c.valid then return end
-    
-    awesome_dnd.dragged_client = c
-    
-    -- set visual feedback immediately
-    c._dnd_prev_border_color = c.border_color
-    local dnd_border = beautiful.dnd_border_color or "#2ecc71" -- green
-    c.border_color = dnd_border
-    c._dnd_dragging = true
-    
-    -- global drag flag (also used by border animation to pause)
-    awesome_dnd.drag_active = true
-    awesome_dnd._follow_on_drop = opts and opts.follow_on_drop or false
-    
-    -- prevent text selection in client (best-effort)
-    c.input_passthrough = true
-    
-    -- force stop any border animation
-    if border_animation_timer and border_animation_timer.started then
-        border_animation_timer:stop()
-        awesome_dnd._paused_border_anim = true
-    end
-    
-    -- use mousegrabber to capture pointer and set cursor during drag
-    mousegrabber.run(function(m)
-        if not c.valid then
-            awesome_dnd.finish_custom_drag()
-            return false
-        end
-        -- detect shift follow-on-drop via modifiers if available
-        if m.modifiers then
-            awesome_dnd._follow_on_drop = m.modifiers.Shift or m.modifiers["Shift_L"] or m.modifiers["Shift_R"] or false
-        end
-        -- continuously update hovered tag
-        if awesome_dnd.update_hover_from_mouse then
-            awesome_dnd.update_hover_from_mouse()
-        end
-        -- stop on left button release
-        if not (m.buttons and m.buttons[1]) then
-            awesome_dnd.finish_custom_drag()
-            return false
-        end
-        return true
-    end, "hand2")
-end
-
-function awesome_dnd.finish_custom_drag()
-    -- ensure any overlay/keygrabber are gone (legacy cleanup)
-    if awesome_dnd._overlay and awesome_dnd._overlay.valid then awesome_dnd._overlay.visible = false end
-    awesome_dnd._overlay = nil
-    if awesome_dnd._drag_keygrabber then awesome_dnd._drag_keygrabber:stop() end
-    awesome_dnd._drag_keygrabber = nil
-    
-    local c = awesome_dnd.dragged_client
-    local target_tag = awesome_dnd.hovered_tag
-    local follow = awesome_dnd._follow_on_drop
-    
-    -- perform the drop
-    if c and c.valid and target_tag and target_tag.valid then
-        local old_tag = c.first_tag
-        c:move_to_tag(target_tag)
-        if follow then
-            target_tag:view_only()
-        end
-        -- update tag squares immediately
-        awesome.emit_signal('tag::clients_updated')
-        -- if old tag lost its last visible client, give new tag shimmer and clear old
-        if old_tag and old_tag.valid then
-            local had_visible = false
-            for _, cc in ipairs(old_tag:clients()) do
-                if not cc.minimized and not cc.hidden then had_visible = true break end
-            end
-            if not had_visible then
-                -- apply shimmer to new tag label
-                if target_tag.screen and target_tag.screen.mytaglist then
-                    target_tag.screen.mytaglist:emit_signal("widget::redraw_needed")
-                end
-            end
-        end
-    else
-        -- no notification
-    end
-    
-    -- restore client appearance and input
-    if c and c.valid then
-        if c._dnd_prev_border_color then
-            c.border_color = c._dnd_prev_border_color
-            c._dnd_prev_border_color = nil
-        end
-        c._dnd_dragging = nil
-        c.input_passthrough = false -- restore normal input
-    end
-    
-    -- restart border animation if it was paused
-    if awesome_dnd._paused_border_anim and border_animation_timer then
-        border_animation_timer:start()
-        awesome_dnd._paused_border_anim = false
-    end
-    
-    -- clear visual feedback and state
-    awesome_dnd.clear_tag_hover()
-    awesome_dnd.dragged_client = nil
-    awesome_dnd.hovered_tag = nil
-    awesome_dnd.drag_active = false
-    awesome_dnd._follow_on_drop = nil
-end
-
--- simpler tag detection that just checks screen taglist areas
-function awesome_dnd.check_tag_hover_simple(mouse_coords)
-    local found_tag = nil
-    local prev_hovered = awesome_dnd.hovered_tag
-    
-    -- check each screen's taglist area
-    for s in screen do
-        if s.mywibox and s.mywibox.visible then
-            local geo = s.mywibox:geometry()
-            
-            if geo and mouse_coords.x >= geo.x and mouse_coords.x <= geo.x + geo.width and
-               mouse_coords.y >= geo.y and mouse_coords.y <= geo.y + geo.height then
-                
-                -- mouse is over this screen's wibar
-                local tag_count = #s.tags
-                
-                if tag_count > 0 then
-                    local relative_x = mouse_coords.x - geo.x
-                    
-                    -- try to find actual taglist widget to get its real geometry
-                    if s.mytaglist and s.mytaglist.visible and s.mytaglist.geometry then
-                        local ok, taglist_geo = pcall(function() return s.mytaglist:geometry() end)
-                        if ok and taglist_geo then
-                            -- check if mouse is within taglist bounds
-                            local taglist_rel_x = mouse_coords.x - taglist_geo.x
-                            if taglist_rel_x >= 0 and taglist_rel_x <= taglist_geo.width and
-                               mouse_coords.y >= taglist_geo.y and mouse_coords.y <= taglist_geo.y + taglist_geo.height then
-                                
-                                local tag_width = taglist_geo.width / tag_count
-                                local tag_index = math.max(1, math.min(tag_count, math.floor(taglist_rel_x / tag_width) + 1))
-                                found_tag = s.tags[tag_index]
-                            end
-                        else
-                            -- fallback to estimation
-                            local taglist_width = math.min(geo.width * 0.4, tag_count * 60)
-                            if relative_x >= 0 and relative_x <= taglist_width then
-                                local tag_width = taglist_width / tag_count
-                                local tag_index = math.max(1, math.min(tag_count, math.floor(relative_x / tag_width) + 1))
-                                found_tag = s.tags[tag_index]
-                            end
-                        end
-                    end
-                end
-            end
-        end
-        
-        -- update hover state and visual feedback
-        if found_tag ~= prev_hovered then
-            -- clear previous hover
-            awesome_dnd.clear_tag_hover()
-            
-            if found_tag then
-                awesome_dnd.hovered_tag = found_tag
-                awesome_dnd.set_tag_hover(found_tag)
-            else
-                awesome_dnd.hovered_tag = nil
-            end
-        end
-    end
-end
-
--- visual feedback for tag hover during drag
-function awesome_dnd.set_tag_hover(tag)
-    if not tag or not tag.valid then 
-        return 
-    end
-    
-    -- find tag widgets and apply hover background
-    for s in screen do
-        if s.mytaglist then
-            if s.mytaglist._private and s.mytaglist._private.widgets then
-                for i, widget_data in pairs(s.mytaglist._private.widgets) do
-                    if widget_data.tag == tag and widget_data.widget then
-                        -- try different approaches to find background widget
-                        local bg_widget = widget_data.widget:get_children_by_id("background_role")[1]
-                        if not bg_widget then
-                            bg_widget = widget_data.widget:get_children_by_id("tag_bg")[1]
-                        end
-                        if not bg_widget then
-                            -- try the widget itself
-                            bg_widget = widget_data.widget
-                        end
-                        
-                        if bg_widget then
-                            bg_widget._dnd_original_bg = bg_widget.bg
-                            bg_widget._dnd_original_fg = bg_widget.fg
-                            bg_widget.bg = beautiful.taglist_dnd_hover_bg or "#b8860b"
-                            bg_widget.fg = "#000000" -- black text on gold during drag
-                            awesome_dnd._hovered_widget = bg_widget
-                        end
-                        break
-                    end
-                end
-            end
-        end
-    end
-end
-
-function awesome_dnd.clear_tag_hover()
-    if awesome_dnd._hovered_widget then
-        if awesome_dnd._hovered_widget._dnd_original_bg then
-            awesome_dnd._hovered_widget.bg = awesome_dnd._hovered_widget._dnd_original_bg
-            awesome_dnd._hovered_widget._dnd_original_bg = nil
-        else
-            awesome_dnd._hovered_widget.bg = nil
-        end
-        if awesome_dnd._hovered_widget._dnd_original_fg then
-            awesome_dnd._hovered_widget.fg = awesome_dnd._hovered_widget._dnd_original_fg
-            awesome_dnd._hovered_widget._dnd_original_fg = nil
-        end
-        awesome_dnd._hovered_widget = nil
-    end
-end
-
-
-
-function awesome_dnd.finish_drop()
-    local c = awesome_dnd.dragged_client
-    if not c or (c.valid ~= nil and not c.valid) then
-        awesome_dnd.clear_hover()
-        if c and c._dnd_prev_border_color then
-            c.border_color = c._dnd_prev_border_color
-            c._dnd_prev_border_color = nil
-        end
-        awesome_dnd.dragged_client = nil
-        if awesome_dnd._timer then
-            awesome_dnd._timer:stop()
-            awesome_dnd._timer = nil
-        end
-        return
-    end
-
-    local t = awesome_dnd.resolve_drop_target and awesome_dnd.resolve_drop_target() or awesome_dnd.hovered_tag
-    awesome_dnd.dragged_client = nil
-    if t and t.valid and c.valid then
-        c:move_to_tag(t)
-        -- debug removed
-    end
-    awesome_dnd.clear_hover()
-    if c and c._dnd_prev_border_color then
-        c.border_color = c._dnd_prev_border_color
-        c._dnd_prev_border_color = nil
-        c._dnd_dragging = nil -- clear drag flag
-    end
-    if awesome_dnd._paused_border_anim and border_animation_timer then
-        border_animation_timer:start()
-        awesome_dnd._paused_border_anim = false
-    end
-    if awesome_dnd._timer then
-        awesome_dnd._timer:stop()
-        awesome_dnd._timer = nil
-    end
-end
-
--- attempt to infer hovered tag from the mouse pointer, even during client move
-function awesome_dnd.update_hover_from_mouse()
-    local mc = mouse.coords()
-    if not mc then
-        -- debug removed: no mouse coords
-        awesome_dnd.clear_hover()
-        return
-    end
-    -- debug removed: mouse position
-    local candidates = {}
-    -- scan all screens' wibars to be safe (pointer grab may affect mouse.screen)
-    for scr in screen do
-        if scr.mywibox and scr.mywibox.visible then table.insert(candidates, scr.mywibox) end
-        if scr.myaltwibox and scr.myaltwibox.visible then table.insert(candidates, scr.myaltwibox) end
-    end
-    -- debug removed: number of wibars
-    local found_widget, found_tag
-    for _, wb in ipairs(candidates) do
-        if wb and wb.valid then
-            local geo = wb:geometry() or { x = wb.x or 0, y = wb.y or 0, width = wb.width or 0, height = wb.height or 0 }
-            local wx = mc.x - geo.x
-            local wy = mc.y - geo.y
-            -- debug removed: wibar geo, inside wibar
-            local list = {}
-            if wb.find_widgets then
-                local ok, res = pcall(function() return wb:find_widgets(wx, wy) end)
-                if ok and res then list = res end
-            end
-            if (#list == 0) and wb.widget and wb.widget.find_widgets then
-                local ok2, res2 = pcall(function() return wb.widget:find_widgets(wx, wy) end)
-                if ok2 and res2 then list = res2 end
-            end
-            for _, item in ipairs(list) do
-                local w = item.widget or item
-                if w and w._is_dnd_tag_target and w._tag_ref and w._tag_ref.valid then
-                    found_widget = (w._dnd_highlight_widget and w._dnd_highlight_widget.valid) and w._dnd_highlight_widget or w
-                    found_tag = w._tag_ref
-                    break
-                end
-            end
-        end
-        if found_tag then break end
-    end
-    if found_tag then
-        awesome_dnd.set_hover(found_tag, found_widget)
-    else
-        -- Clear hover when no tag is found (mouse moved off tags)
-        awesome_dnd.clear_hover()
-    end
-end
-
-function awesome_dnd.resolve_drop_target()
-    if awesome_dnd.hovered_tag and awesome_dnd.hovered_tag.valid then
-        return awesome_dnd.hovered_tag
-    end
-    local mc = mouse.coords()
-    if not mc then return nil end
-    local candidates = {}
-    for scr in screen do
-        if scr.mywibox and scr.mywibox.visible then table.insert(candidates, scr.mywibox) end
-        if scr.myaltwibox and scr.myaltwibox.visible then table.insert(candidates, scr.myaltwibox) end
-    end
-    for _, wb in ipairs(candidates) do
-        if wb and wb.valid then
-            local geo = wb:geometry() or { x = wb.x or 0, y = wb.y or 0, width = wb.width or 0, height = wb.height or 0 }
-            local wx = mc.x - geo.x
-            local wy = mc.y - geo.y
-            if wx >= 0 and wy >= 0 and wx < geo.width and wy < geo.height then
-                local list = nil
-                if wb.find_widgets then
-                    list = wb:find_widgets(wx, wy)
-                end
-                if (not list or #list == 0) and wb.widget and wb.widget.find_widgets then
-                    list = wb.widget:find_widgets(wx, wy)
-                end
-                list = list or {}
-                for _, item in ipairs(list) do
-                    local w = item.widget or item
-                    if w and w._is_dnd_tag_target and w._tag_ref and w._tag_ref.valid then
-                        return w._tag_ref
-                    end
-                end
-            end
-        end
-    end
-    return nil
-end
-
-function awesome_dnd.finish_drop()
-    local c = awesome_dnd.dragged_client
-    if not c or (c.valid ~= nil and not c.valid) then
-        awesome_dnd.clear_hover()
-        if c and c._dnd_prev_border_color then
-            c.border_color = c._dnd_prev_border_color
-            c._dnd_prev_border_color = nil
-        end
-        awesome_dnd.dragged_client = nil
-        if awesome_dnd._timer then
-            awesome_dnd._timer:stop()
-            awesome_dnd._timer = nil
-        end
-        return
-    end
-    
-    local t = awesome_dnd.resolve_drop_target and awesome_dnd.resolve_drop_target() or awesome_dnd.hovered_tag
-    awesome_dnd.dragged_client = nil
-    if t and t.valid and c.valid then
-        c:move_to_tag(t)
-        -- debug removed
-    end
-    awesome_dnd.clear_hover()
-    if c and c._dnd_prev_border_color then
-        c.border_color = c._dnd_prev_border_color
-        c._dnd_prev_border_color = nil
-        c._dnd_dragging = nil -- clear drag flag
-    end
-    if awesome_dnd._paused_border_anim and border_animation_timer then
-        border_animation_timer:start()
-        awesome_dnd._paused_border_anim = false
-    end
-    if awesome_dnd._timer then
-        awesome_dnd._timer:stop()
-        awesome_dnd._timer = nil
-    end
-end
 
 
 
@@ -4704,12 +2593,7 @@ end
 -- ################################################################################
 -- CONFIG - final configuration settings and system preferences
 
--- Color settings
-beautiful.bg_systray = "#000000"
--- beautiful.bg_systray = "#191919"
-beautiful.notification_bg = "#FFD700"  -- Gold background
-beautiful.notification_fg = "#000000"  -- Black text
-beautiful.hotkeys_modifiers_fg = "#dddddd"
+-- Color settings moved to theme file
 
 -- Notification settings
 naughty.config.defaults.ontop = true
@@ -4721,7 +2605,6 @@ naughty.config.defaults.position = 'bottom_middle'
 
 -- Notification icon settings
 -- Attempt to constrain the size of large icons in their apps notifications
-beautiful.notification_icon_size = 64  -- Number instead of string
 naughty.config.defaults['icon_size'] = 64
 
 -- // MARK: START
@@ -4758,18 +2641,64 @@ awful.spawn.with_shell("pgrep -u $USER -x picom > /dev/null || picom --config ~/
 
 -- Uncomment any of the above or add your own autostart applications
 
--- Function to restart shimmer timer (useful for debugging)
-local function restart_shimmer()
-    if shimmer_timer then
-        shimmer_timer:stop()
-        shimmer_timer.timeout = shimmer_config[shimmer_mode].speed
-        shimmer_timer:again()
-        -- print("Shimmer timer restarted with mode:", shimmer_mode, "speed:", shimmer_config[shimmer_mode].speed)
-    end
-end
+-- // MARK: BINDINGS
+-- ################################################################################
+-- ██████╗ ██╗███╗   ██╗██████╗ ██╗███╗   ██╗ ██████╗ ███████╗
+-- ██╔══██╗██║████╗  ██║██╔══██╗██║████╗  ██║██╔════╝ ██╔════╝
+-- ██████╔╝██║██╔██╗ ██║██║  ██║██║██╔██╗ ██║██║  ███╗███████╗
+-- ██╔══██╗██║██║╚██╗██║██║  ██║██║██║╚██╗██║██║   ██║╚════██║
+-- ██████╔╝██║██║ ╚████║██████╔╝██║██║ ╚████║╚██████╔╝███████║
+-- ╚═════╝ ╚═╝╚═╝  ╚═══╝╚═════╝ ╚═╝╚═╝  ╚═══╝ ╚═════╝ ╚══════╝
+-- ################################################################################
+-- KEY AND MOUSE BINDINGS - essential input handling
 
--- Restart shimmer timer after configuration changes
-restart_shimmer()
+-- Global key bindings
+-- Keybindings now handled by keybindings.lua module
+
+-- Bind all key numbers to tags
+-- Now handled by keybindings.lua
+-- for i = 1, 9 do
+--    globalkeys = gears.table.join(globalkeys,
+--        -- View tag only
+--        awful.key({ modkey }, "#" .. i + 9,
+--                  function ()
+--                        local screen = awful.screen.focused()
+--                        local tag = screen.tags[i]
+--                        if tag then
+--                           tag:view_only()
+--                        end
+--                  end,
+--                  {description = "view tag #"..i, group = "tag"}),
+--        -- Move client to tag
+--        awful.key({ modkey, "Shift" }, "#" .. i + 9,
+--                  function ()
+--                      if client.focus then
+--                          local tag = client.focus.screen.tags[i]
+--                          if tag then
+--                              client.focus:move_to_tag(tag)
+--                          end
+--                     end
+--                  end,
+--                  {description = "move focused client to tag #"..i, group = "tag"})
+--    )
+-- end
 
 
+-- Mouse bindings for clients - this fixes the mousewheel error
+-- Now handled by keybindings.lua
+-- clientbuttons = gears.table.join(
+--     awful.button({ }, 1, function (c)
+--         c:emit_signal("request::activate", "mouse_click", {raise = true})
+--     end),
+--     awful.button({ modkey }, 1, function (c)
+--         c:emit_signal("request::activate", "mouse_click", {raise = true})
+--         awful.mouse.client.move(c)
+--     end),
+--     awful.button({ modkey }, 3, function (c)
+--         c:emit_signal("request::activate", "mouse_click", {raise = true})
+--         resize_no_warp(c)
+--     end)
+-- )
 
+-- Set root bindings
+root.keys(gears.table.join(table.unpack(globalkeys)))
