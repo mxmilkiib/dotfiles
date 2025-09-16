@@ -1,0 +1,267 @@
+-- plugins/shimmer/integrations.lua
+-- Simplified integration system for taglist, tasklist, launcher
+
+local gears = require("gears")
+local awful = require("awful")
+
+local M = {}
+
+-- shimmer configuration with phase offsets
+local shimmer_config = {
+    tag_phase = 0.0,      -- tags start at base phase
+    task_phase = 1.0,     -- tasks offset by 1.0 (different timing)
+    launcher_phase = 2.0, -- launcher offset by 2.0
+    per_letter = {
+        tags = false,
+        tasks = false,
+        launcher = false
+    }
+}
+
+-- widget tracking
+local registered_widgets = {
+    taglist = {},  -- [screen_index][tag] = widget
+    tasklist = {},
+    tasklist_clients = {},  -- [client] = text_widget for direct shimmer updates
+    launcher = nil
+}
+
+-- get animation functions
+local function get_animation()
+    return require("plugins.shimmer.animation")
+end
+
+-- simplified taglist registration - map individual tag widgets to their tags
+function M.register_taglist(taglist_widget, screen_index, tag)
+    if not registered_widgets.taglist[screen_index] then
+        registered_widgets.taglist[screen_index] = {}
+    end
+    -- store widget by tag reference for proper mapping
+    if tag then
+        registered_widgets.taglist[screen_index][tag] = taglist_widget
+    else
+        -- backward compatibility - store as array
+        table.insert(registered_widgets.taglist[screen_index], taglist_widget)
+    end
+end
+
+-- simplified tasklist registration  
+function M.register_tasklist(tasklist_widget)
+    table.insert(registered_widgets.tasklist, tasklist_widget)
+end
+
+-- tasklist update callback for shimmer integration
+function M.tasklist_update_callback(self, c, index, objects)
+    local tb = self:get_children_by_id('text_role')[1]
+    if tb and c then
+        -- store client->widget mapping for continuous shimmer updates
+        registered_widgets.tasklist_clients[c] = tb
+        
+        if c == client.focus then
+            local title = c.name or c.class or ""
+            if title ~= "" then
+                local animation = get_animation()
+                local options = {
+                    phase_offset = shimmer_config.task_phase,
+                    per_letter = shimmer_config.per_letter.tasks
+                }
+                animation.apply_to_widget(tb, title, nil, options)
+            end
+        else
+            -- plain text for unfocused clients
+            local title = c.name or c.class or ""
+            if title ~= "" then
+                tb:set_text(title)
+            end
+        end
+    end
+end
+
+-- launcher registration
+function M.register_launcher(launcher_widget)
+    registered_widgets.launcher = launcher_widget
+    if launcher_widget and launcher_widget.set_markup then
+        local animation = get_animation()
+        local options = {
+            phase_offset = shimmer_config.launcher_phase,
+            per_letter = shimmer_config.per_letter.launcher
+        }
+        animation.apply_to_widget(launcher_widget, '⚙', nil, options)
+    end
+end
+
+-- simplified tag hover handler
+function M.handle_tag_hover(tag_widget, tag, mode)
+    local text_widget = tag_widget and tag_widget:get_children_by_id('text_role')[1]
+    if not text_widget or not text_widget.set_markup then return end
+    
+    local current = tag.name or ''
+    local animation = get_animation()
+    local base_gold = animation.get_base_gold()
+    
+    if mode == "enter" then
+        if tag.selected then return end
+        
+        local awesome_dnd = package.loaded["plugins.awesome_dnd"]
+        if awesome_dnd and awesome_dnd.drag_active then return end
+        
+        text_widget.__hover_lock = true
+        text_widget:set_markup('<span color="' .. base_gold .. '">' .. current .. '</span>')
+        tag_widget.__hover_text_colored = true
+        
+    elseif mode == "leave" then
+        if tag_widget.__hover_text_colored then
+            text_widget.__hover_lock = nil
+            tag_widget.__hover_text_colored = nil
+
+            if tag.selected then
+                local options = {
+                    phase_offset = shimmer_config.tag_phase,
+                    per_letter = shimmer_config.per_letter.tags
+                }
+                animation.apply_to_widget(text_widget, current, nil, options)
+            else
+                if text_widget.__hover_fade_timer and text_widget.__hover_fade_timer.stop then
+                    text_widget.__hover_fade_timer:stop()
+                end
+                
+                local fade_steps = 10
+                local fade_duration = 0.5
+                local step_time = fade_duration / fade_steps
+                local step = 0
+                
+                text_widget.__hover_fade_timer = gears.timer {
+                    timeout = step_time,
+                    autostart = true,
+                    callback = function()
+                        step = step + 1
+                        local progress = step / fade_steps
+                        local r = math.floor(255 - (255 - 255) * progress)
+                        local g = math.floor(215 - (215 - 255) * progress)
+                        local b = math.floor(0 - (0 - 255) * progress)
+                        local color = string.format("#%02x%02x%02x", r, g, b)
+                        text_widget:set_markup('<span color="' .. color .. '">' .. current .. '</span>')
+                        
+                        if step >= fade_steps then
+                            text_widget.__hover_fade_timer:stop()
+                            text_widget.__hover_fade_timer = nil
+                            -- for unselected tags, show plain text with tag's own name
+                            text_widget:set_markup(current)
+                        end
+                    end
+                }
+            end
+        end
+    elseif mode == "dnd_enter" then
+        text_widget.__hover_lock = true
+        text_widget:set_markup('<span color="' .. base_gold .. '">' .. current .. '</span>')
+        tag_widget.__dnd_hover_active = true
+        
+    elseif mode == "dnd_leave" then
+        if tag_widget.__dnd_hover_active then
+            text_widget.__hover_lock = nil
+            tag_widget.__dnd_hover_active = nil
+            if tag.selected then
+                local options = {
+                    phase_offset = shimmer_config.tag_phase,
+                    per_letter = shimmer_config.per_letter.tags
+                }
+                animation.apply_to_widget(text_widget, current, nil, options)
+            else
+                if text_widget.__hover_fade_timer and text_widget.__hover_fade_timer.stop then
+                    text_widget.__hover_fade_timer:stop()
+                end
+                text_widget:set_markup(current)
+            end
+        end
+    end
+end
+
+-- configuration functions
+function M.set_phase_offsets(config)
+    if config.tag_phase ~= nil then shimmer_config.tag_phase = config.tag_phase end
+    if config.task_phase ~= nil then shimmer_config.task_phase = config.task_phase end
+    if config.launcher_phase ~= nil then shimmer_config.launcher_phase = config.launcher_phase end
+    if config.border_phase ~= nil then
+        local border = require("plugins.shimmer.border")
+        border.set_phase_offset(config.border_phase)
+    end
+end
+
+function M.set_per_letter_modes(config)
+    if config.tags ~= nil then shimmer_config.per_letter.tags = config.tags end
+    if config.tasks ~= nil then shimmer_config.per_letter.tasks = config.tasks end
+    if config.launcher ~= nil then shimmer_config.per_letter.launcher = config.launcher end
+end
+
+function M.get_phase_offsets()
+    local border = require("plugins.shimmer.border")
+    return {
+        tag_phase = shimmer_config.tag_phase,
+        task_phase = shimmer_config.task_phase,
+        launcher_phase = shimmer_config.launcher_phase,
+        border_phase = border.get_phase_offset()
+    }
+end
+
+function M.get_per_letter_modes()
+    return {
+        tags = shimmer_config.per_letter.tags,
+        tasks = shimmer_config.per_letter.tasks,
+        launcher = shimmer_config.per_letter.launcher
+    }
+end
+
+-- update function called directly by animation module
+function M.update_widgets()
+    local animation = get_animation()
+    
+    -- update all tags with proper tag-to-widget mapping
+    for screen_index, tag_widgets in pairs(registered_widgets.taglist) do
+        local s = screen[screen_index]
+        if s then
+            for _, tag in pairs(s.tags) do
+                local widget = tag_widgets[tag]  -- get specific widget for this tag
+                if widget then
+                    local text_widget = widget:get_children_by_id('text_role')[1]
+                    if text_widget and not text_widget.__hover_lock then
+                        if tag.selected then
+                            -- apply shimmer to selected tag with its own name
+                            local options = {
+                                phase_offset = shimmer_config.tag_phase,
+                                per_letter = shimmer_config.per_letter.tags
+                            }
+                            animation.apply_to_widget(text_widget, tag.name or "", nil, options)
+                        else
+                            -- ensure unselected tags show their correct plain text names
+                            text_widget:set_markup(tag.name or "")
+                        end
+                    end
+                end
+            end
+        end
+    end
+    
+    -- update focused client in tasklist with direct shimmer application
+    local focused = client.focus
+    if focused then
+        local text_widget = registered_widgets.tasklist_clients[focused]
+        if text_widget and not text_widget.__hover_lock then
+            local title = focused.name or focused.class or ""
+            if title ~= "" then
+                local options = {
+                    phase_offset = shimmer_config.task_phase,
+                    per_letter = shimmer_config.per_letter.tasks
+                }
+                animation.apply_to_widget(text_widget, title, nil, options)
+            end
+        end
+        
+        -- also trigger general tasklist redraw for other updates
+        for _, tasklist in pairs(registered_widgets.tasklist) do
+            tasklist:emit_signal("widget::redraw_needed")
+        end
+    end
+end
+
+return M

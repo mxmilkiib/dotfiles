@@ -1,0 +1,82 @@
+-- plugins/shimmer/init.lua
+-- Unified shimmer animation system for AwesomeWM
+-- Main interface module
+
+local gears = require("gears")
+local animation = require("plugins.shimmer.animation")
+local border = require("plugins.shimmer.border") 
+local integrations = require("plugins.shimmer.integrations")
+
+local M = {}
+
+-- expose core functions directly (flattened API)
+M.set_mode = animation.set_mode
+M.get_mode = animation.get_mode
+M.get_color = animation.get_color
+M.start = animation.start
+M.stop = animation.stop
+M.restart = animation.restart
+M.apply_to_widget = animation.apply_to_widget
+M.get_base_gold = animation.get_base_gold
+M.get_status_prefix = animation.get_status_prefix
+M.start = animation.start
+M.stop = animation.stop
+M.get_palette = animation.get_palette
+M.get_gradient_params = animation.get_gradient_params
+M.set_gradient_params = animation.set_gradient_params
+M.clear_palette_cache = animation.clear_palette_cache
+M.get_letter_shimmer_markup = animation.get_letter_shimmer_markup
+
+-- integration functions
+M.register_taglist = integrations.register_taglist
+M.register_tasklist = integrations.register_tasklist
+M.register_launcher = integrations.register_launcher
+M.handle_tag_hover = integrations.handle_tag_hover
+M.tasklist_update_callback = integrations.tasklist_update_callback
+M.set_phase_offsets = integrations.set_phase_offsets
+M.set_per_letter_modes = integrations.set_per_letter_modes
+M.get_phase_offsets = integrations.get_phase_offsets
+M.get_per_letter_modes = integrations.get_per_letter_modes
+
+-- border functions
+M.set_border_phase_offset = border.set_phase_offset
+M.get_border_phase_offset = border.get_phase_offset
+M.set_border_smoothness = border.set_smoothness
+
+-- configuration
+function M.configure(config)
+    config = config or {}
+    
+    -- set preset if specified
+    if config.preset then
+        animation.set_mode(config.preset)
+    end
+    
+    -- configure border animation if specified
+    if config.border then
+        if config.border.smoothness then
+            border.set_smoothness(config.border.smoothness)
+        end
+    end
+    
+    -- configure phase offsets
+    if config.phase_offsets then
+        integrations.set_phase_offsets(config.phase_offsets)
+    end
+    
+    -- configure per-letter shimmer modes
+    if config.per_letter then
+        integrations.set_per_letter_modes(config.per_letter)
+    end
+    
+    -- start systems
+    animation.start()
+    border.start()
+end
+
+-- initialize system (defer to avoid startup issues)
+gears.timer.delayed_call(function()
+    M.start()
+end)
+
+return M

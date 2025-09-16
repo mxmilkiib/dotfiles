@@ -1,0 +1,390 @@
+-- plugins/shimmer/animation.lua
+-- Core animation and color generation
+
+local gears = require("gears")
+local awful = require("awful")
+
+local M = {}
+
+-- base gold color palette
+local base_gold = "#FFD700"
+
+-- current animation mode
+local shimmer_mode = "warm_light"
+
+-- color palette cache and generation
+local color_palettes = {}
+local palette_length = 100
+
+-- animation state
+local shimmer_step = 0
+local shimmer_timer = nil
+
+-- gradient generator function
+local function makeColorGradient(frequency1, frequency2, frequency3, phase1, phase2, phase3, center, width, length)
+    center = center or 200  -- lighter center
+    width = width or 55     -- reduced width for lighter colors
+    length = length or palette_length
+    local palette = {}
+    for i = 0, length - 1 do
+        local r = math.floor(math.sin(frequency1 * i + phase1) * width + center)
+        local g = math.floor(math.sin(frequency2 * i + phase2) * width + center)
+        local b = math.floor(math.sin(frequency3 * i + phase3) * width + center)
+        -- clamp values to valid range
+        r = math.max(0, math.min(255, r))
+        g = math.max(0, math.min(255, g))
+        b = math.max(0, math.min(255, b))
+        palette[i] = string.format("#%02x%02x%02x", r, g, b)
+    end
+    return palette
+end
+
+-- enhanced shimmer configuration with color cycling
+local shimmer_config = {
+    -- subtle warm golden glow - gentle, readable, default choice
+    -- produces soft yellow-orange shimmer with minimal blue, good for everyday use
+    warm_light = {
+        speed = 0.3,
+        gradient = {
+            redFrequency = 0.05,
+            grnFrequency = 0.08,
+            bluFrequency = 0.02,
+            phase1 = 0,
+            phase2 = 2,
+            phase3 = 4,
+            center = 220,
+            width = 35
+        }
+    },
+    -- vivid golden shimmer - more intense and eye-catching
+    -- creates bright gold with stronger color variation, good for highlighting
+    bright_gold = {
+        speed = 0.4,
+        gradient = {
+            redFrequency = 0.08,
+            grnFrequency = 0.1,
+            bluFrequency = 0.03,
+            phase1 = 1,
+            phase2 = 3,
+            phase3 = 5,
+            center = 210,
+            width = 45
+        }
+    },
+    -- warm flickering candlelight - organic, cozy feel
+    -- slow animation with orange-yellow tones, mimics real flame movement
+    candle = {
+        speed = 0.25,
+        gradient = {
+            redFrequency = 0.06,
+            grnFrequency = 0.09,
+            bluFrequency = 0.02,
+            phase1 = 0.5,
+            phase2 = 2.5,
+            phase3 = 4.5,
+            center = 200,
+            width = 55
+        }
+    },
+    -- soft ethereal cloud shimmer - dreamlike, pastel effect
+    -- includes subtle blues/purples for a mystical appearance
+    cloud = {
+        speed = 0.35,
+        gradient = {
+            redFrequency = 0.04,
+            grnFrequency = 0.07,
+            bluFrequency = 0.05,
+            phase1 = 1,
+            phase2 = 3,
+            phase3 = 2,
+            center = 185,
+            width = 70
+        }
+    },
+    -- rapid text flicker - high-energy, attention-grabbing
+    -- fast animation speed with high frequency changes, best for short bursts
+    char_flicker = {
+        speed = 0.15,
+        gradient = {
+            redFrequency = 0.12,
+            grnFrequency = 0.15,
+            bluFrequency = 0.08,
+            phase1 = 0,
+            phase2 = 2,
+            phase3 = 4,
+            center = 200,
+            width = 55
+        }
+    },
+    -- border sync mode - coordinates with window border animation
+    -- designed to complement border colors, wider color range for variety
+    border_sync = {
+        speed = 0.4,
+        gradient = {
+            redFrequency = 0.1,
+            grnFrequency = 0.2,
+            bluFrequency = 0.1,
+            phase1 = 1,
+            phase2 = 260,
+            phase3 = 50,
+            center = 180,
+            width = 75
+        }
+    },
+    -- rich deep gold - sophisticated, subtle luxury feel
+    -- slower, more refined animation with deeper golden tones
+    deep_gold = {
+        speed = 0.6,
+        gradient = {
+            redFrequency = 0.03,
+            grnFrequency = 0.05,
+            bluFrequency = 0.01,
+            phase1 = 0,
+            phase2 = 1,
+            phase3 = 3,
+            center = 190,
+            width = 40
+        }
+    },
+    -- debug rainbow - obvious color cycling for testing/development
+    -- cycles through red->green->blue->yellow->magenta->cyan for easy visibility
+    debug = {
+        speed = 0.2,
+        gradient = {
+            redFrequency = 0.3,
+            grnFrequency = 0.2,
+            bluFrequency = 0.4,
+            phase1 = 0,
+            phase2 = 2.1,
+            phase3 = 4.2,
+            center = 127,
+            width = 127
+        }
+    },
+    -- no animation - static gold color
+    -- fallback mode, good for performance or when animation is unwanted
+    off = {
+        speed = 0,
+        static_color = base_gold
+    }
+}
+
+-- generate and cache color palette for a mode
+local function ensure_palette(mode_name)
+    local config = shimmer_config[mode_name]
+    if not config then return nil end
+    
+    if not color_palettes[mode_name] then
+        if config.gradient then
+            local g = config.gradient
+            color_palettes[mode_name] = makeColorGradient(
+                g.redFrequency, g.grnFrequency, g.bluFrequency,
+                g.phase1, g.phase2, g.phase3,
+                g.center, g.width, palette_length
+            )
+        else
+            -- fallback for modes without gradient
+            color_palettes[mode_name] = { config.static_color or base_gold }
+        end
+    end
+    
+    return color_palettes[mode_name]
+end
+
+-- get client status prefix symbols
+local function get_client_status_prefix(c)
+    if not c or not c.valid then return "" end
+    
+    local symbols = {}
+    if c.floating then table.insert(symbols, "✈") end
+    if c.maximized then table.insert(symbols, "+")
+    elseif c.maximized_horizontal then table.insert(symbols, "⬌")
+    elseif c.maximized_vertical then table.insert(symbols, "⬍") end
+    if c.sticky then table.insert(symbols, "▪") end
+    if c.ontop then table.insert(symbols, "⌃")
+    elseif c.above then table.insert(symbols, "▴")
+    elseif c.below then table.insert(symbols, "▾") end
+    
+    return (#symbols > 0) and table.concat(symbols, "") .. " " or ""
+end
+
+-- timer callback for shimmer animation
+local function shimmer_tick()
+    shimmer_step = shimmer_step + 1
+    -- direct call to integrations update instead of signal
+    local integrations = require("plugins.shimmer.integrations")
+    integrations.update_widgets()
+end
+
+-- per-letter shimmer function
+function M.get_letter_shimmer_markup(text, base_phase_offset)
+    if not text or text == "" then return "" end
+    
+    local escaped_text = gears.string.xml_escape(text)
+    local chars = {}
+    
+    -- split into individual characters (handle utf-8)
+    for i = 1, escaped_text:len() do
+        local char = escaped_text:sub(i, i)
+        if char ~= "" then
+            table.insert(chars, char)
+        end
+    end
+    
+    local colored_chars = {}
+    for i, char in ipairs(chars) do
+        if char:match("%s") then
+            -- preserve whitespace
+            table.insert(colored_chars, char)
+        else
+            -- each letter gets offset phase based on position
+            local letter_phase = (base_phase_offset or 0) + (i * 0.2)
+            local color = M.get_color(nil, 1, letter_phase)
+            table.insert(colored_chars, '<span foreground="' .. color .. '">' .. char .. '</span>')
+        end
+    end
+    
+    return table.concat(colored_chars)
+end
+
+-- api functions
+function M.set_mode(mode)
+    if shimmer_config[mode] then
+        shimmer_mode = mode
+        ensure_palette(mode)
+        -- direct call to border module instead of signal
+        local border = require("plugins.shimmer.border")
+        border.on_mode_changed(mode)
+    end
+end
+
+function M.get_mode()
+    return shimmer_mode
+end
+
+function M.get_color(mode_config, text_length, phase_offset)
+    local mode_name = mode_config or shimmer_mode or "warm_light"
+    local config = shimmer_config[mode_name]
+    
+    if not config then
+        return base_gold
+    end
+    
+    -- handle static colors
+    if config.speed == 0 or config.static_color then
+        return config.static_color or base_gold
+    end
+    
+    -- get or generate palette
+    local palette = ensure_palette(mode_name)
+    if not palette or #palette == 0 then
+        return base_gold
+    end
+    
+    -- calculate animation index with text length variation and phase offset
+    local base_time = shimmer_step * config.speed
+    local length_factor = (text_length or 1) * 0.1
+    local phase_factor = (phase_offset or 0) * 2.0  -- amplify phase differences
+    local animation_phase = base_time + length_factor + phase_factor
+    
+    -- map to palette index with smooth cycling
+    local palette_index = math.floor(animation_phase * 10) % #palette
+    return palette[palette_index] or base_gold
+end
+
+function M.start()
+    if shimmer_timer then return end
+    
+    shimmer_timer = gears.timer {
+        timeout = 0.1,
+        autostart = true,
+        callback = shimmer_tick
+    }
+end
+
+function M.stop()
+    if shimmer_timer then
+        shimmer_timer:stop()
+        shimmer_timer = nil
+    end
+end
+
+function M.restart()
+    M.stop()
+    shimmer_step = 0
+    M.start()
+end
+
+function M.get_base_gold()
+    return base_gold
+end
+
+function M.get_status_prefix(client)
+    return get_client_status_prefix(client)
+end
+
+function M.apply_to_widget(widget, text, status_symbols, options)
+    if not widget or not widget.set_markup then return end
+    if widget.__hover_lock or widget.__hover_fade_lock then return end
+    
+    local display_text = (status_symbols or "") .. (text or "")
+    if display_text == "" then return end
+    
+    options = options or {}
+    local phase_offset = options.phase_offset or 0
+    local per_letter = options.per_letter or false
+    
+    if per_letter then
+        widget:set_markup(M.get_letter_shimmer_markup(display_text, phase_offset))
+    else
+        local shimmer_color = M.get_color(nil, #display_text, phase_offset)
+        local markup = '<span foreground="' .. shimmer_color .. '">' .. 
+                       gears.string.xml_escape(display_text) .. '</span>'
+        widget:set_markup(markup)
+    end
+end
+
+function M.get_palette(mode_name)
+    local mode = mode_name or shimmer_mode
+    return ensure_palette(mode)
+end
+
+function M.get_gradient_params(mode_name)
+    local mode = mode_name or shimmer_mode
+    local config = shimmer_config[mode]
+    return config and config.gradient
+end
+
+function M.set_gradient_params(mode_name, params)
+    if not shimmer_config[mode_name] then return false end
+    
+    shimmer_config[mode_name].gradient = params
+    color_palettes[mode_name] = nil
+    
+    return true
+end
+
+function M.clear_palette_cache(mode_name)
+    if mode_name then
+        color_palettes[mode_name] = nil
+    else
+        color_palettes = {}
+    end
+end
+
+function M.add_preset(preset_config)
+    local name = preset_config.name or "custom"
+    local preset = {
+        speed = preset_config.speed or 0.3,
+        gradient = preset_config.gradient or {
+            redFrequency = 0.05,
+            grnFrequency = 0.08,
+            bluFrequency = 0.02,
+            phase1 = 0, phase2 = 2, phase3 = 4,
+            center = 200, width = 50
+        }
+    }
+    shimmer_config[name] = preset
+end
+
+return M
