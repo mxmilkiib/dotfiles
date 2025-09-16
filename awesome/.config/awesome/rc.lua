@@ -1,22 +1,3 @@
--- helper: refresh all tasklists across screens
-local function refresh_all_tasklists()
-    for s in screen do
-        if s.mytasklist then
-            -- force redraw; layout change causes update callbacks to run
-            s.mytasklist:emit_signal("widget::layout_changed")
-            s.mytasklist:emit_signal("widget::redraw_needed")
-        end
-    end
-end
-
--- when a client is minimized/restored or hidden/unhidden, refresh tasklists to update bg color
-client.connect_signal("property::minimized", function(c)
-    refresh_all_tasklists()
-end)
-
-client.connect_signal("property::hidden", function(c)
-    refresh_all_tasklists()
-end)
 --------------------------------------------------
 -- Milkiis rc.lua                                --
 -- https://github.com/mxmilkiib/dotfiles        --
@@ -183,39 +164,103 @@ local naughty = require("naughty")   -- Notification library
 local menubar = require("menubar")
 local hotkeys_popup = require("awful.hotkeys_popup")
 
+local lgi = require("lgi")
+local cairo = lgi.cairo
 
--- External libraries
+-- layouts will be defined in request::default_layouts handler below
+
+
+-- external libraries
 local lain = require("lain")                  -- Layouts, widgets, utilities
 local bling = require("bling")                -- Modern layouts and utilities
 local cyclefocus = require("cyclefocus")       -- Cycle between applications
 local freedesktop = require("freedesktop")      -- Create a menu from .desktop files
 local treetile = require("treetile")           -- Hierarchical window arrangement
-local shimmer = require("plugins/shimmer")     -- Shimmer animation system
+local shimmer = require("plugins.shimmer")     -- Unified shimmer & border animation system
 local keybindings = require("keybindings")        -- Hotkey definitions
 local hotkey_dupe_detector = require("plugins/hotkey_dupe_detector")  -- duplicate hotkey detection
 
--- CLOCK WIDGET
--- Restore previous clock style: Hack font, white on purple, with right margin
-local mytextclock = wibox.widget.textclock()
-mytextclock.format = "%a %b %d  %H:%M"
-mytextclock.font = "Hack Nerd Font 9"
-local textclock_clr = wibox.container.background()
--- add at least 4px of purple padding on both sides
-textclock_clr:set_widget(wibox.container.margin(mytextclock, 4, 4, 0, 0))
-textclock_clr:set_fg("#ffffff")
-textclock_clr:set_bg("#623997")
 
--- 1px separator to the left of the clock
-local clock_sep = wibox.widget {
-    orientation = "vertical",
-    forced_width = 1,
-    color = "#222222",
-    widget = wibox.widget.separator,
-}
+-- // MARK: -- shimmer configuration
+-- configure unified shimmer system (text effects + border animation)
+shimmer.configure({
+    -- preset = "debug",  -- lighter, more visible preset
+    -- preset = "warm_light",  -- lighter, more visible preset
+    -- preset = "bright_gold",  -- gold-only shine default
+    -- preset = "candy",  -- candy-cane shine preset
+    preset = "candy_pastel",  -- pastel candy-cane shine preset
+    border = {
+        smoothness = 2,  -- light border animation
+        enabled = true
+    }
+})
+
+-- minimal startup timer for shimmer - just enough for tasklist widgets to initialize
+gears.timer.start_new(0.05, function()
+    local focused = client.focus
+    if focused then
+        -- trigger tasklist redraws to establish widget mappings
+        for s in screen do
+            if s.mytasklist then
+                s.mytasklist:emit_signal("widget::redraw_needed")
+            end
+        end
+        -- force shimmer update
+        shimmer.initialize_focused_client()
+    end
+    return false
+end)
+
+-- shimmer mode function (direct access)
+-- use shimmer.set_mode(mode) directly instead of wrapper
+
+
+
+
+-- // MARK: ERRORS
+-- ################################################################################
+-- ███████╗██████╗ ██████╗  ██████╗ ██████╗ ███████╗
+-- ██╔════╝██╔══██╗██╔══██╗██╔═══██╗██╔══██╗██╔════╝
+-- █████╗  ██████╔╝██████╔╝██║   ██║██████╔╝███████╗
+-- ██╔══╝  ██╔══██╗██╔══██╗██║   ██║██╔══██╗╚════██║
+-- ███████╗██║  ██║██║  ██║╚██████╔╝██║  ██║███████║
+-- ╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═╝╚══════╝
+-- ################################################################################
+-- ERROR HANDLING - startup and runtime error management
+
+
+-- Check if awesome encountered an error during startup and fell back to another config
+-- (This code will only ever execute for the fallback config)
+if awesome.startup_errors then
+	naughty.notify({
+		preset = naughty.config.presets.critical,
+		title = "Oops, there were errors during startup!",
+		text = awesome.startup_errors
+	})
+end
+
+
+-- Handle runtime errors after startup
+do
+	local in_error = false
+	awesome.connect_signal("debug::error", function(err)
+		-- Make sure we don't go into an endless error loop
+		if in_error then return end
+		in_error = true
+
+		naughty.notify({
+			preset = naughty.config.presets.critical,
+			title = "Oops, an error happened!",
+			text = tostring(err)
+		})
+		in_error = false
+	end)
+end
+
 
 -- Enable hotkeys help widget for VIM and other apps
 -- when client with a matching name is opened:
--- require("awful.hotkeys_popup.keys")
+require("awful.hotkeys_popup.keys")
 
 
 -- // MARK: VARS
@@ -239,10 +284,18 @@ local tasklist_show_all_tags = false
 local function toggle_tasklist_mode()
     tasklist_show_all_tags = not tasklist_show_all_tags
     
-    -- refresh all tasklists on all screens
+    -- refresh all tasklists on all screens - force filter re-evaluation
     for s in screen do
         if s.mytasklist then
+            -- force complete tasklist rebuild by emitting multiple signals
+            s.mytasklist:emit_signal("widget::layout_changed")
             s.mytasklist:emit_signal("widget::redraw_needed")
+            -- trigger client property changes to force filter re-evaluation
+            for _, c in ipairs(client.get()) do
+                if c.screen == s then
+                    c:emit_signal("property::urgent")
+                end
+            end
         end
     end
     
@@ -257,6 +310,18 @@ end
 
 -- // MARK: UTILITY FUNCTIONS
 -- ################################################################################
+
+
+-- helper: refresh all tasklists across screens
+local function refresh_all_tasklists()
+    for s in screen do
+        if s.mytasklist then
+            -- force redraw; layout change causes update callbacks to run
+            s.mytasklist:emit_signal("widget::layout_changed")
+            s.mytasklist:emit_signal("widget::redraw_needed")
+        end
+    end
+end
 
 -- Matcher generator for rules
 local create_matcher = function(class_name)
@@ -277,101 +342,6 @@ local function blend_hex_colors(c1, c2, t)
     return string.format("#%02x%02x%02x", r, g, b)
 end
 
-local function apply_tag_hover(tag_widget, tag, mode)
-    local text_widget = tag_widget:get_children_by_id('text_role')[1]
-    if not text_widget or not text_widget.set_markup then return end
-    
-    local current = tag.name or ''
-    local base_gold = shimmer.get_base_gold()
-    
-    if mode == "enter" then
-        -- Don't apply hover if tag is selected or if DnD is active
-        if tag.selected or (awesome_dnd and awesome_dnd.drag_active) then return end
-        
-        -- text_widget:set_markup('<span color="' .. (beautiful.taglist_hover_fg or base_gold) .. '">' .. current .. '</span>')
-        -- force solid gold on hover and lock shimmer from overriding
-        text_widget.__hover_lock = true
-        text_widget:set_markup('<span color="' .. base_gold .. '">' .. current .. '</span>')
-        tag_widget.__hover_text_colored = true
-        
-    elseif mode == "leave" then
-        -- restore after hover: always clear lock; if selected, reapply shimmer; else fade gold->white over 0.5s
-        if tag_widget.__hover_text_colored then
-            text_widget.__hover_lock = nil
-            tag_widget.__hover_text_colored = nil
-
-            if tag.selected then
-                pcall(shimmer.apply_to_widget, text_widget, current, nil)
-            else
-                -- cancel existing fade if any
-                if text_widget.__hover_fade_timer and text_widget.__hover_fade_timer.stop then
-                    text_widget.__hover_fade_timer:stop()
-                end
-                text_widget.__hover_fade_lock = true
-                local steps = 10
-                local i = 0
-                text_widget.__hover_fade_timer = gears.timer {
-                    timeout = 0.05,
-                    autostart = true,
-                    callback = function()
-                        i = i + 1
-                        local t = i / steps
-                        local color = blend_hex_colors(base_gold, "#FFFFFF", t)
-                        text_widget:set_markup('<span color="' .. color .. '">' .. current .. '</span>')
-                        if i >= steps then
-                            -- end fade
-                            text_widget.__hover_fade_lock = nil
-                            if text_widget.__hover_fade_timer and text_widget.__hover_fade_timer.stop then
-                                text_widget.__hover_fade_timer:stop()
-                            end
-                            text_widget.__hover_fade_timer = nil
-                        end
-                    end
-                }
-            end
-        end
-        
-    elseif mode == "dnd_enter" then
-        -- DnD specific hover - always applies regardless of selection
-        text_widget.__hover_lock = true
-        text_widget:set_markup('<span color="' .. base_gold .. '">' .. current .. '</span>')
-        tag_widget.__dnd_hover_active = true
-        
-    elseif mode == "dnd_leave" then
-        -- restore from DnD hover: always clear lock; if selected, reapply shimmer; else fade gold->white
-        if tag_widget.__dnd_hover_active then
-            text_widget.__hover_lock = nil
-            tag_widget.__dnd_hover_active = nil
-            if tag.selected then
-                pcall(shimmer.apply_to_widget, text_widget, current, nil)
-            else
-                if text_widget.__hover_fade_timer and text_widget.__hover_fade_timer.stop then
-                    text_widget.__hover_fade_timer:stop()
-                end
-                text_widget.__hover_fade_lock = true
-                local steps = 10
-                local i = 0
-                text_widget.__hover_fade_timer = gears.timer {
-                    timeout = 0.05,
-                    autostart = true,
-                    callback = function()
-                        i = i + 1
-                        local t = i / steps
-                        local color = blend_hex_colors(base_gold, "#FFFFFF", t)
-                        text_widget:set_markup('<span color="' .. color .. '">' .. current .. '</span>')
-                        if i >= steps then
-                            text_widget.__hover_fade_lock = nil
-                            if text_widget.__hover_fade_timer and text_widget.__hover_fade_timer.stop then
-                                text_widget.__hover_fade_timer:stop()
-                            end
-                            text_widget.__hover_fade_timer = nil
-                        end
-                    end
-                }
-            end
-        end
-    end
-end
 
 -- Confirmation menu for quitting awesome
 confirmQuitmenu = awful.menu({
@@ -395,6 +365,9 @@ editor_cmd = terminal .. " -e " .. editor
 tag_nav_mod_keys = {modkey, altkey}
 
 -- Default layout for milk theme
+-- old: preferred default requires custom layout not yet loaded at this point
+-- milkdefault = centerwork_twothirds.horizontal 
+-- set safe temporary default; will be overridden after layout requires
 milkdefault = lain.layout.termfair.center
 
 -- Tyrannical tag configuration (commented out but kept for reference)
@@ -547,6 +520,9 @@ milkdefault = lain.layout.termfair.center
 -- tyrannical.settings.block_children_focus_stealing = true --Block popups ()
 -- tyrannical.settings.group_children = true --Force popups/dialogs to have the same tags as the parent client
 
+
+
+
 -- // MARK: WINDOW MANAGEMENT FUNCTIONS
 -- ################################################################################
 
@@ -624,6 +600,7 @@ local window_manager = {
     end
 }
 
+
 -- Screen rotation function
 function rotate_screens(direction)
     local current_screen = awful.screen.focused()
@@ -662,8 +639,9 @@ function rotate_screens(direction)
     end
 end
 
+
 -- Tag navigation functions  
-local function move_to_previous_tag()
+function move_to_previous_tag()
     local c = client.focus
     if not c then return end
     local current_tag = c:tags()[1]
@@ -673,7 +651,7 @@ local function move_to_previous_tag()
     end
 end
 
-local function move_to_next_tag()
+function move_to_next_tag()
     local c = client.focus
     if not c then return end
     local current_tag = c:tags()[1]
@@ -683,8 +661,9 @@ local function move_to_next_tag()
     end
 end
 
+
 -- Function to cycle through tags with clients (including minimized ones)
-local function cycle_tags_with_clients(direction)
+function cycle_tags_with_clients(direction)
     local current_screen = awful.screen.focused()
     local all_tags = current_screen.tags
 
@@ -711,42 +690,6 @@ local function cycle_tags_with_clients(direction)
 end
 
 
--- // MARK: ERRORS
--- ################################################################################
--- ███████╗██████╗ ██████╗  ██████╗ ██████╗ ███████╗
--- ██╔════╝██╔══██╗██╔══██╗██╔═══██╗██╔══██╗██╔════╝
--- █████╗  ██████╔╝██████╔╝██║   ██║██████╔╝███████╗
--- ██╔══╝  ██╔══██╗██╔══██╗██║   ██║██╔══██╗╚════██║
--- ███████╗██║  ██║██║  ██║╚██████╔╝██║  ██║███████║
--- ╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═╝╚══════╝
--- ################################################################################
--- ERROR HANDLING - startup and runtime error management
--- Check if awesome encountered an error during startup and fell back to another config
--- (This code will only ever execute for the fallback config)
-if awesome.startup_errors then
-	naughty.notify({
-		preset = naughty.config.presets.critical,
-		title = "Oops, there were errors during startup!",
-		text = awesome.startup_errors
-	})
-end
-
--- Handle runtime errors after startup
-do
-	local in_error = false
-	awesome.connect_signal("debug::error", function(err)
-		-- Make sure we don't go into an endless error loop
-		if in_error then return end
-		in_error = true
-
-		naughty.notify({
-			preset = naughty.config.presets.critical,
-			title = "Oops, an error happened!",
-			text = tostring(err)
-		})
-		in_error = false
-	end)
-end
 
 
 -- // MARK: DEFS
@@ -759,20 +702,98 @@ end
 -- ╚═════╝ ╚══════╝╚═╝     ╚══════╝
 -- ################################################################################
 -- DEFINITIONS - theme configuration and visual foundations
+
+
+-- theme init
 beautiful.init(gears.filesystem.get_configuration_dir() .. "milktheme/theme.lua")
 
--- Theme customization moved to milktheme/theme.lua
 
--- tag occupancy indicators handled by plugins/tag_indicators.lua
--- tag occupancy indicators (dynamic tag squares based on unminimized clients)
--- NOTE: required later as `require("plugins.tag_indicators")` to avoid double-loading; keeping this
---       commented reference here for clarity and to avoid accidental reintroduction.
--- local tag_indicators = require("plugins/tag_indicators")
+-- // MARK: icons
+-- icon management system - moved here to fix scoping issues
 
--- // MARK: COLOR AND ICON FUNCTIONS
--- ################################################################################
 
--- Sample dominant color from client icon
+-- helper: resolve fallback icon using theme (menubar) or known paths
+local function get_fallback_icon(c)
+    local utils = menubar and menubar.utils
+    local function load_icon_by_name(name)
+        if not utils or not utils.lookup_icon then return nil end
+        local p = utils.lookup_icon(name)
+        if p and gears.filesystem.file_readable(p) then
+            return gears.surface.load_uncached(p)
+        end
+        return nil
+    end
+
+    -- prefer terminal icon if class suggests a terminal
+    local is_term = false
+    if c and c.class then
+        local cls = tostring(c.class)
+        local l = cls:lower()
+        is_term = l:find("term") ~= nil or cls == "URxvt" or cls == "XTerm"
+    end
+
+    -- try terminal icons first if this is a terminal
+    if is_term then
+        local names_term = {
+            "utilities-terminal",
+            "org.gnome.Terminal",
+            "terminal",
+            "xterm",
+            "utilities-terminal-symbolic",
+        }
+        for _, n in ipairs(names_term) do
+            local surf = load_icon_by_name(n)
+            if surf then return surf end
+        end
+    end
+    local names_generic = {
+        "application-x-executable-symbolic",
+        "application-x-executable",
+        "application-default-icon",
+        "applications-system",
+        "system-run",
+    }
+    for _, n in ipairs(names_generic) do
+        local surf = load_icon_by_name(n)
+        if surf then return surf end
+    end
+
+    -- last resort hardcoded paths (prefer small PNGs over SVG symbolics for reliability)
+    local candidates = {
+        -- generic symbolic svg (small vector; works on most systems)
+        "/usr/share/icons/Adwaita/symbolic/mimetypes/application-x-executable-symbolic.svg",
+        "/usr/share/icons/hicolor/symbolic/mimetypes/application-x-executable-symbolic.svg",
+        "/usr/share/icons/hicolor/scalable/mimetypes/application-x-executable.svg",
+        -- adwaita
+        "/usr/share/icons/Adwaita/16x16/legacy/utilities-terminal.png",
+        "/usr/share/icons/Adwaita/16x16/mimetypes/application-x-executable.png",
+        "/usr/share/icons/Adwaita/16x16/apps/utilities-terminal.png",
+        "/usr/share/icons/Adwaita/16x16/apps/applications-system.png",
+        -- hicolor
+        "/usr/share/icons/hicolor/16x16/apps/utilities-terminal.png",
+        "/usr/share/icons/hicolor/16x16/mimetypes/application-x-executable.png",
+        "/usr/share/icons/hicolor/24x24/apps/utilities-terminal.png",
+        "/usr/share/icons/hicolor/24x24/mimetypes/application-x-executable.png",
+        -- pixmaps fallbacks
+        "/usr/share/pixmaps/terminal.png",
+        "/usr/share/pixmaps/gnome-terminal.png",
+        "/usr/share/pixmaps/application-x-executable.png",
+    }
+    for _, path in ipairs(candidates) do
+        if path and gears.filesystem.file_readable(path) then
+            local surf = gears.surface.load_uncached(path)
+            if surf then return surf end
+        end
+    end
+
+    return nil
+end
+
+
+
+-- // MARK: colour and icons
+
+-- sample dominant color from client icon
 local function average_color_from_icon(icon)
     if not icon then return "#aaaaaa" end
     
@@ -818,7 +839,8 @@ local function average_color_from_icon(icon)
     return "#aaaaaa"
 end
 
--- Create a simple generic terminal icon surface (fallback when no file icon is available)
+
+-- create a simple generic terminal icon surface (fallback when no file icon is available)
 local function create_terminal_icon_surface(size)
     size = size or 16
     local img = cairo.ImageSurface(cairo.Format.ARGB32, size, size)
@@ -862,6 +884,7 @@ local function create_terminal_icon_surface(size)
     
     return img
 end
+
 
 -- Get dominant color for a tag based on visible client icons
 local function get_tag_dominant_color(tag)
@@ -910,8 +933,11 @@ end
 
 
 
+
 -- // MARK: notifications
--- Notification settings
+-- notification settings
+
+
 naughty.config.defaults.ontop = true
 -- naughty.config.defaults.timeout = 10
 -- naughty.config.defaults.margin = dpi("16")
@@ -919,14 +945,15 @@ naughty.config.defaults.ontop = true
 naughty.config.defaults.width = 400  -- Width in pixels instead of percentage string
 naughty.config.defaults.position = 'bottom_middle'
 
--- Notification icon settings
--- Attempt to constrain the size of large icons in their apps notifications
+
+-- notification icon settings
+-- attempt to constrain the size of large icons in their apps notifications
 naughty.config.defaults['icon_size'] = 64
 
 
 
 
--- // MARK: HOTKEYS
+-- // MARK: hotkeys
 -- ################################################################################
 -- ██╗  ██╗ ██████╗ ████████╗██╗  ██╗███████╗██╗   ██╗███████╗
 -- ██║  ██║██╔═══██╗╚══██╔══╝██║ ██╔╝██╔════╝╚██╗ ██╔╝██╔════╝
@@ -935,9 +962,10 @@ naughty.config.defaults['icon_size'] = 64
 -- ██║  ██║╚██████╔╝   ██║   ██║  ██╗███████╗   ██║   ███████║
 -- ╚═╝  ╚═╝ ╚═════╝    ╚═╝   ╚═╝  ╚═╝╚══════╝   ╚═╝   ╚══════╝
 -- ################################################################################
--- HOTKEYS - global and client key bindings
+-- hotkeys - global and client key bindings
 
---- Import keybindings from module
+
+-- import keybindings from module
 local keys = keybindings.build({
     modkey = modkey,
     terminal = terminal,
@@ -945,37 +973,42 @@ local keys = keybindings.build({
     move_to_previous_tag = move_to_previous_tag,
     move_to_next_tag = move_to_next_tag,
     toggle_tasklist_mode = toggle_tasklist_mode,
+    -- old: cycle_tags_with_clients used locally in module
+    -- new: pass global implementation so there's a single source of truth
+    cycle_tags_with_clients = cycle_tags_with_clients,
     quake = nil  -- will be defined later in screen setup
 })
 
--- Use the keybindings from the module
+
+-- use the keybindings from the module
 globalkeys = keys.globalkeys
 clientkeys = keys.clientkeys
 clientbuttons = keys.clientbuttons
 
--- Register client keybindings properly for modern AwesomeWM
+-- register client keybindings properly for modern AwesomeWM
 client.connect_signal("request::default_keybindings", function()
     awful.keyboard.append_client_keybindings(clientkeys)
 end)
 
 
+
+
 -- // MARK: dupe key check
 
--- Check for duplicate hotkeys on startup and show orange notification
+-- check for duplicate hotkeys on startup and show orange notification
 hotkey_dupe_detector.notify_duplicates(globalkeys, clientkeys)
 
 
 
-
--- Compound terminal command for system monitoring
-terminal_cmd = terminal .. " -e btop;" ..
-               terminal .. " -e journalctl -xeb;" ..
-               terminal .. " -e dmesg"
-
+-- compound terminal command for system monitoring
+-- terminal_cmd = terminal .. " -e btop;" ..
+--                terminal .. " -e journalctl -xeb;" ..
+--                terminal .. " -e dmesg"
 
 
 
--- // MARK: VISUAL
+
+-- // MARK: wallpaper
 -- ################################################################################
 -- ██╗   ██╗██╗███████╗██╗   ██╗ █████╗ ██╗     
 -- ██║   ██║██║██╔════╝██║   ██║██╔══██╗██║     
@@ -984,10 +1017,8 @@ terminal_cmd = terminal .. " -e btop;" ..
 --  ╚████╔╝ ██║███████║╚██████╔╝██║  ██║███████╗
 --   ╚═══╝  ╚═╝╚══════╝ ╚═════╝ ╚═╝  ╚═╝╚══════╝
 -- ################################################################################
--- VISUAL - wallpaper, borders, and visual effects
-
--- WALLPAPER - Wallpaper management and configuration
--- Define wallpaper function
+-- wallpaper management and configuration
+-- define wallpaper function
 local function set_wallpaper(s)
 	-- Wallpaper
 	if beautiful.wallpaper then
@@ -1001,28 +1032,21 @@ local function set_wallpaper(s)
 end
 
 -- Set wallpaper on startup
-for s = 1, screen.count() do
-	gears.wallpaper.maximized(beautiful.wallpaper, s, true)
+-- old: numeric loop with screen.count()
+-- for s = 1, screen.count() do
+-- 	gears.wallpaper.maximized(beautiful.wallpaper, s, true)
+-- end
+-- new: idiomatic screen iterator
+for s in screen do
+    gears.wallpaper.maximized(beautiful.wallpaper, s, true)
 end
 
 -- Reset wallpaper when screen geometry changes
 screen.connect_signal("property::geometry", set_wallpaper)
 
--- BORDERS - Border properties and window shapes
--- Border properties moved to theme file
-
--- Client window shapes handled in consolidated signal section
-
--- Client status prefix function provided by shimmer plugin
-
--- Widget references handled by shimmer plugin
-
--- Status prefix updates handled by shimmer plugin
-
--- Terminal icon assignment handled in consolidated signal section
 
 
--- // MARK: LAYOUT
+-- // MARK: layouts
 -- ################################################################################
 -- ██╗      █████╗ ██╗   ██╗ ██████╗ ██╗   ██╗████████╗
 -- ██║     ██╔══██╗╚██╗ ██╔╝██╔═══██╗██║   ██║╚══██╔══╝
@@ -1032,6 +1056,7 @@ screen.connect_signal("property::geometry", set_wallpaper)
 -- ╚══════╝╚═╝  ╚═╝   ╚═╝    ╚═════╝   ╚══╝     ╚═╝   
 -- ################################################################################
 -- LAYOUT - layout management and navigation systems
+
 
 -- NAVIGATION - Movement and collision detection
 -- Navigation system using collision detection
@@ -1056,18 +1081,31 @@ require("collision") {
     -- right = { "Right", "\"", "l", "F17" },
 }
 
+
+
 -- Alt-Tab alternatives (disabled)
 -- local switcher = require("awesome-switcher")
 -- awful.key({ "Mod1" }, "Tab", function() switcher.switch(1, "Alt_L", "Tab", "ISO_Left_Tab") end)
 -- awful.key({ "Mod1", "Shift" }, "Tab", function() switcher.switch(-1, "Alt_L", "Tab", "ISO_Left_Tab") end)
+
 
 -- Alternative Alt-Tab implementation (disabled)
 -- local alttab = require("gobo.awesome.alttab")
 -- awful.key({ "Mod1" }, "Tab", function() alttab.switch(1, "Alt_L", "Tab", "ISO_Left_Tab") end,
 --    { description = "Switch between windows", group = "awesome" })
 
--- MODULES - Additional layout and utility modules
--- Layouts, widgets and utilities
+
+
+-- MODULES - Additional layout and utility modules, layouts, widgets and utilities
+-- local tyrannical = require("tyrannical")     -- Dynamic desktop tagging
+-- require("tyrannical.shortcut")               -- Optional tyrannical shortcuts
+-- local revelation = require("revelation")     -- App/desktop switching script
+-- revelation.init()
+
+
+
+-- LAYOUTS - Layout definitions and configuration
+-- Active layout scripts
 
 -- Custom adaptive layout
 local centerwork_adaptive = require("lain.layout.centerwork_adaptive")
@@ -1076,66 +1114,69 @@ local centerwork_twothirds = require("lain.layout.centerwork_twothirds")
 -- Custom tile.bottom layout with enhanced mouse resize functionality
 local tile_bottom_mouse = require("lain.layout.tile_bottom_mouse")
 
--- Disabled modules (commented out for reference)
--- local tyrannical = require("tyrannical")     -- Dynamic desktop tagging
--- require("tyrannical.shortcut")               -- Optional tyrannical shortcuts
--- local revelation = require("revelation")     -- App/desktop switching script
--- revelation.init()
-
--- LAYOUTS - Layout definitions and configuration
--- Active layout scripts
-
 
 -- LAYOUT DEFINITIONS
 -- Table of layouts to cover with awful.layout.inc, order matters.
 -- https://awesomewm.org/doc/api/libraries/awful.layout.html
 -- https://github.com/lcpz/lain/wiki/Layouts
-awful.layout.layouts = {
-    -- Active layouts in preferred order
-    centerwork_twothirds.horizontal,            -- CUSTOM: Two-thirds for new window
-    centerwork_adaptive.horizontal,             -- CUSTOM: Adaptive centerwork horizontal
-    -- lain.layout.centerwork.horizontal,
-    awful.layout.suit.tile.top,
-    awful.layout.suit.tile.bottom,
-	awful.layout.suit.tile,
-    awful.layout.suit.tile.left,
-    -- tile_bottom_mouse,                          -- CUSTOM: Enhanced tile.bottom with mouse resize
-    -- awful.layout.suit.fair.horizontal,
-	-- bling.layout.horizontal,          -- OPTIONAL: Horizontal master layout  
-    -- lain.layout.termfair.center,
-    -- awful.layout.suit.corner.ne,
-    -- awful.layout.suit.corner.nw,
-	-- awful.layout.suit.spiral,                -- RECOMMENDED: Fibonacci spiral layout
-	treetile,
-	bling.layout.equalarea,              -- RECOMMENDED: Equal area distribution
-	bling.layout.mstab,                -- HIGHLY RECOMMENDED: Master-slave tabbing
-	-- bling.layout.vertical,            -- OPTIONAL: Vertical master layout
-    -- lain.layout.centerwork,
-    -- lain.layout.termfair,
-    awful.layout.suit.magnifier,
-	bling.layout.deck,                -- OPTIONAL: Deck-style stacking layout
-    lain.layout.cascade,                     -- RECOMMENDED: Beautiful cascading windows
-    awful.layout.suit.max,
-	--
-	--    -- BLING LAYOUTS (uncomment if you install Bling):
-    awful.layout.suit.floating,
-	bling.layout.centered,           -- RECOMMENDED: Centered layout
-	--    -- Disabled layouts (commented out for reference)
-	--    -- awful.layout.suit.corner.nw,
-	--    -- awful.layout.suit.corner.ne,
-	--    -- awful.layout.suit.spiral.dwindle,
-	--    awful.layout.suit.max.fullscreen,
-	--    leaved.layout.suit.tile.right,
-	-- 	leaved.layout.suit.tile.left,
-	-- 	leaved.layout.suit.tile.bottom,
-	-- 	leaved.layout.suit.tile.top,
-	trizen, 
-	-- dovetail.layout.right,
-	-- dynamite.layout.conditional,
-	-- dynamite.layout.ratio,
-	-- dynamite.layout.stack,
-	-- dynamite.layout.tabbed
-}
+
+
+-- awful.layout.layouts = {}
+
+
+-- new: handle default layouts by assigning the exact curated subset
+awesome.connect_signal("request::default_layouts", function()
+    -- assert only these layouts are available (not a superset)
+    awful.layout.layouts = {
+        -- active layouts in preferred order
+        centerwork_twothirds.horizontal,            -- custom: two-thirds for new window
+        centerwork_adaptive.horizontal,             -- custom: adaptive centerwork horizontal
+        -- lain.layout.centerwork.horizontal,
+        awful.layout.suit.tile.top,
+        awful.layout.suit.tile.bottom,
+        awful.layout.suit.tile,
+        awful.layout.suit.tile.left,
+        -- tile_bottom_mouse,                          -- custom: enhanced tile.bottom with mouse resize
+        -- awful.layout.suit.fair.horizontal,
+        -- bling.layout.horizontal,          -- optional: horizontal master layout  
+        -- lain.layout.termfair.center,
+        -- awful.layout.suit.corner.ne,
+        -- awful.layout.suit.corner.nw,
+        -- awful.layout.suit.spiral,                -- recommended: fibonacci spiral layout
+        treetile,
+        bling.layout.equalarea,              -- recommended: equal area distribution
+        bling.layout.mstab,                  -- highly recommended: master-slave tabbing
+        -- bling.layout.vertical,            -- optional: vertical master layout
+        -- lain.layout.centerwork,
+        -- lain.layout.termfair,
+        awful.layout.suit.magnifier,
+        bling.layout.deck,                   -- optional: deck-style stacking layout
+        lain.layout.cascade,                 -- recommended: beautiful cascading windows
+        -- awful.layout.suit.max,
+        -- awful.layout.suit.floating,
+        -- bling.layout.centered,
+        -- awful.layout.suit.corner.nw,
+        -- awful.layout.suit.corner.ne,
+        -- awful.layout.suit.spiral.dwindle,
+        -- awful.layout.suit.max.fullscreen,
+        -- leaved.layout.suit.tile.right,
+        -- leaved.layout.suit.tile.left,
+        -- leaved.layout.suit.tile.top,
+        -- trizen,
+        -- dovetail.layout.right,
+        -- dynamite.layout.conditional,
+        -- dynamite.layout.ratio,
+        -- dynamite.layout.stack,
+        -- dynamite.layout.tabbed
+    }
+end)
+
+
+-- now that custom layouts are loaded, set preferred default
+-- overrides the temporary safe default set earlier
+milkdefault = centerwork_twothirds.horizontal
+
+
 
 
 -- // MARK: WIDGETS
@@ -1149,8 +1190,32 @@ awful.layout.layouts = {
 -- ################################################################################
 -- WIDGETS - menus, widgets, and interface elements
 
--- // MARK: --menu
+
+-- // MARK: -- clock widget
+-- Restore previous clock style: Hack font, white on purple, with right margin
+local mytextclock = wibox.widget.textclock()
+mytextclock.format = "%a %b%d %H:%M"
+mytextclock.font = "Hack Nerd Font 9"
+
+local textclock_clr = wibox.container.background()
+-- add at least 4px of purple padding on both sides
+textclock_clr:set_widget(wibox.container.margin(mytextclock, 7, 7, 0, 0))
+textclock_clr:set_fg("#ffffff")
+textclock_clr:set_bg("#623997")
+
+-- 1px separator to the left of the clock
+local clock_sep = wibox.widget {
+    orientation = "vertical",
+    forced_width = 1,
+    color = "#222222",
+    widget = wibox.widget.separator,
+}
+
+
+-- // MARK: -- menu
 -- MENU - Application menu configuration
+
+
 -- Create the awesome submenu contents
 awesomesubmenu = {
     -- {"Hotkeys", function() hotkeys_popup.show_help(nil, awful.screen.focused()) end},
@@ -1160,6 +1225,8 @@ awesomesubmenu = {
     {"Restart", awesome.restart},
     {"Quit", function() awesome.quit() end}
 }
+
+
 -- Build the main menu with the submenu, app launcher, and terminal entry
 mymainmenu = freedesktop.menu.build({
     before = {
@@ -1172,37 +1239,31 @@ mymainmenu = freedesktop.menu.build({
     }
 })
 
+
 -- Create a launcher widget and a main menu
 mylauncher = awful.widget.launcher({
     image = beautiful.awesome_icon,
     menu = mymainmenu
 })
 
+
 -- Keyboard map indicator and switcher
 mykeyboardlayout = awful.widget.keyboardlayout()
 
--- Desktop icons available but disabled
-
--- Navigation system already initialized above in LAYOUT section
 
 
-
-
-
-
--- treetile already required above at line 191
-
--- Alternative layout scripts available but disabled
-
--- Additional navigation and utility modules available but disabled
 -- local media_player = require("media-player")
 
 
--- // MARK: --session
+
+-- // MARK: session
 -- SESSION - Session management
+
+
 -- Reactivate tabs that were active before a restart of awesomewm
 -- For Firefox, might have to disable widget.disable-workspace-management in about:config
--- https://www.reddit.com/r/awesomewm/comments/syjolb/preserve_previously_used_tag_between_restarts/
+-- https://www.reddit.com/r/awesomewm/comments/syjolb/preserve_previously_used_tag_between_restarts
+
 awesome.connect_signal('exit', function(reason_restart)
 	if not reason_restart then return end
 	local file = io.open('/tmp/awesomewm-last-selected-tags', 'w+')
@@ -1221,35 +1282,37 @@ awesome.connect_signal('startup', function()
 	end
 	for s in screen do
 		local i = selected_tags[s.index]
-		local t = s.tags[i]
-		t:view_only()
+		if i and s.tags[i] then
+			local t = s.tags[i]
+			t:view_only()
+		end
 	end
 	file:close()
 end)
 
 
--- // MARK: --borders-shimmer
--- MARK: BORDERS / SHIMMER - Create a cycling rainbow animation for focused window borders
 
--- Border animation handled by plugins/border_animation.lua
+
+-- // MARK: borders-shimmer
+-- unified shimmer system handles both text effects and border animation
+-- configuration done above in shimmer.configure() call
 
 -- Store widget references for direct updates (moved here to avoid nil reference)
 -- (moved earlier) local active_tag_widgets = {}
 -- (moved earlier) local active_client_widgets = {}
 
+
+
 -- ========================================================================
 -- PLUGIN INTEGRATION
 -- ========================================================================
 -- load self-contained plugins (logical order: dependencies first)
-local awesome_dnd = require("plugins.awesome_dnd")
-local border_animation = require("plugins.border_animation")  -- emits signals
-local shimmer = require("plugins.shimmer")                   -- listens to border signals
+
+
 local tag_indicators = require("plugins.tag_indicators")
+local awesome_dnd = require("plugins.awesome_dnd")
+-- border animation now integrated into shimmer system
 
--- start border animation system
-border_animation.start()
-
--- Border sync handled directly in shimmer plugin - no relay needed
 
 -- Create a shimmering text launcher (moved here to avoid nil reference)
 local launcher_text = wibox.widget {
@@ -1264,25 +1327,15 @@ launcher_text:buttons(gears.table.join(
     awful.button({}, 3, function() mymainmenu:toggle() end)
 ))
 
--- Update launcher text with shimmer (moved here to avoid nil reference)
-local function update_launcher_shimmer()
-    -- Always use static base gold color for launcher (no animation)
-    launcher_text:set_markup('<span color="' .. shimmer.get_base_gold() .. '">⚙</span>')
-end
-
--- Client focus handled by shimmer plugin
+-- register launcher with shimmer (direct function call)
+shimmer.register_launcher(launcher_text)
 
 
--- Shimmer animation handled by plugins/shimmer.lua
--- Shimmer mode function - delegates to plugin
-function set_shimmer_mode(mode)
-    shimmer.set_mode(mode)
-end
-
--- All shimmer configuration and animation handled by plugins/shimmer.lua
 
 
--- screen setup and widget creation
+
+-- // MARK: taglist
+-- taglist button mouse bindings
 local taglist_buttons = gears.table.join(
     awful.button({ }, 1, function(t) t:view_only() end),
     awful.button({ modkey }, 1, function(t)
@@ -1300,6 +1353,9 @@ local taglist_buttons = gears.table.join(
     awful.button({ }, 5, function(t) awful.tag.viewprev(t.screen) end)
 )
 
+
+-- // MARK: tasklist
+-- tasklist button mouse bindings
 local tasklist_buttons = gears.table.join(
     awful.button({ }, 1, function (c)
         if c == client.focus then
@@ -1328,7 +1384,10 @@ local tasklist_buttons = gears.table.join(
 
 
 
--- // MARK: SCREEN
+
+-- // MARK: screen
+
+
 -- apply wallpaper and create widgets for each screen
 awful.screen.connect_for_each_screen(function(s)
     -- wallpaper
@@ -1372,7 +1431,9 @@ awful.screen.connect_for_each_screen(function(s)
     )
 
     -- each screen has its own tag table
-    awful.tag({ "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "-", "="}, s, awful.layout.layouts[1])
+    -- old: used first layout in global list (order can vary if modules append)
+    -- awful.tag({ "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "-", "="}, s, awful.layout.layouts[1])
+    awful.tag({ "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "-", "="}, s, milkdefault)
 
     -- create a promptbox for each screen
     s.mypromptbox = awful.widget.prompt()
@@ -1421,38 +1482,44 @@ awful.screen.connect_for_each_screen(function(s)
             create_callback = function(self, t, index, objects)
                 local text_widget = self:get_children_by_id('text_role')[1]
                 if text_widget and t then
-                    -- Set initial shimmer if tag is selected
-                    if t.selected then
-                        pcall(shimmer.apply_to_widget, text_widget, t.name or "", nil)
-                    end
-                    -- register with shimmer so timer updates selected tag(s)
-                    pcall(shimmer.register_tag_widget, s.index, t, text_widget)
+                    -- register with shimmer (direct function call with tag mapping)
+                    shimmer.register_taglist(self, s.index, t)
                     
-                    -- Tag hover styling
+                    -- tag hover styling (direct function calls)
                     self:connect_signal('mouse::enter', function()
-                        pcall(apply_tag_hover, self, t, "enter")
+                        shimmer.handle_tag_hover(self, t, "enter")
                     end)
                     
                     self:connect_signal('mouse::leave', function()
-                        pcall(apply_tag_hover, self, t, "leave")
+                        shimmer.handle_tag_hover(self, t, "leave")
                     end)
                 end
             end
             ,
             update_callback = function(self, t, index, objects)
                 local text_widget = self:get_children_by_id('text_role')[1]
-                if text_widget and t and t.selected then
-                    -- maintain shimmering for selected tags
-                    pcall(shimmer.apply_to_widget, text_widget, t.name or "", nil)
+                if text_widget and t then
+                    -- taglist update handled automatically by shimmer
                 end
             end
         }
     }
 
+
+
     -- // MARK: tasklist
-    -- create a tasklist widget with spacers
+    -- completely standard tasklist - no custom templates or overrides
+    -- let the standard system handle all functionality properly:
+    -- • terminal icons with proper fallbacks
+    -- • underscore handling for minimized clients  
+    -- • status indicators and client state management
+    --
+    -- separate enhancement modules (like shimmer) will integrate via signals
+    -- rather than trying to modify the core widget structure
     s.mytasklist = awful.widget.tasklist {
         screen  = s,
+        disable_icon = false,
+        tasklist_disable_icon = false,
         filter  = function(c, screen)
             if not c or not c.valid or c.screen ~= screen then
                 return false
@@ -1478,6 +1545,7 @@ awful.screen.connect_for_each_screen(function(s)
         end,
         buttons = tasklist_buttons,
         style = {
+            disable_icon = false,
             bg_normal = "#623997",   -- unfocused but unminimized
             bg_focus  = "#623997",   -- focused
             bg_minimize = "#000000", -- minimized
@@ -1487,84 +1555,94 @@ awful.screen.connect_for_each_screen(function(s)
             spacing = 1,
             layout = wibox.layout.flex.horizontal
         },
-        
-        -- Simplified template to prevent crashes
+        -- robust template: always provide an icon widget, and override with fallback when needed
         widget_template = {
             {
                 {
                     {
-                        id = 'icon_role',
-                        widget = wibox.widget.imagebox,
-                    },
-                    {
                         {
-                            id = 'text_role',
-                            widget = wibox.widget.textbox,
+                            id     = 'icon_role',
+                            widget = wibox.widget.imagebox,
+                            resize = true,
                         },
-                        halign = "center",
+                        valign = 'center',
+                        halign = 'center',
                         widget = wibox.container.place,
                     },
+                    {
+                        id     = 'text_role',
+                        widget = wibox.widget.textbox,
+                    },
+                    spacing = 4,
                     layout = wibox.layout.fixed.horizontal,
                 },
-                left = 4,
+                left  = 4,
                 right = 4,
-                widget = wibox.container.margin,
+                widget  = wibox.container.margin,
             },
-            id = 'background_role',
+            id     = 'background_role',
             widget = wibox.container.background,
-            
             create_callback = function(self, c, index, objects)
-                pcall(function()
-                    local text_widget = self:get_children_by_id('text_role')[1]
-                    if not text_widget then return end
-                    local name = c and (c.name or c.class) or ""
-                    -- text_widget:set_text(name)
-                    if c and client.focus and c == client.focus then
-                        -- shimmer focused client
-                        pcall(shimmer.apply_to_widget, text_widget, name, nil)
-                    else
-                        -- clear any previous shimmer by forcing plain white text
-                        text_widget:set_markup('<span color="#FFFFFF">' .. name .. '</span>')
+                local ib = self:get_children_by_id('icon_role')[1]
+                if ib then
+                    local sz = (beautiful and (beautiful.tasklist_icon_size or beautiful.icon_size)) or 16
+                    ib.forced_height = sz
+                    ib.forced_width = sz
+                    -- direct load when forcing generic icons
+                    if FORCE_GENERIC_ICONS and GENERIC_ICON_PATH and gears.filesystem.file_readable(GENERIC_ICON_PATH) then
+                        ib.image = gears.surface.load_uncached(GENERIC_ICON_PATH)
+                    elseif not c.icon then
+                        -- fallback when client has no icon
+                        local surf = get_fallback_icon and get_fallback_icon(c)
+                        if surf then 
+                            ib.image = surf
+                        end
                     end
-                    -- set background based on minimized state
-                    local is_min = c and c.minimized
-                    local color = is_min and "#000000" or "#623997"
-                    self.bg = color
-                    if self.set_bg then self:set_bg(color) end
-                    -- optionally remove bg border color interference
-                    if self.set_shape_border_color then self:set_shape_border_color(nil) end
-                    -- register with shimmer so timer updates focused client
-                    if c then pcall(shimmer.register_client_widget, s.index, c, text_widget, nil) end
-                end)
+                end
+                
+                -- shimmer integration (simplified)
+                local tb = self:get_children_by_id('text_role')[1]
+                if tb and c == client.focus then
+                    -- shimmer handled by tasklist_update_callback below
+                    -- (removed duplicate shimmer application)
+                end
             end,
-            
             update_callback = function(self, c, index, objects)
-                pcall(function()
-                    local text_widget = self:get_children_by_id('text_role')[1]
-                    if not text_widget then return end
-                    local name = c and (c.name or c.class) or ""
-                    -- if focused, shimmer; else plain white
-                    if c and client.focus and c == client.focus then
-                        pcall(shimmer.apply_to_widget, text_widget, name, nil)
-                    else
-                        text_widget:set_markup('<span color="#FFFFFF">' .. name .. '</span>')
+                local ib = self:get_children_by_id('icon_role')[1]
+                if ib then
+                    local sz = (beautiful and (beautiful.tasklist_icon_size or beautiful.icon_size)) or 16
+                    ib.forced_height = sz
+                    ib.forced_width = sz
+                    if not c.icon or ib.image == nil then
+                        -- fallback when client has no icon
+                        local surf = get_fallback_icon and get_fallback_icon(c)
+                        if surf then 
+                            ib.image = surf
+                        end
                     end
-                    -- update background based on minimized state
-                    local is_min = c and c.minimized
-                    local color = is_min and "#000000" or "#623997"
-                    self.bg = color
-                    if self.set_bg then self:set_bg(color) end
-                    if self.set_shape_border_color then self:set_shape_border_color(nil) end
-                end)
+                end
+                
+                -- shimmer integration handled by shimmer module
+                shimmer.tasklist_update_callback(self, c, index, objects)
             end,
         },
     }
+    
+    -- register tasklist with shimmer
+    shimmer.register_tasklist(s.mytasklist)
+
 
     -- // MARK: wibox
     -- create the wibox
     s.mywibox = awful.wibar({ position = "top", screen = s })
 
     -- add widgets to the wibox
+    -- create systray with base size from theme
+    local mysystray = wibox.widget.systray()
+    if mysystray.set_base_size then
+        local tray_size = (beautiful and (beautiful.systray_icon_size or beautiful.icon_size)) or 16
+        mysystray:set_base_size(tray_size)
+    end
     s.mywibox:setup {
         layout = wibox.layout.align.horizontal,
         { -- left widgets
@@ -1580,18 +1658,21 @@ awful.screen.connect_for_each_screen(function(s)
         },
         { -- right widgets
             layout = wibox.layout.fixed.horizontal,
-            clock_sep,
-            textclock_clr,
-            wibox.widget.systray(),
+            -- add 3px padding to clock text
+            -- add 3px horizontal + 1px top padding to systray and center vertically
+            wibox.container.margin({ mysystray, valign = "center", widget = wibox.container.place }, 6, 6, 0, 0),
+            wibox.container.margin(textclock_clr, 0, 0, 0, 0)
         },
     }
+
+
 
     -- // MARK: altwibox
     -- the alt wibox
     s.myaltwibox = awful.wibar({
         position = "top",
         screen = s,
-        height = 23,
+        height = 22,
         visible = false
     })
 
@@ -1614,16 +1695,19 @@ end)
 
 
 
--- // MARK: CLIENT SIGNAL HANDLERS
+
+-- // MARK: clients
 -- ################################################################################
---  ██████╗██╗     ██╗███████╗███╗   ██╗████████╗    ███╗   ███╗ █████╗ ███╗   ██╗ █████╗  ██████╗ ███████╗███╗   ██╗███████╗██╗  ██╗
--- ██╔════╝██║     ██║██╔════╝████╗  ██║╚══██╔══╝    ████╗ ████║██╔══██╗████╗  ██║██╔══██╗██╔════╝ ██╔════╝████╗  ██║██╔════╝╚██╗██╔╝
--- ██║     ██║     ██║█████╗  ██╔██╗ ██║   ██║       ██╔████╔██║███████║██╔██╗ ██║███████║██║  ███╗█████╗  ██╔██╗ ██║█████╗  ╚███╔╝ 
--- ██║     ██║     ██║██╔══╝  ██║╚██╗██║   ██║       ██║╚██╔╝██║██╔══██║██║╚██╗██║██╔══██║██║   ██║██╔══╝  ██║╚██╗██║██╔══╝  ██╔██╗ 
--- ╚██████╗███████╗██║███████╗██║ ╚████║   ██║       ██║ ╚═╝ ██║██║  ██║██║ ╚████║██║  ██║╚██████╔╝███████╗██║ ╚████║███████╗██╔╝ ██╗
---  ╚═════╝╚══════╝╚═╝╚══════╝╚═╝  ╚═══╝   ╚═╝       ╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝ ╚═════╝ ╚══════╝╚═╝  ╚═══╝╚══════╝╚═╝  ╚═╝
+--  ██████╗██╗     ██╗███████╗███╗   ██╗████████╗
+-- ██╔════╝██║     ██║██╔════╝████╗  ██║╚══██╔══╝
+-- ██║     ██║     ██║█████╗  ██╔██╗ ██║   ██║   
+-- ██║     ██║     ██║██╔══╝  ██║╚██╗██║   ██║   
+-- ╚██████╗███████╗██║███████╗██║ ╚████║   ██║   
+--  ╚═════╝╚══════╝╚═╝╚══════╝╚═╝  ╚═══╝   ╚═╝   
 -- ################################################################################
--- Client management signals consolidated for clarity and maintainability
+-- duplicate functions removed - consolidated in utility section above
+
+
 
 
 -- Client creation and setup
@@ -1632,69 +1716,149 @@ client.connect_signal("manage", function(c)
     c.shape = function(cr, w, h)
         gears.shape.rounded_rect(cr, w, h, beautiful.border_radius)
     end
-    
-    -- Make floating windows appear on top by default
-    if c.floating then
-        c.ontop = true
+
+    -- old: only set fallback when the client had no icon
+    -- if not c.icon then
+    --     local fallback_icon = "/usr/share/icons/Adwaita/symbolic/legacy/utilities-terminal-symbolic.svg"
+    --     if gears.filesystem.file_readable(fallback_icon) then
+    --         c.icon = gears.surface.load_uncached(fallback_icon)
+    --     end
+    -- end
+
+    -- set fallback icon when client has no icon
+    if not c.icon then
+        local surf = get_fallback_icon(c)
+        if surf then c.icon = surf end
     end
     
-    -- Assign generic terminal icon for urxvt clients
-    if c.class == "URxvt" or c.class == "urxvt" then
-        local term_icon = gears.filesystem.get_configuration_dir() .. "milktheme/layouts/term.png"
-        if gears.filesystem.file_readable(term_icon) then
-            c.icon = gears.surface.load_uncached(term_icon)
-        end
-    end
-    
-    -- Set windows as slave (put at end instead of master)
+    -- Set the windows at the slave,
+    -- i.e. put it at the end of others instead of setting it master.
     -- if not awesome.startup then awful.client.setslave(c) end
     
     if awesome.startup
       and not c.size_hints.user_position
       and not c.size_hints.program_position then
-        -- Prevent clients from being unreachable after screen count changes
+        -- Prevent clients from being unreachable after screen count changes.
         awful.placement.no_offscreen(c)
     end
 end)
 
 -- Titlebar management
+-- double-click handler for titlebar (per-client, weak-keyed)
+local double_click_timers = setmetatable({}, { __mode = "k" })
+local function titlebar_handle_click(c, single_cb, double_cb, interval)
+    interval = interval or 0.20
+    local t = double_click_timers[c]
+    if t then
+        if t.started then t:stop() end
+        double_click_timers[c] = nil
+        if double_cb then double_cb() end
+    else
+        t = gears.timer {
+            timeout = interval,
+            autostart = true,
+            single_shot = true,
+            callback = function()
+                double_click_timers[c] = nil
+                if single_cb then single_cb() end
+            end
+        }
+        double_click_timers[c] = t
+    end
+end
+
 client.connect_signal("request::titlebars", function(c)
+    -- unified icon size from theme
+    local icon_size = (beautiful and beautiful.icon_size) or 16
+
     -- buttons for the titlebar
     local buttons = gears.table.join(
+        -- left click: single = move, double = toggle maximize
         awful.button({ }, 1, function()
-            c:emit_signal("request::activate", "titlebar", {raise = true})
-            awful.mouse.client.move(c)
+            titlebar_handle_click(c,
+                function()
+                    c:emit_signal("request::activate", "titlebar", {raise = true})
+                    awful.mouse.client.move(c)
+                end,
+                function()
+                    c.maximized = not c.maximized
+                    c:raise()
+                end
+            )
         end),
+        -- middle click minimises client
+        awful.button({ }, 2, function()
+            c.minimized = true
+        end),
+        -- right click resizes client
         awful.button({ }, 3, function()
             c:emit_signal("request::activate", "titlebar", {raise = true})
             awful.mouse.client.resize(c)
         end)
     )
 
-    awful.titlebar(c) : setup {
+    local titlebar_text_widget = wibox.widget.textbox()
+    titlebar_text_widget.font = "Hack Nerd Font 6"
+    
+    awful.titlebar(c, { size = (beautiful and beautiful.titlebar_height) or ((beautiful and beautiful.icon_size) or 16) + 2 }) : setup {
         { -- Left
-            awful.titlebar.widget.iconwidget(c),
+            -- window icon with fallback, constrained to theme icon size, vertically centered, with padding (left=5, top=1)
+            wibox.container.margin({
+                {
+                    {
+                        id = 'titlebar_icon',
+                        image = c.icon or (beautiful and beautiful.awesome_icon) or nil,
+                        forced_height = icon_size,
+                        forced_width = icon_size,
+                        resize = true,
+                        widget = wibox.widget.imagebox,
+                    },
+                    valign = "center",
+                    widget = wibox.container.place,
+                },
+            }, 5, 0, 1, 0),
             buttons = buttons,
             layout  = wibox.layout.fixed.horizontal
         },
         { -- Middle
-            { -- Title
-                align  = "center",
-                widget = awful.titlebar.widget.titlewidget(c)
-            },
+            -- tiny title text, left-aligned with same padding as right buttons, gray color
+            wibox.container.margin({
+                titlebar_text_widget,
+                valign = "center",
+                halign = "left",
+                widget = wibox.container.place,
+            }, 5, 0, 1, 0), -- same left padding as right button group
             buttons = buttons,
             layout  = wibox.layout.flex.horizontal
         },
-        { -- Right
-            awful.titlebar.widget.floatingbutton (c),
-            awful.titlebar.widget.maximizedbutton(c),
-            awful.titlebar.widget.stickybutton   (c),
-            awful.titlebar.widget.ontopbutton    (c),
-            awful.titlebar.widget.closebutton    (c),
+        -- Right (wrap the whole group to give right=5, top=1 padding)
+        wibox.container.margin({
+            -- constrain all titlebar control buttons to theme icon size and center vertically
+            { wibox.container.constraint(awful.titlebar.widget.floatingbutton (c), "exact", icon_size, icon_size), valign = "center", widget = wibox.container.place },
+            { wibox.container.constraint(awful.titlebar.widget.maximizedbutton(c), "exact", icon_size, icon_size), valign = "center", widget = wibox.container.place },
+            { wibox.container.constraint(awful.titlebar.widget.stickybutton   (c), "exact", icon_size, icon_size), valign = "center", widget = wibox.container.place },
+            { wibox.container.constraint(awful.titlebar.widget.ontopbutton    (c), "exact", icon_size, icon_size), valign = "center", widget = wibox.container.place },
+            { wibox.container.constraint(awful.titlebar.widget.closebutton    (c), "exact", icon_size, icon_size), valign = "center", widget = wibox.container.place },
             layout = wibox.layout.fixed.horizontal()
-        },
+        }, 0, 5, 1, 0),
         layout = wibox.layout.align.horizontal
     }
+    
+    -- Set up dynamic titlebar text color based on focus state
+    local function update_titlebar_text_color()
+        if titlebar_text_widget then
+            local color = client.focus == c and "#ffffff" or "#999999" -- bright when focused, dimmer when unfocused
+            titlebar_text_widget.markup = '<span color="' .. color .. '">' .. (c.name or c.class or "") .. '</span>'
+        end
+    end
+    
+    -- Set initial color
+    update_titlebar_text_color()
+    
+    -- Update color on focus changes
+    c:connect_signal("focus", update_titlebar_text_color)
+    c:connect_signal("unfocus", update_titlebar_text_color)
+    c:connect_signal("property::name", update_titlebar_text_color)
 end)
 
 -- Client property changes
@@ -1901,7 +2065,7 @@ end)
 -- end)
 
 
--- // MARK: CLIENT MANAGEMENT
+-- // MARK: clients
 -- ################################################################################
 --  ██████╗██╗     ██╗███████╗███╗   ██╗████████╗    ███╗   ███╗ █████╗ ███╗   ██╗ █████╗  ██████╗ ███████╗███╗   ██╗███████╗██╗  ██╗
 -- ██╔════╝██║     ██║██╔════╝████╗  ██║╚══██╔══╝    ████╗ ████║██╔══██╗████╗  ██║██╔══██╗██╔════╝ ██╔════╝████╗  ██║██╔════╝╚██╗██╔╝
@@ -1910,106 +2074,19 @@ end)
 -- ╚██████╗███████╗██║███████╗██║ ╚████║   ██║       ██║ ╚═╝ ██║██║  ██║██║ ╚████║██║  ██║╚██████╔╝███████╗██║ ╚████║███████╗██╔╝ ██╗
 --  ╚═════╝╚══════╝╚═╝╚══════╝╚═╝  ╚═══╝   ╚═╝       ╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝ ╚═════╝ ╚══════╝╚═╝  ╚═══╝╚══════╝╚═╝  ╚═╝
 -- ################################################################################
--- CLIENT MANAGEMENT - auto-sizing, focus handling, floating windows, and mouse interactions
--- (consolidated from: AUTO-SIZING, ANTI-WARP RESIZE, FOCUS AND ACTIVATION HANDLING, FLOATING WINDOW CENTER, MOUSE BUTTONS)
+-- CLIENT MANAGEMENT - focus handling, floating windows, and mouse interactions
+-- (consolidated from: ANTI-WARP RESIZE, FOCUS AND ACTIVATION HANDLING, FLOATING WINDOW CENTER, MOUSE BUTTONS)
 
--- // MARK: --auto-sizing
---[[ DISABLED: Auto-sizing dialog system was too aggressive
-client.connect_signal("manage", function(c)
-    -- Wait a moment for the window name to be set
-    gears.timer.delayed_call(function()
-        if not c.valid then return end
-        
-        local name = c.name or ""
-        local class = c.class or ""
-        
-        -- Get current geometry to check if window is too small
-        local geo = c:geometry()
-        local min_width = 400  -- Minimum width threshold
-        local min_height = 300 -- Minimum height threshold
-        
-        -- Only apply auto-floating if window is smaller than threshold
-        local should_auto_resize = (geo.width < min_width or geo.height < min_height)
-        
-        -- Screenshot and image dialogs
-        if (name:match("Save screenshot") or name:match("Save Screenshot") or 
-           name:match("Screenshot") or name:match("Save Image") or
-           name:match("Export Image") or name:match("Export Screenshot")) and should_auto_resize then
-            c.floating = true
-            c.width = 800
-            c.height = 600
-            awful.placement.centered(c)
-        
-        -- File operation dialogs
-        elseif (name:match("Save As") or name:match("Open File") or 
-               name:match("Choose File") or name:match("File Operations") or
-               name:match("Copy Files") or name:match("Move Files")) and should_auto_resize then
-            c.floating = true
-            c.width = 900
-            c.height = 700
-            awful.placement.centered(c)
-        
-        -- Preferences and settings dialogs
-        elseif (name:match("Preferences") or name:match("Settings") or 
-               name:match("Options") or name:match("Configuration") or
-               name:match("Properties")) and should_auto_resize then
-            c.floating = true
-            c.width = 850
-            c.height = 650
-            awful.placement.centered(c)
-        
-        -- Print and export dialogs
-        elseif (name:match("Print") or name:match("Export") or 
-               name:match("Print Setup") or name:match("Export As")) and should_auto_resize then
-            c.floating = true
-            c.width = 750
-            c.height = 550
-            awful.placement.centered(c)
-        
-        -- Error and confirmation dialogs
-        elseif (name:match("Error") or name:match("Warning") or 
-               name:match("Confirmation") or name:match("Confirm")) and should_auto_resize then
-            c.floating = true
-            c.width = 500
-            c.height = 300
-            awful.placement.centered(c)
-        
-        -- Browser dialogs
-        elseif (name:match("Downloads") or name:match("Bookmarks") or 
-               name:match("History") or name:match("Page Info") or
-               name:match("Developer Tools")) and should_auto_resize then
-            c.floating = true
-            c.width = 800
-            c.height = 600
-            awful.placement.centered(c)
-        
-        -- Media player dialogs
-        elseif (name:match("Media Info") or name:match("Track Info") or 
-               name:match("Playlist") or name:match("Audio Settings")) and should_auto_resize then
-            c.floating = true
-            c.width = 700
-            c.height = 500
-            awful.placement.centered(c)
-        
-        -- Development dialogs
-        elseif (name:match("Debug") or name:match("Output") or 
-               name:match("Terminal") or name:match("Build Output") or
-               name:match("Error List")) and should_auto_resize then
-            c.floating = true
-            c.width = 900
-            c.height = 700
-            awful.placement.centered(c)
-        
-        -- Generic dialog catch-all (for any dialog type window)
-        elseif c.type == "dialog" and should_auto_resize then
-            c.floating = true
-            c.width = 600
-            c.height = 400
-            awful.placement.centered(c)
-        end
-    end)
+
+-- when a client is minimized/restored or hidden/unhidden, refresh tasklists to update bg color
+client.connect_signal("property::minimized", function(c)
+    refresh_all_tasklists()
 end)
---]] -- End of disabled auto-sizing dialog system
+
+client.connect_signal("property::hidden", function(c)
+    refresh_all_tasklists()
+end)
+
 
 -- Anti-warp resize function that prevents cursor from jumping to another monitor
 local function resize_no_warp(c)
@@ -2128,6 +2205,7 @@ local function resize_no_warp(c)
     end
 end
 
+
 -- Keep track of which clients are being dragged
 client.connect_signal("request::activate", function(c, context, hints)
     -- Check if mouse button is still down
@@ -2141,6 +2219,7 @@ client.connect_signal("request::activate", function(c, context, hints)
         window_manager.set_dragging(c, true)
     end
 end)
+
 
 client.connect_signal("property::size", function(c)
     -- Skip if not floating
@@ -2161,21 +2240,23 @@ end)
 -- Client cleanup handled above in consolidated signal section
 
 
--- Middle mouse button for minimize/focus
-awful.button({}, 0, function(c)
-    if c == client.focus then
-        c.minimized = true
-    else
-        client.focus = c
-        c:raise()
-    end
-end)
+-- Middle mouse button for minimise
+-- awful.button({}, 3, function(c)
+--     if c == client.focus then
+--         c.minimized = true
+--     else
+--         client.focus = c
+--         c:raise()
+--     end
+-- end)
+
 
 -- Set keys
-local globalkeys = keys.globalkeys or {}
-root.keys(gears.table.join(table.unpack(globalkeys)))
-
--- Note: set_shimmer_mode is already defined globally above
+-- old: shadowed local and redundant join/unpack
+-- local globalkeys = keys.globalkeys or {}
+-- root.keys(gears.table.join(table.unpack(globalkeys)))
+-- new: set once, use keys from module directly
+root.keys(keys.globalkeys)
 
 
 
@@ -2191,25 +2272,6 @@ local tag_keybindings = {
 
 
 
-
-
-
---
---
---
---
---
---
---
---
---     { description = "decrease the number of columns", group = "layout" }),
---
-
-
-
-
-
-
 -- // MARK: RULES
 -- ################################################################################
 -- ██████╗ ██╗   ██╗██╗     ███████╗
@@ -2221,7 +2283,8 @@ local tag_keybindings = {
 -- ################################################################################
 -- RULES - client rules and window behavior
 
--- // MARK: --global-rules
+
+-- // MARK: global-rules
 -- rules to apply to new clients (through the "manage" signal)
 awful.rules.rules = {
     -- all clients will match this rule (global defaults)
@@ -2238,13 +2301,16 @@ awful.rules.rules = {
             placement = awful.placement.no_overlap+awful.placement.no_offscreen
         }
     },
-    
-    -- bypass size hints for arandr
-    {
-        rule = { class = "Arandr" },
-        properties = { size_hints_honor = false }
-    },
 
+
+    -- add titlebars to normal clients and dialogs
+    { rule_any = {type = { "normal", "dialog" }}, properties = { titlebars_enabled = true } },
+
+    -- bypass size hints for arandr
+    { rule = { class = "Arandr" }, properties = { size_hints_honor = false } },
+
+
+    -- // MARK: floating-rule
     -- floating clients
     { rule_any = {
             instance = {
@@ -2276,10 +2342,7 @@ awful.rules.rules = {
         }
       }, properties = { floating = true }},
 
-    -- add titlebars to normal clients and dialogs
-    { rule_any = {type = { "normal", "dialog" }
-      }, properties = { titlebars_enabled = true }
-    },
+
 
     -- // MARK: --floating-rules
     -- {{{ Floating client rules
@@ -2701,4 +2764,5 @@ awful.spawn.with_shell("pgrep -u $USER -x picom > /dev/null || picom --config ~/
 -- )
 
 -- Set root bindings
-root.keys(gears.table.join(table.unpack(globalkeys)))
+-- old: duplicate binding set with join/unpack; now handled earlier via root.keys(keys.globalkeys)
+-- root.keys(gears.table.join(table.unpack(globalkeys)))
