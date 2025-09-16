@@ -69,6 +69,73 @@ local function set_shimmer_mode(mode)
     shimmer.set_mode(mode)
 end
 
+-- cycle through shimmer presets
+local function cycle_shimmer_preset()
+    local new_preset = shimmer.cycle_preset()
+    -- show notification of new preset
+    naughty.notify({
+        title = "shimmer preset",
+        text = new_preset,
+        timeout = 1.5
+    })
+end
+
+-- toggle per-character shimmer
+local function toggle_per_character_shimmer()
+    local enabled = shimmer.toggle_per_character()
+    -- print("[SHIMMER DEBUG] keybinding toggle result:", enabled)
+    naughty.notify({
+        title = "per-character shimmer",
+        text = enabled and "enabled" or "disabled",
+        timeout = 1.5
+    })
+    -- force immediate widget update to see the change
+    local integrations = require('plugins.shimmer.integrations')
+    integrations.update_widgets()
+end
+
+-- cycle per-character mode
+local function cycle_per_character_mode()
+    local mode = shimmer.cycle_per_character_mode()
+    naughty.notify({
+        title = "per-character mode",
+        text = mode,
+        timeout = 1.5
+    })
+end
+
+-- speed control functions
+local function increase_shimmer_speed()
+    local current_speed = shimmer.get_speed_multiplier()
+    local new_speed = math.min(current_speed * 1.5, 10.0)  -- larger increment, higher cap
+    shimmer.set_speed_multiplier(new_speed)
+    naughty.notify({
+        title = "shimmer speed",
+        text = string.format("%.1fx", new_speed),
+        timeout = 1.5
+    })
+end
+
+local function decrease_shimmer_speed()
+    local current_speed = shimmer.get_speed_multiplier()
+    local new_speed = math.max(current_speed / 1.5, 0.1)  -- larger decrement
+    shimmer.set_speed_multiplier(new_speed)
+    naughty.notify({
+        title = "shimmer speed",
+        text = string.format("%.1fx", new_speed),
+        timeout = 1.5
+    })
+end
+
+local function reset_shimmer_speed()
+    shimmer.set_speed_multiplier(1.0)
+    naughty.notify({
+        title = "shimmer speed",
+        text = "reset to 1.0x",
+        timeout = 1.5
+    })
+end
+
 -- Define modifier keys locally
 local altkey = "Mod1"   -- Alt key
 local ctrlkey = "Control" -- Control key
@@ -84,6 +151,8 @@ function M.build(ctx)
   assert(ctx.move_to_previous_tag, "keybindings.build: ctx.move_to_previous_tag is required")
   assert(ctx.move_to_next_tag, "keybindings.build: ctx.move_to_next_tag is required")
   assert(ctx.toggle_tasklist_mode, "keybindings.build: ctx.toggle_tasklist_mode is required")
+  -- optional but recommended: global cycle_tags_with_clients provided by rc.lua
+  local cycle_tags_with_clients = ctx.cycle_tags_with_clients
 
   local modkey = ctx.modkey
   local terminal = ctx.terminal
@@ -93,7 +162,7 @@ function M.build(ctx)
   local toggle_tasklist_mode = ctx.toggle_tasklist_mode
   local quake = ctx.quake  -- optional
 
-  -- // MARK: SHIMMER CONTROLS
+
   local globalkeys = {}
 
   -- Helper function to add client keys from a table
@@ -125,6 +194,20 @@ function M.build(ctx)
   local function add_keys(keys_table)
     if not keys_table then return end  -- Skip if table is nil
     
+    -- old: use awful.spawn.raise_or_spawn which may be deprecated
+    -- new: provide run_or_raise helper
+    local function run_or_raise(cmd, matcher)
+      for _, c in ipairs(client.get()) do
+        if matcher and matcher(c) then
+          c.minimized = false
+          c:emit_signal("request::activate", "run_or_raise", { raise = true })
+          if c.first_tag then c.first_tag:view_only() end
+          return
+        end
+      end
+      awful.spawn.with_shell(cmd, false)
+    end
+
     for _, key in ipairs(keys_table) do
       if key and type(key) == "table" and #key >= 4 then  -- Ensure key is a valid table with enough elements
         local modifiers = key[1]
@@ -139,7 +222,7 @@ function M.build(ctx)
             -- Special handling for F-key launchers with window matching
             local matcher = create_matcher(class_name)
             table.insert(globalkeys, awful.key(modifiers, key_name, function()
-              awful.spawn.raise_or_spawn(func_or_string, nil, matcher, class_name)
+              run_or_raise(func_or_string, matcher)
             end, {description = description, group = group}))
           elseif group == "menu" then
             -- Special handling for menu keys that use os.execute
@@ -171,13 +254,16 @@ function M.build(ctx)
     {{modkey}, "s", function() hotkeys_popup.show_help(nil, mouse.screen) end, "show help", nil, "awesome"},
     {{modkey}, "Left", function() awful.tag.viewprev() end, "view previous tag", nil, "tag"},
     {{modkey}, "Right", function() awful.tag.viewnext() end, "view next tag", nil, "tag"},
+    -- old: local helper; new: use rc.lua provided function if available
+    {{modkey, shiftkey}, "Left", function() if cycle_tags_with_clients then cycle_tags_with_clients("prev") end end, "view previous tag with client", nil, "tag"},
+    {{modkey, shiftkey}, "Right", function() if cycle_tags_with_clients then cycle_tags_with_clients("next") end end, "view next tag with client", nil, "tag"},
     {{modkey}, "Escape", function() awful.tag.history.restore() end, "go back", nil, "tag"},
     {{modkey}, "j", function() awful.client.focus.byidx(1) end, "focus next client", nil, "client"},
     {{modkey}, "k", function() awful.client.focus.byidx(-1) end, "focus previous client", nil, "client"},
     {{modkey}, "Tab", function() 
       awful.client.focus.history.previous()
       if client.focus then client.focus:raise() end
-    end, "go back", nil, "client"}
+      end, "go back", nil, "client"}
   }
 
   -- // MARK: LAYOUT
@@ -226,6 +312,7 @@ function M.build(ctx)
     end, "lua execute prompt", nil, "awesome"}
   }
 
+  -- // MARK: SHIMMER
   -- Shimmer control keys in table format
   local shimmer_keys = {
     {{modkey, shiftkey, altkey}, "1", function() set_shimmer_mode("candle") end, "candle shimmer mode", nil, "shimmer"},
@@ -233,7 +320,13 @@ function M.build(ctx)
     {{modkey, shiftkey, altkey}, "3", function() set_shimmer_mode("char_flicker") end, "character flicker shimmer mode", nil, "shimmer"},
     {{modkey, shiftkey, altkey}, "4", function() set_shimmer_mode("border_sync") end, "border sync shimmer mode", nil, "shimmer"},
     {{modkey, shiftkey, altkey}, "0", function() set_shimmer_mode("off") end, "turn off shimmer", nil, "shimmer"},
-    {{modkey, shiftkey, altkey}, "5", function() set_shimmer_mode("deep_gold") end, "deep gold shimmer mode", nil, "shimmer"}
+    {{modkey, shiftkey, altkey}, "5", function() set_shimmer_mode("deep_gold") end, "deep gold shimmer mode", nil, "shimmer"},
+    {{modkey, shiftkey, altkey}, "c", cycle_shimmer_preset, "cycle shimmer presets", nil, "shimmer"},
+    {{modkey, shiftkey, altkey}, "p", toggle_per_character_shimmer, "toggle per-character shimmer", nil, "shimmer"},
+    {{modkey, shiftkey, altkey}, "m", cycle_per_character_mode, "cycle per-character mode", nil, "shimmer"},
+    {{modkey, shiftkey, altkey}, "parenright", increase_shimmer_speed, "increase shimmer speed", nil, "shimmer"},
+    {{modkey, shiftkey, altkey}, "parenleft", decrease_shimmer_speed, "decrease shimmer speed", nil, "shimmer"},
+    {{modkey, shiftkey, altkey}, "BackSpace", reset_shimmer_speed, "reset shimmer speed", nil, "shimmer"}
   }
 
   -- // MARK: F-KEY LAUNCHERS
@@ -357,52 +450,62 @@ function M.build(ctx)
   -- // MARK: TAGS
   -- Generate tag keybindings using standardized table approach
   local tag_keys = {}
-  for i = 1, 9 do
-    -- View tag only
-    table.insert(tag_keys, {
-      {modkey}, "#" .. i + 9,
-      function()
-        local screen = awful.screen.focused()
-        local tag = screen.tags[i]
-        if tag then tag:view_only() end
-      end,
-      "view tag #" .. i, nil, "tag"
-    })
-    
-    -- Toggle tag display
-    table.insert(tag_keys, {
-      {modkey, ctrlkey}, "#" .. i + 9,
-      function()
-        local screen = awful.screen.focused()
-        local tag = screen.tags[i]
-        if tag then awful.tag.viewtoggle(tag) end
-      end,
-      "toggle tag #" .. i, nil, "tag"
-    })
-    
-    -- Move client to tag
-    table.insert(tag_keys, {
-      {modkey, shiftkey}, "#" .. i + 9,
-      function()
-        if client.focus then
-          local tag = client.focus.screen.tags[i]
-          if tag then client.focus:move_to_tag(tag) end
-        end
-      end,
-      "move focused client to tag #" .. i, nil, "tag"
-    })
-    
-    -- Toggle tag on focused client
-    table.insert(tag_keys, {
-      {modkey, ctrlkey, shiftkey}, "#" .. i + 9,
-      function()
-        if client.focus then
-          local tag = client.focus.screen.tags[i]
-          if tag then client.focus:toggle_tag(tag) end
-        end
-      end,
-      "toggle focused client on tag #" .. i, nil, "tag"
-    })
+  
+  -- tag key mapping: 1-9 use number keys, 10 uses 0, 11 uses -, 12 uses =
+  local tag_key_map = {
+    [1] = "1", [2] = "2", [3] = "3", [4] = "4", [5] = "5", [6] = "6",
+    [7] = "7", [8] = "8", [9] = "9", [10] = "0", [11] = "minus", [12] = "equal"
+  }
+  
+  for i = 1, 12 do
+    local key = tag_key_map[i]
+    if key then
+      -- View tag only
+      table.insert(tag_keys, {
+        {modkey}, key,
+        function()
+          local screen = awful.screen.focused()
+          local tag = screen.tags[i]
+          if tag then tag:view_only() end
+        end,
+        "view tag #" .. i, nil, "tag"
+      })
+      
+      -- Toggle tag display
+      table.insert(tag_keys, {
+        {modkey, ctrlkey}, key,
+        function()
+          local screen = awful.screen.focused()
+          local tag = screen.tags[i]
+          if tag then awful.tag.viewtoggle(tag) end
+        end,
+        "toggle tag #" .. i, nil, "tag"
+      })
+      
+      -- Move client to tag
+      table.insert(tag_keys, {
+        {modkey, shiftkey}, key,
+        function()
+          if client.focus then
+            local tag = client.focus.screen.tags[i]
+            if tag then client.focus:move_to_tag(tag) end
+          end
+        end,
+        "move focused client to tag #" .. i, nil, "tag"
+      })
+      
+      -- Toggle tag on focused client
+      table.insert(tag_keys, {
+        {modkey, ctrlkey, shiftkey}, key,
+        function()
+          if client.focus then
+            local tag = client.focus.screen.tags[i]
+            if tag then client.focus:toggle_tag(tag) end
+          end
+        end,
+        "toggle focused client on tag #" .. i, nil, "tag"
+      })
+    end
   end
 
   -- // MARK: WIBOX
@@ -475,33 +578,8 @@ function M.build(ctx)
 
 
   -- // MARK: HELPERS
-
-  -- Helper function for tag cycling
-  local function cycle_tags_with_clients(direction)
-    local current_screen = awful.screen.focused()
-    local all_tags = current_screen.tags
-
-    -- Get the current tag index
-    local current_tag = current_screen.selected_tag
-    local current_index = gears.table.hasitem(all_tags, current_tag)
-
-    -- Cycle through tags, wrap around when reaching the end/start
-    for i = 1, #all_tags do
-        local idx
-        if direction == "next" then
-            idx = (current_index + i - 1) % #all_tags + 1
-        else
-            idx = (current_index - i - 1) % #all_tags + 1
-        end
-        local tag = all_tags[idx]
-
-        -- Check if the tag has clients (including minimized ones)
-        if #tag:clients() > 0 then
-            tag:view_only()
-            return
-        end
-    end
-  end
+  -- old: local duplicate of cycle_tags_with_clients
+  -- new: rely on ctx.cycle_tags_with_clients provided by rc.lua
 
   
   -- // MARK: MOUSE BINDINGS
