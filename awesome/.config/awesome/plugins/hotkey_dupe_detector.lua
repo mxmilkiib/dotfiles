@@ -143,15 +143,15 @@ function M.notify_duplicates(globalkeys, clientkeys)
         
         return true, count
     else
-        -- optional: show success notification
-        naughty.notify({
-            title = "✅ hotkey check complete",
-            text = "no duplicate hotkeys found",
-            bg = "#32CD32",  -- green background
-            fg = "#000000",  -- black text
-            timeout = 3,
-            position = "bottom_middle"
-        })
+        -- -- optional: show success notification
+        -- naughty.notify({
+        --     title = "✅ hotkey check complete",
+        --     text = "no duplicate hotkeys found",
+        --     bg = "#32CD32",  -- green background
+        --     fg = "#000000",  -- black text
+        --     timeout = 3,
+        --     position = "bottom_middle"
+        -- })
         
         return false, 0
     end

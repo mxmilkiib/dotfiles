@@ -10,9 +10,8 @@ local cairo = require("lgi").cairo
 local awful_taglist = require("awful.widget.taglist")
 
 
-
-
 local M = {}
+
 
 -- Configuration
 local TAG_SQUARE_SIZE = 5
