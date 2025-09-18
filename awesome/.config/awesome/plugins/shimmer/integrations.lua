@@ -165,8 +165,12 @@ function M.handle_tag_hover(tag_widget, tag, mode)
     if mode == "enter" then
         if tag.selected then return end
         
-        local awesome_dnd = package.loaded["plugins.awesome_dnd"]
-        if awesome_dnd and awesome_dnd.drag_active then return end
+        local dnd_to_tag = package.loaded["plugins.dnd_to_tag"]
+        if dnd_to_tag and dnd_to_tag.drag_active then
+            -- when dragging, delegate hover to dnd module and skip shimmer hover FX
+            dnd_to_tag.set_hover(tag, tag_widget)
+            return
+        end
         
         text_widget.__hover_lock = true
         
@@ -186,6 +190,12 @@ function M.handle_tag_hover(tag_widget, tag, mode)
         tag_widget.__hover_text_colored = true
         
     elseif mode == "leave" then
+        -- when dragging, clear dnd hover and skip shimmer leave FX
+        local dnd_to_tag = package.loaded["plugins.dnd_to_tag"]
+        if dnd_to_tag and dnd_to_tag.drag_active then
+            dnd_to_tag.clear_hover()
+            return
+        end
         if tag_widget.__hover_text_colored then
             text_widget.__hover_lock = nil
             tag_widget.__hover_text_colored = nil
@@ -201,8 +211,8 @@ function M.handle_tag_hover(tag_widget, tag, mode)
                     text_widget.__hover_fade_timer:stop()
                 end
                 
-                local fade_steps = 15
-                local fade_duration = 0.8
+                local fade_steps = 20
+                local fade_duration = 1.5
                 local step_time = fade_duration / fade_steps
                 local step = 0
                 
@@ -510,6 +520,12 @@ function M.get_per_letter_modes()
         tasks = shimmer_config.per_letter.tasks,
         launcher = shimmer_config.per_letter.launcher
     }
+end
+
+-- internal accessor for registered widgets map (for cooperating modules)
+-- intentionally underscored to signify internal use
+function M._get_registered_widgets()
+    return registered_widgets
 end
 
 return M
