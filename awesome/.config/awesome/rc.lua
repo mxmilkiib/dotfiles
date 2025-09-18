@@ -81,7 +81,7 @@ Xephyr :1 -ac -br -noreset -screen 1152x720 & sleep 1 && DISPLAY=:1.0 awesome -c
 --   • freedesktop/ - XDG menu integration and .desktop file support
 --   • gobo/ - Custom system integration utilities
 --   • thrizen/ - Additional system tools
---   • plugins/ - Custom extensions (awesome_dnd, shimmer, keystats, tag_indicators, etc.)
+--   • plugins/ - Custom extensions (dnd_to_tag, shimmer, keystats, tag_indicators, etc.)
 --
 -- 🗂️ BACKUP ARCHIVE (multiple versions):
 --   • Recent backups: rc.lua.bak-20250908_2056, rc.lua.bak-20250908_1504, rc.lua.bak-20250907_0212
@@ -177,6 +177,7 @@ local cyclefocus = require("cyclefocus")       -- Cycle between applications
 local freedesktop = require("freedesktop")      -- Create a menu from .desktop files
 local treetile = require("treetile")           -- Hierarchical window arrangement
 local shimmer = require("plugins.shimmer")     -- Unified shimmer & border animation system
+local mode_glyphs = require("plugins.mode_glyphs") -- stable tasklist mode glyphs
 local keybindings = require("keybindings")        -- Hotkey definitions
 local hotkey_dupe_detector = require("plugins/hotkey_dupe_detector")  -- duplicate hotkey detection
 
@@ -188,12 +189,17 @@ shimmer.configure({
     -- preset = "warm_light",  -- lighter, more visible preset
     -- preset = "bright_gold",  -- gold-only shine default
     -- preset = "candy",  -- candy-cane shine preset
-    preset = "candy_pastel",  -- pastel candy-cane shine preset
+    -- preset = "gold_contrast",  -- pastel candy-cane shine preset
+    -- preset = "plasma_drift",  -- pastel candy-cane shine preset
+    preset = "amber_pulse",  -- pastel candy-cane shine preset
     border = {
         smoothness = 2,  -- light border animation
         enabled = true
     }
 })
+
+-- configure mode glyphs (default basic; independent of shimmer)
+mode_glyphs.configure({ style = "basic" })
 
 -- minimal startup timer for shimmer - just enough for tasklist widgets to initialize
 gears.timer.start_new(0.05, function()
@@ -210,6 +216,15 @@ gears.timer.start_new(0.05, function()
     end
     return false
 end)
+
+-- optional: toggle mode glyphs styling between basic and shimmer
+-- toggle tasklist mode glyph styling between basic and shimmer
+local function toggle_mode_glyphs_style()
+    local new_style = (mode_glyphs.style == "basic") and "shimmer" or "basic"
+    mode_glyphs.configure({ style = new_style })
+    refresh_all_tasklists()
+    naughty.notify({ title = "mode glyphs", text = "style: " .. new_style, timeout = 2 })
+end
 
 -- shimmer mode function (direct access)
 -- use shimmer.set_mode(mode) directly instead of wrapper
@@ -973,6 +988,8 @@ local keys = keybindings.build({
     move_to_previous_tag = move_to_previous_tag,
     move_to_next_tag = move_to_next_tag,
     toggle_tasklist_mode = toggle_tasklist_mode,
+    -- mode glyphs toggle hotkey
+    toggle_mode_glyphs_style = toggle_mode_glyphs_style,
     -- old: cycle_tags_with_clients used locally in module
     -- new: pass global implementation so there's a single source of truth
     cycle_tags_with_clients = cycle_tags_with_clients,
@@ -1194,7 +1211,7 @@ milkdefault = centerwork_twothirds.horizontal
 -- // MARK: -- clock widget
 -- Restore previous clock style: Hack font, white on purple, with right margin
 local mytextclock = wibox.widget.textclock()
-mytextclock.format = "%a %b%d %H:%M"
+mytextclock.format = "%a %b %d %H:%M"
 mytextclock.font = "Hack Nerd Font 9"
 
 local textclock_clr = wibox.container.background()
@@ -1310,7 +1327,7 @@ end)
 
 
 local tag_indicators = require("plugins.tag_indicators")
-local awesome_dnd = require("plugins.awesome_dnd")
+local dnd_to_tag = require("plugins.dnd_to_tag")
 -- border animation now integrated into shimmer system
 
 
@@ -1555,29 +1572,35 @@ awful.screen.connect_for_each_screen(function(s)
             spacing = 1,
             layout = wibox.layout.flex.horizontal
         },
-        -- robust template: always provide an icon widget, and override with fallback when needed
+        -- robust template: always provide an icon widget + split prefix/title
         widget_template = {
             {
                 {
+                    widget = wibox.container.place,
+                    halign = 'left',
+                    valign = 'center',
                     {
+                        layout = wibox.layout.fixed.horizontal,
+                        spacing = 1,
+                        { id = 'icon_role', widget = wibox.widget.imagebox, resize = true },
                         {
-                            id     = 'icon_role',
-                            widget = wibox.widget.imagebox,
-                            resize = true,
+                            layout = wibox.layout.fixed.horizontal,
+                            spacing = 1,
+                            {
+                                id = 'status_prefix_margin',
+                                widget = wibox.container.margin,
+                                left = 2, right = 1, top = 0, bottom = 0,
+                                {
+                                    id = 'status_prefix',
+                                    widget = wibox.widget.textbox,
+                                }
+                            },
+                            { id = 'text_role', widget = wibox.widget.textbox },
                         },
-                        valign = 'center',
-                        halign = 'center',
-                        widget = wibox.container.place,
                     },
-                    {
-                        id     = 'text_role',
-                        widget = wibox.widget.textbox,
-                    },
-                    spacing = 4,
-                    layout = wibox.layout.fixed.horizontal,
                 },
                 left  = 4,
-                right = 4,
+                right = 1,
                 widget  = wibox.container.margin,
             },
             id     = 'background_role',
@@ -1588,24 +1611,14 @@ awful.screen.connect_for_each_screen(function(s)
                     local sz = (beautiful and (beautiful.tasklist_icon_size or beautiful.icon_size)) or 16
                     ib.forced_height = sz
                     ib.forced_width = sz
-                    -- direct load when forcing generic icons
                     if FORCE_GENERIC_ICONS and GENERIC_ICON_PATH and gears.filesystem.file_readable(GENERIC_ICON_PATH) then
                         ib.image = gears.surface.load_uncached(GENERIC_ICON_PATH)
                     elseif not c.icon then
-                        -- fallback when client has no icon
                         local surf = get_fallback_icon and get_fallback_icon(c)
-                        if surf then 
-                            ib.image = surf
-                        end
+                        if surf then ib.image = surf end
                     end
                 end
-                
-                -- shimmer integration (simplified)
-                local tb = self:get_children_by_id('text_role')[1]
-                if tb and c == client.focus then
-                    -- shimmer handled by tasklist_update_callback below
-                    -- (removed duplicate shimmer application)
-                end
+                mode_glyphs.apply(self, c)
             end,
             update_callback = function(self, c, index, objects)
                 local ib = self:get_children_by_id('icon_role')[1]
@@ -1614,18 +1627,14 @@ awful.screen.connect_for_each_screen(function(s)
                     ib.forced_height = sz
                     ib.forced_width = sz
                     if not c.icon or ib.image == nil then
-                        -- fallback when client has no icon
                         local surf = get_fallback_icon and get_fallback_icon(c)
-                        if surf then 
-                            ib.image = surf
-                        end
+                        if surf then ib.image = surf end
                     end
                 end
-                
-                -- shimmer integration handled by shimmer module
+                mode_glyphs.update(self, c)
                 shimmer.tasklist_update_callback(self, c, index, objects)
             end,
-        },
+        }
     }
     
     -- register tasklist with shimmer
@@ -1658,9 +1667,8 @@ awful.screen.connect_for_each_screen(function(s)
         },
         { -- right widgets
             layout = wibox.layout.fixed.horizontal,
-            -- add 3px padding to clock text
-            -- add 3px horizontal + 1px top padding to systray and center vertically
-            wibox.container.margin({ mysystray, valign = "center", widget = wibox.container.place }, 6, 6, 0, 0),
+            -- add 3px horizontal + 1px top padding to systray and center vertically (only on primary screen)
+            s == screen.primary and wibox.container.margin({ mysystray, valign = "center", widget = wibox.container.place }, 6, 6, 0, 0) or wibox.container.margin({ mysystray, valign = "center", widget = wibox.container.place }, 1, 0, 0, 0),
             wibox.container.margin(textclock_clr, 0, 0, 0, 0)
         },
     }
@@ -1777,6 +1785,16 @@ client.connect_signal("request::titlebars", function(c)
         awful.button({ }, 1, function()
             titlebar_handle_click(c,
                 function()
+                    -- old (commented): immediate activate+move without guarding intention
+                    -- c:emit_signal("request::activate", "titlebar", {raise = true})
+                    -- awful.mouse.client.move(c)
+
+                    -- prepare drag intention and temporarily unmaximize if needed
+                    c._intend_drag = true
+                    if c.maximized then
+                        c._was_maximized = true
+                        c.maximized = false
+                    end
                     c:emit_signal("request::activate", "titlebar", {raise = true})
                     awful.mouse.client.move(c)
                 end,
@@ -1871,8 +1889,9 @@ end)
 
 -- Handle maximized state for dragging windows between screens
 client.connect_signal("request::activate", function(c, context, hints)
-    if context == "mouse_click" and window_manager.is_dragging(c) and c.maximized then
-        -- Store the maximized state to restore later
+    -- unmaximize only when a move was intended (from titlebar or modkey+drag)
+    if (context == "mouse_click" or context == "titlebar") and c._intend_drag and c.maximized then
+        -- store the maximized state to restore later
         c._was_maximized = true
         c.maximized = false
     end
@@ -2208,15 +2227,39 @@ end
 
 -- Keep track of which clients are being dragged
 client.connect_signal("request::activate", function(c, context, hints)
-    -- Check if mouse button is still down
+    -- only track dragging for explicit move intention to avoid false positives on simple clicks
     local buttons = mouse.coords().buttons
+    if not c._intend_drag then
+        return
+    end
     if not buttons or not buttons[1] then
-        -- Mouse button released, no longer dragging
+        -- mouse button released, no longer dragging
         window_manager.set_dragging(c, false)
         window_manager.store_center(c)
+        c._intend_drag = nil
     else
-        -- Mouse button is down, mark as dragging
+        -- mouse button is down, mark as dragging
         window_manager.set_dragging(c, true)
+    end
+end)
+
+-- explicit lifecycle tracking for intended drags in case activate events are sparse
+client.connect_signal("button::press", function(c)
+    if c._intend_drag then
+        window_manager.set_dragging(c, true)
+    end
+end)
+
+client.connect_signal("button::release", function(c)
+    if c._intend_drag then
+        window_manager.set_dragging(c, false)
+        window_manager.store_center(c)
+        -- restore maximized if it was set prior to drag
+        if c._was_maximized then
+            c.maximized = true
+            c._was_maximized = nil
+        end
+        c._intend_drag = nil
     end
 end)
 
@@ -2227,6 +2270,12 @@ client.connect_signal("property::size", function(c)
 
     -- Skip if being dragged
     if window_manager.is_dragging(c) then return end
+
+    -- Skip when client is maximized/fullscreen (or partially maximized)
+    -- otherwise our center maintenance would offset the geometry away from workarea
+    if c.maximized or c.fullscreen or c.maximized_horizontal or c.maximized_vertical then
+        return
+    end
 
     -- Record center point on first detection or maintain center during resize
     if not window_centers[c] then
@@ -2669,6 +2718,9 @@ naughty.config.defaults.position = 'bottom_middle'
 -- Notification icon settings
 -- Attempt to constrain the size of large icons in their apps notifications
 naughty.config.defaults['icon_size'] = 64
+
+
+
 
 -- // MARK: START
 -- ################################################################################
