@@ -49,6 +49,7 @@
 --     clientkeys = table,    -- Per-client keybindings
 --     clientbuttons = table  -- Mouse button bindings for clients
 --   }
+
 --
 -- ################################################################################
 
@@ -59,7 +60,7 @@ local hotkeys_popup = require("awful.hotkeys_popup")
 local naughty = require("naughty")
 local shimmer = require("plugins/shimmer") -- For shimmer mode functions
 
--- Matcher generator for rules
+-- Matcher generator for rulesg
 local create_matcher = function(class_name)
     return function(c) return awful.rules.match(c, {class = class_name}) end
 end
@@ -75,6 +76,17 @@ local function cycle_shimmer_preset()
     -- show notification of new preset
     naughty.notify({
         title = "shimmer preset",
+        text = new_preset,
+        timeout = 1.5
+    })
+end
+
+-- cycle through shimmer presets backwards
+local function cycle_shimmer_preset_reverse()
+    local new_preset = shimmer.cycle_preset_reverse()
+    -- show notification of new preset
+    naughty.notify({
+        title = "shimmer preset (reverse)",
         text = new_preset,
         timeout = 1.5
     })
@@ -99,6 +111,16 @@ local function cycle_per_character_mode()
     local mode = shimmer.cycle_per_character_mode()
     naughty.notify({
         title = "per-character mode",
+        text = mode,
+        timeout = 1.5
+    })
+end
+
+-- cycle per-character mode backwards
+local function cycle_per_character_mode_reverse()
+    local mode = shimmer.cycle_per_character_mode_reverse()
+    naughty.notify({
+        title = "per-character mode (reverse)",
         text = mode,
         timeout = 1.5
     })
@@ -160,6 +182,8 @@ function M.build(ctx)
   local move_to_previous_tag = ctx.move_to_previous_tag
   local move_to_next_tag = ctx.move_to_next_tag
   local toggle_tasklist_mode = ctx.toggle_tasklist_mode
+  -- mode glyphs style toggle provided by rc.lua
+  local toggle_mode_glyphs_style = ctx.toggle_mode_glyphs_style
   local quake = ctx.quake  -- optional
 
 
@@ -287,13 +311,15 @@ function M.build(ctx)
   -- Program launchers
   local program_keys = {
     {{modkey}, "Return", function() awful.spawn(terminal) end, "open terminal", nil, "launcher"},
+    {{modkey, shiftkey}, "Return", function() awful.spawn(terminal, {floating = true, placement = awful.placement.center}) end, "open floating terminal", nil, "launcher"},
+    {{modkey, ctrlkey}, "Return", function() awful.spawn("sh -c '" .. terminal .. " --chdir \"$(xcwd)\"'") end, "open terminal in focused app's cwd", nil, "launcher"},
     {{modkey, ctrlkey}, "r", function() awesome.restart() end, "reload awesome", nil, "awesome"},
     {{modkey, shiftkey}, "q", function() awesome.quit() end, "quit awesome", nil, "awesome"},
     {{modkey, ctrlkey}, "n", function()
       local c = awful.client.restore()
       if c then c:emit_signal("request::activate", "key.unminimize", {raise = true}) end
     end, "restore minimized", nil, "client"},
-    {{modkey}, "p", function() menubar.show() end, "show menubar", nil, "launcher"}
+    {{modkey, shiftkey}, "p", function() menubar.show() end, "show menubar", nil, "launcher"}
   }
 
   -- // MARK: PROMPT
@@ -322,10 +348,14 @@ function M.build(ctx)
     {{modkey, shiftkey, altkey}, "0", function() set_shimmer_mode("off") end, "turn off shimmer", nil, "shimmer"},
     {{modkey, shiftkey, altkey}, "5", function() set_shimmer_mode("deep_gold") end, "deep gold shimmer mode", nil, "shimmer"},
     {{modkey, shiftkey, altkey}, "c", cycle_shimmer_preset, "cycle shimmer presets", nil, "shimmer"},
+    {{modkey, shiftkey, altkey}, "s", cycle_shimmer_preset_reverse, "cycle shimmer presets reverse", nil, "shimmer"},
     {{modkey, shiftkey, altkey}, "p", toggle_per_character_shimmer, "toggle per-character shimmer", nil, "shimmer"},
     {{modkey, shiftkey, altkey}, "m", cycle_per_character_mode, "cycle per-character mode", nil, "shimmer"},
-    {{modkey, shiftkey, altkey}, "parenright", increase_shimmer_speed, "increase shimmer speed", nil, "shimmer"},
-    {{modkey, shiftkey, altkey}, "parenleft", decrease_shimmer_speed, "decrease shimmer speed", nil, "shimmer"},
+    {{modkey, shiftkey, altkey}, "k", cycle_per_character_mode_reverse, "cycle per-character mode reverse", nil, "shimmer"},
+    {{modkey, shiftkey, altkey}, "g", increase_shimmer_speed, "increase shimmer speed", nil, "shimmer"},
+    {{modkey, shiftkey, altkey}, "v", decrease_shimmer_speed, "decrease shimmer speed", nil, "shimmer"},
+    -- {{modkey, shiftkey, altkey}, "parenright", increase_shimmer_speed, "increase shimmer speed", nil, "shimmer"},
+    -- {{modkey, shiftkey, altkey}, "parenleft", decrease_shimmer_speed, "decrease shimmer speed", nil, "shimmer"},
     {{modkey, shiftkey, altkey}, "BackSpace", reset_shimmer_speed, "reset shimmer speed", nil, "shimmer"}
   }
 
@@ -383,18 +413,19 @@ function M.build(ctx)
   -- // MARK: AUDIO
   -- Volume and audio control keys
   local audio_keys = {
-    {{}, "XF86AudioLowerVolume", "vol-dec-all-3.sh", "decrease volume", nil, "hotkeys"},
-    {{}, "XF86AudioRaiseVolume", "vol-inc-all-3.sh", "increase volume", nil, "hotkeys"},
-    {{}, "XF86AudioMute", "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle", "toggle mute", nil, "hotkeys"}
+    {{modkey}, "p", "pavucontrol", "open pavucontrol", nil, "audio"},
+    {{}, "XF86AudioLowerVolume", "vol-dec-all-3.sh", "decrease volume", nil, "audio"},
+    {{}, "XF86AudioRaiseVolume", "vol-inc-all-3.sh", "increase volume", nil, "audio"},
+    {{}, "XF86AudioMute", "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle", "toggle mute", nil, "audio"}
   }
   
   -- // MARK: DENON
   -- Denon amplifier control keys
   local denon_keys = {
-    {{modkey, ctrlkey, altkey}, "b", "funiculi --host 192.168.1.24 up", "Denon amp increase volume", nil, "hotkeys"},
-    {{modkey, ctrlkey, altkey}, "g", "funiculi --host 192.168.1.24 down", "Denon amp decrease volume", nil, "hotkeys"},
-    {{modkey, ctrlkey, altkey}, "v", "denon_toggle_source.sh", "Denon amp source set toggle", nil, "hotkeys"},
-    {{modkey, ctrlkey, altkey}, "r", "denon_toggle_power.sh", "Denon amp power toggle", nil, "hotkeys"}
+    {{modkey, ctrlkey, altkey}, "b", "funiculi --host 192.168.1.24 up", "Denon amp increase volume", nil, "denon"},
+    {{modkey, ctrlkey, altkey}, "g", "funiculi --host 192.168.1.24 down", "Denon amp decrease volume", nil, "denon"},
+    {{modkey, ctrlkey, altkey}, "v", "denon_toggle_source.sh", "Denon amp source set toggle", nil, "denon"},
+    {{modkey, ctrlkey, altkey}, "r", "denon_toggle_power.sh", "Denon amp power toggle", nil, "denon"}
   }
   
   -- // MARK: MEDIA
@@ -415,10 +446,10 @@ function M.build(ctx)
   -- // MARK: BRIGHTNESS
   -- Brightness control keys
   local brightness_keys = {
-    {{}, "XF86MonBrightnessDown", "brillo -U 10", "decrease brightness", nil, "hotkeys"},
-    {{modkey, altkey}, "XF86AudioLowerVolume", "brillo -U 10", "decrease brightness (alt)", nil, "hotkeys"},
-    {{}, "XF86MonBrightnessUp", "brillo -A 10", "increase brightness", nil, "hotkeys"},
-    {{modkey, altkey}, "XF86AudioRaiseVolume", "brillo -A 10", "increase brightness (alt)", nil, "hotkeys"}
+    {{}, "XF86MonBrightnessDown", "brillo -U 10", "decrease brightness", nil, "brightness"},
+    {{modkey, altkey}, "XF86AudioLowerVolume", "brillo -U 10", "decrease brightness (alt)", nil, "brightness"},
+    {{}, "XF86MonBrightnessUp", "brillo -A 10", "increase brightness", nil, "brightness"},
+    {{modkey, altkey}, "XF86AudioRaiseVolume", "brillo -A 10", "increase brightness (alt)", nil, "brightness"}
   }
   
   -- // MARK: LAUNCHER
@@ -446,6 +477,14 @@ function M.build(ctx)
   add_keys(media_keys)
   add_keys(brightness_keys)
   add_keys(launcher_keys)
+
+  -- mode glyphs control (basic <-> shimmer)
+  local glyph_keys = {
+    {{modkey, altkey}, "g", function()
+      if toggle_mode_glyphs_style then toggle_mode_glyphs_style() end
+    end, "toggle mode glyph style", nil, "awesome"}
+  }
+  add_keys(glyph_keys)
   
   -- // MARK: TAGS
   -- Generate tag keybindings using standardized table approach
@@ -542,9 +581,9 @@ function M.build(ctx)
       awful.client.floating.toggle(c)
     end, "toggle floating", nil, "client"},
     
-    {{modkey, ctrlkey}, "Return", function(c)
-      c:swap(awful.client.getmaster())
-    end, "move to master", nil, "client"},
+    -- {{modkey, ctrlkey}, "Return", function(c)
+    --   c:swap(awful.client.getmaster())
+    -- end, "move to master", nil, "client"},
     
     {{modkey}, "o", function(c)
       c:move_to_screen()
@@ -584,21 +623,44 @@ function M.build(ctx)
   
   -- // MARK: MOUSE BINDINGS
   -- Mouse bindings for clients
-  local awesome_dnd = require("plugins.awesome_dnd")
+  local dnd_to_tag = require("plugins.dnd_to_tag")
   local clientbuttons = gears.table.join(
     awful.button({ }, 1, function (c)
         c:emit_signal("request::activate", "mouse_click", {raise = true})
     end),
-    -- Standard move behavior (between screens)
+    
+    -- old: standard move behavior (between screens)
+    -- awful.button({ modkey }, 1, function (c)
+    --     c:emit_signal("request::activate", "mouse_click", {raise = true})
+    --     awful.mouse.client.move(c)
+    -- end),
+    -- new: mark drag intention; temp unmaximize while dragging
     awful.button({ modkey }, 1, function (c)
+        c._intend_drag = true
+        if c.maximized then
+          c._was_maximized = true
+          c.maximized = false
+        end
         c:emit_signal("request::activate", "mouse_click", {raise = true})
         awful.mouse.client.move(c)
     end),
-    -- Drag to tag behavior (with shift modifier)
+    
+    -- old: drag to tag behavior (with shift modifier)
+    -- awful.button({ modkey, shiftkey }, 1, function (c)
+    --     c:emit_signal("request::activate", "mouse_click", {raise = true})
+    --     dnd_to_tag.start_custom_drag(c, {follow_on_drop = true})
+    -- end),
+    -- new: mark drag intention before custom drag
     awful.button({ modkey, shiftkey }, 1, function (c)
+        c._intend_drag = true
+        if c.maximized then
+          c._was_maximized = true
+          c.maximized = false
+        end
         c:emit_signal("request::activate", "mouse_click", {raise = true})
-        awesome_dnd.start_custom_drag(c, {follow_on_drop = true})
+        dnd_to_tag.start_custom_drag(c, {follow_on_drop = true})
     end),
+    
     awful.button({ modkey }, 3, function (c)
         c:emit_signal("request::activate", "mouse_click", {raise = true})
         awful.mouse.client.resize(c)
