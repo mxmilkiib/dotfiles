@@ -8,10 +8,16 @@
 -- BASIC SYNTAX CHECK (no libraries):
 --   lua -e "dofile('rc.lua')" 2>&1 | head -10
 --   (Expected: "module 'gears' not found" - this is normal outside AwesomeWM)
-
+-- DEBUG MODE:
+--   awesome -c ~/.config/awesome/rc.lua --debug
+--   (Runs with debug output for troubleshooting)
+--
 -- FULL ENVIRONMENT TEST (with AwesomeWM libraries):
 --   awesome -c ~/.config/awesome/rc.lua --check
 --   (Tests complete configuration with all libraries loaded)
+--
+-- NOTE: The "module 'gears' not found" error is expected when testing
+-- outside the AwesomeWM environment.
 
 -- XEPHYR TEST ENVIRONMENT:
 --[[
@@ -24,12 +30,6 @@ Xephyr :1 -ac -br -noreset -screen 1152x720 & sleep 1 && DISPLAY=:1.0 awesome -c
 --   luacheck rc.lua --no-max-line-length
 --   (Static analysis for common Lua issues)
 
--- DEBUG MODE:
---   awesome -c ~/.config/awesome/rc.lua --debug
---   (Runs with debug output for troubleshooting)
---
--- NOTE: The "module 'gears' not found" error is expected when testing
--- outside the AwesomeWM environment. Use awesome --check for full validation.
 
 
 -- // MARK: OVERVIEW
@@ -46,7 +46,6 @@ Xephyr :1 -ac -br -noreset -screen 1152x720 & sleep 1 && DISPLAY=:1.0 awesome -c
 --
 -- 📄 MAIN FILES:
 --   • rc.lua (104KB, 2528 lines) - This comprehensive configuration file (cleaned & optimized)
---   • rc_new.lua (15KB, 307 lines) - Alternative minimal config
 --   • quake.lua (5.6KB, 169 lines) - Dropdown terminal (Quake-style)
 --   • xrandr.lua (3.5KB, 136 lines) - Multi-monitor display management
 --   • test_dialog_sizing.lua (1.5KB, 45 lines) - Dialog sizing test script
@@ -83,12 +82,6 @@ Xephyr :1 -ac -br -noreset -screen 1152x720 & sleep 1 && DISPLAY=:1.0 awesome -c
 --   • thrizen/ - Additional system tools
 --   • plugins/ - Custom extensions (dnd_to_tag, shimmer, keystats, tag_indicators, etc.)
 --
--- 🗂️ BACKUP ARCHIVE (multiple versions):
---   • Recent backups: rc.lua.bak-20250908_2056, rc.lua.bak-20250908_1504, rc.lua.bak-20250907_0212
---   • Evolution: 568 lines → 3,347 lines (22KB → 144KB)
---
--- Total: 20+ layouts, 5 focus systems, comprehensive widget ecosystem,
--- deep system integration, and methodical configuration evolution.
 --
 -- ⚠️  INTENTIONALLY DISABLED FEATURES (commented out by choice):
 -- NAVIGATION ALTERNATIVES:
@@ -115,26 +108,6 @@ Xephyr :1 -ac -br -noreset -screen 1152x720 & sleep 1 && DISPLAY=:1.0 awesome -c
 --   • Alternative client rules, placement, and titlebar processing
 --
 -- NOTE: These features are available but intentionally disabled for current workflow.
---
--- 🔍 SUBDIRECTORY STATUS:
--- ✅ HEALTHY: collision/, bling/, lain/, milktheme/, tyrannical/, awesome-workspace-grid/
--- ✅ FUNCTIONAL: treetile/, freedesktop/, revelation/, battery-widget/, media-player-widget/
--- ⚠️ UNKNOWN: gobo/ (directory access issues - may need investigation)
--- ✅ EMPTY: awesome-wm-widgets/ (placeholder for additional widgets)
--- 📝 PLUGINS: plugins/ contains xrandr.lua + media-player/ subdirectory
---
--- 🏗️  ARCHITECTURE: Plugin-based modular design with clean APIs
--- 🔄 STATUS: Production-ready, fully validated configuration
---
--- ✅ RECENT OPTIMIZATIONS:
--- - Removed 1,149 lines of commented-out dead code (819 lines reduction)
--- - Centralized all keybindings in keybindings.lua module
--- - Fixed keybinding integration and root.keys() unpacking
--- - Cleaned up redundant global variable definitions
--- - File size reduced from 144KB to 104KB (28% reduction)
-
-
--- run in xephyr for testing:
 
 
 
@@ -153,33 +126,36 @@ Xephyr :1 -ac -br -noreset -screen 1152x720 & sleep 1 && DISPLAY=:1.0 awesome -c
 
 pcall(require, "luarocks.loader")
 
+
 -- Standard awesome libraries
 local gears = require("gears")
-local gmath = require("gears.math")
+-- removed: gears.math (unused)
 local awful = require("awful")
 require("awful.autofocus")
-local wibox = require("wibox")     -- Widget and layout library
-local beautiful = require("beautiful") -- Theme handling library
-local naughty = require("naughty")   -- Notification library
-local menubar = require("menubar")
-local hotkeys_popup = require("awful.hotkeys_popup")
+local wibox = require("wibox")          -- Widget and layout library
+local beautiful = require("beautiful")  -- Theme handling library
+local naughty = require("naughty")      -- Notification library
+local menubar = require("menubar")      -- Menu bar library
+local hotkeys_popup = require("awful.hotkeys_popup")  -- Hotkey help system
 
 local lgi = require("lgi")
 local cairo = lgi.cairo
 
--- layouts will be defined in request::default_layouts handler below
+
+local keybindings = require("rc.keybindings")        -- Hotkey definitions
 
 
 -- external libraries
 local lain = require("lain")                  -- Layouts, widgets, utilities
 local bling = require("bling")                -- Modern layouts and utilities
-local cyclefocus = require("cyclefocus")       -- Cycle between applications
+-- removed: cyclefocus (unused)
 local freedesktop = require("freedesktop")      -- Create a menu from .desktop files
 local treetile = require("treetile")           -- Hierarchical window arrangement
+
+
 local shimmer = require("plugins.shimmer")     -- Unified shimmer & border animation system
 local mode_glyphs = require("plugins.mode_glyphs") -- stable tasklist mode glyphs
-local keybindings = require("keybindings")        -- Hotkey definitions
-local hotkey_dupe_detector = require("plugins/hotkey_dupe_detector")  -- duplicate hotkey detection
+local hotkey_dupe_detector = require("plugins.hotkey_dupe_detector")  -- duplicate hotkey detection
 
 
 -- // MARK: -- shimmer configuration
@@ -191,43 +167,28 @@ shimmer.configure({
     -- preset = "candy",  -- candy-cane shine preset
     -- preset = "gold_contrast",  -- pastel candy-cane shine preset
     -- preset = "plasma_drift",  -- pastel candy-cane shine preset
-    preset = "amber_pulse",  -- pastel candy-cane shine preset
+    preset = "gold_contrast",  -- pastel candy-cane shine preset
     border = {
-        smoothness = 2,  -- light border animation
-        enabled = true
+        -- smoothness = 2,  -- light border animation
+        smoothness = 1,  -- 0.15s per frame
+        speed = 0.15,         -- animation timer interval
     }
 })
+-- minimal startup timer for shimmer - just enough for tasklist widgets to initialize
+shimmer.post_startup_init()  -- defer small init to module (tasklist mapping + focused init)
 
--- configure mode glyphs (default basic; independent of shimmer)
+-- configure reworked client mode task entry glyphs
 mode_glyphs.configure({ style = "basic" })
 
--- minimal startup timer for shimmer - just enough for tasklist widgets to initialize
-gears.timer.start_new(0.05, function()
-    local focused = client.focus
-    if focused then
-        -- trigger tasklist redraws to establish widget mappings
-        for s in screen do
-            if s.mytasklist then
-                s.mytasklist:emit_signal("widget::redraw_needed")
-            end
-        end
-        -- force shimmer update
-        shimmer.initialize_focused_client()
-    end
-    return false
-end)
-
 -- optional: toggle mode glyphs styling between basic and shimmer
+
 -- toggle tasklist mode glyph styling between basic and shimmer
 local function toggle_mode_glyphs_style()
     local new_style = (mode_glyphs.style == "basic") and "shimmer" or "basic"
     mode_glyphs.configure({ style = new_style })
-    refresh_all_tasklists()
+    shimmer.refresh_all_tasklists()
     naughty.notify({ title = "mode glyphs", text = "style: " .. new_style, timeout = 2 })
 end
-
--- shimmer mode function (direct access)
--- use shimmer.set_mode(mode) directly instead of wrapper
 
 
 
@@ -327,16 +288,7 @@ end
 -- ################################################################################
 
 
--- helper: refresh all tasklists across screens
-local function refresh_all_tasklists()
-    for s in screen do
-        if s.mytasklist then
-            -- force redraw; layout change causes update callbacks to run
-            s.mytasklist:emit_signal("widget::layout_changed")
-            s.mytasklist:emit_signal("widget::redraw_needed")
-        end
-    end
-end
+-- refresh_all_tasklists function moved earlier in file
 
 -- Matcher generator for rules
 local create_matcher = function(class_name)
@@ -617,7 +569,7 @@ local window_manager = {
 
 
 -- Screen rotation function
-function rotate_screens(direction)
+local function rotate_screens(direction) -- tighten scope
     local current_screen = awful.screen.focused()
     local initial_screen = current_screen
     while (true) do
@@ -656,7 +608,7 @@ end
 
 
 -- Tag navigation functions  
-function move_to_previous_tag()
+local function move_to_previous_tag() -- tighten scope
     local c = client.focus
     if not c then return end
     local current_tag = c:tags()[1]
@@ -666,7 +618,7 @@ function move_to_previous_tag()
     end
 end
 
-function move_to_next_tag()
+local function move_to_next_tag() -- tighten scope
     local c = client.focus
     if not c then return end
     local current_tag = c:tags()[1]
@@ -678,7 +630,7 @@ end
 
 
 -- Function to cycle through tags with clients (including minimized ones)
-function cycle_tags_with_clients(direction)
+local function cycle_tags_with_clients(direction) -- tighten scope
     local current_screen = awful.screen.focused()
     local all_tags = current_screen.tags
 
@@ -705,6 +657,42 @@ function cycle_tags_with_clients(direction)
 end
 
 
+-- Function to cycle through tags with visible/unminimized clients only
+local function cycle_tags_with_visible_clients(direction) -- tighten scope
+    local current_screen = awful.screen.focused()
+    local all_tags = current_screen.tags
+
+    -- Get the current tag index
+    local current_tag = current_screen.selected_tag
+    local current_index = gears.table.hasitem(all_tags, current_tag)
+
+    -- Cycle through tags, wrap around when reaching the end/start
+    for i = 1, #all_tags do
+        local idx
+        if direction == "next" then
+            idx = (current_index + i - 1) % #all_tags + 1
+        else
+            idx = (current_index - i - 1) % #all_tags + 1
+        end
+        local tag = all_tags[idx]
+
+        -- Check if the tag has visible (unminimized) clients
+        local has_visible_clients = false
+        for _, c in ipairs(tag:clients()) do
+            if not c.minimized then
+                has_visible_clients = true
+                break
+            end
+        end
+        
+        if has_visible_clients then
+            tag:view_only()
+            return
+        end
+    end
+end
+
+
 
 
 -- // MARK: DEFS
@@ -722,6 +710,32 @@ end
 -- theme init
 beautiful.init(gears.filesystem.get_configuration_dir() .. "milktheme/theme.lua")
 
+-- shimmer safety: ensure any plain tasklist focused text is not stark white
+-- this prevents visible white flashes if a plain frame sneaks in during redraw
+beautiful.tasklist_fg_focus = beautiful.tasklist_fg_focus or "#d2b48c"  -- warm tan
+-- optionally tune normal/unfocused to a neutral; leave commented if not desired
+-- beautiful.tasklist_fg_normal = beautiful.tasklist_fg_normal or "#c0c0c0"
+
+-- title change logger - logs all client title changes (no duplicates)
+local __title_log = setmetatable({}, { __mode = 'k' }) -- weak keys to avoid leaks
+local function __log_title(c, reason)
+    if not c or not c.valid then return end
+    local name = c.name or ""
+    if name == "" then return end
+    if __title_log[c] == name then return end -- skip duplicates
+    __title_log[c] = name
+    local class = c.class or c.instance or "?"
+    local prefix = reason and ("(" .. tostring(reason) .. ") ") or ""
+    if gears and gears.debug and gears.debug.print_warning then
+        gears.debug.print_warning("[title] " .. prefix .. class .. ": " .. name)
+    else
+        print("[title] " .. prefix .. class .. ": " .. name)
+    end
+end
+
+client.connect_signal("property::name", function(c) __log_title(c, "name") end)
+client.connect_signal("manage", function(c) __log_title(c, "init") end)
+client.connect_signal("unmanage", function(c) __title_log[c] = nil end)
 
 -- // MARK: icons
 -- icon management system - moved here to fix scoping issues
@@ -949,7 +963,7 @@ end
 
 
 
--- // MARK: notifications
+-- // MARK: NOTIFICATIONS
 -- notification settings
 
 
@@ -964,6 +978,69 @@ naughty.config.defaults.position = 'bottom_middle'
 -- notification icon settings
 -- attempt to constrain the size of large icons in their apps notifications
 naughty.config.defaults['icon_size'] = 64
+
+
+-- // MARK -- click-to-copy notification handler
+-- track last notification for keyboard copying
+local last_notification_text = ""
+
+-- -- enable copying notification text by clicking on notifications
+-- naughty.connect_signal("request::display", function(n)
+--     -- store the notification text for keyboard shortcut access
+--     if n.title and n.text then
+--         last_notification_text = n.title .. "\n" .. n.text
+--     elseif n.title then
+--         last_notification_text = n.title
+--     elseif n.text then
+--         last_notification_text = n.text
+--     end
+    
+--     -- add click action to copy notification text
+--     n:connect_signal("button::press", function(_, _, _, button)
+--         if button == 1 then  -- left click
+--             local text_to_copy = ""
+--             if n.title and n.text then
+--                 text_to_copy = n.title .. "\n" .. n.text
+--             elseif n.title then
+--                 text_to_copy = n.title
+--             elseif n.text then
+--                 text_to_copy = n.text
+--             end
+            
+--             if text_to_copy ~= "" then
+--                 -- copy to clipboard using xclip
+--                 awful.spawn.with_shell("echo '" .. text_to_copy:gsub("'", "'\"'\"'") .. "' | xclip -selection clipboard")
+--                 -- brief feedback notification
+--                 naughty.notify({
+--                     title = "copied",
+--                     text = "notification text copied to clipboard",
+--                     timeout = 2,
+--                     position = "top_right"
+--                 })
+--             end
+--         end
+--     end)
+-- end)
+
+-- -- function to copy last notification via keyboard shortcut
+-- local function copy_last_notification()
+--     if last_notification_text ~= "" then
+--         awful.spawn.with_shell("echo '" .. last_notification_text:gsub("'", "'\"'\"'") .. "' | xclip -selection clipboard")
+--         naughty.notify({
+--             title = "copied",
+--             text = "last notification copied to clipboard",
+--             timeout = 2,
+--             position = "top_right"
+--         })
+--     else
+--         naughty.notify({
+--             title = "no notification",
+--             text = "no recent notification to copy",
+--             timeout = 2,
+--             position = "top_right"
+--         })
+--     end
+-- end
 
 
 
@@ -993,6 +1070,7 @@ local keys = keybindings.build({
     -- old: cycle_tags_with_clients used locally in module
     -- new: pass global implementation so there's a single source of truth
     cycle_tags_with_clients = cycle_tags_with_clients,
+    copy_last_notification = copy_last_notification,
     quake = nil  -- will be defined later in screen setup
 })
 
@@ -1129,7 +1207,7 @@ local centerwork_adaptive = require("lain.layout.centerwork_adaptive")
 -- Custom two-thirds layout that gives new window 2/3 screen
 local centerwork_twothirds = require("lain.layout.centerwork_twothirds")
 -- Custom tile.bottom layout with enhanced mouse resize functionality
-local tile_bottom_mouse = require("lain.layout.tile_bottom_mouse")
+-- removed: tile_bottom_mouse require (unused)
 
 
 -- LAYOUT DEFINITIONS
@@ -1220,13 +1298,7 @@ textclock_clr:set_widget(wibox.container.margin(mytextclock, 7, 7, 0, 0))
 textclock_clr:set_fg("#ffffff")
 textclock_clr:set_bg("#623997")
 
--- 1px separator to the left of the clock
-local clock_sep = wibox.widget {
-    orientation = "vertical",
-    forced_width = 1,
-    color = "#222222",
-    widget = wibox.widget.separator,
-}
+-- removed: clock separator (unused)
 
 
 -- // MARK: -- menu
@@ -1264,10 +1336,7 @@ mylauncher = awful.widget.launcher({
 })
 
 
--- Keyboard map indicator and switcher
-mykeyboardlayout = awful.widget.keyboardlayout()
-
-
+-- removed: keyboard layout widget (unused)
 
 -- local media_player = require("media-player")
 
@@ -1330,22 +1399,7 @@ local tag_indicators = require("plugins.tag_indicators")
 local dnd_to_tag = require("plugins.dnd_to_tag")
 -- border animation now integrated into shimmer system
 
-
--- Create a shimmering text launcher (moved here to avoid nil reference)
-local launcher_text = wibox.widget {
-    markup = '<span color="#FFD700">⚙</span>',  -- Gear icon as text
-    font = "Hack Nerd Font 16",
-    widget = wibox.widget.textbox
-}
-
--- Make launcher text clickable
-launcher_text:buttons(gears.table.join(
-    awful.button({}, 1, function() mymainmenu:toggle() end),
-    awful.button({}, 3, function() mymainmenu:toggle() end)
-))
-
--- register launcher with shimmer (direct function call)
-shimmer.register_launcher(launcher_text)
+-- removed: unused shimmering text launcher
 
 
 
@@ -1366,8 +1420,22 @@ local taglist_buttons = gears.table.join(
             client.focus:toggle_tag(t)
         end
     end), 
-    awful.button({ }, 4, function(t) awful.tag.viewnext(t.screen) end),
-    awful.button({ }, 5, function(t) awful.tag.viewprev(t.screen) end)
+    -- mousewheel up: cycle to next tag with clients
+    awful.button({ }, 4, function(t) 
+        cycle_tags_with_clients("next")
+    end),
+    -- mousewheel down: cycle to previous tag with clients  
+    awful.button({ }, 5, function(t) 
+        cycle_tags_with_clients("prev")
+    end),
+    -- shift + mousewheel up: cycle to next tag with visible clients only
+    awful.button({ "Shift" }, 4, function(t) 
+        cycle_tags_with_visible_clients("next")
+    end),
+    -- shift + mousewheel down: cycle to previous tag with visible clients only
+    awful.button({ "Shift" }, 5, function(t) 
+        cycle_tags_with_visible_clients("prev")
+    end)
 )
 
 
@@ -1494,22 +1562,12 @@ awful.screen.connect_for_each_screen(function(s)
             },
             id = 'background_role',
             widget = wibox.container.background,
-            
-            -- Simple create callback for tag setup
             create_callback = function(self, t, index, objects)
                 local text_widget = self:get_children_by_id('text_role')[1]
                 if text_widget and t then
-                    -- register with shimmer (direct function call with tag mapping)
+                    -- shimmer: register + wire hover via module helper
                     shimmer.register_taglist(self, s.index, t)
-                    
-                    -- tag hover styling (direct function calls)
-                    self:connect_signal('mouse::enter', function()
-                        shimmer.handle_tag_hover(self, t, "enter")
-                    end)
-                    
-                    self:connect_signal('mouse::leave', function()
-                        shimmer.handle_tag_hover(self, t, "leave")
-                    end)
+                    shimmer.attach_tag_hover(self, t)
                 end
             end
             ,
@@ -1536,7 +1594,7 @@ awful.screen.connect_for_each_screen(function(s)
     s.mytasklist = awful.widget.tasklist {
         screen  = s,
         disable_icon = false,
-        tasklist_disable_icon = false,
+        -- removed: tasklist_disable_icon (unknown property)
         filter  = function(c, screen)
             if not c or not c.valid or c.screen ~= screen then
                 return false
@@ -1619,6 +1677,12 @@ awful.screen.connect_for_each_screen(function(s)
                     end
                 end
                 mode_glyphs.apply(self, c)
+                -- shimmer: centralize safety colorization
+                shimmer.apply_tasklist_safety(self, c)
+                -- ensure shimmer protection and initial application happen at creation
+                if shimmer and shimmer.tasklist_update_callback then
+                    shimmer.tasklist_update_callback(self, c, index, objects)
+                end
             end,
             update_callback = function(self, c, index, objects)
                 local ib = self:get_children_by_id('icon_role')[1]
@@ -1632,6 +1696,8 @@ awful.screen.connect_for_each_screen(function(s)
                     end
                 end
                 mode_glyphs.update(self, c)
+                -- shimmer: centralize safety colorization
+                shimmer.apply_tasklist_safety(self, c)
                 shimmer.tasklist_update_callback(self, c, index, objects)
             end,
         }
@@ -1722,7 +1788,8 @@ end)
 client.connect_signal("manage", function(c)
     -- Set client window shapes
     c.shape = function(cr, w, h)
-        gears.shape.rounded_rect(cr, w, h, beautiful.border_radius)
+        -- guard missing theme var
+        gears.shape.rounded_rect(cr, w, h, beautiful.border_radius or 0)
     end
 
     -- old: only set fallback when the client had no icon
@@ -2099,11 +2166,11 @@ end)
 
 -- when a client is minimized/restored or hidden/unhidden, refresh tasklists to update bg color
 client.connect_signal("property::minimized", function(c)
-    refresh_all_tasklists()
+    shimmer.refresh_all_tasklists()
 end)
 
 client.connect_signal("property::hidden", function(c)
-    refresh_all_tasklists()
+    shimmer.refresh_all_tasklists()
 end)
 
 
@@ -2308,17 +2375,7 @@ end)
 root.keys(keys.globalkeys)
 
 
-
--- Define tag keybinding combinations in a table for clarity
-local tag_keybindings = {
-    { mods = {modkey}, action = function(tag) tag:view_only() end, desc = "view tag #%d" },
-    { mods = {modkey, altkey}, action = function(tag) awful.tag.viewtoggle(tag) end, desc = "toggle tag #%d" },
-    { mods = {modkey, ctrlkey}, action = function(tag) if client.focus then client.focus:move_to_tag(tag) end end, desc = "move client to tag #%d" },
-    { mods = {modkey, shiftkey}, action = function(tag) if client.focus then client.focus:move_to_tag(tag); tag:view_only() end end, desc = "move client and follow to tag #%d" },
-    { mods = {modkey, ctrlkey, shiftkey}, action = function(tag) if client.focus then client.focus:toggle_tag(tag) end end, desc = "toggle client on tag #%d" },
-}
-
-
+-- removed: unused tag_keybindings definition
 
 
 -- // MARK: RULES
@@ -2467,10 +2524,7 @@ awful.rules.rules = {
         }
     },
 
-    -- Focus filter rule
-    {rule = {}, properties = {focus = awful.client.focus.filter}},
-    -- Alternative: {rule = {}, properties = {focus = true}},
-    
+    -- removed: duplicate focus filter rule (covered by global defaults)
 
     -- // MARK: --tag-assignments
     -- {{{ Application-specific tag assignments
@@ -2675,21 +2729,7 @@ awful.rules.rules = {
 -- }}} -- End of window size management rules
 }
 
--- Apply client keys and buttons to all clients
-awful.rules.rules = gears.table.join(awful.rules.rules, {
-    -- All clients will match this rule
-    { rule = { },
-      properties = { border_width = beautiful.border_width,
-                     border_color = beautiful.border_normal,
-                     focus = awful.client.focus.filter,
-                     raise = true,
-                     keys = clientkeys,
-                     buttons = clientbuttons,
-                     screen = awful.screen.preferred,
-                     placement = awful.placement.no_overlap+awful.placement.no_offscreen
-     }
-    }
-})
+-- removed: duplicate global defaults rule (already defined above)
 
 
 
@@ -2707,17 +2747,7 @@ awful.rules.rules = gears.table.join(awful.rules.rules, {
 
 -- Color settings moved to theme file
 
--- Notification settings
-naughty.config.defaults.ontop = true
--- naughty.config.defaults.timeout = 10
--- naughty.config.defaults.margin = dpi("16")
--- naughty.config.defaults.border_width = 0
-naughty.config.defaults.width = 400  -- Width in pixels instead of percentage string
-naughty.config.defaults.position = 'bottom_middle'
-
--- Notification icon settings
--- Attempt to constrain the size of large icons in their apps notifications
-naughty.config.defaults['icon_size'] = 64
+-- removed: duplicate notification defaults (set earlier)
 
 
 
@@ -2734,7 +2764,7 @@ naughty.config.defaults['icon_size'] = 64
 -- START - Autostart applications
 
 -- Run programs on startup
-awful.spawn.with_shell("pgrep -u $USER -x picom > /dev/null || picom --config ~/.config/picom.conf &")
+awful.spawn.with_shell("pgrep -u $USER -x picom > /dev/null || picom --config ~/.config/picom.conf") -- don't double-background
 
 -- Screen layouts
 -- awful.spawn.with_shell("~/.screenlayout/new/31-laptop-tv-side.sh")
