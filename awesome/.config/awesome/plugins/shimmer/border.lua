@@ -24,6 +24,14 @@ local gears = require("gears")
 
 local M = {}
 
+-- // MARK: CONSTANT FOLDING & MATH OPTIMIZATION
+-- pre-calculated mathematical constants
+local HALF = 0.5
+
+-- cached math functions for performance
+local math_floor = math.floor
+local string_format = string.format
+
 -- // MARK: BORDER STATE VARIABLES
 
 -- border animation state
@@ -32,7 +40,7 @@ local border_step = 1.0
 local border_paused = false
 local border_timer = nil
 local border_params = {
-    speed = 0.06,         -- animation timer interval
+    -- speed = 0.06,         -- animation timer interval
     step_size = 0.5,      -- animation step increment
     phase_offset = 3.0    -- border gets its own phase offset for variety
 }
@@ -69,19 +77,19 @@ function M.start()
             
             local len = #palette
             
-            -- step the loop with fractional precision and phase offset
+            -- ping-pong across palette indices with fractional step (smooth)
             border_loop = border_loop + border_step
             if border_loop >= (len - 1) then
                 border_loop = len - 1
-                border_step = -(border_params.step_size or 0.5)
+                border_step = -(border_params.step_size or HALF)
             elseif border_loop <= 0 then
                 border_loop = 0
-                border_step = (border_params.step_size or 0.5)
+                border_step = (border_params.step_size or HALF)
             end
             
             -- apply phase offset to color selection (1-based indexing)
             local phase_adjusted_loop = border_loop + (border_params.phase_offset or 0)
-            local base_index = math.floor(phase_adjusted_loop)
+            local base_index = math_floor(phase_adjusted_loop)
             local index = (base_index % len) + 1
             local fraction = phase_adjusted_loop - base_index
             local next_index = (index % len) + 1
@@ -89,6 +97,7 @@ function M.start()
             local color1 = palette[index] or "#00000000"
             local color2 = palette[next_index] or "#00000000"
             
+            -- simple rgb lerp between adjacent palette colors for smoothness
             local color = color1
             if fraction > 0 and color1 ~= color2 then
                 local r1, g1, b1 = color1:match("#(%x%x)(%x%x)(%x%x)")
@@ -96,10 +105,10 @@ function M.start()
                 if r1 and g1 and b1 and r2 and g2 and b2 then
                     r1, g1, b1 = tonumber(r1, 16), tonumber(g1, 16), tonumber(b1, 16)
                     r2, g2, b2 = tonumber(r2, 16), tonumber(g2, 16), tonumber(b2, 16)
-                    local r = math.floor(r1 + (r2 - r1) * fraction)
-                    local g = math.floor(g1 + (g2 - g1) * fraction)
-                    local b = math.floor(b1 + (b2 - b1) * fraction)
-                    color = string.format("#%02x%02x%02x", r, g, b)
+                    local r = math_floor(r1 + (r2 - r1) * fraction)
+                    local g = math_floor(g1 + (g2 - g1) * fraction)
+                    local b = math_floor(b1 + (b2 - b1) * fraction)
+                    color = string_format("#%02x%02x%02x", r, g, b)
                 end
             end
             
