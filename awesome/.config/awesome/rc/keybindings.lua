@@ -74,13 +74,55 @@ local shiftkey = "Shift"  -- Shift key
 
 local M = {}
 
+-- Validation helper to check only required context functions
+local function validate_context(ctx)
+  -- Only validate required fields - optional ones are checked dynamically at usage
+  local required = {
+    "modkey", "terminal", "rotate_screens", 
+    "move_to_previous_tag", "move_to_next_tag", "toggle_tasklist_mode"
+  }
+  
+  for _, field in ipairs(required) do
+    if not ctx[field] then
+      error("keybindings.build: ctx." .. field .. " is required")
+    end
+  end
+end
+
+-- Helper to safely check if a context function exists and is callable
+local function ctx_has_function(ctx, func_name)
+  return ctx[func_name] and type(ctx[func_name]) == "function"
+end
+
+-- Optional: Log unknown context properties for debugging
+local function log_unknown_context_properties(ctx)
+  local known_properties = {
+    -- Required
+    "modkey", "terminal", "rotate_screens", "move_to_previous_tag", 
+    "move_to_next_tag", "toggle_tasklist_mode",
+    -- Optional (commonly used)
+    "copy_last_notification", "toggle_mode_glyphs_style", 
+    "cycle_tags_with_clients", "quake_toggle_lain", "quake"
+  }
+  
+  local known_set = {}
+  for _, prop in ipairs(known_properties) do
+    known_set[prop] = true
+  end
+  
+  for key, value in pairs(ctx) do
+    if not known_set[key] and gears and gears.debug and gears.debug.print_warning then
+      gears.debug.print_warning("[keybindings] Unknown context property: " .. key .. " (" .. type(value) .. ")")
+    end
+  end
+end
+
 function M.build(ctx)
-  assert(ctx and ctx.modkey, "keybindings.build: ctx.modkey is required")
-  assert(ctx.terminal, "keybindings.build: ctx.terminal is required")
-  assert(ctx.rotate_screens, "keybindings.build: ctx.rotate_screens is required")
-  assert(ctx.move_to_previous_tag, "keybindings.build: ctx.move_to_previous_tag is required")
-  assert(ctx.move_to_next_tag, "keybindings.build: ctx.move_to_next_tag is required")
-  assert(ctx.toggle_tasklist_mode, "keybindings.build: ctx.toggle_tasklist_mode is required")
+  -- Validate context instead of using assertions
+  validate_context(ctx)
+  
+  -- Optional: Enable this for debugging unknown context properties
+  -- log_unknown_context_properties(ctx)
   -- optional but recommended: global cycle_tags_with_clients provided by rc.lua
   local cycle_tags_with_clients = ctx.cycle_tags_with_clients
 
@@ -157,9 +199,9 @@ function M.build(ctx)
               run_or_raise(func_or_string, matcher)
             end, {description = description, group = group}))
           elseif group == "menu" then
-            -- Special handling for menu keys that use os.execute
+            -- run menus with awful.spawn for non-blocking behavior
             table.insert(globalkeys, awful.key(modifiers, key_name, function()
-              os.execute(func_or_string)
+              awful.spawn.with_shell(func_or_string)
             end, {description = description, group = group}))
           else
             table.insert(globalkeys, awful.key(modifiers, key_name, function()
@@ -174,6 +216,11 @@ function M.build(ctx)
           table.insert(globalkeys, awful.key(modifiers, key_name, function()
             rotate_screens(func_or_string)
           end, {description = description, group = group}))
+        else
+          -- Log warning for unsupported function types but don't break
+          if gears and gears.debug and gears.debug.print_warning then
+            gears.debug.print_warning("[keybindings] Skipping unsupported key binding: " .. tostring(description))
+          end
         end
       end
     end
@@ -186,10 +233,10 @@ function M.build(ctx)
     {{modkey}, "s", function() hotkeys_popup.show_help(nil, mouse.screen) end, "show help", nil, "awesome"},
     {{modkey}, "Left", function() awful.tag.viewprev() end, "view previous tag", nil, "tag"},
     {{modkey}, "Right", function() awful.tag.viewnext() end, "view next tag", nil, "tag"},
-    -- old: local helper; new: use rc.lua provided function if available
-    {{modkey, shiftkey}, "Left", function() if cycle_tags_with_clients then cycle_tags_with_clients("prev") end end,
+    -- optional: use rc.lua provided function if available
+    {{modkey, shiftkey}, "Left", function() if ctx_has_function(ctx, "cycle_tags_with_clients") then ctx.cycle_tags_with_clients("prev") end end,
       "view previous tag with client", nil, "tag"},
-    {{modkey, shiftkey}, "Right", function() if cycle_tags_with_clients then cycle_tags_with_clients("next") end end,
+    {{modkey, shiftkey}, "Right", function() if ctx_has_function(ctx, "cycle_tags_with_clients") then ctx.cycle_tags_with_clients("next") end end,
       "view next tag with client", nil, "tag"},
     {{modkey}, "Escape", function() awful.tag.history.restore() end, "go back", nil, "tag"},
     {{modkey}, "j", function() awful.client.focus.byidx(1) end, "focus next client", nil, "client"},
@@ -232,6 +279,15 @@ function M.build(ctx)
     {{modkey, shiftkey}, "p", function() menubar.show() end, "show menubar", nil, "launcher"}
   }
 
+  -- // MARK: QUAKE TERMINAL
+  -- Toggle the lain quake dropdown terminal
+  local quake_keys = {}
+  if ctx_has_function(ctx, "quake_toggle_lain") then
+    quake_keys = {
+      {{modkey}, "grave", ctx.quake_toggle_lain, "toggle quake terminal", nil, "launcher"}
+    }
+  end
+
   -- // MARK: PROMPT
   -- Prompt keys
   local prompt_keys = {
@@ -266,9 +322,12 @@ function M.build(ctx)
   }
 
   -- // MARK -- notification copy keys
-  local notification_keys = {
-    {{modkey, shiftkey}, "n", ctx.copy_last_notification, "copy last notification text", nil, "notification"}
-  }
+  local notification_keys = {}
+  if ctx_has_function(ctx, "copy_last_notification") then
+    notification_keys = {
+      {{modkey, shiftkey}, "n", ctx.copy_last_notification, "copy last notification text", nil, "notification"}
+    }
+  end
 
   -- // MARK: F-KEY LAUNCHERS
   -- F-key application launchers
@@ -297,6 +356,8 @@ function M.build(ctx)
     {{modkey, altkey}, "e", "emote", "run emote emoji picker", nil, "utility"},
     {{modkey, altkey}, "q", "xkill", "xkill to kill a hung gui app", nil, "utility"},
     {{modkey, altkey}, "c", "xcolor -s clipboard", "colour picker to clipboard", nil, "utility"},
+    -- add focused window's identifier to rc.lua floating rules (helper script)
+    {{modkey, altkey}, "f", "$HOME/.config/awesome/rc/add-floating-rule.sh", "add focused window to floating rules", nil, "utility"},
     {{modkey, ctrlkey}, "a", "arandr", "run arandr", nil, "utility"}
   }
   
@@ -374,6 +435,7 @@ function M.build(ctx)
   add_keys(nav_keys)
   add_keys(layout_keys)
   add_keys(program_keys)
+  add_keys(quake_keys)
   add_keys(prompt_keys)
   add_keys(shimmer_keys)
   add_keys(notification_keys)
@@ -391,10 +453,12 @@ function M.build(ctx)
   add_keys(launcher_keys)
 
   -- mode glyphs control (basic <-> shimmer)
-  local glyph_keys = {
-    {{modkey, altkey}, "g", function() if toggle_mode_glyphs_style then toggle_mode_glyphs_style() end end,
-      "toggle mode glyph style", nil, "awesome"}
-  }
+  local glyph_keys = {}
+  if ctx_has_function(ctx, "toggle_mode_glyphs_style") then
+    glyph_keys = {
+      {{modkey, altkey}, "g", ctx.toggle_mode_glyphs_style, "toggle mode glyph style", nil, "awesome"}
+    }
+  end
   add_keys(glyph_keys)
   
   -- // MARK: TAGS
@@ -487,7 +551,13 @@ function M.build(ctx)
     {{modkey, ctrlkey}, "m", function(c) c.maximized_vertical = not c.maximized_vertical c:raise() end,
       "toggle vertical maximize", nil, "client"},
     {{modkey, shiftkey}, "m", function(c) c.maximized_horizontal = not c.maximized_horizontal c:raise() end,
-      "toggle horizontal maximize", nil, "client"}
+      "toggle horizontal maximize", nil, "client"},
+    -- center focused window on active screen
+    -- note: forces floating to allow free placement without affecting tiling layout
+    {{modkey, shiftkey}, "c", function(c)
+      c.floating = true
+      awful.placement.centered(c, { honor_workarea = true })
+    end, "center window", nil, "client"}
   }
   
 

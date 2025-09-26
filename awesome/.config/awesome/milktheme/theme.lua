@@ -27,11 +27,18 @@ local themes_path = gfs.get_themes_dir()
 local theme = {}
 
 -- Base icon directories used by layout icon sections
+local theme_dir = gfs.get_configuration_dir() .. "milktheme/"
 theme.lain_icons         = "~/.config/awesome/lain/icons/layout/default/"
 theme.bling_icons        = "~/.config/awesome/bling/icons/layouts/"
-theme.extras_icons       = "~/.config/awesome/lib_extras_milkii/icons/layouts/"
+theme.layout_icons       = theme_dir .. "icons/layouts/"  -- renamed from extras_icons
 
 
+
+-- // MARK: ICONS
+
+-- set a concrete icon theme so xdg icon lookups succeed (used by desktop icons, menus, etc.)
+-- choose from installed icon themes; Adwaita and hicolor are common
+theme.icon_theme = "Adwaita"
 
 
 -- // MARK: WALLPAPER
@@ -54,7 +61,12 @@ else
     theme.wallpaper = themes_path .. "default/background.png"
 end
 
-
+-- -- per-screen wallpapers
+-- theme.wallpapers = {
+--     "/path/to/screen1.png",
+--     "/path/to/screen2.png",
+--     "/path/to/screen3.png",
+--   }
 
 
 -- // MARK: FONTS
@@ -99,7 +111,7 @@ theme.hotkeys_border_width = dpi(1)
 theme.hotkeys_border_color = "#6c6c6c"
 theme.hotkeys_group_margin = dpi(8)
 theme.hotkeys_label_bg = theme.bg_focus
-theme.hotkeys_label_fg = "#ffffff"
+theme.hotkeys_label_fg = "#000000"  -- black foreground for section titles
 
 
 ---- active window
@@ -121,6 +133,10 @@ theme.hotkeys_label_fg = "#ffffff"
 
 
 theme.main_purple   = "#623997"
+-- theme.main_orange   = "#976239"  -- complementary orange: same saturation/lightness as purple
+theme.main_orange   = "#f97316"
+-- border_color = beautiful.main_orange  -- for orange accents
+
 
 -- Keep bg_focus as an alias for compatibility with Awesome/Beautiful expectations
 theme.bg_focus       = theme.main_purple
@@ -411,27 +427,50 @@ theme.layout_cornerse = themes_path.."default/layouts/cornersew.png"
 
 
 
-theme.layout_centerwork_adaptiveh = theme.extras_icons .. "centerwork_adaptiveh" .. theme.layout_icon_config.current_suffix .. ".svg" -- centerwork_adaptive.horizontal
-theme.layout_centerwork_twothirdsh = theme.extras_icons .. "centerwork_twothirdsh" .. theme.layout_icon_config.current_suffix .. ".svg" -- centerwork_twothirds.horizontal
-theme.layout_centered = theme.extras_icons .. "centered" .. theme.layout_icon_config.current_suffix .. ".svg" -- bling.layout.centered
-theme.layout_deck = theme.extras_icons .. "deck" .. theme.layout_icon_config.current_suffix .. ".svg" -- bling.layout.deck
-theme.layout_equalarea = theme.extras_icons .. "equalarea" .. theme.layout_icon_config.current_suffix .. ".svg" -- bling.layout.equalarea
-theme.layout_mstab = theme.extras_icons .. "mstab" .. theme.layout_icon_config.current_suffix .. ".svg" -- bling.layout.mstab
-theme.layout_tile = theme.extras_icons .. "tile" .. theme.layout_icon_config.current_suffix .. ".svg" -- awful.layout.suit.tile
-theme.layout_tiletop = theme.extras_icons .. "tiletop" .. theme.layout_icon_config.current_suffix .. ".svg" -- awful.layout.suit.tile.top
-theme.layout_tilebottom = theme.extras_icons .. "tilebottom" .. theme.layout_icon_config.current_suffix .. ".svg" -- awful.layout.suit.tile.bottom
-theme.layout_tileleft = theme.extras_icons .. "tileleft" .. theme.layout_icon_config.current_suffix .. ".svg" -- awful.layout.suit.tile.left
-theme.layout_magnifier = theme.extras_icons .. "magnifier" .. theme.layout_icon_config.current_suffix .. ".svg" -- awful.layout.suit.magnifier
-theme.layout_max = theme.extras_icons .. "max" .. theme.layout_icon_config.current_suffix .. ".svg" -- awful.layout.suit.max
-theme.layout_floating = theme.extras_icons .. "floating" .. theme.layout_icon_config.current_suffix .. ".svg" -- awful.layout.suit.floating
-theme.layout_cascade = theme.extras_icons .. "cascade" .. theme.layout_icon_config.current_suffix .. ".svg" -- lain.layout.cascade
-theme.layout_treetile = theme.extras_icons .. "treetile" .. theme.layout_icon_config.current_suffix .. ".svg" -- treetile layout
-theme.layout_trizen = theme.extras_icons .. "trizen" .. theme.layout_icon_config.current_suffix .. ".svg" -- trizen layout
+theme.layout_centerwork_adaptiveh = theme.layout_icons .. "centerwork_adaptiveh" .. theme.layout_icon_config.current_suffix .. ".svg" -- centerwork_adaptive.horizontal
+theme.layout_centerwork_twothirdsh = theme.layout_icons .. "centerwork_twothirdsh" .. theme.layout_icon_config.current_suffix .. ".svg" -- centerwork_twothirds.horizontal
+theme.layout_centered = theme.layout_icons .. "centered" .. theme.layout_icon_config.current_suffix .. ".svg" -- bling.layout.centered
+theme.layout_deck = theme.layout_icons .. "deck" .. theme.layout_icon_config.current_suffix .. ".svg" -- bling.layout.deck
+theme.layout_equalarea = theme.layout_icons .. "equalarea" .. theme.layout_icon_config.current_suffix .. ".svg" -- bling.layout.equalarea
+theme.layout_mstab = theme.layout_icons .. "mstab" .. theme.layout_icon_config.current_suffix .. ".svg" -- bling.layout.mstab
+theme.layout_tile = theme.layout_icons .. "tile" .. theme.layout_icon_config.current_suffix .. ".svg" -- awful.layout.suit.tile
+theme.layout_tiletop = theme.layout_icons .. "tiletop" .. theme.layout_icon_config.current_suffix .. ".svg" -- awful.layout.suit.tile.top
+theme.layout_tilebottom = theme.layout_icons .. "tilebottom" .. theme.layout_icon_config.current_suffix .. ".svg" -- awful.layout.suit.tile.bottom
+theme.layout_tileleft = theme.layout_icons .. "tileleft" .. theme.layout_icon_config.current_suffix .. ".svg" -- awful.layout.suit.tile.left
+theme.layout_magnifier = theme.layout_icons .. "magnifier" .. theme.layout_icon_config.current_suffix .. ".svg" -- awful.layout.suit.magnifier
+theme.layout_max = theme.layout_icons .. "max" .. theme.layout_icon_config.current_suffix .. ".svg" -- awful.layout.suit.max
+theme.layout_floating = theme.layout_icons .. "floating" .. theme.layout_icon_config.current_suffix .. ".svg" -- awful.layout.suit.floating
+theme.layout_cascade = theme.layout_icons .. "cascade" .. theme.layout_icon_config.current_suffix .. ".svg" -- lain.layout.cascade
+theme.layout_treetile = theme.layout_icons .. "treetile" .. theme.layout_icon_config.current_suffix .. ".svg" -- treetile layout
+theme.layout_trizen = theme.layout_icons .. "trizen" .. theme.layout_icon_config.current_suffix .. ".svg" -- trizen layout
 
 theme.layout_leavedright  = "~/.config/awesome/awesome-leaved/icons/leavedright.png"
 theme.layout_leavedleft   = "~/.config/awesome/awesome-leaved/icons/leavedleft.png"
 theme.layout_leavedbottom = "~/.config/awesome/awesome-leaved/icons/leavedbottom.png"
 theme.layout_leavedtop    = "~/.config/awesome/awesome-leaved/icons/leavedtop.png"
+
+-- // MARK: WINDOW SWALLOWING
+
+-- ██╗    ██╗██╗███╗   ██╗██████╗  ██████╗ ██╗    ██╗    ███████╗██╗    ██╗ █████╗ ██╗     ██╗      ██████╗ ██╗    ██╗██╗███╗   ██╗ ██████╗ 
+-- ██║    ██║██║████╗  ██║██╔══██╗██╔═══██╗██║    ██║    ██╔════╝██║    ██║██╔══██╗██║     ██║     ██╔═══██╗██║    ██║██║████╗  ██║██╔════╝ 
+-- ██║ █╗ ██║██║██╔██╗ ██║██║  ██║██║   ██║██║ █╗ ██║    ███████╗██║ █╗ ██║███████║██║     ██║     ██║   ██║██║ █╗ ██║██║██╔██╗ ██║██║  ███╗
+-- ██║███╗██║██║██║╚██╗██║██║  ██║██║   ██║██║███╗██║    ╚════██║██║███╗██║██╔══██║██║     ██║     ██║   ██║██║███╗██║██║██║╚██╗██║██║   ██║
+-- ╚███╔███╔╝██║██║ ╚████║██████╔╝╚██████╔╝╚███╔███╔╝    ███████║╚███╔███╔╝██║  ██║███████╗███████╗╚██████╔╝╚███╔███╔╝██║██║ ╚████║╚██████╔╝
+--  ╚══╝╚══╝ ╚═╝╚═╝  ╚═══╝╚═════╝  ╚═════╝  ╚══╝╚══╝     ╚══════╝ ╚══╝╚══╝ ╚═╝  ╚═╝╚══════╝╚══════╝ ╚═════╝  ╚══╝╚══╝ ╚═╝╚═╝  ╚═══╝ ╚═════╝ 
+
+-- applications that should not be swallowed as parent windows
+-- these apps typically spawn child processes that should remain separate
+theme.parent_filter_list = { 
+    "firefox", 
+    "Gimp", 
+    "Google-chrome",
+    "Mixxx"  -- mixxx dj software should not swallow child windows
+}
+
+-- applications that should not be swallowed as child windows  
+-- (empty by default - add here if specific apps should never be swallowed)
+theme.child_filter_list = {}
+
 
 -- // MARK: PLUGIN LAYOUT ICONS
 theme.layout_thrizen = themes_path.."thrizen/themes/default/thrizen.png"

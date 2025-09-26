@@ -32,6 +32,7 @@ local naughty = require("naughty")
 local animation = require("plugins.shimmer.animation")
 local border = require("plugins.shimmer.border") 
 local integrations = require("plugins.shimmer.integrations")
+local beautiful = require("beautiful")  -- Theme handling library
 
 local M = {}
 
@@ -54,19 +55,19 @@ local function show_shimmer_notification(title, text, timeout)
     end
     
     -- use persistent timeout if enabled, otherwise use provided timeout
-    local actual_timeout = notification_persistent and 0 or (timeout or 5)
+    local actual_timeout = notification_persistent and 0 or (timeout or 3)
     
     -- show new notification and track it
     current_notification = naughty.notify({
         title = title,
         text = text,
         timeout = actual_timeout,
-        bg = "#5330CA",     -- darker, more purple background
-        fg = "#f1f5f9",     -- slightly brighter text for better contrast
-        border_color = "#f97316",  -- orange border
+        bg = beautiful.main_purple or "#5330EA",     -- darker, more purple background
+        fg = beautiful.fg_normal or "#f1f5f9",     -- slightly brighter text for better contrast
+        border_color = beautiful.main_orange or "#f97316",  -- orange border
         border_width = 1,
         font = "monospace 9",
-        width = 600,        -- even wider notification to prevent line wrapping
+        width = 450,        -- even wider notification to prevent line wrapping
         -- position = "top_middle"  -- force top position for visibility
     })
     
@@ -103,21 +104,21 @@ function M.toggle_notification_persistence()
         gears.timer.start_new(0.2, function()
             naughty.notify({
                 title = "shimmer notifications",
-                text = "notifications now " .. status,
-                timeout = 2,
-                bg = "#5330CA",
-                fg = "#f1f5f9",
-                border_color = "#f97316",
+                text = "notifications now: " .. status,
+                timeout = 3,
+                bg = beautiful.main_purple or "#5330CA",
+                fg = beautiful.fg_normal or "#f1f5f9",
+                border_color = beautiful.main_orange or "#f97316",
                 border_width = 1,
                 font = "monospace 9",
-                width = 350,
+                width = 450,
                 -- position = "top_middle"  -- force top position for visibility
             })
             return false  -- don't repeat
         end)
     else
         -- when turning persistent off, just show the toggle message
-        show_shimmer_notification("shimmer notifications", "notifications now " .. status, 6)
+        show_shimmer_notification("shimmer notifications", "notifications now: " .. status, 3)
     end
     
     return notification_persistent

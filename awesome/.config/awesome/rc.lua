@@ -993,14 +993,44 @@ end
 -- // MARK: NOTIFICATIONS
 -- notification settings
 
+-- force enable ruled notifications
+ruled.notification.connect_signal("request::rules", function()
+    ruled.notification.append_rule {
+        rule = {},
+        properties = {
+            screen = awful.screen.preferred,
+            implicit_timeout = 5,
+        }
+    }
+end)
+
+-- explicitly require and configure naughty display - this was the key fix for Xephyr
 
 naughty.config.defaults.ontop = true
 -- naughty.config.defaults.timeout = 10
--- naughty.config.defaults.margin = dpi("16")
+-- naughty.config.defaults.margin = dpi("16")  
 -- naughty.config.defaults.border_width = 0
 naughty.config.defaults.width = 400  -- Width in pixels instead of percentage string
-naughty.config.defaults.position = 'bottom_middle'
+-- naughty.config.defaults.position = 'top_right'  -- changed from bottom_middle for testing
+naughty.config.defaults.position = 'bottom_middle'  -- changed from bottom_middle for testing
+-- naughty.config.defaults.screen = awful.screen.preferred  -- ensure screen is set
 
+-- use theme colors for regular notifications
+naughty.config.defaults.bg = beautiful.notification_bg or beautiful.main_purple or "#FFD700"
+naughty.config.defaults.fg = beautiful.notification_fg or "#000000"
+naughty.config.defaults.border_color = beautiful.main_purple or "#623997"
+naughty.config.defaults.border_width = 2
+
+-- optional: test notification on startup (comment out when not needed)
+-- gears.timer.start_new(2, function()
+--     naughty.notify({
+--         title = "AwesomeWM",
+--         text = "Configuration loaded successfully!",
+--         timeout = 3,
+--         position = "top_right"
+--     })
+--     return false
+-- end)
 
 -- notification icon settings
 -- attempt to constrain the size of large icons in their apps notifications
@@ -1011,63 +1041,77 @@ naughty.config.defaults['icon_size'] = 64
 -- track last notification for keyboard copying
 local last_notification_text = ""
 
--- -- enable copying notification text by clicking on notifications
--- naughty.connect_signal("request::display", function(n)
---     -- store the notification text for keyboard shortcut access
---     if n.title and n.text then
---         last_notification_text = n.title .. "\n" .. n.text
---     elseif n.title then
---         last_notification_text = n.title
---     elseif n.text then
---         last_notification_text = n.text
---     end
-    
---     -- add click action to copy notification text
---     n:connect_signal("button::press", function(_, _, _, button)
---         if button == 1 then  -- left click
---             local text_to_copy = ""
---             if n.title and n.text then
---                 text_to_copy = n.title .. "\n" .. n.text
---             elseif n.title then
---                 text_to_copy = n.title
---             elseif n.text then
---                 text_to_copy = n.text
---             end
-            
---             if text_to_copy ~= "" then
---                 -- copy to clipboard using xclip
---                 awful.spawn.with_shell("echo '" .. text_to_copy:gsub("'", "'\"'\"'") .. "' | xclip -selection clipboard")
---                 -- brief feedback notification
---                 naughty.notify({
---                     title = "copied",
---                     text = "notification text copied to clipboard",
---                     timeout = 2,
---                     position = "top_right"
---                 })
---             end
---         end
---     end)
--- end)
+-- enable default naughty notification system 
+require("naughty.dbus")
 
--- -- function to copy last notification via keyboard shortcut
--- local function copy_last_notification()
---     if last_notification_text ~= "" then
---         awful.spawn.with_shell("echo '" .. last_notification_text:gsub("'", "'\"'\"'") .. "' | xclip -selection clipboard")
---         naughty.notify({
---             title = "copied",
---             text = "last notification copied to clipboard",
---             timeout = 2,
---             position = "top_right"
---         })
---     else
---         naughty.notify({
---             title = "no notification",
---             text = "no recent notification to copy",
---             timeout = 2,
---             position = "top_right"
---         })
---     end
--- end
+-- store notification text and add click handling to existing notifications
+naughty.connect_signal("added", function(n)
+    -- store text for keyboard shortcut
+    local text_to_copy = ""
+    if n.title and n.text then
+        text_to_copy = n.title .. "\n" .. n.text
+        last_notification_text = text_to_copy
+    elseif n.title then
+        text_to_copy = n.title
+        last_notification_text = text_to_copy
+    elseif n.text then
+        text_to_copy = n.text
+        last_notification_text = text_to_copy
+    else
+        last_notification_text = ""
+    end
+    
+    -- add right-click handler to the notification (after it's displayed)
+    gears.timer.delayed_call(function()
+        if n.box and n.box.widget then
+            n.box.widget:connect_signal("button::press", function(_, _, _, button)
+                if button == 1 then
+                    -- left click: dismiss (default behavior)
+                    n:destroy()
+                elseif button == 3 then
+                    -- right click: copy to clipboard
+                    if text_to_copy ~= "" then
+                        awful.spawn.with_shell("echo '" .. text_to_copy:gsub("'", "'\"'\"'") .. "' | xclip -selection clipboard")
+                        naughty.notify({
+                            title = "copied",
+                            text = "notification copied to clipboard",
+                            timeout = 2,
+                        })
+                    else
+                        naughty.notify({
+                            title = "nothing to copy",
+                            text = "notification has no text",
+                            timeout = 2,
+                        })
+                    end
+                    n:destroy()
+                end
+            end)
+        end
+    end)
+end)
+
+-- optional: add click handling to notifications  
+-- (this would require more complex setup to not interfere with default display)
+-- for now, just keep the keyboard shortcut working
+
+-- function to copy last notification via keyboard shortcut
+local function copy_last_notification()
+    if last_notification_text ~= "" then
+        awful.spawn.with_shell("echo '" .. last_notification_text:gsub("'", "'\"'\"'") .. "' | xclip -selection clipboard")
+        naughty.notify({
+            title = "copied",
+            text = "last notification copied to clipboard",
+            timeout = 2,
+        })
+    else
+        naughty.notify({
+            title = "no notification",
+            text = "no recent notification to copy",
+            timeout = 2,
+        })
+    end
+end
 
 
 
@@ -1756,14 +1800,18 @@ awful.screen.connect_for_each_screen(function(s)
                 return true
             end
             
-            -- default behavior: only show clients from focused/selected tags
-            local focused_tag = screen.selected_tag
-            if not focused_tag then return false end
+            -- default behavior: show clients from all selected tags (not just the first one)
+            local selected_tags = screen.selected_tags
+            if not selected_tags or #selected_tags == 0 then 
+                return false 
+            end
             
-            -- check if client is on the focused tag
-            for _, tag in ipairs(c:tags()) do
-                if tag == focused_tag then
-                    return true
+            -- check if client is on any of the selected tags
+            for _, client_tag in ipairs(c:tags()) do
+                for _, selected_tag in ipairs(selected_tags) do
+                    if client_tag == selected_tag then
+                        return true
+                    end
                 end
             end
             
@@ -1918,8 +1966,8 @@ awful.screen.connect_for_each_screen(function(s)
     }
 
     -- desktop icons (freedesktop) per screen
-    local desktop = require("freedesktop.desktop")
-    desktop.add_icons({ screen = s, dir = os.getenv("HOME") .. "/Desktop", showlabel = true, open_with = "xdg-open" })
+    -- local desktop = require("freedesktop.desktop")
+    -- desktop.add_icons({ screen = s, dir = os.getenv("HOME") .. "/Desktop", showlabel = true, open_with = "xdg-open" })
 end)
 
 
