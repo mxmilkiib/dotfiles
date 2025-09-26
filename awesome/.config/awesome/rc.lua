@@ -97,7 +97,6 @@ Xephyr :1 -ac -br -noreset -screen 1152x720 & sleep 1 && DISPLAY=:1.0 awesome -c
 --
 -- WIDGETS & UTILITIES:
 --   • battery-widget - Visual battery status and charging indicators
---   • xrandr - Multi-monitor display management interface
 --   • mpris_widget/media-player - Media controls and track information
 --   • smart_borders - Automatic border width control
 --
@@ -129,7 +128,6 @@ pcall(require, "luarocks.loader")
 
 -- Standard awesome libraries
 local gears = require("gears")
--- removed: gears.math (unused)
 local awful = require("awful")
 require("awful.autofocus")
 local wibox = require("wibox")          -- Widget and layout library
@@ -141,21 +139,42 @@ local hotkeys_popup = require("awful.hotkeys_popup")  -- Hotkey help system
 local lgi = require("lgi")
 local cairo = lgi.cairo
 
-
 local keybindings = require("rc.keybindings")        -- Hotkey definitions
+
+-- startup profiler
+-- local profiler = require("rc.startup_profiler")
+-- usage:
+--   1) enable: uncomment the line above to load the profiler
+--   2) wrap expensive sections:
+--        profiler.start("theme.init")
+--        beautiful.init(...)
+--        profiler.stop()
+--      or use a one-shot wrapper:
+--        profiler.measure("layouts_load", function()
+--          -- code to measure
+--        end)
+--   3) reporting:
+--      a summary report is printed automatically ~2s after startup
+--      you can also call profiler.report() manually if needed
 
 
 -- external libraries
-local lain = require("lain")                  -- Layouts, widgets, utilities
-local bling = require("bling")                -- Modern layouts and utilities
--- removed: cyclefocus (unused)
-local freedesktop = require("freedesktop")      -- Create a menu from .desktop files
-local treetile = require("treetile")           -- Hierarchical window arrangement
+local lain = require("lain")                                          -- Layouts, widgets, utilities
+local quake_lain = require("lain.util.quake")                         -- optional dropdown terminal (lain's quake)
+
+local bling = require("bling")                                        -- Modern layouts and utilities
+
+local freedesktop = require("freedesktop")                            -- Create a menu from .desktop files
+
+local treetile = require("treetile")                                  -- Hierarchical window arrangement
+
+local ruled = require("ruled")                                        -- modern rules API
 
 
-local shimmer = require("plugins.shimmer")     -- Unified shimmer & border animation system
-local mode_glyphs = require("plugins.mode_glyphs") -- stable tasklist mode glyphs
+local shimmer = require("plugins.shimmer")                            -- Unified shimmer & border animation system
+local mode_glyphs = require("plugins.mode_glyphs")                    -- stable tasklist mode glyphs
 local hotkey_dupe_detector = require("plugins.hotkey_dupe_detector")  -- duplicate hotkey detection
+
 
 
 -- // MARK: -- shimmer configuration
@@ -170,8 +189,8 @@ shimmer.configure({
     preset = "gold_contrast",  -- pastel candy-cane shine preset
     border = {
         -- smoothness = 2,  -- light border animation
-        smoothness = 1,  -- 0.15s per frame
-        speed = 0.15,         -- animation timer interval
+        smoothness = 1,     -- 0.15s per frame
+        speed = 0.15,       -- animation timer interval
     }
 })
 -- minimal startup timer for shimmer - just enough for tasklist widgets to initialize
@@ -190,8 +209,16 @@ local function toggle_mode_glyphs_style()
     naughty.notify({ title = "mode glyphs", text = "style: " .. new_style, timeout = 2 })
 end
 
-
-
+-- bling extras: enable window swallowing and previews
+-- keep defaults minimal; placement centered within workarea
+-- bling.module.window_swallowing.start()
+-- require("bling.widget.task_preview").enable({
+--     placement_fn = function(d) awful.placement.centered(d, { honor_workarea = true }) end,
+-- })
+-- require("bling.widget.tag_preview").enable({
+--     placement_fn = function(d) awful.placement.centered(d, { honor_workarea = true }) end,
+--     show_client_content = true,
+-- })
 
 -- // MARK: ERRORS
 -- ################################################################################
@@ -1071,7 +1098,18 @@ local keys = keybindings.build({
     -- new: pass global implementation so there's a single source of truth
     cycle_tags_with_clients = cycle_tags_with_clients,
     copy_last_notification = copy_last_notification,
-    quake = nil  -- will be defined later in screen setup
+    -- quake terminal: expose toggle function for hotkey
+    quake_toggle_lain = (function()
+        -- instantiate lain quake dropdown
+        local q = quake_lain({
+            app = terminal,
+            name = "QuakeLain",
+            height = 0.30,
+            width = 1,
+            followtag = true,
+        })
+        return function() q:toggle() end
+    end)(),
 })
 
 
@@ -1115,10 +1153,15 @@ hotkey_dupe_detector.notify_duplicates(globalkeys, clientkeys)
 -- wallpaper management and configuration
 -- define wallpaper function
 local function set_wallpaper(s)
-	-- Wallpaper
+    -- per-screen wallpaper: prefer beautiful.wallpapers[s.index] if provided
+    if beautiful.wallpapers and beautiful.wallpapers[s.index] then
+        gears.wallpaper.maximized(beautiful.wallpapers[s.index], s, true)
+        return
+    end
+    -- fallback to single wallpaper or function
 	if beautiful.wallpaper then
 		local wallpaper = beautiful.wallpaper
-		-- If wallpaper is a function, call it with the screen
+        -- if wallpaper is a function, call it with the screen
 		if type(wallpaper) == "function" then
 			wallpaper = wallpaper(s)
 		end
@@ -1133,7 +1176,8 @@ end
 -- end
 -- new: idiomatic screen iterator
 for s in screen do
-    gears.wallpaper.maximized(beautiful.wallpaper, s, true)
+    -- use helper to support per-screen backgrounds
+    set_wallpaper(s)
 end
 
 -- Reset wallpaper when screen geometry changes
@@ -1441,6 +1485,103 @@ local taglist_buttons = gears.table.join(
 
 -- // MARK: tasklist
 -- tasklist button mouse bindings
+
+
+-- // MARK -- mousewheel client cycling functions
+-- cycle through clients on the current tag only (normal mousewheel)
+local function cycle_clients_on_tag(direction)
+    local current_tag = awful.screen.focused().selected_tag
+    if not current_tag then return end
+    
+    local clients = current_tag:clients()
+    if #clients <= 1 then return end
+    
+    local current_client = client.focus
+    if not current_client then
+        clients[1]:emit_signal("request::activate", "tasklist", {raise = true})
+        return
+    end
+    
+    -- find current client index
+    local current_index = nil
+    for i, c in ipairs(clients) do
+        if c == current_client then
+            current_index = i
+            break
+        end
+    end
+    
+    if not current_index then
+        clients[1]:emit_signal("request::activate", "tasklist", {raise = true})
+        return
+    end
+    
+    -- calculate next client index
+    local next_index
+    if direction == 1 then -- forward
+        next_index = current_index % #clients + 1
+    else -- backward
+        next_index = (current_index - 2) % #clients + 1
+    end
+    
+    -- activate next client
+    clients[next_index]:emit_signal("request::activate", "tasklist", {raise = true})
+end
+
+-- cycle through clients with only one visible (mod4 + mousewheel)
+local function cycle_clients_exclusive(direction)
+    local current_tag = awful.screen.focused().selected_tag
+    if not current_tag then return end
+    
+    local clients = current_tag:clients()
+    if #clients <= 1 then return end
+    
+    local current_client = client.focus
+    if not current_client then
+        -- minimize all except first
+        for i, c in ipairs(clients) do
+            if i == 1 then
+                c.minimized = false
+                c:emit_signal("request::activate", "tasklist", {raise = true})
+            else
+                c.minimized = true
+            end
+        end
+        return
+    end
+    
+    -- find current client index
+    local current_index = nil
+    for i, c in ipairs(clients) do
+        if c == current_client then
+            current_index = i
+            break
+        end
+    end
+    
+    if not current_index then
+        return
+    end
+    
+    -- calculate next client index
+    local next_index
+    if direction == 1 then -- forward
+        next_index = current_index % #clients + 1
+    else -- backward
+        next_index = (current_index - 2) % #clients + 1
+    end
+    
+    -- minimize all clients except the next one
+    for i, c in ipairs(clients) do
+        if i == next_index then
+            c.minimized = false
+            c:emit_signal("request::activate", "tasklist", {raise = true})
+        else
+            c.minimized = true
+        end
+    end
+end
+
 local tasklist_buttons = gears.table.join(
     awful.button({ }, 1, function (c)
         if c == client.focus then
@@ -1459,11 +1600,21 @@ local tasklist_buttons = gears.table.join(
     awful.button({ }, 3, function()
         awful.menu.client_list({ theme = { width = 250 } })
     end),
+    -- mousewheel up: cycle forward through clients on current tag
     awful.button({ }, 4, function ()
-        awful.client.focus.byidx(1)
+        cycle_clients_on_tag(1)
     end),
+    -- mousewheel down: cycle backward through clients on current tag
     awful.button({ }, 5, function ()
-        awful.client.focus.byidx(-1)
+        cycle_clients_on_tag(-1)
+    end),
+    -- mod4 + mousewheel up: cycle forward with exclusive visibility
+    awful.button({ modkey }, 4, function ()
+        cycle_clients_exclusive(1)
+    end),
+    -- mod4 + mousewheel down: cycle backward with exclusive visibility
+    awful.button({ modkey }, 5, function ()
+        cycle_clients_exclusive(-1)
     end)
 )
 
@@ -1765,6 +1916,10 @@ awful.screen.connect_for_each_screen(function(s)
             layout = wibox.layout.fixed.horizontal
         }
     }
+
+    -- desktop icons (freedesktop) per screen
+    local desktop = require("freedesktop.desktop")
+    desktop.add_icons({ screen = s, dir = os.getenv("HOME") .. "/Desktop", showlabel = true, open_with = "xdg-open" })
 end)
 
 
@@ -1906,13 +2061,25 @@ client.connect_signal("request::titlebars", function(c)
             layout  = wibox.layout.fixed.horizontal
         },
         { -- Middle
-            -- tiny title text, left-aligned with same padding as right buttons, gray color
-            wibox.container.margin({
-                titlebar_text_widget,
-                valign = "center",
-                halign = "left",
-                widget = wibox.container.place,
-            }, 5, 0, 1, 0), -- same left padding as right button group
+            -- tiny title text with a subtle gradient background
+            -- only the title area gets the gradient, not the main bar
+            wibox.container.background(
+                wibox.container.margin({
+                    titlebar_text_widget,
+                    valign = "center",
+                    halign = "left",
+                    widget = wibox.container.place,
+                }, 5, 0, 1, 0),
+                gears.color({
+                    type = "linear",
+                    from = { 0, 0 },
+                    to   = { (c and c.screen and c.screen.geometry and c.screen.geometry.width) or 200, 0 },
+                    stops = {
+                        { 0, "#623997" },
+                        { 1, "#593187" }, -- slightly darker on the right, no alpha
+                    }
+                })
+            ),
             buttons = buttons,
             layout  = wibox.layout.flex.horizontal
         },
@@ -1921,6 +2088,7 @@ client.connect_signal("request::titlebars", function(c)
             -- constrain all titlebar control buttons to theme icon size and center vertically
             { wibox.container.constraint(awful.titlebar.widget.floatingbutton (c), "exact", icon_size, icon_size), valign = "center", widget = wibox.container.place },
             { wibox.container.constraint(awful.titlebar.widget.maximizedbutton(c), "exact", icon_size, icon_size), valign = "center", widget = wibox.container.place },
+            { wibox.container.constraint(awful.titlebar.widget.minimizebutton (c), "exact", icon_size, icon_size), valign = "center", widget = wibox.container.place },
             { wibox.container.constraint(awful.titlebar.widget.stickybutton   (c), "exact", icon_size, icon_size), valign = "center", widget = wibox.container.place },
             { wibox.container.constraint(awful.titlebar.widget.ontopbutton    (c), "exact", icon_size, icon_size), valign = "center", widget = wibox.container.place },
             { wibox.container.constraint(awful.titlebar.widget.closebutton    (c), "exact", icon_size, icon_size), valign = "center", widget = wibox.container.place },
@@ -2392,6 +2560,7 @@ root.keys(keys.globalkeys)
 
 -- // MARK: global-rules
 -- rules to apply to new clients (through the "manage" signal)
+--[[
 awful.rules.rules = {
     -- all clients will match this rule (global defaults)
     {
@@ -2728,8 +2897,128 @@ awful.rules.rules = {
     
 -- }}} -- End of window size management rules
 }
+--]]
 
 -- removed: duplicate global defaults rule (already defined above)
+
+
+-- modern rules system (ruled)
+-- keep the old awful.rules.rules commented above for reference
+ruled.client.connect_signal("request::rules", function()
+    -- global defaults
+    ruled.client.append_rule {
+        id = "global",
+        rule = { },
+        properties = {
+            border_width = beautiful.border_width,
+            border_color = beautiful.border_normal,
+            focus = awful.client.focus.filter,
+            raise = true,
+            keys = clientkeys,
+            buttons = clientbuttons,
+            screen = awful.screen.preferred,
+            placement = awful.placement.no_overlap + awful.placement.no_offscreen,
+        }
+    }
+
+    -- titlebars
+    ruled.client.append_rule {
+        id = "titlebars",
+        rule_any = { type = { "normal", "dialog" } },
+        properties = { titlebars_enabled = true }
+    }
+
+    -- arandr size hints
+    ruled.client.append_rule {
+        id = "arandr_size_hints",
+        rule = { class = "Arandr" },
+        properties = { size_hints_honor = false }
+    }
+
+    -- generic floating helpers (instances/classes/roles)
+    ruled.client.append_rule {
+        id = "floating_generic",
+        rule_any = {
+            instance = { "DTA", "copyq", "pinentry" },
+            class = { "Arandr", "Blueman-manager", "Gpick", "Kruler", "MessageWin", "Sxiv", "Tor Browser", "Wpa_gui", "veromix", "xtightvncviewer" },
+            name = { "Event Tester" },
+            role = { "AlarmWindow", "ConfigManager", "pop-up" },
+        },
+        properties = { floating = true }
+    }
+
+    -- extended floating rules (consolidated from original)
+    ruled.client.append_rule {
+        id = "floating_extended",
+        rule_any = {
+            instance = { "DTA", "copyq", "pinentry", "ncmpcpp", "firefox" },
+            class = {
+                -- system
+                "Arandr", "Blueman-manager", "Lxappearance", "Gsmartcontrol", "hp-toolbox",
+                "Protonvpn-gui", "Syncthing GTK", "netctl-gui", "Solaar", "Font-manager",
+                "Font Manager", "qt5ct", "Deskflow",
+                -- audio/video
+                "Cadence", "qjackctl", "Studio-controls", "QjackCtl", "kmix", "Pavucontrol",
+                "pwvucontrol", "Goodvibes", "Drumstick MIDI Monitor", "Audio/MIDI Setup", "Mixer",
+                "seq64", "qseq66", "patroneo", "Agordejo", "radium_compessor", "Vlc",
+                "vokoscreenNG", "SimpleScreenRecorder", "Indicator-sound-switcher5",
+                -- graphics
+                "Gpick", "Kruler", "emulsion", "Sxiv", "qimgv", "qView", "Image Lounge",
+                "Image Menu", "spectacle", "flameshot",
+                -- privacy
+                "KeePassXC", "Tor Browser",
+                -- misc
+                "MessageWin", "copyq", "* Copying", "krunner", "xtightvncviewer", "scrcpy",
+                "Gnaural", "kdeconnect.sms", "Mattermost", "Onboard", "gammy", "Flirc",
+                "isoimagewriter", "Xdotoolgui.py", "mpd218 editor.exe", "Indicator-sound-switcher", "easyeffects"
+            },
+            name = { "Event Tester", "Choose an application", "File operations", "Blender Preferences", "Options", "Tree View Menu", "menu" },
+            role = { "AlarmWindow", "ConfigManager", "pop-up", "page-info", "TfrmFileOp", "TfrmViewer" },
+        },
+        properties = {
+            floating = true,
+            placement = awful.placement.centered + awful.placement.no_overlap + awful.placement.no_offscreen,
+        }
+    }
+
+    -- tag assignments (grouped and appended via loop)
+    local tag_rules = {
+        { rule = { class = "URxvt", instance = "ncmpcpp" }, callback = function(c) c.overwrite_class = "urxvt:dev" end },
+
+        { rule = { instance = "Agordejo" },        properties = { tag = "2" } },
+        { rule = { instance = "raysession" },      properties = { tag = "2" } },
+
+        { rule = { instance = "Nicotine" },        properties = { tag = "3" } },
+        { rule = { instance = "qbittorrent" },     properties = { tag = "3" } },
+        { rule = { class = "Picard" },             properties = { tag = "3" } },
+
+        { rule = { class = "Mixxx" },              properties = { tag = "4" } },
+
+        { rule = { instance = "ncmpcpp" },         properties = { tag = "8" } },
+        { rule = { instance = "spotify" },         properties = { tag = "8" } },
+        { rule = { instance = "Spotify" },         properties = { tag = "8" } },
+        { rule = { class = "mpv" },                properties = { screen = 1, tag = "8", switch_to_tags = true } },
+
+        { rule = { instance = "Double Commander" },properties = { tag = "9" } },
+        { rule = { instance = "doublecmd" },       properties = { tag = "9" } },
+
+        { rule = { instance = "quassel" },         properties = { tag = "-", switch_to_tags = true } },
+
+        { rule_any = { instance = "firefox" },     properties = { tag = "=", switch_to_tags = true } },
+        { rule = { class = "firefox" },            properties = { tag = "=", switch_to_tags = true } },
+        { rule = { class = "Firefox" },            properties = { tag = "=", switch_to_tags = true } },
+        { rule = { class = "Chromium" },           properties = { tag = "=", switch_to_tags = true } },
+        { rule = { class = "Navigator" },          properties = { tag = "=", switch_to_tags = true } },
+
+        { rule = { instance = "jack_mixer" },      properties = { tag = "3" } },
+        { rule = { instance = "radium_compressor" },properties = { tag = "2" } },
+        { rule = { instance = "qseq64" },          properties = { tag = "3" } },
+        { rule = { instance = "qseq66" },          properties = { tag = "3" } },
+    }
+    for _, r in ipairs(tag_rules) do
+        ruled.client.append_rule(r)
+    end
+end)
 
 
 
