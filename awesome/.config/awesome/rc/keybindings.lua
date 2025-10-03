@@ -234,9 +234,9 @@ function M.build(ctx)
     {{modkey}, "Left", function() awful.tag.viewprev() end, "view previous tag", nil, "tag"},
     {{modkey}, "Right", function() awful.tag.viewnext() end, "view next tag", nil, "tag"},
     -- optional: use rc.lua provided function if available
-    {{modkey, shiftkey}, "Left", function() if ctx_has_function(ctx, "cycle_tags_with_clients") then ctx.cycle_tags_with_clients("prev") end end,
+    {{modkey, altkey}, "Left", function() if ctx_has_function(ctx, "cycle_tags_with_clients") then ctx.cycle_tags_with_clients("prev") end end,
       "view previous tag with client", nil, "tag"},
-    {{modkey, shiftkey}, "Right", function() if ctx_has_function(ctx, "cycle_tags_with_clients") then ctx.cycle_tags_with_clients("next") end end,
+    {{modkey, altkey}, "Right", function() if ctx_has_function(ctx, "cycle_tags_with_clients") then ctx.cycle_tags_with_clients("next") end end,
       "view next tag with client", nil, "tag"},
     {{modkey}, "Escape", function() awful.tag.history.restore() end, "go back", nil, "tag"},
     {{modkey}, "j", function() awful.client.focus.byidx(1) end, "focus next client", nil, "client"},
@@ -329,6 +329,14 @@ function M.build(ctx)
     }
   end
 
+  -- // MARK -- shimmer preset export keys
+  local shimmer_preset_keys = {}
+  if shimmer and shimmer.shimmer_control_notify then
+    shimmer_preset_keys = {
+      {{modkey, shiftkey}, "e", function() shimmer.shimmer_control_notify("copyable_preset") end, "export shimmer preset (copyable)", nil, "shimmer"}
+    }
+  end
+
   -- // MARK: F-KEY LAUNCHERS
   -- F-key application launchers
   local f_key_defs = {
@@ -358,7 +366,10 @@ function M.build(ctx)
     {{modkey, altkey}, "c", "xcolor -s clipboard", "colour picker to clipboard", nil, "utility"},
     -- add focused window's identifier to rc.lua floating rules (helper script)
     {{modkey, altkey}, "f", "$HOME/.config/awesome/rc/add-floating-rule.sh", "add focused window to floating rules", nil, "utility"},
-    {{modkey, ctrlkey}, "a", "arandr", "run arandr", nil, "utility"}
+    {{modkey, ctrlkey}, "a", "arandr", "run arandr", nil, "utility"},
+    -- screen blanking / DPMS controls
+    {{modkey, altkey}, "b", "xset dpms force off", "blank screens immediately (DPMS)", nil, "utility"},
+    {{modkey, shiftkey, altkey}, "b", "xset dpms force suspend", "suspend screens (DPMS)", nil, "utility"}
   }
   
   -- // MARK: MENU
@@ -371,8 +382,8 @@ function M.build(ctx)
   -- // MARK: SCREEN ROTATION
   -- Screen rotation
   local rotation_keys = {
-    {{modkey, altkey}, "Left", 1, "rotate screens left", nil, "screen"},
-    {{modkey, altkey}, "Right", -1, "rotate screens right", nil, "screen"}
+    {{modkey, shiftkey, altkey}, "Left", 1, "rotate screens left", nil, "screen"},
+    {{modkey, shiftkey, altkey}, "Right", -1, "rotate screens right", nil, "screen"}
   }
   
   -- // MARK: TAG NAVIGATION
@@ -381,11 +392,20 @@ function M.build(ctx)
     {{modkey, ctrlkey}, "Left", move_to_previous_tag, "move client to prev tag without follow", nil, "tag"},
     {{modkey, ctrlkey}, "Right", move_to_next_tag, "move client to next tag without follow", nil, "tag"}
   }
+  
+  -- Tag navigation with following (move client and switch to that tag)
+  local tag_nav_follow_keys = {}
+  if ctx_has_function(ctx, "move_to_previous_tag_and_follow") and ctx_has_function(ctx, "move_to_next_tag_and_follow") then
+    tag_nav_follow_keys = {
+      {{modkey, shiftkey}, "Left", ctx.move_to_previous_tag_and_follow, "move client to prev tag and follow", nil, "tag"},
+      {{modkey, shiftkey}, "Right", ctx.move_to_next_tag_and_follow, "move client to next tag and follow", nil, "tag"}
+    }
+  end
 
   -- // MARK: AUDIO
   -- Volume and audio control keys
   local audio_keys = {
-    {{modkey}, "p", "pavucontrol", "open pavucontrol", nil, "audio"},
+    {{modkey}, "p", function() if ctx.toggle_pavucontrol then ctx.toggle_pavucontrol() end end, "toggle pavucontrol", nil, "audio"},
     {{}, "XF86AudioLowerVolume", "vol-dec-all-3.sh", "decrease volume", nil, "audio"},
     {{}, "XF86AudioRaiseVolume", "vol-inc-all-3.sh", "increase volume", nil, "audio"},
     {{}, "XF86AudioMute", "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle", "toggle mute", nil, "audio"}
@@ -439,11 +459,13 @@ function M.build(ctx)
   add_keys(prompt_keys)
   add_keys(shimmer_keys)
   add_keys(notification_keys)
+  add_keys(shimmer_preset_keys)
   add_keys(f_key_defs)
   add_keys(utility_keys)
   add_keys(menu_keys)
   add_keys(rotation_keys)
   add_keys(tag_nav_keys)
+  add_keys(tag_nav_follow_keys)
   
   -- Add system control keys to globalkeys
   add_keys(audio_keys)
@@ -604,6 +626,17 @@ function M.build(ctx)
         end
         c:emit_signal("request::activate", "mouse_click", {raise = true})
         dnd_to_tag.start_custom_drag(c, {follow_on_drop = true})
+    end),
+    
+    -- drag to tag without following (with control modifier)
+    awful.button({ modkey, "Control" }, 1, function (c)
+        c._intend_drag = true
+        if c.maximized then
+          c._was_maximized = true
+          c.maximized = false
+        end
+        c:emit_signal("request::activate", "mouse_click", {raise = true})
+        dnd_to_tag.start_custom_drag(c, {follow_on_drop = false})
     end),
     
     awful.button({ modkey }, 3, function (c)

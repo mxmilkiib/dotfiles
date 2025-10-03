@@ -1,4 +1,4 @@
--- plugins/awesome_dnd.lua
+-- plugins/dnd_to_tag.lua
 -- // MARK: DRAG AND DROP
 -- ################################################################################
 -- ██████╗ ██████╗ ██████╗    █████╗    ██████╗  ██████╗ ██████╗ 
@@ -8,17 +8,44 @@
 -- ██████╔╝██║  ██║██████╔╝  ██║  ██║  ╚██████╔╝╚██████╔╝██║     
 -- ╚═════╝ ╚═╝  ╚═╝╚═════╝   ╚═╝  ╚═╝   ╚═════╝  ╚═════╝ ╚═╝     
 -- ################################################################################
--- DRAG AND DROP - client to tag drag and drop functionality
-
-
--- Drag-and-drop client → tag functionality
--- Exposes:
+-- drag and drop - client to tag drag and drop functionality
+--
+-- USAGE:
+--   1. require the module in your rc.lua:
+--      local dnd_to_tag = require("plugins.dnd_to_tag")
+--
+--   2. add mouse bindings to client buttons:
+--      -- drag to tag and follow view (modkey + shift + button1)
+--      awful.button({ modkey, "Shift" }, 1, function (c)
+--          c:emit_signal("request::activate", "mouse_click", {raise = true})
+--          dnd_to_tag.start_custom_drag(c, {follow_on_drop = true})
+--      end)
+--
+--      -- drag to tag without following (modkey + control + button1)
+--      awful.button({ modkey, "Control" }, 1, function (c)
+--          c:emit_signal("request::activate", "mouse_click", {raise = true})
+--          dnd_to_tag.start_custom_drag(c, {follow_on_drop = false})
+--      end)
+--
+--   3. during drag, hold shift to follow or control to stay on current tag
+--
+--   4. optional: configure visual feedback
+--      dnd_to_tag.configure({
+--          visual_feedback = "border",
+--          border_color = "#ff8800",
+--          highlight_widget = true,
+--          hover_bg = "#444444",
+--          hover_fg = "#ffffff"
+--      })
+--
+-- API:
 --   dnd_to_tag.start_custom_drag(client, opts)
 --   dnd_to_tag.finish_custom_drag()
 --   dnd_to_tag.set_hover(tag, widget)
 --   dnd_to_tag.clear_hover()
 --   dnd_to_tag.update_hover_from_mouse()
 --   dnd_to_tag.resolve_drop_target()
+--   dnd_to_tag.configure(opts)
 
 local awful = require("awful")
 local gears = require("gears")
@@ -155,11 +182,17 @@ function M.start_custom_drag(c, opts)
             M.finish_custom_drag()
             return false
         end
-        -- detect shift follow-on-drop via modifiers if available
+        -- detect shift/control follow-on-drop via modifiers if available
         if m.modifiers then
-            M._follow_on_drop =
-                m.modifiers.Shift or m.modifiers["Shift_L"] or
-                    m.modifiers["Shift_R"] or false
+            local shift_held = m.modifiers.Shift or m.modifiers["Shift_L"] or m.modifiers["Shift_R"]
+            local ctrl_held = m.modifiers.Control or m.modifiers["Control_L"] or m.modifiers["Control_R"]
+            
+            if ctrl_held then
+                M._follow_on_drop = false  -- control = don't follow
+            elseif shift_held then
+                M._follow_on_drop = true   -- shift = follow
+            end
+            -- otherwise keep existing _follow_on_drop value
         end
         -- continuously update hovered tag
         if M.update_hover_from_mouse then
