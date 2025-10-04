@@ -7,16 +7,27 @@ function echo_color() {
   printf "\033[0;96m$1\033[0m$2\033[0;96m$3\033[0m$4\033[0;91m$5\033[0m$6\033[0;91m$7\033[0m$8\n"
 }
 
-# console message on shell start with reminders of the "readline" hotkeys
-# function echo_color_a() { printf "\033[0;96m$1\033[0m $2 \033[0;96m$3\033[0m $4 \033[0;91m$5\033[0m $6 \033[0;91m$7\033[0m $8\n" }
-echo_color " c-b "  "Back one character " "c-f "  "Forward a character "  "c-h "  "Delete back a character " "c-d "  "Delete a character"
-echo_color " a-b "  "Back to word end   " "a-f "  "Forward to word end "  "c-w "  "Delete back a word      " "a-d "  "Delete forward a word"
-echo_color " c-p "  "Up one line        " "c-n "  "Down one line       "  "c-k "  "Delete to end of line   " "c-u "  "Delete entire line"
-echo_color " c-a "  "Go to line start   " "c-e "  "Jump to line end"
-# echo_color "C-b" "Back char     " "C-f" "Forward char    "  "C-h" "del back cHar"  " C-d" "del forwarD char"
-# echo_color "A-b" "Back word end " "A-f" "Forward word end"  "C-w" "del back Word"  " A-d" "del forwarD word"
-# echo_color "C-a" "to line stArt " "C-e" "to End of line  "  "C-k" "Kut to lineend"
-# echo_color "C-p" "Prev (line up)" "C-n" "Next (line down)"  "C-u" "Undo line"
+# console message on shell start with reminders of key bindings
+# hybrid emacs/vim mode: emacs bindings by default, vim motions after esc
+if [[ ${COLUMNS:-80} -le 80 ]]; then
+  # compact version for narrow terminals (80 chars or less)
+  echo_color "  c-a " "start    " "  c-e " "end      " " Home " "start    " "  End " "end"
+  echo_color "  c-k " "kill->   " "  c-u " "kill line" "  c-w " "kill <-  " "  a-d " "kill ->"
+  echo_color "c-</> " "jmp word " "a-</> " "jmp word " "  ^v  " "history  " "c-^v  " "hist-pfx"
+  echo_color " PgUp " "hist top " "PgDwn " "hist end " "Space " "expand ! " "  ESC " "vi-cmd"
+  echo_color "   F1 " "help     " "   F2 " "sudo     " "   F4 " "edit     " "  a-s " "sudo"
+  echo_color "  Tab " "complete " "S-Tab " "back cpl " "  c-_ " "keep menu" " c-sp " "run sugg"
+  echo_color "  Del " "del char " " BkSp " "del back " "  Ins " "overwrit " "c-Del " "kill ->"
+else
+  # full version for wider terminals
+  echo_color "  c-a "  "Line start         " "  c-e "  "Line end            "  " Home "  "Line start           " "  End "  "Line end"
+  echo_color "  c-k "  "Kill to line end   " "  c-u "  "Kill entire line    "  "  c-w "  "Kill word backward   " "  a-d "  "Kill word forward"
+  echo_color "c-</> "  "Jump words (emacs) " "a-</> "  "Jump words (vim)    "  "  ^v  "  "Search typed history " "c-^v  "  "Search line start"
+  echo_color " PgUp "  "History top        " "PgDwn "  "History end         "  "Space "  "Expand history !     " "  ESC "  "Vim command mode"
+  echo_color "   F1 "  "Help on command    " "   F2 "  "Prepend sudo        "  "   F4 "  "Edit in $EDITOR      " "  a-s "  "Insert sudo"
+  echo_color "  Tab "  "Completion         " "S-Tab "  "Reverse completion  "  "  c-_ "  "Keep menu open       " " c-sp "  "Run suggestion"
+  echo_color "  Del "  "Delete char        " " BkSp "  "Delete backward     "  "  Ins "  "Overwrite mode       " "c-Del "  "Kill word forward"
+fi
 
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
@@ -253,20 +264,18 @@ zstyle ':completion:*' file-sort modification
 # [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 # [[ ! -f ~/.config/awesome/awesomewm-vim-tmux-navigator/dynamictitles.zsh ]] || source ~/.config/awesome/awesomewm-vim-tmux-navigator/dynamictitles.zsh
 
+# cursor color to indicate vi mode (cyan in vicmd, default in insert/emacs)
 # https://unix.stackexchange.com/questions/743104/colorful-cursor-to-indicate-vi-mode-in-zsh-but-fail-to-reset-color
 _reset_cursor_color() printf '\e]112\a'
 
 zle-keymap-select() {
     if [[ $KEYMAP = vicmd ]]; then
-        printf '\e]12;#0ff\a'
+        printf '\e]12;#0ff\a'  # cyan cursor in vim command mode
     else
-        _reset_cursor_color
+        _reset_cursor_color     # default cursor in emacs/insert mode
     fi
 }
 zle -N zle-keymap-select
-
-zle-line-init() zle -K viins
-zle -N zle-line-init
 
 precmd_functions+=(_reset_cursor_color)
 
