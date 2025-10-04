@@ -1,10 +1,10 @@
-# two thirds through fixing
-
+# bindings.zsh - hybrid emacs/vim keybindings with terminfo support
 # use 'bindkey' to list current key bindings
+# run 'bindkey -l' to list available keymaps
 
 # create human readable global associative array from local terminfo in variable $key
 # this is instead of hardbinding to control codes as these can vary between terminals
-# make sure your terminfo is corrext! set in .Xresources. bad idea to overwrite $TERM.
+# make sure your terminfo is correct! set in .Xresources. bad idea to overwrite $TERM.
 # to add other keys to this hash, see: man 5 terminfo
 
 typeset -g -A key
@@ -24,114 +24,11 @@ key[Right]=${terminfo[kcuf1]}
 key[PageUp]=${terminfo[kpp]}
 key[PageDown]=${terminfo[knp]}
 
-#  'BackTab'      "$terminfo[kcbt]"
-# key[Backspace]='^?'
-key[CtrlLeft]=${terminfo[kLFT5]}
-key[CtrlRight]=${terminfo[kRFT5]}
+# ctrl-left, ctrl-right - terminfo entries often missing, provide fallbacks
+key[CtrlLeft]=${terminfo[kLFT5]:-'^[[1;5D'}
+key[CtrlRight]=${terminfo[kRFT5]:-'^[[1;5C'}
 
-
-# setup key accordingly
-[[ -n {${key[Home]}}      ]]  && bindkey  "${key[Home]}"    beginning-of-line
-[[ -n "${key[End]}"       ]]  && bindkey  "${key[End]}"     end-of-line
-bindkey '^a' beginning-of-line
-bindkey '^e' end-of-line
-bindkey '^[[1~' beginning-of-line
-bindkey '^[[4~' end-of-line
-bindkey '^[[OH' beginning-of-line
-bindkey '^[[OF' end-of-line
-
-[[ -n "${key[Insert]}"    ]]  && bindkey  "${key[Insert]}"  overwrite-mode #broken?
-[[ -n "${key[Backspace]}" ]]  && bindkey  "${key[Backspace]}"  backward-delete-char
-[[ -n "${key[Delete]}"    ]]  && bindkey  "${key[Delete]}"  delete-char
-# [[ -n "${key[Up]}"        ]]  && bindkey  "${key[Up]}"      up-line-or-history
-# [[ -n "${key[Down]}"      ]]  && bindkey  "${key[Down]}"    down-line-or-history
-# type then press up/down to search history
-bindkey "${key[Up]}" history-substring-search-up
-bindkey "${key[Down]}" history-substring-search-down
-[[ -n "${key[Left]}"      ]]  && bindkey  "${key[Left]}"    backward-char
-[[ -n "${key[Right]}"     ]]  && bindkey  "${key[Right]}"   forward-char
-[[ -n "${key[PageUp]}"    ]]  && bindkey  "${key[PageUp]}"  beginning-of-history
-[[ -n "${key[PageDown]}"  ]]  && bindkey  "${key[PageDown]}" end-of-history
-
-
-# [[ -n "${key[CtrlLeft]}" ]]  && bindkey  "${key[CtrlLeft]}" backward-word
-# [[ -n "${key[CtrlRight]}" ]]  && bindkey  "${key[CtrlRight]}" forward-word
-
-
-# ctrl-left, ctrl-right - move cursor over words
-# xterm-256-color?
-bindkey '^[[1;5D' emacs-backward-word
-bindkey '^[[1;5C' emacs-forward-word
-# bindkey '[1;5C' emacs-forward-word
-# urxvt
-bindkey "\eOd" emacs-backward-word
-bindkey "\eOc" emacs-forward-word # lands between words, not on first char
-
-bindkey "Od" emacs-backward-word
-bindkey "Oc" emacs-forward-word # lands between words, not on first char
-
-bindkey "^[Od" emacs-backward-word
-bindkey "^[Oc" emacs-forward-word # lands between words, not on first char
-
-
-# alt-left, alt-right - move cursor to start of previous or next word
-# same as ctrl-left/right, just fixes accidental pressing. to change to cursor location on end of jump..
-# xterm
-bindkey '^[[1;3D' backward-word
-bindkey '^[[1;3C' forward-word
-# urxvt
-bindkey '^[^[[D'  backward-word
-bindkey '^[^[[C'  forward-word
-
-bindkey '^b' backward-word
-bindkey '^f' forward-word
-
-
-# ctrl-backspace - deletes word to left of cursor
-# bindkey \" backward-kill-word
-bindkey '^h' backward-kill-word
-bindkey '^H' backward-kill-word
-
-
-# ctrl-del - deletes word to right of cursor
-# xterm
-bindkey '^[[3;5~' kill-word
-# urxvt
-bindkey '^[[3^'   kill-word
-bindkey '^d'      kill-word
-
-
-# Type command then ctrl-up/ctrl-down to search history
-# bindkey "^[[1;5A" history-beginning-search-backward
-# bindkey "^[[1;5B" history-beginning-search-forward
-# bindkey "\e[A" history-beginning-search-backward
-# bindkey "\e[B" history-beginning-search-forward
-
-# bindkey "^[[A" history-beginning-search-backward
-# bindkey "^[[B" history-beginning-search-forward
-
-# bindkey "^S" history-incremental-search-forward
-# bindkey "^R" history-incremental-search-backward
-
-# bindkey "^p" up-line-or-search
-# bindkey "^n" down-line-or-search
-
-# Seach command history with up and down
-autoload -U history-search-end
-zle -N history-beginning-search-backward-end history-search-end
-zle -N history-beginning-search-forward-end history-search-end
-# bindkey "^[[A" history-beginning-search-backward-end
-# bindkey "^[[B" history-beginning-search-forward-end
-# make this ctrl-up/ctrl-down
-bindkey '^[[1;5A' history-beginning-search-backward-end
-bindkey '^[[1;5B' history-beginning-search-forward-end
-
-# zsh-history-substring-search
-# up/down
-bindkey '^[[A' history-substring-search-up
-bindkey '^[[B' history-substring-search-down
-
-
+# f-keys
 key[F1]=${terminfo[kf1]}
 key[F2]=${terminfo[kf2]}
 key[F3]=${terminfo[kf3]}
@@ -145,115 +42,13 @@ key[F10]=${terminfo[kf10]}
 key[F11]=${terminfo[kf11]}
 key[F12]=${terminfo[kf12]}
 
-
+# fix ncurses application mode quirk ($'\eO'* -> $'\e['*)
 for k in ${(k)key} ; do
-    # $terminfo[] entries are weird in ncurses application mode...
     [[ ${key[$k]} == $'\eO'* ]] && key[$k]=${key[$k]/O/[}
 done
 unset k
 
-
-# Open man page for command in editing buffer
-bindkey $key[F1] run-help
-
-# Insert "sudo " at the beginning of the line
-function prepend-sudo {
-  if [[ $BUFFER != "sudo "* ]]; then
-    BUFFER="sudo $BUFFER"; CURSOR+=5
-  fi
-}
-zle -N prepend-sudo
-bindkey "$key[F2]" prepend-sudo
-
-
-autoload edit-command-line
-zle -N edit-command-line
-bindkey $key[F4] edit-command-line
-
-
-# Display contents of files in dir and below
-bindkey $key[F5] "bat *"
-
-
-# Ctrl-w - push line to buffer stack, 
-# bindkey '^w' push-line
-
-# Ctrl-e - pop line from buffer stack
-# bindkey '^e' get-line
-
-
-# Ctrl-b - Comment out line with # and execute
-# bindkey '^b' pound-insert
-
-# bindkey "^V" quoted-insert
-
-# Ctrl-k - delete after cursor
-bindkey "^k" kill-line
-
-# Ctrl-u - delete everything  
-bindkey "^u" kill-whole-line
-
-
-bindkey "\e[Z" reverse-menu-complete # Shift+Tab
-
-# zsh - Ctrl-/ (also ctrl-shift-- i.e. ctrl-_) - add completion item to editing buffer but don't close completion menu
-bindkey '^_' accept-and-hold
-
-# Insert accented character
-# https://github.com/johan/zsh/blob/master/Functions/Zle/insert-composed-char
-# autoload insert-composed-char
-# zle -N insert-composed-char
-# bindkey "^K" insert-composed-char
-
-# bindkey "^X" execute-named-cmd
-
-
-bindkey " " magic-space # do history expansion ($ !ssh ...) on space
-
-# bindkey "\e[2~" quoted-insert
-
-# bindkey '^i' expand-or-complete-prefix
-
-# bits from https://github.com/simongmzlj/dotfiles/blob/master/zsh/zshrc
-
-
-
-insert_sudo () { zle beginning-of-line; zle -U "sudo " }
-zle -N insert-sudo insert_sudo
-bindkey "^[s" insert-sudo
-
-
-# if [[ "$TERM" != emacs ]]; then
-# [[ -z "$terminfo[kdch1]" ]] || bindkey -M emacs "$terminfo[kdch1]" delete-char
-# [[ -z "$terminfo[khome]" ]] || bindkey -M emacs "$terminfo[khome]" beginning-of-line
-# [[ -z "$terminfo[kend]" ]] || bindkey -M emacs "$terminfo[kend]" end-of-line
-# [[ -z "$terminfo[kich1]" ]] || bindkey -M emacs "$terminfo[kich1]" overwrite-mode
-# [[ -z "$terminfo[kdch1]" ]] || bindkey -M vicmd "$terminfo[kdch1]" vi-delete-char
-# [[ -z "$terminfo[khome]" ]] || bindkey -M vicmd "$terminfo[khome]" vi-beginning-of-line
-# [[ -z "$terminfo[kend]" ]] || bindkey -M vicmd "$terminfo[kend]" vi-end-of-line
-# [[ -z "$terminfo[kich1]" ]] || bindkey -M vicmd "$terminfo[kich1]" overwrite-mode
-#
-# [[ -z "$terminfo[cuu1]" ]] || bindkey -M viins "$terminfo[cuu1]" vi-up-line-or-history
-# [[ -z "$terminfo[cuf1]" ]] || bindkey -M viins "$terminfo[cuf1]" vi-forward-char
-# [[ -z "$terminfo[kcuu1]" ]] || bindkey -M viins "$terminfo[kcuu1]" vi-up-line-or-history
-# [[ -z "$terminfo[kcud1]" ]] || bindkey -M viins "$terminfo[kcud1]" vi-down-line-or-history
-# [[ -z "$terminfo[kcuf1]" ]] || bindkey -M viins "$terminfo[kcuf1]" vi-forward-char
-# [[ -z "$terminfo[kcub1]" ]] || bindkey -M viins "$terminfo[kcub1]" vi-backward-char
-#
-# # ncurses fogyatekos
-# [[ "$terminfo[kcuu1]" == "^[O"* ]] && bindkey -M viins "${terminfo[kcuu1]/O/[}" vi-up-line-or-history
-# [[ "$terminfo[kcud1]" == "^[O"* ]] && bindkey -M viins "${terminfo[kcud1]/O/[}" vi-down-line-or-history
-# [[ "$terminfo[kcuf1]" == "^[O"* ]] && bindkey -M viins "${terminfo[kcuf1]/O/[}" vi-forward-char
-# [[ "$terminfo[kcub1]" == "^[O"* ]] && bindkey -M viins "${terminfo[kcub1]/O/[}" vi-backward-char
-# [[ "$terminfo[khome]" == "^[O"* ]] && bindkey -M viins "${terminfo[khome]/O/[}" beginning-of-line
-# [[ "$terminfo[kend]" == "^[O"* ]] && bindkey -M viins "${terminfo[kend]/O/[}" end-of-line
-# [[ "$terminfo[khome]" == "^[O"* ]] && bindkey -M emacs "${terminfo[khome]/O/[}" beginning-of-line
-# [[ "$terminfo[kend]" == "^[O"* ]] && bindkey -M emacs "${terminfo[kend]/O/[}" end-of-line
-# fi
-
-# simulate escape key with menu key
-# bindkey '^[[29~' '^[' noop noop
-
+# enable application keypad mode (allows terminfo keys to work correctly)
 if (( ${+terminfo[smkx]} )) && (( ${+terminfo[rmkx]} )); then
   function zle-line-init() {
     echoti smkx
@@ -265,18 +60,170 @@ if (( ${+terminfo[smkx]} )) && (( ${+terminfo[rmkx]} )); then
   zle -N zle-line-finish
 fi
 
-# Use emacs key bindings
+
+# MARK: EMACS MODE BINDINGS (DEFAULT)
+
+# set emacs mode as default
 bindkey -e
 
-# [Home] - Go to beginning of line
-if [[ -n "${terminfo[khome]}" ]]; then
-  bindkey -M emacs "${terminfo[khome]}" beginning-of-line
-  bindkey -M viins "${terminfo[khome]}" beginning-of-line
-  bindkey -M vicmd "${terminfo[khome]}" beginning-of-line
-fi
-# [End] - Go to end of line
-if [[ -n "${terminfo[kend]}" ]]; then
-  bindkey -M emacs "${terminfo[kend]}"  end-of-line
-  bindkey -M viins "${terminfo[kend]}"  end-of-line
-  bindkey -M vicmd "${terminfo[kend]}"  end-of-line
-fi
+# enable vim command mode with ESC
+bindkey -M emacs '^[' vi-cmd-mode
+
+
+# MARK: -- navigation
+
+# home/end - beginning/end of line
+[[ -n "${key[Home]}" ]] && bindkey -M emacs "${key[Home]}" beginning-of-line
+[[ -n "${key[End]}" ]]  && bindkey -M emacs "${key[End]}" end-of-line
+bindkey -M emacs '^a' beginning-of-line
+bindkey -M emacs '^e' end-of-line
+# common terminal variations
+bindkey -M emacs '^[[1~' beginning-of-line
+bindkey -M emacs '^[[4~' end-of-line
+bindkey -M emacs '^[[OH' beginning-of-line
+bindkey -M emacs '^[[OF' end-of-line
+
+# arrow keys - basic character movement
+[[ -n "${key[Left]}" ]]  && bindkey -M emacs "${key[Left]}" backward-char
+[[ -n "${key[Right]}" ]] && bindkey -M emacs "${key[Right]}" forward-char
+
+# page up/down - jump to history boundaries
+[[ -n "${key[PageUp]}" ]]   && bindkey -M emacs "${key[PageUp]}" beginning-of-history
+[[ -n "${key[PageDown]}" ]] && bindkey -M emacs "${key[PageDown]}" end-of-history
+
+# up/down - history substring search (type then press up/down to search)
+[[ -n "${key[Up]}" ]]   && bindkey -M emacs "${key[Up]}" history-substring-search-up
+[[ -n "${key[Down]}" ]] && bindkey -M emacs "${key[Down]}" history-substring-search-down
+# fallback for terminals not using terminfo
+bindkey -M emacs '^[[A' history-substring-search-up
+bindkey -M emacs '^[[B' history-substring-search-down
+
+# ctrl-up/ctrl-down - history beginning search
+autoload -U history-search-end
+zle -N history-beginning-search-backward-end history-search-end
+zle -N history-beginning-search-forward-end history-search-end
+bindkey -M emacs '^[[1;5A' history-beginning-search-backward-end
+bindkey -M emacs '^[[1;5B' history-beginning-search-forward-end
+
+# ctrl-left/ctrl-right - word movement (emacs style - lands between words)
+[[ -n "${key[CtrlLeft]}" ]]  && bindkey -M emacs "${key[CtrlLeft]}" emacs-backward-word
+[[ -n "${key[CtrlRight]}" ]] && bindkey -M emacs "${key[CtrlRight]}" emacs-forward-word
+# urxvt fallbacks
+bindkey -M emacs '\eOd' emacs-backward-word
+bindkey -M emacs '\eOc' emacs-forward-word
+bindkey -M emacs 'Od' emacs-backward-word
+bindkey -M emacs 'Oc' emacs-forward-word
+bindkey -M emacs '^[Od' emacs-backward-word
+bindkey -M emacs '^[Oc' emacs-forward-word
+
+# alt-left/alt-right - word movement (lands on word boundaries)
+bindkey -M emacs '^[[1;3D' backward-word
+bindkey -M emacs '^[[1;3C' forward-word
+bindkey -M emacs '^[^[[D' backward-word  # urxvt
+bindkey -M emacs '^[^[[C' forward-word
+
+
+# MARK: -- editing
+
+# backspace/delete - character deletion
+[[ -n "${key[Backspace]}" ]] && bindkey -M emacs "${key[Backspace]}" backward-delete-char
+[[ -n "${key[Delete]}" ]]    && bindkey -M emacs "${key[Delete]}" delete-char
+
+# insert - overwrite mode
+[[ -n "${key[Insert]}" ]] && bindkey -M emacs "${key[Insert]}" overwrite-mode
+
+# note: ^H (ctrl-h) conflicts with xterm backspace, so don't bind it
+# use ctrl-w instead for backward-kill-word
+
+# ctrl-d - delete char or list completions (default behavior)
+bindkey -M emacs '^d' delete-char-or-list
+
+# ctrl-del - delete word forward
+bindkey -M emacs '^[[3;5~' kill-word  # xterm
+bindkey -M emacs '^[[3^' kill-word    # urxvt
+
+# esc-d / alt-d - delete word forward (standard emacs binding)
+bindkey -M emacs '^[d' kill-word
+
+# ctrl-w - delete word backward (standard readline/emacs)
+bindkey -M emacs '^w' backward-kill-word
+
+# ctrl-k - delete to end of line
+bindkey -M emacs '^k' kill-line
+
+# ctrl-u - delete entire line
+bindkey -M emacs '^u' kill-whole-line
+
+# space - do history expansion on space (e.g., !ssh expands)
+bindkey -M emacs ' ' magic-space
+
+# shift-tab - reverse menu completion
+bindkey -M emacs '\e[Z' reverse-menu-complete
+
+# ctrl-/ (also ctrl-_) - accept completion but keep menu open
+bindkey -M emacs '^_' accept-and-hold
+
+
+## MARK: -- special functions
+
+# f1 - show help for command under cursor
+[[ -n "${key[F1]}" ]] && bindkey -M emacs "${key[F1]}" run-help
+
+# f2 - prepend sudo to line
+function prepend-sudo {
+  if [[ $BUFFER != "sudo "* ]]; then
+    BUFFER="sudo $BUFFER"; CURSOR+=5
+  fi
+}
+zle -N prepend-sudo
+[[ -n "${key[F2]}" ]] && bindkey -M emacs "${key[F2]}" prepend-sudo
+
+# alt-s - insert sudo at beginning (alternate binding)
+function insert_sudo () { zle beginning-of-line; zle -U "sudo " }
+zle -N insert-sudo insert_sudo
+bindkey -M emacs '^[s' insert-sudo
+
+# f4 - edit command line in $EDITOR
+autoload edit-command-line
+zle -N edit-command-line
+[[ -n "${key[F4]}" ]] && bindkey -M emacs "${key[F4]}" edit-command-line
+
+
+# MARK: VIM COMMAND MODE BINDINGS
+
+# home/end in vim command mode
+[[ -n "${key[Home]}" ]] && bindkey -M vicmd "${key[Home]}" vi-beginning-of-line
+[[ -n "${key[End]}" ]]  && bindkey -M vicmd "${key[End]}" vi-end-of-line
+bindkey -M vicmd '^[[1~' vi-beginning-of-line
+bindkey -M vicmd '^[[4~' vi-end-of-line
+bindkey -M vicmd '^[[OH' vi-beginning-of-line
+bindkey -M vicmd '^[[OF' vi-end-of-line
+
+# delete in vim command mode
+[[ -n "${key[Delete]}" ]] && bindkey -M vicmd "${key[Delete]}" vi-delete-char
+
+# insert mode bindings (when in vi mode)
+[[ -n "${key[Home]}" ]] && bindkey -M viins "${key[Home]}" beginning-of-line
+[[ -n "${key[End]}" ]]  && bindkey -M viins "${key[End]}" end-of-line
+bindkey -M viins '^[[1~' beginning-of-line
+bindkey -M viins '^[[4~' end-of-line
+bindkey -M viins '^[[OH' beginning-of-line
+bindkey -M viins '^[[OF' end-of-line
+
+# arrow keys in vim insert mode
+[[ -n "${key[Up]}" ]]    && bindkey -M viins "${key[Up]}" history-substring-search-up
+[[ -n "${key[Down]}" ]]  && bindkey -M viins "${key[Down]}" history-substring-search-down
+[[ -n "${key[Left]}" ]]  && bindkey -M viins "${key[Left]}" vi-backward-char
+[[ -n "${key[Right]}" ]] && bindkey -M viins "${key[Right]}" vi-forward-char
+
+# delete/backspace in vim insert mode
+[[ -n "${key[Delete]}" ]]    && bindkey -M viins "${key[Delete]}" delete-char
+[[ -n "${key[Backspace]}" ]] && bindkey -M viins "${key[Backspace]}" backward-delete-char
+
+# fix ncurses application mode in vim insert mode
+[[ "${key[Up]}" == $'\eO'* ]]    && bindkey -M viins "${key[Up]/O/[}" history-substring-search-up
+[[ "${key[Down]}" == $'\eO'* ]]  && bindkey -M viins "${key[Down]/O/[}" history-substring-search-down
+[[ "${key[Left]}" == $'\eO'* ]]  && bindkey -M viins "${key[Left]/O/[}" vi-backward-char
+[[ "${key[Right]}" == $'\eO'* ]] && bindkey -M viins "${key[Right]/O/[}" vi-forward-char
+[[ "${key[Home]}" == $'\eO'* ]]  && bindkey -M viins "${key[Home]/O/[}" beginning-of-line
+[[ "${key[End]}" == $'\eO'* ]]   && bindkey -M viins "${key[End]/O/[}" end-of-line
