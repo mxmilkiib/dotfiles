@@ -60,9 +60,13 @@ local hotkeys_popup = require("awful.hotkeys_popup")
 local naughty = require("naughty")
 local shimmer = require("plugins/shimmer") -- For shimmer mode functions
 
--- Matcher generator for rules
-local create_matcher = function(class_name)
-    return function(c) return awful.rules.match(c, {class = class_name}) end
+-- Matcher generator for rules - supports class or instance matching
+local create_matcher = function(class_name, use_instance)
+    if use_instance then
+        return function(c) return awful.rules.match(c, {instance = class_name}) end
+    else
+        return function(c) return awful.rules.match(c, {class = class_name}) end
+    end
 end
 
 
@@ -135,6 +139,7 @@ function M.build(ctx)
   -- mode glyphs style toggle provided by rc.lua
   local toggle_mode_glyphs_style = ctx.toggle_mode_glyphs_style
   local quake = ctx.quake  -- optional
+  local resize_no_warp = ctx.resize_no_warp  -- custom resize function
 
 
   local globalkeys = {}
@@ -164,7 +169,7 @@ function M.build(ctx)
   end
 
   -- Helper function to add multiple keys from a table
-  -- Standard structure: {modifiers, key, function_or_string, description, class_name, group}
+  -- Standard structure: {modifiers, key, function_or_string, description, class_name, group, use_instance}
   local function add_keys(keys_table)
     if not keys_table then return end  -- Skip if table is nil
     
@@ -190,11 +195,12 @@ function M.build(ctx)
         local description = key[4]
         local class_name = key[5]  -- Optional, for window matching
         local group = key[6] or "awesome"
+        local use_instance = key[7]  -- Optional, use instance instead of class for matching
         
         if type(func_or_string) == "string" then
           if class_name then
             -- Special handling for F-key launchers with window matching
-            local matcher = create_matcher(class_name)
+            local matcher = create_matcher(class_name, use_instance)
             table.insert(globalkeys, awful.key(modifiers, key_name, function()
               run_or_raise(func_or_string, matcher)
             end, {description = description, group = group}))
@@ -311,12 +317,12 @@ function M.build(ctx)
     {{modkey, shiftkey, altkey}, "d", shimmer.cycle_colour_prog_mode_reverse_notify, "cycle colour progression mode reverse", nil, "shimmer"},
     {{modkey, shiftkey, altkey}, "g", shimmer.cycle_shine_prog_mode_notify, "cycle shine progression mode", nil, "shimmer"},
     {{modkey, shiftkey, altkey}, "v", shimmer.cycle_shine_prog_mode_reverse_notify, "cycle shine progression mode reverse", nil, "shimmer"},
-    -- remapped: colour progression speed controls (x=down, y=up)
-    {{modkey, shiftkey, altkey}, "x", shimmer.decrease_color_speed_notify, "decrease colour progression speed", nil, "shimmer"},
-    {{modkey, shiftkey, altkey}, "r", shimmer.increase_color_speed_notify, "increase colour progression speed", nil, "shimmer"},
-    -- remapped: shine progression speed controls (z=down, a=up)
-    {{modkey, shiftkey, altkey}, "z", shimmer.decrease_shine_speed_notify, "decrease shine progression speed", nil, "shimmer"},
-    {{modkey, shiftkey, altkey}, "a", shimmer.increase_shine_speed_notify, "increase shine progression speed", nil, "shimmer"},
+    -- remapped: shine progression speed controls (x=down, r=up)
+    {{modkey, shiftkey, altkey}, "x", shimmer.decrease_shine_speed_notify, "decrease shine progression speed", nil, "shimmer"},
+    {{modkey, shiftkey, altkey}, "r", shimmer.increase_shine_speed_notify, "increase shine progression speed", nil, "shimmer"},
+    -- remapped: colour progression speed controls (z=down, a=up)
+    {{modkey, shiftkey, altkey}, "z", shimmer.decrease_color_speed_notify, "decrease colour progression speed", nil, "shimmer"},
+    {{modkey, shiftkey, altkey}, "a", shimmer.increase_color_speed_notify, "increase colour progression speed", nil, "shimmer"},
     -- remapped: toggle persistent notifications to Mod+Shift+Alt+P (from Z)
     {{modkey, shiftkey, altkey}, "p", shimmer.toggle_notification_persistence, "toggle notification persistence", nil, "shimmer"}
   }
@@ -340,8 +346,8 @@ function M.build(ctx)
   -- // MARK: F-KEY LAUNCHERS
   -- F-key application launchers
   local f_key_defs = {
-    {{modkey}, "F1", "urxvt -e sh -c 'ncmpcpp' -name 'ncmpcpp'", "run ncmpcpp", "ncmpcpp", "launcher"},
-    {{modkey, shiftkey}, "F1", "spotify", "run spotify", "spotify", "launcher"},
+    {{modkey}, "F1", "urxvt -e sh -c 'ncmpcpp' -name 'ncmpcpp'", "run ncmpcpp", "ncmpcpp", "launcher", true},  -- use instance matching
+    {{modkey, shiftkey}, "F1", "spotify", "run spotify", "spotify", "launcher", true},  -- use instance matching
     {{modkey}, "F2", "raysession", "run raysession", nil, "launcher"},
     {{modkey, shiftkey}, "F2", "urxvt -e sh -c 'nsm'", "run argodejo in a terminal", "nsm", "launcher"},
     {{modkey}, "F3", "qbittorrent", "run qbittorrent", "qBittorrent", "launcher"},
@@ -350,9 +356,9 @@ function M.build(ctx)
     {{modkey, shiftkey}, "F4", "simplescreenrecorder", "run simplescreenrecorder", nil, "launcher"},
     {{modkey, shiftkey}, "F6", "qseq66", "run qseq66", nil, "launcher"},
     {{modkey, shiftkey}, "F7", "signal-desktop", "run signal-desktop", nil, "launcher"},
-    {{modkey}, "F8", "keepassxc ~/state/nextcloud/sync/keepassxc-mb.kdbx", "run keepassxc", "keepassxc", "launcher"},
-    {{modkey}, "F9", "doublecmd", "run doublecmd", "doublecmd", "launcher"},
-    {{modkey}, "F11", "quasselclient", "run quasselclient", "quasselclient", "launcher"},
+    {{modkey}, "F8", function() if ctx.toggle_keepassxc then ctx.toggle_keepassxc() end end, "toggle keepassxc", "keepassxc", "launcher"},
+    {{modkey}, "F9", "doublecmd", "run doublecmd", "doublecmd", "launcher", true},  -- use instance matching
+    {{modkey}, "F11", "quasselclient", "run quasselclient", "quassel", "launcher", true},  -- use instance matching (instance = "quassel")
     {{modkey}, "F12", "firefox", "run firefox", nil, "launcher"},
     {{modkey, shiftkey}, "F12", "chromium", "run chromium", nil, "launcher"}
   }
@@ -409,6 +415,12 @@ function M.build(ctx)
     {{}, "XF86AudioLowerVolume", "vol-dec-all-3.sh", "decrease volume", nil, "audio"},
     {{}, "XF86AudioRaiseVolume", "vol-inc-all-3.sh", "increase volume", nil, "audio"},
     {{}, "XF86AudioMute", "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle", "toggle mute", nil, "audio"}
+  }
+  
+  -- // MARK: DISPLAY
+  -- Display configuration tools
+  local display_keys = {
+    {{modkey}, "a", function() if ctx.toggle_arandr then ctx.toggle_arandr() end end, "toggle arandr", nil, "display"}
   }
   
   -- // MARK: DENON
@@ -469,6 +481,7 @@ function M.build(ctx)
   
   -- Add system control keys to globalkeys
   add_keys(audio_keys)
+  add_keys(display_keys)
   add_keys(denon_keys)
   add_keys(media_keys)
   add_keys(brightness_keys)
@@ -641,7 +654,11 @@ function M.build(ctx)
     
     awful.button({ modkey }, 3, function (c)
         c:emit_signal("request::activate", "mouse_click", {raise = true})
-        awful.mouse.client.resize(c)
+        if resize_no_warp then
+            resize_no_warp(c)
+        else
+            awful.mouse.client.resize(c)
+        end
     end)
   )
 
