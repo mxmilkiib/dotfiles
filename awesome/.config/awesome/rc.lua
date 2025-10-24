@@ -159,17 +159,14 @@ local keybindings = require("rc.keybindings")        -- Hotkey definitions
 
 
 -- external libraries
+local ruled = require("ruled")                                        -- modern rules API
+local freedesktop = require("freedesktop")                            -- Create a menu from .desktop files
+
 local lain = require("lain")                                          -- Layouts, widgets, utilities
 local quake_lain = require("lain.util.quake")                         -- optional dropdown terminal (lain's quake)
 
 local bling = require("bling")                                        -- Modern layouts and utilities
-
-local freedesktop = require("freedesktop")                            -- Create a menu from .desktop files
-
 local treetile = require("treetile")                                  -- Hierarchical window arrangement
-
-local ruled = require("ruled")                                        -- modern rules API
-
 
 local shimmer = require("plugins.shimmer")                            -- Unified shimmer & border animation system
 local mode_glyphs = require("plugins.mode_glyphs")                    -- stable tasklist mode glyphs
@@ -180,18 +177,25 @@ local hotkey_dupe_detector = require("plugins.hotkey_dupe_detector")  -- duplica
 -- // MARK: -- shimmer configuration
 -- configure unified shimmer system (text effects + border animation)
 shimmer.configure({
-    -- preset = "debug",  -- lighter, more visible preset
+    -- preset = "debug",  -- lighter, more visible preset    
     -- preset = "warm_light",  -- lighter, more visible preset
     -- preset = "bright_gold",  -- gold-only shine default
     -- preset = "candy",  -- candy-cane shine preset
     -- preset = "gold_contrast",  -- pastel candy-cane shine preset
     -- preset = "plasma_drift",  -- pastel candy-cane shine preset
-    preset = "gold_contrast",  -- pastel candy-cane shine preset
+    preset = "gold_crumble",  -- pastel candy-cane shine preset
     border = {
         -- smoothness = 2,  -- light border animation
+        -- smoothness = 1,     -- 0.15s per frame
         smoothness = 1,     -- 0.15s per frame
-        speed = 0.15,       -- animation timer interval
-    }
+        speed = 1,       -- animation timer interval
+        follow_text_style = false,  -- if true, border uses same progression strategy as title text
+        use_shimmer_palette = false,  -- if true, use shimmer colors; if false, use original default gradient
+    },
+    disable_shine = false,  -- disable shine aspect
+    disable_color = false,  -- keep color progression active
+    -- max_animated_chars = 10  -- limit to 5 animated chars globally
+
 })
 -- minimal startup timer for shimmer - just enough for tasklist widgets to initialize
 shimmer.post_startup_init()  -- defer small init to module (tasklist mapping + focused init)
@@ -207,6 +211,8 @@ local function toggle_mode_glyphs_style()
     mode_glyphs.configure({ style = new_style })
     shimmer.refresh_all_tasklists()
     naughty.notify({ title = "mode glyphs", text = "style: " .. new_style, timeout = 2 })
+    
+    
 end
 
 -- bling extras: enable window swallowing and previews
@@ -280,36 +286,18 @@ require("awful.hotkeys_popup.keys")
 -- Store the previous tag when switching to pavucontrol
 local previous_tag = nil
 
+-- pavucontrol toggle state tracking
+local pavucontrol_tag_visible = false
+
+-- keepassxc toggle state tracking
+local keepassxc_tag_visible = false
+
+-- arandr toggle state tracking
+local arandr_tag_visible = false
+
 -- tasklist mode: false = focused tag only (default), true = all tags
 local tasklist_show_all_tags = false
 
--- function to toggle tasklist mode and refresh all tasklists
-local function toggle_tasklist_mode()
-    tasklist_show_all_tags = not tasklist_show_all_tags
-    
-    -- refresh all tasklists on all screens - force filter re-evaluation
-    for s in screen do
-        if s.mytasklist then
-            -- force complete tasklist rebuild by emitting multiple signals
-            s.mytasklist:emit_signal("widget::layout_changed")
-            s.mytasklist:emit_signal("widget::redraw_needed")
-            -- trigger client property changes to force filter re-evaluation
-            for _, c in ipairs(client.get()) do
-                if c.screen == s then
-                    c:emit_signal("property::urgent")
-                end
-            end
-        end
-    end
-    
-    -- show notification about current mode
-    local mode_text = tasklist_show_all_tags and "all tags" or "focused tag only"
-    naughty.notify({
-        title = "tasklist mode",
-        text = "showing tasks from: " .. mode_text,
-        timeout = 2
-    })
-end
 
 -- // MARK: UTILITY FUNCTIONS
 -- ################################################################################
@@ -354,6 +342,38 @@ terminal = "urxvt" -- Default terminal (urxvt preferred for consistency)
 -- terminal = "alacritty" -- Alternative terminal
 editor = os.getenv("EDITOR") or "nvim"
 editor_cmd = terminal .. " -e " .. editor
+
+-- // MARK: CONSTANTS
+-- ################################################################################
+-- Timing constants
+local CLEANUP_INTERVAL = 30        -- Window cleanup timer (seconds)
+local SHIMMER_INIT_DELAY = 0.05    -- Shimmer initialization delay (seconds)  
+local DOUBLE_CLICK_INTERVAL = 0.20 -- Double-click detection timeout (seconds)
+
+-- UI dimension constants
+local QUAKE_HEIGHT_SMALL = 0.30    -- Small quake terminal height (ratio)
+local QUAKE_HEIGHT_LARGE = 0.4     -- Large quake terminal height (ratio) 
+local QUAKE_WIDTH_FULL = 1.0       -- Full-width quake terminal (ratio)
+
+-- Icon and widget sizing
+local DEFAULT_ICON_SIZE = 16       -- Fallback icon size (pixels)
+local MIN_WINDOW_SIZE = 50         -- Minimum window dimensions (pixels)
+
+-- Layout spacing and margins  
+local TAGLIST_MARGIN_H = 8         -- Taglist horizontal margin (pixels)
+local TAGLIST_MARGIN_V = 4         -- Taglist vertical margin (pixels)
+local TASKLIST_MARGIN_LEFT = 4     -- Tasklist left margin (pixels)
+local TASKLIST_MARGIN_RIGHT = 1    -- Tasklist right margin (pixels)
+local CLOCK_MARGIN = 7             -- Clock widget margin (pixels)
+
+-- Resize and animation parameters
+local RESIZE_BASE_DISTANCE = 50    -- Base distance for resize scaling
+local RESIZE_SENSITIVITY = 200     -- Resize sensitivity factor
+local MIN_SCALE_FACTOR = 0.1       -- Minimum window scale factor
+local BITMAP_SIZE = 1024           -- Widget lock bitmap size
+
+-- Notification settings (moved from shimmer)
+local NOTIFICATION_WIDTH = beautiful.notification_width or 530     -- Notification width (pixels)
 
 -- Tag navigation modifier keys
 tag_nav_mod_keys = {modkey, altkey}
@@ -450,7 +470,7 @@ milkdefault = lain.layout.termfair.center
 --     screen      = 1,
 --     layout      = awful.layout.suit.max                          ,
 --     class = {
---     "Pavucontrol", "Jack_mixer" }
+--     "pavucontrol", "Jack_mixer" }
 --   } ,
 --   {
 --     name        = "0 Sys",
@@ -520,13 +540,21 @@ milkdefault = lain.layout.termfair.center
 -- // MARK: WINDOW MANAGEMENT FUNCTIONS
 -- ################################################################################
 
--- Window state tracking with cleanup
-local window_centers = {}
-local dragging_clients = {}
+-- Window state tracking with cleanup - use weak keys to prevent memory leaks
+-- MEMORY LEAK FIXES APPLIED:
+-- • Changed to weak key tables for automatic garbage collection
+-- • Reduced cleanup timer from 60s to 30s
+-- • Added comprehensive client validation in all handlers
+-- • Added immediate cleanup in unmanage signal
+-- • Added explicit property cleanup in window_manager.cleanup()
+-- • Added forced garbage collection to help clean weak references
+local window_centers = setmetatable({}, { __mode = "k" })  -- weak keys for automatic GC
+local dragging_clients = setmetatable({}, { __mode = "k" })  -- weak keys for automatic GC
+local client_tiled_sizes = setmetatable({}, { __mode = "k" })  -- store tiled size for 10% reduction on float
 
--- periodic cleanup for memory management
+-- periodic cleanup for memory management (reduced frequency since we have weak keys)
 local cleanup_timer = gears.timer {
-    timeout = 60,  -- cleanup every minute
+    timeout = CLEANUP_INTERVAL,  -- cleanup timer interval
     autostart = true,
     callback = function()
         -- clean up window_centers for invalid clients
@@ -535,12 +563,14 @@ local cleanup_timer = gears.timer {
                 window_centers[c] = nil
             end
         end
-        -- clean up dragging_clients for invalid clients
-        for c, _ in pairs(dragging_clients) do
+        -- clean up client_tiled_sizes for invalid clients
+        for c, _ in pairs(client_tiled_sizes) do
             if not c.valid then
-                dragging_clients[c] = nil
+                client_tiled_sizes[c] = nil
             end
         end
+        -- force garbage collection to clean up weak references
+        collectgarbage("collect")
     end
 }
 
@@ -573,8 +603,14 @@ local window_manager = {
     
     -- Clean up window tracking data
     cleanup = function(c)
+        if not c then return end
+        -- clear all client tracking data immediately
         window_centers[c] = nil
         dragging_clients[c] = nil
+        client_tiled_sizes[c] = nil
+        -- clear any client-specific properties that may cause leaks
+        if c._intend_drag then c._intend_drag = nil end
+        if c._was_maximized then c._was_maximized = nil end
     end,
     
     -- Check if window is being dragged
@@ -595,47 +631,119 @@ local window_manager = {
 }
 
 
--- Screen rotation function
-local function rotate_screens(direction) -- tighten scope
-    local current_screen = awful.screen.focused()
-    local initial_screen = current_screen
-    while (true) do
-        -- Handle both numeric and string values for direction
-        if direction == "right" or direction == -1 then
-            current_screen = current_screen:get_next_in_direction("right")
-            if current_screen == nil then
-                local screens = screen
-                current_screen = screens[1]
-            end
-        elseif direction == "left" or direction == 1 then
-            current_screen = current_screen:get_next_in_direction("left")
-            if current_screen == nil then
-                local screens = screen
-                current_screen = screens[#screens]
-            end
-        elseif direction == "up" then
-            current_screen = current_screen:get_next_in_direction("up")
-            if current_screen == nil then
-                current_screen = awful.screen.focused()
-            end
-        elseif direction == "down" then
-            current_screen = current_screen:get_next_in_direction("down")
-            if current_screen == nil then
-                current_screen = awful.screen.focused()
-            end
-        end
-        -- If we've looped back to the initial screen, break to avoid infinite loop
-        if current_screen == initial_screen then
-            break
-        end
-        mouse.screen = current_screen
-        break
+-- // MARK: SCREEN MANAGEMENT
+
+-- screen rotation and management helpers
+-- 
+-- implements screen content rotation across multiple displays:
+--   - rotates all tag contents (clients, layouts, properties) between screens
+--   - preserves tag selection states and window assignments
+--   - works bidirectionally (left/right rotation)
+--   - provides visual feedback via notifications
+-- 
+-- keybindings:
+--   - mod4 + ctrl + left/right arrows: keyboard rotation
+--   - mod4 + scroll wheel (over layout widget): mouse rotation
+-- 
+-- rotation direction semantics:
+--   - "left": content moves left (screen 1 gets screen 2's content)
+--   - "right": content moves right (screen 1 gets last screen's content)
+
+local function rotate_screens(direction)
+    local all_screens = {}
+    for s in screen do
+        table.insert(all_screens, s)
     end
+    
+    -- need at least 2 screens to rotate content
+    if #all_screens <= 1 then 
+        naughty.notify({
+            title = "Screen Rotation",
+            text = "Only one screen, nothing to rotate",
+            timeout = 2
+        })
+        return 
+    end
+    
+    -- collect all tag configurations from all screens
+    local screen_tags = {}
+    for i, s in ipairs(all_screens) do
+        screen_tags[i] = {}
+        for j, tag in ipairs(s.tags) do
+            -- store tag properties
+            screen_tags[i][j] = {
+                name = tag.name,
+                selected = tag.selected,
+                layout = tag.layout,
+                clients = tag:clients(),
+                -- store additional tag properties
+                master_width_factor = tag.master_width_factor,
+                master_count = tag.master_count,
+                column_count = tag.column_count,
+                gap = tag.gap,
+                gap_single_client = tag.gap_single_client
+            }
+        end
+    end
+    
+    -- calculate rotation: left = content moves left (screen indices go right)
+    -- right = content moves right (screen indices go left)
+    local target_mapping = {}
+    for i = 1, #all_screens do
+        if direction == "left" or direction == 1 then
+            -- content moves left: screen 1 gets screen 2's content, etc.
+            target_mapping[i] = (i % #all_screens) + 1
+        else -- right or -1
+            -- content moves right: screen 1 gets screen #'s content, etc.
+            target_mapping[i] = ((i - 2 + #all_screens) % #all_screens) + 1
+        end
+    end
+    
+    -- apply the rotation
+    for screen_idx, source_idx in pairs(target_mapping) do
+        local target_screen = all_screens[screen_idx]
+        local source_tags = screen_tags[source_idx]
+        
+        -- update each tag with properties from source
+        for tag_idx, tag in ipairs(target_screen.tags) do
+            local source_tag_data = source_tags[tag_idx]
+            if source_tag_data then
+                -- move all clients from source to target tag
+                for _, client in ipairs(source_tag_data.clients) do
+                    if client.valid then
+                        client:move_to_tag(tag)
+                    end
+                end
+                
+                -- apply tag properties
+                tag.layout = source_tag_data.layout
+                tag.master_width_factor = source_tag_data.master_width_factor
+                tag.master_count = source_tag_data.master_count
+                tag.column_count = source_tag_data.column_count
+                tag.gap = source_tag_data.gap
+                tag.gap_single_client = source_tag_data.gap_single_client
+                
+                -- apply selection state last (after clients are moved)
+                if source_tag_data.selected then
+                    tag:view_only()
+                end
+            end
+        end
+    end
+    
+    -- show notification
+    local direction_text = (direction == "left" or direction == 1) and "left" or "right"
+    naughty.notify({
+        title = "Screen Content Rotated",
+        text = "All tags rotated " .. direction_text .. " across " .. #all_screens .. " screens",
+        timeout = 2
+    })
 end
 
 
--- Tag navigation functions  
-local function move_to_previous_tag() -- tighten scope
+-- // MARK: -- tag navigation
+-- tag navigation functions for moving clients between tags
+local function move_to_previous_tag()
     local c = client.focus
     if not c then return end
     local current_tag = c:tags()[1]
@@ -645,7 +753,7 @@ local function move_to_previous_tag() -- tighten scope
     end
 end
 
-local function move_to_next_tag() -- tighten scope
+local function move_to_next_tag()
     local c = client.focus
     if not c then return end
     local current_tag = c:tags()[1]
@@ -655,27 +763,46 @@ local function move_to_next_tag() -- tighten scope
     end
 end
 
+local function move_to_previous_tag_and_follow()
+    local c = client.focus
+    if not c then return end
+    local current_tag = c:tags()[1]
+    if current_tag then
+        local prev_tag = current_tag.screen.tags[current_tag.index - 1]
+        if prev_tag then 
+            c:move_to_tag(prev_tag)
+            prev_tag:view_only()
+        end
+    end
+end
 
--- Function to cycle through tags with clients (including minimized ones)
-local function cycle_tags_with_clients(direction) -- tighten scope
+local function move_to_next_tag_and_follow()
+    local c = client.focus
+    if not c then return end
+    local current_tag = c:tags()[1]
+    if current_tag then
+        local next_tag = current_tag.screen.tags[current_tag.index + 1]
+        if next_tag then 
+            c:move_to_tag(next_tag)
+            next_tag:view_only()
+        end
+    end
+end
+
+local function cycle_tags_with_clients(direction)
     local current_screen = awful.screen.focused()
     local all_tags = current_screen.tags
-
-    -- Get the current tag index
     local current_tag = current_screen.selected_tag
     local current_index = gears.table.hasitem(all_tags, current_tag)
 
-    -- Cycle through tags, wrap around when reaching the end/start
-    for i = 1, #all_tags do
+    for i = 1, #all_tags - 1 do
         local idx
         if direction == "next" then
-            idx = (current_index + i - 1) % #all_tags + 1
+            idx = ((current_index - 1 + i) % #all_tags) + 1
         else
-            idx = (current_index - i - 1) % #all_tags + 1
+            idx = ((current_index - 1 - i + #all_tags) % #all_tags) + 1
         end
         local tag = all_tags[idx]
-
-        -- Check if the tag has clients (including minimized ones)
         if #tag:clients() > 0 then
             tag:view_only()
             return
@@ -683,27 +810,20 @@ local function cycle_tags_with_clients(direction) -- tighten scope
     end
 end
 
-
--- Function to cycle through tags with visible/unminimized clients only
-local function cycle_tags_with_visible_clients(direction) -- tighten scope
+local function cycle_tags_with_visible_clients(direction)
     local current_screen = awful.screen.focused()
     local all_tags = current_screen.tags
-
-    -- Get the current tag index
     local current_tag = current_screen.selected_tag
     local current_index = gears.table.hasitem(all_tags, current_tag)
 
-    -- Cycle through tags, wrap around when reaching the end/start
-    for i = 1, #all_tags do
+    for i = 1, #all_tags - 1 do
         local idx
         if direction == "next" then
-            idx = (current_index + i - 1) % #all_tags + 1
+            idx = ((current_index - 1 + i) % #all_tags) + 1
         else
-            idx = (current_index - i - 1) % #all_tags + 1
+            idx = ((current_index - 1 - i + #all_tags) % #all_tags) + 1
         end
         local tag = all_tags[idx]
-
-        -- Check if the tag has visible (unminimized) clients
         local has_visible_clients = false
         for _, c in ipairs(tag:clients()) do
             if not c.minimized then
@@ -711,7 +831,6 @@ local function cycle_tags_with_visible_clients(direction) -- tighten scope
                 break
             end
         end
-        
         if has_visible_clients then
             tag:view_only()
             return
@@ -720,9 +839,384 @@ local function cycle_tags_with_visible_clients(direction) -- tighten scope
 end
 
 
+-- // MARK: -- tasklist mode toggle
+local function toggle_tasklist_mode()
+    tasklist_show_all_tags = not tasklist_show_all_tags
+    
+    -- refresh all tasklists on all screens - force filter re-evaluation
+    for s in screen do
+        if s.mytasklist then
+            -- force complete tasklist rebuild by emitting multiple signals
+            s.mytasklist:emit_signal("widget::layout_changed")
+            s.mytasklist:emit_signal("widget::redraw_needed")
+            -- trigger client property changes to force filter re-evaluation
+            for _, c in ipairs(client.get()) do
+                if c.screen == s then
+                    c:emit_signal("property::urgent")
+                end
+            end
+        end
+    end
+    
+    -- show notification about current mode
+    local mode_text = tasklist_show_all_tags and "all tags" or "focused tag only"
+    naughty.notify({
+        title = "tasklist mode",
+        text = "showing tasks from: " .. mode_text,
+        timeout = 2
+    })
+end
 
 
--- // MARK: DEFS
+-- // MARK: -- pavucontrol toggle
+local function toggle_pavucontrol()
+    local current_screen = awful.screen.focused()
+    
+    -- check if pavucontrol is already running
+    local pavucontrol_client = nil
+    for _, c in ipairs(client.get()) do
+        if c.class == "Pavucontrol" then
+            pavucontrol_client = c
+            break
+        end
+    end
+    
+    if pavucontrol_client then
+        -- pavucontrol exists - work with the screen it's actually on
+        local pavucontrol_screen = pavucontrol_client.screen
+        local pavucontrol_tag9 = pavucontrol_screen.tags[9]
+        
+        if not pavucontrol_tag9 then
+            return
+        end
+        
+        -- if pavucontrol is on a different screen, move it to current screen
+        if pavucontrol_screen ~= current_screen then
+            pavucontrol_client:move_to_screen(current_screen)
+            -- now get tag 9 on the current screen
+            local current_tag9 = current_screen.tags[9]
+            if current_tag9 then
+                pavucontrol_client:move_to_tag(current_tag9)
+                pavucontrol_tag9 = current_tag9
+            end
+        end
+        
+        -- toggle tag 9 visibility on the appropriate screen
+        if pavucontrol_tag9.selected then
+            -- tag 9 is visible, hide it
+            awful.tag.viewtoggle(pavucontrol_tag9)
+            pavucontrol_tag_visible = false
+        else
+            -- tag 9 is not visible, show it
+            awful.tag.viewtoggle(pavucontrol_tag9)
+            pavucontrol_tag_visible = true
+            -- focus the pavucontrol window
+            pavucontrol_client:emit_signal("request::activate", "toggle_pavucontrol", {raise = true})
+        end
+    else
+        -- pavucontrol doesn't exist, launch it on current screen
+        local current_tag9 = current_screen.tags[9]
+        if not current_tag9 then
+            return
+        end
+        
+        awful.spawn.with_shell("GDK_SCALE=0.9 pavucontrol")
+        pavucontrol_tag_visible = true
+    end
+end
+
+
+-- // MARK: -- keepassxc toggle
+local function toggle_keepassxc()
+    local current_screen = awful.screen.focused()
+    
+    -- check if keepassxc is already running
+    local keepassxc_client = nil
+    for _, c in ipairs(client.get()) do
+        if c.class == "KeePassXC" then
+            keepassxc_client = c
+            break
+        end
+    end
+    
+    if keepassxc_client then
+        -- keepassxc exists - work with the screen it's actually on
+        local keepassxc_screen = keepassxc_client.screen
+        local keepassxc_tag8 = keepassxc_screen.tags[8]
+        
+        if not keepassxc_tag8 then
+            return
+        end
+        
+        -- if keepassxc is on a different screen, move it to current screen
+        if keepassxc_screen ~= current_screen then
+            keepassxc_client:move_to_screen(current_screen)
+            -- now get tag 8 on the current screen
+            local current_tag8 = current_screen.tags[8]
+            if current_tag8 then
+                keepassxc_client:move_to_tag(current_tag8)
+                keepassxc_tag8 = current_tag8
+            end
+        end
+        
+        -- toggle tag 8 visibility on the appropriate screen
+        if keepassxc_tag8.selected then
+            -- tag 8 is visible, hide it
+            awful.tag.viewtoggle(keepassxc_tag8)
+            keepassxc_tag_visible = false
+        else
+            -- tag 8 is not visible, show it
+            awful.tag.viewtoggle(keepassxc_tag8)
+            keepassxc_tag_visible = true
+            -- focus the keepassxc window
+            keepassxc_client:emit_signal("request::activate", "toggle_keepassxc", {raise = true})
+        end
+    else
+        -- keepassxc doesn't exist, launch it on current screen
+        local current_tag8 = current_screen.tags[8]
+        if not current_tag8 then
+            return
+        end
+        
+        awful.spawn.with_shell("keepassxc ~/state/nextcloud/sync/keepassxc-mb.kdbx")
+        keepassxc_tag_visible = true
+    end
+end
+
+
+-- // MARK: -- arandr toggle
+local function toggle_arandr()
+    local current_screen = awful.screen.focused()
+    
+    -- check if arandr is already running
+    local arandr_client = nil
+    for _, c in ipairs(client.get()) do
+        if c.class == "Arandr" then
+            arandr_client = c
+            break
+        end
+    end
+    
+    if arandr_client then
+        -- arandr exists - work with the screen it's actually on
+        local arandr_screen = arandr_client.screen
+        local arandr_tag9 = arandr_screen.tags[9]
+        
+        if not arandr_tag9 then
+            return
+        end
+        
+        -- if arandr is on a different screen, move it to current screen
+        if arandr_screen ~= current_screen then
+            arandr_client:move_to_screen(current_screen)
+            -- now get tag 9 on the current screen
+            local current_tag9 = current_screen.tags[9]
+            if current_tag9 then
+                arandr_client:move_to_tag(current_tag9)
+                arandr_tag9 = current_tag9
+            end
+        end
+        
+        -- toggle tag 9 visibility on the appropriate screen
+        if arandr_tag9.selected then
+            -- tag 9 is visible, hide it
+            awful.tag.viewtoggle(arandr_tag9)
+            arandr_tag_visible = false
+        else
+            -- tag 9 is not visible, show it
+            awful.tag.viewtoggle(arandr_tag9)
+            arandr_tag_visible = true
+            -- focus the arandr window
+            arandr_client:emit_signal("request::activate", "toggle_arandr", {raise = true})
+        end
+    else
+        -- arandr doesn't exist, launch it on current screen
+        local current_tag9 = current_screen.tags[9]
+        if not current_tag9 then
+            return
+        end
+        
+        awful.spawn("arandr")
+        arandr_tag_visible = true
+    end
+end
+
+
+-- // MARK: -- resize-no-warp
+-- anti-warp resize function that prevents cursor from jumping to another monitor
+local function resize_no_warp(c)
+    c:emit_signal("request::activate", "mouse_click", {raise = true})
+
+    -- check if client is floating or if current layout has mouse_resize_handler
+    local layout = awful.layout.get(c.screen)
+    
+    -- if client is not floating and layout has mouse_resize_handler, use it
+    if not c.floating and layout.mouse_resize_handler then
+        
+        local initial_coords = mouse.coords()
+        local geo = c:geometry()
+        
+        -- determine corner based on mouse position relative to client center  
+        local corner
+        if initial_coords.y < geo.y + geo.height/2 then
+            if initial_coords.x < geo.x + geo.width/2 then
+                corner = "top_left"
+            else
+                corner = "top_right"
+            end
+        else
+            if initial_coords.x < geo.x + geo.width/2 then
+                corner = "bottom_left"
+            else
+                corner = "bottom_right"
+            end
+        end
+        
+        -- call the layout's mouse resize handler
+        layout.mouse_resize_handler(c, corner, initial_coords.x, initial_coords.y)
+        return
+    end
+
+    -- fallback to floating window resize for floating clients or layouts without mouse handler
+    -- store initial cursor position
+    local initial_coords = mouse.coords()
+
+    -- store initial client geometry
+    local geo = c:geometry()
+    local initial_geo = {x = geo.x, y = geo.y, width = geo.width, height = geo.height}
+
+    -- detect which corner/edge was grabbed based on mouse position
+    -- this determines which corner stays fixed (anchor) during resize
+    local corner = ""
+    local edge_threshold = 20  -- pixels from edge to consider it an edge grab
+    
+    local rel_x = initial_coords.x - geo.x
+    local rel_y = initial_coords.y - geo.y
+    
+    -- determine vertical anchor (top or bottom)
+    if rel_y < edge_threshold then
+        corner = "top"
+    elseif rel_y > geo.height - edge_threshold then
+        corner = "bottom"
+    else
+        -- middle vertical, will resize both top and bottom equally
+        corner = "middle"
+    end
+    
+    -- determine horizontal anchor (left or right)
+    if rel_x < edge_threshold then
+        corner = corner .. "_left"
+    elseif rel_x > geo.width - edge_threshold then
+        corner = corner .. "_right"
+    else
+        -- middle horizontal, will resize both left and right equally
+        corner = corner .. "_center"
+    end
+
+    -- define anchor point based on grabbed corner (opposite corner stays fixed)
+    local anchor_x, anchor_y
+    if corner:match("left") then
+        anchor_x = geo.x + geo.width  -- right edge is anchor
+    elseif corner:match("right") then
+        anchor_x = geo.x  -- left edge is anchor
+    else
+        anchor_x = geo.x + geo.width / 2  -- center is anchor
+    end
+    
+    if corner:match("top") then
+        anchor_y = geo.y + geo.height  -- bottom edge is anchor
+    elseif corner:match("bottom") then
+        anchor_y = geo.y  -- top edge is anchor
+    else
+        anchor_y = geo.y + geo.height / 2  -- center is anchor
+    end
+
+    -- get the current screen's geometry for boundary checking
+    local screen_geo = screen[c.screen].geometry
+
+    -- start the mouse grabber without warping the cursor
+    mousegrabber.run(function(m)
+        if not c.valid then return false end
+
+        -- calculate new dimensions based on mouse movement from anchor point
+        local new_x, new_y, new_width, new_height
+        
+        if corner:match("left") then
+            -- dragging left edge: anchor is right edge
+            new_x = math.min(m.x, anchor_x - MIN_WINDOW_SIZE)
+            new_width = anchor_x - new_x
+        elseif corner:match("right") then
+            -- dragging right edge: anchor is left edge
+            new_x = anchor_x
+            new_width = math.max(m.x - anchor_x, MIN_WINDOW_SIZE)
+        else
+            -- dragging center horizontally: expand/contract symmetrically
+            local dx = m.x - initial_coords.x
+            new_width = math.max(initial_geo.width + dx * 2, MIN_WINDOW_SIZE)
+            new_x = anchor_x - new_width / 2
+        end
+        
+        if corner:match("top") then
+            -- dragging top edge: anchor is bottom edge
+            new_y = math.min(m.y, anchor_y - MIN_WINDOW_SIZE)
+            new_height = anchor_y - new_y
+        elseif corner:match("bottom") then
+            -- dragging bottom edge: anchor is top edge
+            new_y = anchor_y
+            new_height = math.max(m.y - anchor_y, MIN_WINDOW_SIZE)
+        else
+            -- dragging center vertically: expand/contract symmetrically
+            local dy = m.y - initial_coords.y
+            new_height = math.max(initial_geo.height + dy * 2, MIN_WINDOW_SIZE)
+            new_y = anchor_y - new_height / 2
+        end
+
+        -- constrain to screen boundaries
+        if new_x < screen_geo.x then
+            new_width = new_width - (screen_geo.x - new_x)
+            new_x = screen_geo.x
+        end
+        if new_y < screen_geo.y then
+            new_height = new_height - (screen_geo.y - new_y)
+            new_y = screen_geo.y
+        end
+        if new_x + new_width > screen_geo.x + screen_geo.width then
+            new_width = screen_geo.x + screen_geo.width - new_x
+        end
+        if new_y + new_height > screen_geo.y + screen_geo.height then
+            new_height = screen_geo.y + screen_geo.height - new_y
+        end
+
+        -- ensure minimum size after boundary constraints
+        new_width = math.max(new_width, MIN_WINDOW_SIZE)
+        new_height = math.max(new_height, MIN_WINDOW_SIZE)
+
+        -- apply the new geometry
+        c:geometry({
+            x = math.floor(new_x),
+            y = math.floor(new_y),
+            width = math.floor(new_width),
+            height = math.floor(new_height)
+        })
+
+        return m.buttons[3] or m.buttons[2]  -- continue as long as right or middle button is pressed
+    end, "fleur")
+
+    -- update center position for our center-locked resizing
+    -- once resize is complete
+    if c.floating and window_centers then
+        local new_geo = c:geometry()
+        window_centers[c] = {
+            x = new_geo.x + new_geo.width / 2,
+            y = new_geo.y + new_geo.height / 2
+        }
+    end
+end
+
+
+
+
+-- // MARK: VISUALS
 -- ################################################################################
 -- ██████╗ ███████╗███████╗███████╗
 -- ██╔══██╗██╔════╝██╔════╝██╔════╝
@@ -764,9 +1258,17 @@ client.connect_signal("property::name", function(c) __log_title(c, "name") end)
 client.connect_signal("manage", function(c) __log_title(c, "init") end)
 client.connect_signal("unmanage", function(c) __title_log[c] = nil end)
 
--- // MARK: icons
--- icon management system - moved here to fix scoping issues
 
+-- // MARK: ICONS
+-- ################################################################################
+-- ██╗ ██████╗ ██████╗ ███╗   ██╗███████╗
+-- ██║██╔════╝██╔═══██╗████╗  ██║██╔════╝
+-- ██║██║     ██║   ██║██╔██╗ ██║███████╗
+-- ██║██║     ██║   ██║██║╚██╗██║╚════██║
+-- ██║╚██████╗╚██████╔╝██║ ╚████║███████║
+-- ╚═╝ ╚═════╝ ╚═════╝ ╚═╝  ╚═══╝╚══════╝
+-- ################################################################################
+-- icon management system - fallback icons and color sampling
 
 -- helper: resolve fallback icon using theme (menubar) or known paths
 local function get_fallback_icon(c)
@@ -785,7 +1287,7 @@ local function get_fallback_icon(c)
     if c and c.class then
         local cls = tostring(c.class)
         local l = cls:lower()
-        is_term = l:find("term") ~= nil or cls == "URxvt" or cls == "XTerm"
+        is_term = l:find("term") ~= nil or cls == "URxvt" or cls == "urxvt" or cls == "XTerm" or cls == "xterm"
     end
 
     -- try terminal icons first if this is a terminal
@@ -803,11 +1305,11 @@ local function get_fallback_icon(c)
         end
     end
     local names_generic = {
-        "application-x-executable-symbolic",
-        "application-x-executable",
-        "application-default-icon",
-        "applications-system",
-        "system-run",
+        -- "application-x-executable-symbolic",
+        -- "application-x-executable",
+        -- "application-default-icon",
+        -- "applications-system",
+        -- "system-run",
     }
     for _, n in ipairs(names_generic) do
         local surf = load_icon_by_name(n)
@@ -817,23 +1319,8 @@ local function get_fallback_icon(c)
     -- last resort hardcoded paths (prefer small PNGs over SVG symbolics for reliability)
     local candidates = {
         -- generic symbolic svg (small vector; works on most systems)
-        "/usr/share/icons/Adwaita/symbolic/mimetypes/application-x-executable-symbolic.svg",
-        "/usr/share/icons/hicolor/symbolic/mimetypes/application-x-executable-symbolic.svg",
-        "/usr/share/icons/hicolor/scalable/mimetypes/application-x-executable.svg",
         -- adwaita
-        "/usr/share/icons/Adwaita/16x16/legacy/utilities-terminal.png",
         "/usr/share/icons/Adwaita/16x16/mimetypes/application-x-executable.png",
-        "/usr/share/icons/Adwaita/16x16/apps/utilities-terminal.png",
-        "/usr/share/icons/Adwaita/16x16/apps/applications-system.png",
-        -- hicolor
-        "/usr/share/icons/hicolor/16x16/apps/utilities-terminal.png",
-        "/usr/share/icons/hicolor/16x16/mimetypes/application-x-executable.png",
-        "/usr/share/icons/hicolor/24x24/apps/utilities-terminal.png",
-        "/usr/share/icons/hicolor/24x24/mimetypes/application-x-executable.png",
-        -- pixmaps fallbacks
-        "/usr/share/pixmaps/terminal.png",
-        "/usr/share/pixmaps/gnome-terminal.png",
-        "/usr/share/pixmaps/application-x-executable.png",
     }
     for _, path in ipairs(candidates) do
         if path and gears.filesystem.file_readable(path) then
@@ -846,9 +1333,7 @@ local function get_fallback_icon(c)
 end
 
 
-
--- // MARK: colour and icons
-
+-- // MARK: -- average-color-from-icon
 -- sample dominant color from client icon
 local function average_color_from_icon(icon)
     if not icon then return "#aaaaaa" end
@@ -896,6 +1381,7 @@ local function average_color_from_icon(icon)
 end
 
 
+-- // MARK: -- create-terminal-icon-surface
 -- create a simple generic terminal icon surface (fallback when no file icon is available)
 local function create_terminal_icon_surface(size)
     size = size or 16
@@ -990,8 +1476,20 @@ end
 
 
 
+
+
 -- // MARK: NOTIFICATIONS
--- notification settings
+-- ################################################################################
+-- ███╗   ██╗ ██████╗ ████████╗██╗███████╗██╗ ██████╗ █████╗ ████████╗██╗ ██████╗ ███╗   ██╗███████╗
+-- ████╗  ██║██╔═══██╗╚══██╔══╝██║██╔════╝██║██╔════╝██╔══██╗╚══██╔══╝██║██╔═══██╗████╗  ██║██╔════╝
+-- ██╔██╗ ██║██║   ██║   ██║   ██║█████╗  ██║██║     ███████║   ██║   ██║██║   ██║██╔██╗ ██║███████╗
+-- ██║╚██╗██║██║   ██║   ██║   ██║██╔══╝  ██║██║     ██╔══██║   ██║   ██║██║   ██║██║╚██╗██║╚════██║
+-- ██║ ╚████║╚██████╔╝   ██║   ██║██║     ██║╚██████╗██║  ██║   ██║   ██║╚██████╔╝██║ ╚████║███████║
+-- ╚═╝  ╚═══╝ ╚═════╝    ╚═╝   ╚═╝╚═╝     ╚═╝ ╚═════╝╚═╝  ╚═╝   ╚═╝   ╚═╝ ╚═════╝ ╚═╝  ╚═══╝╚══════╝
+-- ################################################################################
+-- notification system - configuration and interaction handlers
+
+
 
 -- force enable ruled notifications
 ruled.notification.connect_signal("request::rules", function()
@@ -1016,9 +1514,9 @@ naughty.config.defaults.position = 'bottom_middle'  -- changed from bottom_middl
 -- naughty.config.defaults.screen = awful.screen.preferred  -- ensure screen is set
 
 -- use theme colors for regular notifications
-naughty.config.defaults.bg = beautiful.notification_bg or beautiful.main_purple or "#FFD700"
+naughty.config.defaults.bg = beautiful.notification_bg or (beautiful.main_purple and beautiful.main_purple.base) or "#FFD700"
 naughty.config.defaults.fg = beautiful.notification_fg or "#000000"
-naughty.config.defaults.border_color = beautiful.main_purple or "#623997"
+naughty.config.defaults.border_color = (beautiful.main_purple and beautiful.main_purple.base) or "#623997"
 naughty.config.defaults.border_width = 2
 
 -- optional: test notification on startup (comment out when not needed)
@@ -1037,7 +1535,9 @@ naughty.config.defaults.border_width = 2
 naughty.config.defaults['icon_size'] = 64
 
 
--- // MARK -- click-to-copy notification handler
+
+
+-- // MARK: -- notification-interactions
 -- track last notification for keyboard copying
 local last_notification_text = ""
 
@@ -1126,6 +1626,27 @@ end
 -- ╚═╝  ╚═╝ ╚═════╝    ╚═╝   ╚═╝  ╚═╝╚══════╝   ╚═╝   ╚══════╝
 -- ################################################################################
 -- hotkeys - global and client key bindings
+-- 
+-- modular keybinding system with external keybindings module:
+--   - imports keybindings from separate module for maintainability
+--   - passes rc.lua-defined functions to keybindings builder
+--   - provides global keys (window management, launchers, system controls)
+--   - provides client keys (per-window actions, movement, resizing)
+--   - provides client mouse buttons (titlebar and window interactions)
+-- 
+-- key function categories passed to module:
+--   - screen management: rotate_screens (keyboard + mouse via layout widget)
+--   - tag navigation: move_to_previous/next_tag with optional follow
+--   - ui toggles: tasklist mode, mode glyphs style, pavucontrol, arandr
+--   - window actions: resize_no_warp (prevents cursor jumping)
+--   - special clients: quake terminal dropdown
+--   - tag cycling: cycle_tags_with_clients (maintains single source of truth)
+--   - notifications: copy_last_notification to clipboard
+-- 
+-- registration:
+--   - globalkeys: system-wide hotkeys
+--   - clientkeys: per-client hotkeys (registered via modern API)
+--   - clientbuttons: mouse button bindings for client windows
 
 
 -- import keybindings from module
@@ -1135,6 +1656,8 @@ local keys = keybindings.build({
     rotate_screens = rotate_screens,
     move_to_previous_tag = move_to_previous_tag,
     move_to_next_tag = move_to_next_tag,
+    move_to_previous_tag_and_follow = move_to_previous_tag_and_follow,
+    move_to_next_tag_and_follow = move_to_next_tag_and_follow,
     toggle_tasklist_mode = toggle_tasklist_mode,
     -- mode glyphs toggle hotkey
     toggle_mode_glyphs_style = toggle_mode_glyphs_style,
@@ -1142,14 +1665,22 @@ local keys = keybindings.build({
     -- new: pass global implementation so there's a single source of truth
     cycle_tags_with_clients = cycle_tags_with_clients,
     copy_last_notification = copy_last_notification,
+    -- pavucontrol toggle function
+    toggle_pavucontrol = toggle_pavucontrol,
+    -- keepassxc toggle function
+    toggle_keepassxc = toggle_keepassxc,
+    -- arandr toggle function
+    toggle_arandr = toggle_arandr,
+    -- custom resize function that prevents cursor warping
+    resize_no_warp = resize_no_warp,
     -- quake terminal: expose toggle function for hotkey
     quake_toggle_lain = (function()
         -- instantiate lain quake dropdown
         local q = quake_lain({
             app = terminal,
             name = "QuakeLain",
-            height = 0.30,
-            width = 1,
+            height = QUAKE_HEIGHT_SMALL,
+            width = QUAKE_WIDTH_FULL,
             followtag = true,
         })
         return function() q:toggle() end
@@ -1229,7 +1760,7 @@ screen.connect_signal("property::geometry", set_wallpaper)
 
 
 
--- // MARK: layouts
+-- // MARK: LAYOUTS
 -- ################################################################################
 -- ██╗      █████╗ ██╗   ██╗ ██████╗ ██╗   ██╗████████╗
 -- ██║     ██╔══██╗╚██╗ ██╔╝██╔═══██╗██║   ██║╚══██╔══╝
@@ -1307,6 +1838,8 @@ local centerwork_twothirds = require("lain.layout.centerwork_twothirds")
 -- awful.layout.layouts = {}
 
 
+
+-- // MARK: -- layout-definitions
 -- new: handle default layouts by assigning the exact curated subset
 awesome.connect_signal("request::default_layouts", function()
     -- assert only these layouts are available (not a superset)
@@ -1374,7 +1907,6 @@ milkdefault = centerwork_twothirds.horizontal
 -- WIDGETS - menus, widgets, and interface elements
 
 
--- // MARK: -- clock widget
 -- Restore previous clock style: Hack font, white on purple, with right margin
 local mytextclock = wibox.widget.textclock()
 mytextclock.format = "%a %b %d %H:%M"
@@ -1382,15 +1914,13 @@ mytextclock.font = "Hack Nerd Font 9"
 
 local textclock_clr = wibox.container.background()
 -- add at least 4px of purple padding on both sides
-textclock_clr:set_widget(wibox.container.margin(mytextclock, 7, 7, 0, 0))
+textclock_clr:set_widget(wibox.container.margin(mytextclock, CLOCK_MARGIN, CLOCK_MARGIN, 0, 0))
 textclock_clr:set_fg("#ffffff")
 textclock_clr:set_bg("#623997")
 
--- removed: clock separator (unused)
 
 
--- // MARK: -- menu
--- MENU - Application menu configuration
+-- // MARK: --menu
 
 
 -- Create the awesome submenu contents
@@ -1424,56 +1954,8 @@ mylauncher = awful.widget.launcher({
 })
 
 
--- removed: keyboard layout widget (unused)
-
 -- local media_player = require("media-player")
 
-
-
--- // MARK: session
--- SESSION - Session management
-
-
--- Reactivate tabs that were active before a restart of awesomewm
--- For Firefox, might have to disable widget.disable-workspace-management in about:config
--- https://www.reddit.com/r/awesomewm/comments/syjolb/preserve_previously_used_tag_between_restarts
-
-awesome.connect_signal('exit', function(reason_restart)
-	if not reason_restart then return end
-	local file = io.open('/tmp/awesomewm-last-selected-tags', 'w+')
-	for s in screen do
-		file:write(s.selected_tag.index, '\n')
-	end
-	file:close()
-end)
-
-awesome.connect_signal('startup', function()
-	local file = io.open('/tmp/awesomewm-last-selected-tags', 'r')
-	if not file then return end
-	local selected_tags = {}
-	for line in file:lines() do
-		table.insert(selected_tags, tonumber(line))
-	end
-	for s in screen do
-		local i = selected_tags[s.index]
-		if i and s.tags[i] then
-			local t = s.tags[i]
-			t:view_only()
-		end
-	end
-	file:close()
-end)
-
-
-
-
--- // MARK: borders-shimmer
--- unified shimmer system handles both text effects and border animation
--- configuration done above in shimmer.configure() call
-
--- Store widget references for direct updates (moved here to avoid nil reference)
--- (moved earlier) local active_tag_widgets = {}
--- (moved earlier) local active_client_widgets = {}
 
 
 
@@ -1493,7 +1975,7 @@ local dnd_to_tag = require("plugins.dnd_to_tag")
 
 
 
--- // MARK: taglist
+-- // MARK: --taglist
 -- taglist button mouse bindings
 local taglist_buttons = gears.table.join(
     awful.button({ }, 1, function(t) t:view_only() end),
@@ -1508,30 +1990,30 @@ local taglist_buttons = gears.table.join(
             client.focus:toggle_tag(t)
         end
     end), 
-    -- mousewheel up: cycle to next tag with clients
+    -- mousewheel up: cycle to previous tag with clients
     awful.button({ }, 4, function(t) 
-        cycle_tags_with_clients("next")
-    end),
-    -- mousewheel down: cycle to previous tag with clients  
-    awful.button({ }, 5, function(t) 
         cycle_tags_with_clients("prev")
     end),
-    -- shift + mousewheel up: cycle to next tag with visible clients only
-    awful.button({ "Shift" }, 4, function(t) 
-        cycle_tags_with_visible_clients("next")
+    -- mousewheel down: cycle to next tag with clients  
+    awful.button({ }, 5, function(t) 
+        cycle_tags_with_clients("next")
     end),
-    -- shift + mousewheel down: cycle to previous tag with visible clients only
-    awful.button({ "Shift" }, 5, function(t) 
+    -- shift + mousewheel up: cycle to previous tag with visible clients only
+    awful.button({ "Shift" }, 4, function(t) 
         cycle_tags_with_visible_clients("prev")
+    end),
+    -- shift + mousewheel down: cycle to next tag with visible clients only
+    awful.button({ "Shift" }, 5, function(t) 
+        cycle_tags_with_visible_clients("next")
     end)
 )
 
 
--- // MARK: tasklist
+-- // MARK: --tasklist
 -- tasklist button mouse bindings
 
 
--- // MARK -- mousewheel client cycling functions
+-- // MARK: --mousewheel-client-cycling-functions
 -- cycle through clients on the current tag only (normal mousewheel)
 local function cycle_clients_on_tag(direction)
     local current_tag = awful.screen.focused().selected_tag
@@ -1665,7 +2147,7 @@ local tasklist_buttons = gears.table.join(
 
 
 
--- // MARK: screen
+-- // MARK: --screen
 
 
 -- apply wallpaper and create widgets for each screen
@@ -1687,8 +2169,8 @@ awful.screen.connect_for_each_screen(function(s)
             app = terminal,  -- Terminal emulator to use (default: x-terminal-emulator)
             argname = "--class %s",  -- Set window class for matching in window rules
             name = "QuakeTerminal",  -- Window name for matching in window rules
-            height = 0.4,     -- Height as percentage of screen (0.0 to 1.0)
-            width = 1.0,      -- Width as percentage of screen (0.0 to 1.0)
+            height = QUAKE_HEIGHT_LARGE,     -- Height as percentage of screen (0.0 to 1.0)
+            width = QUAKE_WIDTH_FULL,      -- Width as percentage of screen (0.0 to 1.0)
             horiz = "center", -- Horizontal position ("left", "center", "right")
             vert = "top",     -- Vertical position ("top", "center", "bottom")
             border = 2,       -- Border width in pixels
@@ -1724,9 +2206,11 @@ awful.screen.connect_for_each_screen(function(s)
                            awful.button({ }, 1, function () awful.layout.inc( 1) end),
                            awful.button({ }, 3, function () awful.layout.inc(-1) end),
                            awful.button({ }, 4, function () awful.layout.inc( 1) end),
-                           awful.button({ }, 5, function () awful.layout.inc(-1) end)))
+                           awful.button({ }, 5, function () awful.layout.inc(-1) end),
+                           awful.button({ modkey }, 4, function () rotate_screens("right") end),
+                           awful.button({ modkey }, 5, function () rotate_screens("left") end)))
     
-    -- // MARK: taglist
+    -- // MARK: --taglist
     -- create a taglist widget
     s.mytaglist = awful.widget.taglist {
         screen  = s,
@@ -1747,10 +2231,10 @@ awful.screen.connect_for_each_screen(function(s)
                         id = 'text_role',
                         widget = wibox.widget.textbox,
                     },
-                    left = 8,
-                    right = 8,
-                    top = 4,
-                    bottom = 4,
+                    left = TAGLIST_MARGIN_H,
+                    right = TAGLIST_MARGIN_H,
+                    top = TAGLIST_MARGIN_V,
+                    bottom = TAGLIST_MARGIN_V,
                     widget = wibox.container.margin,
                 },
                 layout = wibox.layout.fixed.horizontal,
@@ -1777,7 +2261,7 @@ awful.screen.connect_for_each_screen(function(s)
 
 
 
-    -- // MARK: tasklist
+    -- // MARK: --tasklist
     -- completely standard tasklist - no custom templates or overrides
     -- let the standard system handle all functionality properly:
     -- • terminal icons with proper fallbacks
@@ -1856,8 +2340,8 @@ awful.screen.connect_for_each_screen(function(s)
                         },
                     },
                 },
-                left  = 4,
-                right = 1,
+                left  = TASKLIST_MARGIN_LEFT,
+                right = TASKLIST_MARGIN_RIGHT,
                 widget  = wibox.container.margin,
             },
             id     = 'background_role',
@@ -1865,7 +2349,7 @@ awful.screen.connect_for_each_screen(function(s)
             create_callback = function(self, c, index, objects)
                 local ib = self:get_children_by_id('icon_role')[1]
                 if ib then
-                    local sz = (beautiful and (beautiful.tasklist_icon_size or beautiful.icon_size)) or 16
+                    local sz = (beautiful and (beautiful.tasklist_icon_size or beautiful.icon_size)) or DEFAULT_ICON_SIZE
                     ib.forced_height = sz
                     ib.forced_width = sz
                     if FORCE_GENERIC_ICONS and GENERIC_ICON_PATH and gears.filesystem.file_readable(GENERIC_ICON_PATH) then
@@ -1886,7 +2370,7 @@ awful.screen.connect_for_each_screen(function(s)
             update_callback = function(self, c, index, objects)
                 local ib = self:get_children_by_id('icon_role')[1]
                 if ib then
-                    local sz = (beautiful and (beautiful.tasklist_icon_size or beautiful.icon_size)) or 16
+                    local sz = (beautiful and (beautiful.tasklist_icon_size or beautiful.icon_size)) or DEFAULT_ICON_SIZE
                     ib.forced_height = sz
                     ib.forced_width = sz
                     if not c.icon or ib.image == nil then
@@ -1906,7 +2390,7 @@ awful.screen.connect_for_each_screen(function(s)
     shimmer.register_tasklist(s.mytasklist)
 
 
-    -- // MARK: wibox
+    -- // MARK: --wibox
     -- create the wibox
     s.mywibox = awful.wibar({ position = "top", screen = s })
 
@@ -1982,7 +2466,10 @@ end)
 -- ╚██████╗███████╗██║███████╗██║ ╚████║   ██║   
 --  ╚═════╝╚══════╝╚═╝╚══════╝╚═╝  ╚═══╝   ╚═╝   
 -- ################################################################################
--- duplicate functions removed - consolidated in utility section above
+-- client management - creation, properties, signals, and behaviors
+
+
+-- // MARK: --client-creation
 
 
 
@@ -2019,13 +2506,25 @@ client.connect_signal("manage", function(c)
         -- Prevent clients from being unreachable after screen count changes.
         awful.placement.no_offscreen(c)
     end
+    
+    -- store initial size for auto-resize when becoming floating
+    -- this captures the tiled size when client is first managed
+    if not c.floating then
+        local geo = c:geometry()
+        if geo.width > 0 and geo.height > 0 then
+            client_tiled_sizes[c] = {
+                width = geo.width,
+                height = geo.height
+            }
+        end
+    end
 end)
 
--- Titlebar management
+-- // MARK: --titlebar-management
 -- double-click handler for titlebar (per-client, weak-keyed)
-local double_click_timers = setmetatable({}, { __mode = "k" })
+local double_click_timers = setmetatable({}, { __mode = "k" })  -- weak keys prevent memory leaks
 local function titlebar_handle_click(c, single_cb, double_cb, interval)
-    interval = interval or 0.20
+    interval = interval or DOUBLE_CLICK_INTERVAL
     local t = double_click_timers[c]
     if t then
         if t.started then t:stop() end
@@ -2047,11 +2546,12 @@ end
 
 client.connect_signal("request::titlebars", function(c)
     -- unified icon size from theme
-    local icon_size = (beautiful and beautiful.icon_size) or 16
+    local icon_size = (beautiful and beautiful.icon_size) or DEFAULT_ICON_SIZE
 
     -- buttons for the titlebar
+    -- MARK: --titlebar-buttons
     local buttons = gears.table.join(
-        -- left click: single = move, double = toggle maximize
+        -- left click: single = move, double = toggle floating
         awful.button({ }, 1, function()
             titlebar_handle_click(c,
                 function()
@@ -2069,7 +2569,7 @@ client.connect_signal("request::titlebars", function(c)
                     awful.mouse.client.move(c)
                 end,
                 function()
-                    c.maximized = not c.maximized
+                    c.floating = not c.floating
                     c:raise()
                 end
             )
@@ -2085,26 +2585,42 @@ client.connect_signal("request::titlebars", function(c)
         end)
     )
 
+    -- MARK: --titlebar-text
     local titlebar_text_widget = wibox.widget.textbox()
     titlebar_text_widget.font = "Hack Nerd Font 6"
+    
+    -- create a right-side gradient that fades from transparent to purple (reverse of middle)
+    local titlebar_right_gradient = {
+        type = "linear",
+        from = { 0, 0 },
+        to = { 200, 0 },  -- approximate width for button area
+        stops = {
+            { 0, beautiful.main_purple.focusend },    -- purple, transparent (start)
+            { 0.3, beautiful.main_purple.focusend },  -- purple, transparent
+            { 1, beautiful.main_purple.base },        -- purple, full opacity (end)
+        }
+    }
     
     awful.titlebar(c, { size = (beautiful and beautiful.titlebar_height) or ((beautiful and beautiful.icon_size) or 16) + 2 }) : setup {
         { -- Left
             -- window icon with fallback, constrained to theme icon size, vertically centered, with padding (left=5, top=1)
-            wibox.container.margin({
-                {
+            wibox.container.background(
+                wibox.container.margin({
                     {
-                        id = 'titlebar_icon',
-                        image = c.icon or (beautiful and beautiful.awesome_icon) or nil,
-                        forced_height = icon_size,
-                        forced_width = icon_size,
-                        resize = true,
-                        widget = wibox.widget.imagebox,
+                        {
+                            id = 'titlebar_icon',
+                            image = c.icon or (beautiful and beautiful.awesome_icon) or nil,
+                            forced_height = icon_size,
+                            forced_width = icon_size,
+                            resize = true,
+                            widget = wibox.widget.imagebox,
+                        },
+                        valign = "center",
+                        widget = wibox.container.place,
                     },
-                    valign = "center",
-                    widget = wibox.container.place,
-                },
-            }, 5, 0, 1, 0),
+                }, 5, 0, 1, 0),
+                beautiful.main_purple.base
+            ),
             buttons = buttons,
             layout  = wibox.layout.fixed.horizontal
         },
@@ -2118,33 +2634,29 @@ client.connect_signal("request::titlebars", function(c)
                     halign = "left",
                     widget = wibox.container.place,
                 }, 5, 0, 1, 0),
-                gears.color({
-                    type = "linear",
-                    from = { 0, 0 },
-                    to   = { (c and c.screen and c.screen.geometry and c.screen.geometry.width) or 200, 0 },
-                    stops = {
-                        { 0, "#623997" },
-                        { 1, "#593187" }, -- slightly darker on the right, no alpha
-                    }
-                })
+                beautiful.titlebar_bg_focus
             ),
             buttons = buttons,
             layout  = wibox.layout.flex.horizontal
         },
         -- Right (wrap the whole group to give right=5, top=1 padding)
-        wibox.container.margin({
-            -- constrain all titlebar control buttons to theme icon size and center vertically
-            { wibox.container.constraint(awful.titlebar.widget.floatingbutton (c), "exact", icon_size, icon_size), valign = "center", widget = wibox.container.place },
-            { wibox.container.constraint(awful.titlebar.widget.maximizedbutton(c), "exact", icon_size, icon_size), valign = "center", widget = wibox.container.place },
-            { wibox.container.constraint(awful.titlebar.widget.minimizebutton (c), "exact", icon_size, icon_size), valign = "center", widget = wibox.container.place },
-            { wibox.container.constraint(awful.titlebar.widget.stickybutton   (c), "exact", icon_size, icon_size), valign = "center", widget = wibox.container.place },
-            { wibox.container.constraint(awful.titlebar.widget.ontopbutton    (c), "exact", icon_size, icon_size), valign = "center", widget = wibox.container.place },
-            { wibox.container.constraint(awful.titlebar.widget.closebutton    (c), "exact", icon_size, icon_size), valign = "center", widget = wibox.container.place },
-            layout = wibox.layout.fixed.horizontal()
-        }, 0, 5, 1, 0),
+        wibox.container.background(
+            wibox.container.margin({
+                -- constrain all titlebar control buttons to theme icon size and center vertically
+                { wibox.container.constraint(awful.titlebar.widget.floatingbutton (c), "exact", icon_size, icon_size), valign = "center", widget = wibox.container.place },
+                { wibox.container.constraint(awful.titlebar.widget.maximizedbutton(c), "exact", icon_size, icon_size), valign = "center", widget = wibox.container.place },
+                { wibox.container.constraint(awful.titlebar.widget.minimizebutton (c), "exact", icon_size, icon_size), valign = "center", widget = wibox.container.place },
+                { wibox.container.constraint(awful.titlebar.widget.stickybutton   (c), "exact", icon_size, icon_size), valign = "center", widget = wibox.container.place },
+                { wibox.container.constraint(awful.titlebar.widget.ontopbutton    (c), "exact", icon_size, icon_size), valign = "center", widget = wibox.container.place },
+                { wibox.container.constraint(awful.titlebar.widget.closebutton    (c), "exact", icon_size, icon_size), valign = "center", widget = wibox.container.place },
+                layout = wibox.layout.fixed.horizontal()
+            }, 0, 5, 0, 0),
+            titlebar_right_gradient
+        ),
         layout = wibox.layout.align.horizontal
     }
     
+    -- // MARK: --dynamic-titlebar-text-colour
     -- Set up dynamic titlebar text color based on focus state
     local function update_titlebar_text_color()
         if titlebar_text_widget then
@@ -2162,6 +2674,8 @@ client.connect_signal("request::titlebars", function(c)
     c:connect_signal("property::name", update_titlebar_text_color)
 end)
 
+
+-- // MARK: --dragging-max-windows
 -- Client property changes
 client.connect_signal("property::maximized", function(c)
     -- Prevent firefox from maximizing (personal preference)
@@ -2205,179 +2719,33 @@ client.connect_signal("property::struts", function(c)
     end
 end)
 
-  -- Focus and border management handled by border_animation plugin
-  -- Static border colors would conflict with animated borders
- 
+
 -- disable focus-follows-mouse (sloppy focus): do not focus clients on cursor hover
 -- keep old code commented for quick restore if desired
 -- client.connect_signal("mouse::enter", function(c)
 --     c:emit_signal("request::activate", "mouse_enter", {raise = false})
 -- end)
- 
--- Client cleanup
+
+-- Client cleanup - comprehensive cleanup on client destruction
 client.connect_signal("unmanage", function(c)
+    -- immediate cleanup of all client tracking
     window_manager.cleanup(c)
+    
+    -- cleanup double-click timers
+    local timer = double_click_timers[c]
+    if timer then
+        if timer.started then timer:stop() end
+        double_click_timers[c] = nil
+    end
+    
+    -- explicit cleanup of title log (though weak keys should handle this)
+    __title_log[c] = nil
+    
+    -- force a small garbage collection to clean up weak references
+    gears.timer.delayed_call(function()
+        collectgarbage("collect")
+    end)
 end)
-
--- // MARK: --pavucontrol-examples
--- Alternative/complex client rule examples (commented out)
--- Example: Open sound mixer but keep tag visible without switching to it
--- {rule = {instance = "pavucontrol"}, properties = {tag = "9", toggle_tag = true}}
-
--- Alternative rule implementation with callback to keep tag visible
--- rule {
---     rule = { class = "pavucontrol" },
---     properties = {
---         tag = "9" -- this puts the client on the tag
---     },
---     callback = function(c)
---         -- Show the tag on screen *without* selecting it
---         local s = c.screen or screen.primary
---         local t = my_tag or awful.tag.find_by_name(s, "9")
-
---         if t and not t.selected then
---             awful.tag.viewtoggle(t)
---         end
---     end
--- }
-
--- Helper function for complex rules (commented out)
--- -- Get screen under mouse without moving cursor
--- local function get_mouse_screen()
---     local coords = mouse.coords()
---     for s in screen do
---         if coords.x >= s.geometry.x and coords.x < s.geometry.x + s.geometry.width and
---            coords.y >= s.geometry.y and coords.y < s.geometry.y + s.geometry.height then
---             return s
---         end
---     end
---     return screen.primary
--- end
-
--- -- Handle new pavucontrol instances
--- client.connect_signal("manage", function(c)
---     if c.class == "Pavucontrol" then
---         -- Mark this pavucontrol as just opened
---         pavucontrol_just_opened[c] = true
-
---         -- Debug: let's see what's happening
---         local mouse_screen = get_mouse_screen()
---         local current_screen = c.screen
-
---         -- Always move to mouse screen first, before any tag operations
---         if current_screen ~= mouse_screen then
---             c:move_to_screen(mouse_screen)
---         end
-
---         -- Now work with the correct screen
---         local target_screen = c.screen  -- Use the screen the client is actually on
---         local tag9 = target_screen.tags[9]
-
---         if tag9 then
---             -- Store current state if tag 9 isn't already selected
---             if not tag9.selected then
---                 local current_tags = target_screen.selected_tags
---                 if #current_tags > 0 then
---                     previous_tag = current_tags[1]
---                 end
-
---                 -- Keep current tags selected and add tag 9
---                 for _, tag in ipairs(current_tags) do
---                     tag.selected = true
---                 end
---                 tag9.selected = true
---             end
---             c:move_to_tag(tag9)
---         end
---         -- Clear the flag after a delay
---         gears.timer.start_new(0.5, function()
---             pavucontrol_just_opened[c] = nil
---             return false
---         end)
---     end
--- end)
-
--- -- Handle existing pavucontrol being focused from different screen
--- client.connect_signal("focus", function(c)
---     if c.class == "Pavucontrol" and not pavucontrol_just_opened[c] then
---         local target_screen = get_mouse_screen()
-
---         -- Only move if pavucontrol is on a different screen than the mouse
---         if c.screen ~= target_screen then
---             c:move_to_screen(target_screen)
-
---             local tag9 = target_screen.tags[9]
---             if tag9 then
---                 if not tag9.selected then
---                     local current_tags = target_screen.selected_tags
---                     if #current_tags > 0 then
---                         previous_tag = current_tags[1]
---                     end
-
---                     -- Keep current tags selected and add tag 9
---                     tag9.selected = true
---                 end
---                 c:move_to_tag(tag9)
---             end
---         end
---     end
--- end)
-
--- -- Handle existing pavucontrol being clicked on different screen
--- client.connect_signal("button::press", function(c)
---     if c.class == "Pavucontrol" then
---         local target_screen = get_mouse_screen()
-
---         -- Only move if pavucontrol is on a different screen than the mouse
---         if c.screen ~= target_screen then
---             c:move_to_screen(target_screen)
-
---             local tag9 = target_screen.tags[9]
---             if tag9 then
---                 if not tag9.selected then
---                     local current_tags = target_screen.selected_tags
---                     if #current_tags > 0 then
---                         previous_tag = current_tags[1]
---                     end
-
---                     -- Keep current tags selected and add tag 9
---                     for _, tag in ipairs(current_tags) do
---                         tag.selected = true
---                     end
---                     tag9.selected = true
---                 end
---                 c:move_to_tag(tag9)
---             end
---         end
---     end
--- end)
-
--- -- Clean up when pavucontrol closes
--- client.connect_signal("unmanage", function(c)
---     if c.class == "Pavucontrol" then
---         -- Clean up the tracking table
---         pavucontrol_just_opened[c] = nil
-
---         -- Restore previous tag if needed
---         if previous_tag then
---             previous_tag:view_only()
---             previous_tag = nil
---         end
---     end
--- end)
-
-
--- // MARK: clients
--- ################################################################################
---  ██████╗██╗     ██╗███████╗███╗   ██╗████████╗    ███╗   ███╗ █████╗ ███╗   ██╗ █████╗  ██████╗ ███████╗███╗   ██╗███████╗██╗  ██╗
--- ██╔════╝██║     ██║██╔════╝████╗  ██║╚══██╔══╝    ████╗ ████║██╔══██╗████╗  ██║██╔══██╗██╔════╝ ██╔════╝████╗  ██║██╔════╝╚██╗██╔╝
--- ██║     ██║     ██║█████╗  ██╔██╗ ██║   ██║       ██╔████╔██║███████║██╔██╗ ██║███████║██║  ███╗█████╗  ██╔██╗ ██║█████╗  ╚███╔╝ 
--- ██║     ██║     ██║██╔══╝  ██║╚██╗██║   ██║       ██║╚██╔╝██║██╔══██║██║╚██╗██║██╔══██║██║   ██║██╔══╝  ██║╚██╗██║██╔══╝  ██╔██╗ 
--- ╚██████╗███████╗██║███████╗██║ ╚████║   ██║       ██║ ╚═╝ ██║██║  ██║██║ ╚████║██║  ██║╚██████╔╝███████╗██║ ╚████║███████╗██╔╝ ██╗
---  ╚═════╝╚══════╝╚═╝╚══════╝╚═╝  ╚═══╝   ╚═╝       ╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝ ╚═════╝ ╚══════╝╚═╝  ╚═══╝╚══════╝╚═╝  ╚═╝
--- ################################################################################
--- CLIENT MANAGEMENT - focus handling, floating windows, and mouse interactions
--- (consolidated from: ANTI-WARP RESIZE, FOCUS AND ACTIVATION HANDLING, FLOATING WINDOW CENTER, MOUSE BUTTONS)
 
 
 -- when a client is minimized/restored or hidden/unhidden, refresh tasklists to update bg color
@@ -2390,126 +2758,11 @@ client.connect_signal("property::hidden", function(c)
 end)
 
 
--- Anti-warp resize function that prevents cursor from jumping to another monitor
-local function resize_no_warp(c)
-    c:emit_signal("request::activate", "mouse_click", {raise = true})
-
-    -- Check if client is floating or if current layout has mouse_resize_handler
-    local layout = awful.layout.get(c.screen)
-    
-    -- If client is not floating and layout has mouse_resize_handler, use it
-    if not c.floating and layout.mouse_resize_handler then
-        
-        local initial_coords = mouse.coords()
-        local geo = c:geometry()
-        
-        -- Determine corner based on mouse position relative to client center  
-        local corner
-        if initial_coords.y < geo.y + geo.height/2 then
-            if initial_coords.x < geo.x + geo.width/2 then
-                corner = "top_left"
-            else
-                corner = "top_right"
-            end
-        else
-            if initial_coords.x < geo.x + geo.width/2 then
-                corner = "bottom_left"
-            else
-                corner = "bottom_right"
-            end
-        end
-        
-        -- Call the layout's mouse resize handler
-        layout.mouse_resize_handler(c, corner, initial_coords.x, initial_coords.y)
-        return
-    end
-
-    -- Fallback to floating window resize for floating clients or layouts without mouse handler
-    -- Store initial cursor position
-    local initial_coords = mouse.coords()
-
-    -- Store initial client geometry
-    local geo = c:geometry()
-    local initial_geo = {x = geo.x, y = geo.y, width = geo.width, height = geo.height}
-
-    -- Calculate initial center position
-    local center_x = geo.x + geo.width / 2
-    local center_y = geo.y + geo.height / 2
-
-    -- Get the current screen's geometry for boundary checking
-    local screen_geo = screen[c.screen].geometry
-
-    -- Start the mouse grabber without warping the cursor
-    local prev_coords = initial_coords
-    mousegrabber.run(function(m)
-        if not c.valid then return false end
-
-        -- Calculate offset from initial position (not previous)
-        local dx = m.x - initial_coords.x
-        local dy = m.y - initial_coords.y
-
-        -- Calculate new dimensions based on mouse distance from initial click for uniform scaling
-        local distance = math.sqrt(dx*dx + dy*dy)
-        local scale_factor = 1 + (distance - 50) / 200  -- Adjust these values for sensitivity
-        if dx < 0 or dy < 0 then scale_factor = 2 - scale_factor end
-        scale_factor = math.max(0.1, scale_factor)  -- Prevent making window too small
-
-        local new_width = math.max(50, initial_geo.width * scale_factor)
-        local new_height = math.max(50, initial_geo.height * scale_factor)
-
-        -- Calculate new position to keep center fixed
-        local new_x = center_x - new_width / 2
-        local new_y = center_y - new_height / 2
-
-        -- Check if window would go off screen and adjust only if necessary
-        local needs_reposition = false
-        if new_x < screen_geo.x then
-            new_x = screen_geo.x
-            needs_reposition = true
-        elseif new_x + new_width > screen_geo.x + screen_geo.width then
-            new_x = screen_geo.x + screen_geo.width - new_width
-            needs_reposition = true
-        end
-
-        if new_y < screen_geo.y then
-            new_y = screen_geo.y
-            needs_reposition = true
-        elseif new_y + new_height > screen_geo.y + screen_geo.height then
-            new_y = screen_geo.y + screen_geo.height - new_height
-            needs_reposition = true
-        end
-
-        -- Update center position only if we had to reposition due to screen boundaries
-        if needs_reposition then
-            center_x = new_x + new_width / 2
-            center_y = new_y + new_height / 2
-        end
-
-        -- Apply the new geometry
-        c:geometry({
-            x = math.floor(new_x),
-            y = math.floor(new_y),
-            width = math.floor(new_width),
-            height = math.floor(new_height)
-        })
-
-        return m.buttons[3] or m.buttons[2]  -- Continue as long as right or middle button is pressed
-    end, "fleur")
-
-    -- Update center position for our center-locked resizing
-    -- once resize is complete
-    if c.floating and window_centers then
-        local new_geo = c:geometry()
-        window_centers[c] = {
-            x = new_geo.x + new_geo.width / 2,
-            y = new_geo.y + new_geo.height / 2
-        }
-    end
-end
-
-
--- Keep track of which clients are being dragged
+-- keep track of which clients are being dragged
 client.connect_signal("request::activate", function(c, context, hints)
+    -- validate client first
+    if not c or not c.valid then return end
+    
     -- only track dragging for explicit move intention to avoid false positives on simple clicks
     local buttons = mouse.coords().buttons
     if not c._intend_drag then
@@ -2521,19 +2774,21 @@ client.connect_signal("request::activate", function(c, context, hints)
         window_manager.store_center(c)
         c._intend_drag = nil
     else
-        -- mouse button is down, mark as dragging
-        window_manager.set_dragging(c, true)
     end
 end)
 
 -- explicit lifecycle tracking for intended drags in case activate events are sparse
 client.connect_signal("button::press", function(c)
+    -- validate client before accessing properties
+    if not c or not c.valid then return end
     if c._intend_drag then
         window_manager.set_dragging(c, true)
     end
 end)
 
 client.connect_signal("button::release", function(c)
+    -- validate client before accessing properties
+    if not c or not c.valid then return end
     if c._intend_drag then
         window_manager.set_dragging(c, false)
         window_manager.store_center(c)
@@ -2548,6 +2803,9 @@ end)
 
 
 client.connect_signal("property::size", function(c)
+    -- validate client first
+    if not c or not c.valid then return end
+    
     -- Skip if not floating
     if not c.floating then return end
 
@@ -2567,6 +2825,65 @@ client.connect_signal("property::size", function(c)
         window_manager.maintain_center(c)
         window_manager.store_center(c)  -- Update stored center after repositioning
     end
+end)
+
+
+-- // MARK: -- auto-resize floated clients 
+-- Handle floating property changes to auto-resize tiled-to-floating clients
+client.connect_signal("property::floating", function(c)
+    -- validate client first
+    if not c or not c.valid then return end
+    
+    -- only act when client becomes floating (not when becoming tiled)
+    if not c.floating then 
+        -- store current size when becoming tiled (for potential future floating)
+        local geo = c:geometry()
+        if geo.width > 0 and geo.height > 0 then
+            client_tiled_sizes[c] = {
+                width = geo.width,
+                height = geo.height
+            }
+        end
+        return 
+    end
+    
+    -- skip size reduction for fullscreen or maximized windows
+    if c.fullscreen or c.maximized or c.maximized_horizontal or c.maximized_vertical then
+        return
+    end
+    
+    -- client just became floating - check if we have a stored tiled size
+    local tiled_size = client_tiled_sizes[c]
+    if not tiled_size then return end
+    
+    -- reduce size by 10% for easier management
+    local reduction_factor = 0.9  -- 10% reduction
+    local new_width = math.floor(tiled_size.width * reduction_factor)
+    local new_height = math.floor(tiled_size.height * reduction_factor)
+    
+    -- ensure minimum size constraints
+    new_width = math.max(new_width, MIN_WINDOW_SIZE or 50)
+    new_height = math.max(new_height, MIN_WINDOW_SIZE or 50)
+    
+    -- get current position to maintain relative placement
+    local current_geo = c:geometry()
+    local center_x = current_geo.x + current_geo.width / 2
+    local center_y = current_geo.y + current_geo.height / 2
+    
+    -- calculate new position to center the resized window
+    local new_x = center_x - new_width / 2
+    local new_y = center_y - new_height / 2
+    
+    -- apply the new geometry
+    c:geometry({
+        x = new_x,
+        y = new_y, 
+        width = new_width,
+        height = new_height
+    })
+    
+    -- clear the stored size since we've used it
+    client_tiled_sizes[c] = nil
 end)
 
 -- Client cleanup handled above in consolidated signal section
@@ -2598,15 +2915,14 @@ root.keys(keys.globalkeys)
 -- ################################################################################
 -- ██████╗ ██╗   ██╗██╗     ███████╗
 -- ██╔══██╗██║   ██║██║     ██╔════╝
--- ██████╔╝██║   ██║██║     ███████╗
--- ██╔══██╗██║   ██║██║     ╚════██║
+-- ██████╔╝██║   ██║██║     ███████╗s
+-- ██╔══██╗██║   ██║██║     ██║
 -- ██║  ██║╚██████╔╝███████╗███████║
 -- ╚═╝  ╚═╝ ╚═════╝ ╚══════╝╚══════╝
 -- ################################################################################
 -- RULES - client rules and window behavior
 
 
--- // MARK: global-rules
 -- rules to apply to new clients (through the "manage" signal)
 --[[
 awful.rules.rules = {
@@ -2633,7 +2949,6 @@ awful.rules.rules = {
     { rule = { class = "Arandr" }, properties = { size_hints_honor = false } },
 
 
-    -- // MARK: floating-rule
     -- floating clients
     { rule_any = {
             instance = {
@@ -2667,7 +2982,7 @@ awful.rules.rules = {
 
 
 
-    -- // MARK: --floating-rules
+    -- // MARK: --old-floating-rules
     -- {{{ Floating client rules
     -- Applications that should always be floating windows
     -- Search marker: floatingggggggggg
@@ -2950,6 +3265,7 @@ awful.rules.rules = {
 -- removed: duplicate global defaults rule (already defined above)
 
 
+-- // MARK: --ruled-rules
 -- modern rules system (ruled)
 -- keep the old awful.rules.rules commented above for reference
 ruled.client.connect_signal("request::rules", function()
@@ -2980,15 +3296,46 @@ ruled.client.connect_signal("request::rules", function()
     ruled.client.append_rule {
         id = "arandr_size_hints",
         rule = { class = "Arandr" },
-        properties = { size_hints_honor = false }
+        properties = {
+            size_hints_honor = false,
+            ontop = true,
+            tag = "9",
+            width = 600
+        },
+        callback = function(c)
+            -- ensure it opens on the focused screen
+            local focused_screen = awful.screen.focused()
+            if c.screen ~= focused_screen then
+                c:move_to_screen(focused_screen)
+            end
+            
+            -- move to tag 9 on the correct screen
+            local tag9 = focused_screen.tags[9]
+            if tag9 then
+                c:move_to_tag(tag9)
+                -- make tag 9 visible alongside current tags
+                if not tag9.selected then
+                    awful.tag.viewtoggle(tag9)
+                    arandr_tag_visible = true
+                end
+            end
+            
+            -- ensure minimum width
+            local geo = c:geometry()
+            if geo.width < 600 then
+                c:geometry({ width = 600 })
+            end
+        end
     }
 
+    -- // MARK: --floating-rules
     -- generic floating helpers (instances/classes/roles)
     ruled.client.append_rule {
         id = "floating_generic",
         rule_any = {
             instance = { "DTA", "copyq", "pinentry" },
-            class = { "Arandr", "Blueman-manager", "Gpick", "Kruler", "MessageWin", "Sxiv", "Tor Browser", "Wpa_gui", "veromix", "xtightvncviewer" },
+            class = { "Arandr", "Blueman-manager", "Gpick", "Kruler", "MessageWin", "Sxiv", "Tor Browser",
+                "Wpa_gui", "veromix", "xtightvncviewer", "KeePassXC" },
             name = { "Event Tester" },
             role = { "AlarmWindow", "ConfigManager", "pop-up" },
         },
@@ -3014,14 +3361,16 @@ ruled.client.connect_signal("request::rules", function()
                 "Gpick", "Kruler", "emulsion", "Sxiv", "qimgv", "qView", "Image Lounge",
                 "Image Menu", "spectacle", "flameshot",
                 -- privacy
-                "KeePassXC", "Tor Browser",
+                 "Tor Browser",
                 -- misc
                 "MessageWin", "copyq", "* Copying", "krunner", "xtightvncviewer", "scrcpy",
                 "Gnaural", "kdeconnect.sms", "Mattermost", "Onboard", "gammy", "Flirc",
                 "isoimagewriter", "Xdotoolgui.py", "mpd218 editor.exe", "Indicator-sound-switcher", "easyeffects"
             },
-            name = { "Event Tester", "Choose an application", "File operations", "Blender Preferences", "Options", "Tree View Menu", "menu" },
-            role = { "AlarmWindow", "ConfigManager", "pop-up", "page-info", "TfrmFileOp", "TfrmViewer" },
+            name = { "Event Tester", "Choose an application", "File operations", "Blender Preferences",
+                "Options", "Tree View Menu", "menu" },
+            role = { "AlarmWindow", "ConfigManager", "pop-up", "page-info", "TfrmFileOp",
+                "TfrmViewer" },
         },
         properties = {
             floating = true,
@@ -3033,35 +3382,56 @@ ruled.client.connect_signal("request::rules", function()
     local tag_rules = {
         { rule = { class = "URxvt", instance = "ncmpcpp" }, callback = function(c) c.overwrite_class = "urxvt:dev" end },
 
-        { rule = { instance = "Agordejo" },        properties = { tag = "2" } },
-        { rule = { instance = "raysession" },      properties = { tag = "2" } },
+        { rule = { instance = "ncmpcpp"           }, properties = { tag = "2" } },
+        { rule = { instance = "spotify"           }, properties = { tag = "2" } },
+        { rule = { instance = "Spotify"           }, properties = { tag = "2" } },
 
-        { rule = { instance = "Nicotine" },        properties = { tag = "3" } },
-        { rule = { instance = "qbittorrent" },     properties = { tag = "3" } },
-        { rule = { class = "Picard" },             properties = { tag = "3" } },
+        { rule = { instance = "Agordejo"          }, properties = { tag = "2" } },
+        { rule = { instance = "raysession"        }, properties = { tag = "2" } },
+        { rule = { instance = "radium_compressor" }, properties = { tag = "2" } },
 
-        { rule = { class = "Mixxx" },              properties = { tag = "4" } },
 
-        { rule = { instance = "ncmpcpp" },         properties = { tag = "8" } },
-        { rule = { instance = "spotify" },         properties = { tag = "8" } },
-        { rule = { instance = "Spotify" },         properties = { tag = "8" } },
-        { rule = { class = "mpv" },                properties = { screen = 1, tag = "8", switch_to_tags = true } },
+        { rule = { instance = "qseq64"            }, properties = { tag = "3" } },
+        { rule = { instance = "qseq66"            }, properties = { tag = "3" } },
+        { rule = { instance = "jack_mixer"        }, properties = { tag = "3" } },
 
-        { rule = { instance = "Double Commander" },properties = { tag = "9" } },
-        { rule = { instance = "doublecmd" },       properties = { tag = "9" } },
+        { rule = { instance = "Nicotine"          }, properties = { tag = "3" } },
+        { rule = { instance = "qbittorrent"       }, properties = { tag = "3" } },
+        { rule = { class = "Picard"               }, properties = { tag = "3" } },
 
-        { rule = { instance = "quassel" },         properties = { tag = "-", switch_to_tags = true } },
 
-        { rule_any = { instance = "firefox" },     properties = { tag = "=", switch_to_tags = true } },
-        { rule = { class = "firefox" },            properties = { tag = "=", switch_to_tags = true } },
-        { rule = { class = "Firefox" },            properties = { tag = "=", switch_to_tags = true } },
-        { rule = { class = "Chromium" },           properties = { tag = "=", switch_to_tags = true } },
-        { rule = { class = "Navigator" },          properties = { tag = "=", switch_to_tags = true } },
+        { rule = { class = "Mixxx"                }, properties = { tag = "4" } },
 
-        { rule = { instance = "jack_mixer" },      properties = { tag = "3" } },
-        { rule = { instance = "radium_compressor" },properties = { tag = "2" } },
-        { rule = { instance = "qseq64" },          properties = { tag = "3" } },
-        { rule = { instance = "qseq66" },          properties = { tag = "3" } },
+        
+        { rule = { class = "mpv"                  }, properties = { screen = 1, tag = "7", ontop = true, switch_to_tags = true } },
+
+
+        { rule = { instance = "keepassxc"         }, properties = { tag = "8" } },
+
+        { rule = { class = "Pavucontrol"          }, properties = { tag = "8", ontop = true }, callback = function(c)
+            -- when pavucontrol opens, make tag 9 visible alongside current tags
+            local screen = c.screen or awful.screen.focused()
+            local tag8 = screen.tags[8]
+            if tag8 and not tag8.selected then
+                awful.tag.viewtoggle(tag8)
+                pavucontrol_tag_visible = true
+            end
+        end },
+
+
+        { rule = { instance = "Double Commander"  }, properties = { tag = "9" } },
+        { rule = { instance = "doublecmd"         }, properties = { tag = "9" } },
+
+
+        { rule = { instance = "quassel"           }, properties = { tag = "-", switch_to_tags = true } },
+
+
+        { rule = { class = "firefox"              }, properties = { tag = "=", switch_to_tags = true } },
+        { rule = { class = "Firefox"              }, properties = { tag = "=", switch_to_tags = true } },
+        { rule = { class = "Chromium"             }, properties = { tag = "=", switch_to_tags = true } },
+        { rule = { class = "Navigator"            }, properties = { tag = "=", switch_to_tags = true } },
+        { rule_any = { instance = "firefox"       }, properties = { tag = "=", switch_to_tags = true } },
+
     }
     for _, r in ipairs(tag_rules) do
         ruled.client.append_rule(r)
@@ -3070,23 +3440,60 @@ end)
 
 
 
-
--- // MARK: CONFIG
+-- // MARK: SESSION
 -- ################################################################################
---  ██████╗ ██████╗ ███╗   ██╗███████╗██╗ ██████╗
--- ██╔════╝██╔═══██╗████╗  ██║██╔════╝██║██╔════╝
--- ██║     ██║   ██║██╔██╗ ██║█████╗  ██║██║  ███╗
--- ██║     ██║   ██║██║╚██╗██║██╔══╝  ██║██║   ██║
--- ╚██████╗╚██████╔╝██║ ╚████║███████╗██║╚██████╔╝
---  ╚═════╝ ╚═════╝ ╚═╝  ╚═══╝╚══════╝╚═╝ ╚═════╝
+-- ███████╗███████╗███████╗███████╗██╗ ██████╗ ███╗   ██╗
+-- ██╔════╝██╔════╝██╔════╝██╔════╝██║██╔═══██╗████╗  ██║
+-- ███████╗█████╗  ███████╗███████╗██║██║   ██║██╔██╗ ██║
+-- ╚════██║██╔══╝  ╚════██║╚════██║██║██║   ██║██║╚██╗██║
+-- ███████║███████╗███████║███████║██║╚██████╔╝██║ ╚████║
+-- ╚══════╝╚══════╝╚══════╝╚══════╝╚═╝ ╚═════╝ ╚═╝  ╚═══╝
 -- ################################################################################
--- CONFIG - final configuration settings and system preferences
+-- session management - preserve state across restarts
 
--- Color settings moved to theme file
+-- reactivate tabs that were active before a restart of awesomewm
+-- for Firefox, might have to disable widget.disable-workspace-management in about:config
+-- https://www.reddit.com/r/awesomewm/comments/syjolb/preserve_previously_used_tag_between_restarts
 
--- removed: duplicate notification defaults (set earlier)
+awesome.connect_signal('exit', function(reason_restart)
+	if not reason_restart then return end
+	local file = io.open('/tmp/awesomewm-last-selected-tags', 'w+')
+	for s in screen do
+		file:write(s.selected_tag.index, '\n')
+	end
+	file:close()
+end)
+
+awesome.connect_signal('startup', function()
+	local file = io.open('/tmp/awesomewm-last-selected-tags', 'r')
+	if not file then return end
+	local selected_tags = {}
+	for line in file:lines() do
+		table.insert(selected_tags, tonumber(line))
+	end
+	for s in screen do
+		local i = selected_tags[s.index]
+		if i and s.tags[i] then
+			local t = s.tags[i]
+			t:view_only()
+		end
+	end
+	file:close()
+end)
 
 
+
+-- // MARK: APP INTEGRATION
+-- ################################################################################
+--  █████╗ ██████╗ ██████╗     ██╗███╗   ██╗████████╗███████╗ ██████╗ ██████╗  █████╗ ████████╗██╗ ██████╗ ███╗   ██╗
+-- ██╔══██╗██╔══██╗██╔══██╗    ██║████╗  ██║╚══██╔══╝██╔════╝██╔════╝ ██╔══██╗██╔══██╗╚══██╔══╝██║██╔═══██╗████╗  ██║
+-- ███████║██████╔╝██████╔╝    ██║██╔██╗ ██║   ██║   █████╗  ██║  ███╗██████╔╝███████║   ██║   ██║██║   ██║██╔██╗ ██║
+-- ██╔══██║██╔═══╝ ██╔═══╝     ██║██║╚██╗██║   ██║   ██╔══╝  ██║   ██║██╔══██╗██╔══██║   ██║   ██║██║   ██║██║╚██╗██║
+-- ██║  ██║██║     ██║         ██║██║ ╚████║   ██║   ███████╗╚██████╔╝██║  ██║██║  ██║   ██║   ██║╚██████╔╝██║ ╚████║
+-- ╚═╝  ╚═╝╚═╝     ╚═╝         ╚═╝╚═╝  ╚═══╝   ╚═╝   ╚══════╝ ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝   ╚═╝ ╚═════╝ ╚═╝  ╚═══╝
+-- ################################################################################
+-- application-specific integrations - pavucontrol rule callbacks
+-- note: toggle functions moved to WINDOW MANAGEMENT FUNCTIONS section
 
 
 -- // MARK: START
@@ -3122,66 +3529,3 @@ awful.spawn.with_shell("pgrep -u $USER -x picom > /dev/null || picom --config ~/
 -- awful.spawn.with_shell("dunst")
 
 -- Uncomment any of the above or add your own autostart applications
-
--- // MARK: BINDINGS
--- ################################################################################
--- ██████╗ ██╗███╗   ██╗██████╗ ██╗███╗   ██╗ ██████╗ ███████╗
--- ██╔══██╗██║████╗  ██║██╔══██╗██║████╗  ██║██╔════╝ ██╔════╝
--- ██████╔╝██║██╔██╗ ██║██║  ██║██║██╔██╗ ██║██║  ███╗███████╗
--- ██╔══██╗██║██║╚██╗██║██║  ██║██║██║╚██╗██║██║   ██║╚════██║
--- ██████╔╝██║██║ ╚████║██████╔╝██║██║ ╚████║╚██████╔╝███████║
--- ╚═════╝ ╚═╝╚═╝  ╚═══╝╚═════╝ ╚═╝╚═╝  ╚═══╝ ╚═════╝ ╚══════╝
--- ################################################################################
--- KEY AND MOUSE BINDINGS - essential input handling
-
--- Global key bindings
--- Keybindings now handled by keybindings.lua module
-
--- Bind all key numbers to tags
--- Now handled by keybindings.lua
--- for i = 1, 9 do
---    globalkeys = gears.table.join(globalkeys,
---        -- View tag only
---        awful.key({ modkey }, "#" .. i + 9,
---                  function ()
---                        local screen = awful.screen.focused()
---                        local tag = screen.tags[i]
---                        if tag then
---                           tag:view_only()
---                        end
---                  end,
---                  {description = "view tag #"..i, group = "tag"}),
---        -- Move client to tag
---        awful.key({ modkey, "Shift" }, "#" .. i + 9,
---                  function ()
---                      if client.focus then
---                          local tag = client.focus.screen.tags[i]
---                          if tag then
---                              client.focus:move_to_tag(tag)
---                          end
---                     end
---                  end,
---                  {description = "move focused client to tag #"..i, group = "tag"})
---    )
--- end
-
-
--- Mouse bindings for clients - this fixes the mousewheel error
--- Now handled by keybindings.lua
--- clientbuttons = gears.table.join(
---     awful.button({ }, 1, function (c)
---         c:emit_signal("request::activate", "mouse_click", {raise = true})
---     end),
---     awful.button({ modkey }, 1, function (c)
---         c:emit_signal("request::activate", "mouse_click", {raise = true})
---         awful.mouse.client.move(c)
---     end),
---     awful.button({ modkey }, 3, function (c)
---         c:emit_signal("request::activate", "mouse_click", {raise = true})
---         resize_no_warp(c)
---     end)
--- )
-
--- Set root bindings
--- old: duplicate binding set with join/unpack; now handled earlier via root.keys(keys.globalkeys)
--- root.keys(gears.table.join(table.unpack(globalkeys)))
