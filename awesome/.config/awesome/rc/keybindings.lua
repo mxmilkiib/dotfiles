@@ -335,6 +335,20 @@ function M.build(ctx)
     }
   end
 
+  -- // MARK -- notification center keys
+  local notification_center_keys = {}
+  if ctx_has_function(ctx, "toggle_notification_center") then
+    -- previous binding: Mod+F10 (conflicted with launcher), then Mod+Alt+F10
+    table.insert(notification_center_keys, {{modkey, altkey}, "n", ctx.toggle_notification_center, "toggle notification center", nil, "notification"})
+    if ctx_has_function(ctx, "clear_notification_history") then
+      table.insert(notification_center_keys, {{modkey, altkey, shiftkey}, "n", ctx.clear_notification_history, "clear notification history", nil, "notification"})
+    end
+    -- notification center popup keybindings (only work when popup is visible)
+    if ctx_has_function(ctx, "notification_center_escape") then
+      table.insert(notification_center_keys, {{}, "Escape", ctx.notification_center_escape, "close notification center", nil, "notification"})
+    end
+  end
+
   -- // MARK -- shimmer preset export keys
   local shimmer_preset_keys = {}
   if shimmer and shimmer.shimmer_control_notify then
@@ -350,16 +364,19 @@ function M.build(ctx)
     {{modkey, shiftkey}, "F1", "spotify", "run spotify", "spotify", "launcher", true},  -- use instance matching
     {{modkey}, "F2", "raysession", "run raysession", nil, "launcher"},
     {{modkey, shiftkey}, "F2", "urxvt -e sh -c 'nsm'", "run argodejo in a terminal", "nsm", "launcher"},
-    {{modkey}, "F3", "qbittorrent", "run qbittorrent", "qBittorrent", "launcher"},
+    {{modkey}, "F3", function() if ctx.toggle_qbittorrent then ctx.toggle_qbittorrent() end end, "toggle qbittorrent", "qBittorrent", "launcher"},
     {{modkey, shiftkey}, "F3", "nicotine", "run nicotine++", nil, "launcher"},
     {{modkey}, "F4", "picard", "run picard", "Picard", "launcher"},
     {{modkey, shiftkey}, "F4", "simplescreenrecorder", "run simplescreenrecorder", nil, "launcher"},
+    {{modkey}, "F6", "eruler", "run eruler", nil, "launcher"},
     {{modkey, shiftkey}, "F6", "qseq66", "run qseq66", nil, "launcher"},
     {{modkey, shiftkey}, "F7", "signal-desktop", "run signal-desktop", nil, "launcher"},
     {{modkey}, "F8", function() if ctx.toggle_keepassxc then ctx.toggle_keepassxc() end end, "toggle keepassxc", "keepassxc", "launcher"},
-    {{modkey}, "F9", "doublecmd", "run doublecmd", "doublecmd", "launcher", true},  -- use instance matching
+    {{modkey}, "F9", function() if ctx.toggle_doublecmd then ctx.toggle_doublecmd() end end, "toggle doublecmd", "doublecmd", "launcher"},
+    {{modkey, shiftkey}, "F9", "oneko", "run oneko", "oneko", "launcher", true},  -- use instance matching
     {{modkey}, "F11", "quasselclient", "run quasselclient", "quassel", "launcher", true},  -- use instance matching (instance = "quassel")
-    {{modkey}, "F12", "firefox", "run firefox", nil, "launcher"},
+    -- previous binding: run_or_raise via command string
+    {{modkey}, "F12", function() if ctx.toggle_firefox then ctx.toggle_firefox() end end, "toggle firefox", "firefox", "launcher"},
     {{modkey, shiftkey}, "F12", "chromium", "run chromium", nil, "launcher"}
   }
   
@@ -388,8 +405,8 @@ function M.build(ctx)
   -- // MARK: SCREEN ROTATION
   -- Screen rotation
   local rotation_keys = {
-    {{modkey, shiftkey, altkey}, "Left", 1, "rotate screens left", nil, "screen"},
-    {{modkey, shiftkey, altkey}, "Right", -1, "rotate screens right", nil, "screen"}
+    {{modkey, shiftkey, altkey}, "j", 1, "rotate screens left", nil, "screen"},
+    {{modkey, shiftkey, altkey}, "k", -1, "rotate screens right", nil, "screen"}
   }
   
   -- // MARK: TAG NAVIGATION
@@ -471,6 +488,7 @@ function M.build(ctx)
   add_keys(prompt_keys)
   add_keys(shimmer_keys)
   add_keys(notification_keys)
+  add_keys(notification_center_keys)
   add_keys(shimmer_preset_keys)
   add_keys(f_key_defs)
   add_keys(utility_keys)
@@ -578,6 +596,7 @@ function M.build(ctx)
     {{modkey}, "f", function(c) c.fullscreen = not c.fullscreen c:raise() end, "toggle fullscreen", nil, "client"},
     {{modkey}, "w", function(c) c:kill() end, "close window", nil, "client"},
     {{modkey}, "z", function(c) awful.client.floating.toggle(c) end, "toggle floating", nil, "client"},
+    {{modkey}, "c", function(c) if ctx_has_function(ctx, "toggle_auto_center") then ctx.toggle_auto_center(c) end end, "toggle auto-center", nil, "client"},
     -- {{modkey, ctrlkey}, "Return", function(c) c:swap(awful.client.getmaster()) end, "move to master", nil, "client"},
     {{modkey}, "o", function(c) c:move_to_screen() end, "move to screen", nil, "client"},
     {{modkey}, "t", function(c) c.ontop = not c.ontop end, "toggle keep on top", nil, "client"},
@@ -592,7 +611,11 @@ function M.build(ctx)
     {{modkey, shiftkey}, "c", function(c)
       c.floating = true
       awful.placement.centered(c, { honor_workarea = true })
-    end, "center window", nil, "client"}
+    end, "center window", nil, "client"},
+    {{modkey, ctrlkey, shiftkey}, "c", function(c)
+      c.floating = true
+      awful.placement.centered(c, { honor_workarea = true })
+    end, "snap to center", nil, "client"}
   }
   
 
