@@ -30,6 +30,25 @@ Xephyr :1 -ac -br -noreset -screen 1152x720 & sleep 1 && DISPLAY=:1.0 awesome -c
 --   luacheck rc.lua --no-max-line-length
 --   (Static analysis for common Lua issues)
 
+-- NON-CORE FEATURES OVERVIEW:
+--   WINDOW MANAGEMENT ENHANCEMENTS
+--     • Screen Rotation Utilities (rotate_screens helpers)
+--     • Quake Dropdown Terminal (lain.util.quake per screen)
+--     • Resize Without Warp (layout-aware resize_no_warp)
+--     • Floating Window Center Preservation (window_manager helpers)
+--   TAG AND TASKLIST AUGMENTATIONS
+--     • Tasklist Mode Toggle (all-tag vs focused-tag views)
+--     • Mode Glyphs Styling (plugins.mode_glyphs integration)
+--     • Tag Indicators (plugins.tag_indicators highlights)
+--     • Drag And Drop To Tag (plugins.dnd_to_tag handlers)
+--   NOTIFICATION EXPERIENCE
+--     • Notification Center (plugins.notification_center toggle)
+--     • Clipboard Copy Of Last Alert (copy_last_notification helper)
+--     • Hotkey Duplicate Detection (plugins.hotkey_dupe_detector audit)
+--   APPLICATION TOGGLES AND MENUS
+--     • Dedicated Toggles For KeePassXC, Pavucontrol, qBittorrent, Double Commander, Arandr
+--     • Freedesktop Menu Integration (freedesktop.menu build)
+
 
 
 -- // MARK: OVERVIEW
@@ -158,7 +177,7 @@ local keybindings = require("rc.keybindings")        -- Hotkey definitions
 --      you can also call profiler.report() manually if needed
 
 
--- external libraries
+-- source external libraries (Lua modules)
 local ruled = require("ruled")                                        -- modern rules API
 local freedesktop = require("freedesktop")                            -- Create a menu from .desktop files
 
@@ -168,10 +187,13 @@ local quake_lain = require("lain.util.quake")                         -- optiona
 local bling = require("bling")                                        -- Modern layouts and utilities
 local treetile = require("treetile")                                  -- Hierarchical window arrangement
 
-local shimmer = require("plugins.shimmer")                            -- Unified shimmer & border animation system
+-- local shimmer = require("plugins.shimmer")                         -- Unified shimmer & border animation system
+local noop = function() end;                                          -- no-op stub for temp disable
+local shimmer = setmetatable({}, { __index = function() return noop end })
+
 local mode_glyphs = require("plugins.mode_glyphs")                    -- stable tasklist mode glyphs
 local hotkey_dupe_detector = require("plugins.hotkey_dupe_detector")  -- duplicate hotkey detection
-
+local notification_center = require("plugins.notification_center")     -- notification history popup
 
 
 -- // MARK: -- shimmer configuration
@@ -183,6 +205,7 @@ shimmer.configure({
     -- preset = "candy",  -- candy-cane shine preset
     -- preset = "gold_contrast",  -- pastel candy-cane shine preset
     -- preset = "plasma_drift",  -- pastel candy-cane shine preset
+    
     preset = "gold_crumble",  -- pastel candy-cane shine preset
     border = {
         -- smoothness = 2,  -- light border animation
@@ -192,11 +215,12 @@ shimmer.configure({
         follow_text_style = false,  -- if true, border uses same progression strategy as title text
         use_shimmer_palette = false,  -- if true, use shimmer colors; if false, use original default gradient
     },
-    disable_shine = false,  -- disable shine aspect
+    disable_shine = false,  -- disable shine aspectD
     disable_color = false,  -- keep color progression active
     -- max_animated_chars = 10  -- limit to 5 animated chars globally
 
 })
+
 -- minimal startup timer for shimmer - just enough for tasklist widgets to initialize
 shimmer.post_startup_init()  -- defer small init to module (tasklist mapping + focused init)
 
@@ -204,15 +228,11 @@ shimmer.post_startup_init()  -- defer small init to module (tasklist mapping + f
 mode_glyphs.configure({ style = "basic" })
 
 -- optional: toggle mode glyphs styling between basic and shimmer
-
--- toggle tasklist mode glyph styling between basic and shimmer
 local function toggle_mode_glyphs_style()
     local new_style = (mode_glyphs.style == "basic") and "shimmer" or "basic"
     mode_glyphs.configure({ style = new_style })
     shimmer.refresh_all_tasklists()
     naughty.notify({ title = "mode glyphs", text = "style: " .. new_style, timeout = 2 })
-    
-    
 end
 
 -- bling extras: enable window swallowing and previews
@@ -225,6 +245,9 @@ end
 --     placement_fn = function(d) awful.placement.centered(d, { honor_workarea = true }) end,
 --     show_client_content = true,
 -- })
+
+
+
 
 -- // MARK: ERRORS
 -- ################################################################################
@@ -283,18 +306,6 @@ require("awful.hotkeys_popup.keys")
 -- ################################################################################
 -- VARIABLES - global variables and configuration constants
 -- ################################################################################
--- Store the previous tag when switching to pavucontrol
-local previous_tag = nil
-
--- pavucontrol toggle state tracking
-local pavucontrol_tag_visible = false
-
--- keepassxc toggle state tracking
-local keepassxc_tag_visible = false
-
--- arandr toggle state tracking
-local arandr_tag_visible = false
-
 -- tasklist mode: false = focused tag only (default), true = all tags
 local tasklist_show_all_tags = false
 
@@ -868,177 +879,134 @@ local function toggle_tasklist_mode()
 end
 
 
--- // MARK: -- pavucontrol toggle
-local function toggle_pavucontrol()
+-- // MARK: -- generic app tag toggle
+-- generic function to toggle app visibility on a specific tag
+-- @param match_fn: function(c) that returns true if client matches app
+-- @param tag_number: tag index (1-based)
+-- @param spawn_cmd: command to launch app if not running
+local function toggle_app_tag(match_fn, tag_number, spawn_cmd)
     local current_screen = awful.screen.focused()
     
-    -- check if pavucontrol is already running
-    local pavucontrol_client = nil
+    -- find the app client
+    local app_client = nil
     for _, c in ipairs(client.get()) do
-        if c.class == "Pavucontrol" then
-            pavucontrol_client = c
+        if match_fn(c) then
+            app_client = c
             break
         end
     end
     
-    if pavucontrol_client then
-        -- pavucontrol exists - work with the screen it's actually on
-        local pavucontrol_screen = pavucontrol_client.screen
-        local pavucontrol_tag9 = pavucontrol_screen.tags[9]
+    if app_client then
+        -- app exists - work with the screen it's actually on
+        local app_screen = app_client.screen
+        local app_tag = app_screen.tags[tag_number]
         
-        if not pavucontrol_tag9 then
+        if not app_tag then
             return
         end
         
-        -- if pavucontrol is on a different screen, move it to current screen
-        if pavucontrol_screen ~= current_screen then
-            pavucontrol_client:move_to_screen(current_screen)
-            -- now get tag 9 on the current screen
-            local current_tag9 = current_screen.tags[9]
-            if current_tag9 then
-                pavucontrol_client:move_to_tag(current_tag9)
-                pavucontrol_tag9 = current_tag9
+        -- if app is on a different screen, move it to current screen
+        if app_screen ~= current_screen then
+            app_client:move_to_screen(current_screen)
+            -- now get the tag on the current screen
+            local current_tag = current_screen.tags[tag_number]
+            if current_tag then
+                app_client:move_to_tag(current_tag)
+                app_tag = current_tag
             end
         end
         
-        -- toggle tag 9 visibility on the appropriate screen
-        if pavucontrol_tag9.selected then
-            -- tag 9 is visible, hide it
-            awful.tag.viewtoggle(pavucontrol_tag9)
-            pavucontrol_tag_visible = false
+        -- toggle tag visibility
+        if app_tag.selected then
+            -- tag is visible, hide it and minimize window
+            app_client.minimized = true
+            awful.tag.viewtoggle(app_tag)
         else
-            -- tag 9 is not visible, show it
-            awful.tag.viewtoggle(pavucontrol_tag9)
-            pavucontrol_tag_visible = true
-            -- focus the pavucontrol window
-            pavucontrol_client:emit_signal("request::activate", "toggle_pavucontrol", {raise = true})
+            -- tag is not visible, show it and unminimize window
+            app_client.minimized = false
+            awful.tag.viewtoggle(app_tag)
+            -- focus the window
+            app_client:emit_signal("request::activate", "toggle_app_tag", {raise = true})
         end
     else
-        -- pavucontrol doesn't exist, launch it on current screen
-        local current_tag9 = current_screen.tags[9]
-        if not current_tag9 then
+        -- app doesn't exist, launch it on current screen
+        local current_tag = current_screen.tags[tag_number]
+        if not current_tag then
             return
         end
         
-        awful.spawn.with_shell("GDK_SCALE=0.9 pavucontrol")
-        pavucontrol_tag_visible = true
+        -- make tag visible if not already
+        if not current_tag.selected then
+            awful.tag.viewtoggle(current_tag)
+        end
+        
+        awful.spawn.with_shell(spawn_cmd)
     end
+end
+
+
+-- // MARK: -- pavucontrol toggle
+local function toggle_pavucontrol()
+    toggle_app_tag(
+        function(c) return c.class == "Pavucontrol" end,
+        8,
+        "GDK_SCALE=0.9 pavucontrol"
+    )
 end
 
 
 -- // MARK: -- keepassxc toggle
 local function toggle_keepassxc()
-    local current_screen = awful.screen.focused()
-    
-    -- check if keepassxc is already running
-    local keepassxc_client = nil
-    for _, c in ipairs(client.get()) do
-        if c.class == "KeePassXC" then
-            keepassxc_client = c
-            break
-        end
-    end
-    
-    if keepassxc_client then
-        -- keepassxc exists - work with the screen it's actually on
-        local keepassxc_screen = keepassxc_client.screen
-        local keepassxc_tag8 = keepassxc_screen.tags[8]
-        
-        if not keepassxc_tag8 then
-            return
-        end
-        
-        -- if keepassxc is on a different screen, move it to current screen
-        if keepassxc_screen ~= current_screen then
-            keepassxc_client:move_to_screen(current_screen)
-            -- now get tag 8 on the current screen
-            local current_tag8 = current_screen.tags[8]
-            if current_tag8 then
-                keepassxc_client:move_to_tag(current_tag8)
-                keepassxc_tag8 = current_tag8
-            end
-        end
-        
-        -- toggle tag 8 visibility on the appropriate screen
-        if keepassxc_tag8.selected then
-            -- tag 8 is visible, hide it
-            awful.tag.viewtoggle(keepassxc_tag8)
-            keepassxc_tag_visible = false
-        else
-            -- tag 8 is not visible, show it
-            awful.tag.viewtoggle(keepassxc_tag8)
-            keepassxc_tag_visible = true
-            -- focus the keepassxc window
-            keepassxc_client:emit_signal("request::activate", "toggle_keepassxc", {raise = true})
-        end
-    else
-        -- keepassxc doesn't exist, launch it on current screen
-        local current_tag8 = current_screen.tags[8]
-        if not current_tag8 then
-            return
-        end
-        
-        awful.spawn.with_shell("keepassxc ~/state/nextcloud/sync/keepassxc-mb.kdbx")
-        keepassxc_tag_visible = true
-    end
+    toggle_app_tag(
+        function(c) return c.class == "KeePassXC" end,
+        8,
+        "keepassxc ~/state/nextcloud/sync/keepassxc-mb.kdbx"
+    )
+end
+
+
+-- // MARK: -- qbittorrent toggle
+local function toggle_qbittorrent()
+    toggle_app_tag(
+        function(c) return c.instance == "qbittorrent" or c.class == "qBittorrent" end,
+        3,
+        "qbittorrent"
+    )
+end
+
+
+-- // MARK: -- doublecmd toggle
+local function toggle_doublecmd()
+    toggle_app_tag(
+        function(c) return c.instance == "doublecmd" or c.instance == "Double Commander" end,
+        9,
+        "doublecmd"
+    )
 end
 
 
 -- // MARK: -- arandr toggle
 local function toggle_arandr()
-    local current_screen = awful.screen.focused()
-    
-    -- check if arandr is already running
-    local arandr_client = nil
-    for _, c in ipairs(client.get()) do
-        if c.class == "Arandr" then
-            arandr_client = c
-            break
-        end
-    end
-    
-    if arandr_client then
-        -- arandr exists - work with the screen it's actually on
-        local arandr_screen = arandr_client.screen
-        local arandr_tag9 = arandr_screen.tags[9]
-        
-        if not arandr_tag9 then
-            return
-        end
-        
-        -- if arandr is on a different screen, move it to current screen
-        if arandr_screen ~= current_screen then
-            arandr_client:move_to_screen(current_screen)
-            -- now get tag 9 on the current screen
-            local current_tag9 = current_screen.tags[9]
-            if current_tag9 then
-                arandr_client:move_to_tag(current_tag9)
-                arandr_tag9 = current_tag9
-            end
-        end
-        
-        -- toggle tag 9 visibility on the appropriate screen
-        if arandr_tag9.selected then
-            -- tag 9 is visible, hide it
-            awful.tag.viewtoggle(arandr_tag9)
-            arandr_tag_visible = false
-        else
-            -- tag 9 is not visible, show it
-            awful.tag.viewtoggle(arandr_tag9)
-            arandr_tag_visible = true
-            -- focus the arandr window
-            arandr_client:emit_signal("request::activate", "toggle_arandr", {raise = true})
-        end
-    else
-        -- arandr doesn't exist, launch it on current screen
-        local current_tag9 = current_screen.tags[9]
-        if not current_tag9 then
-            return
-        end
-        
-        awful.spawn("arandr")
-        arandr_tag_visible = true
-    end
+    toggle_app_tag(
+        function(c) return c.class == "Arandr" end,
+        9,
+        "arandr"
+    )
+end
+
+
+-- // MARK: -- firefox toggle
+local function toggle_firefox()
+    toggle_app_tag(
+        function(c)
+            local class = c.class
+            local instance = c.instance
+            return class == "firefox" or class == "Firefox" or class == "Navigator"
+                or instance == "firefox" or instance == "Navigator"
+        end,
+        12,
+        "firefox"
+    )
 end
 
 
@@ -1591,10 +1559,6 @@ naughty.connect_signal("added", function(n)
     end)
 end)
 
--- optional: add click handling to notifications  
--- (this would require more complex setup to not interfere with default display)
--- for now, just keep the keyboard shortcut working
-
 -- function to copy last notification via keyboard shortcut
 local function copy_last_notification()
     if last_notification_text ~= "" then
@@ -1613,6 +1577,33 @@ local function copy_last_notification()
     end
 end
 
+
+
+
+-- // MARK: NOTIFICATION CENTER
+-- ################################################################################
+-- ███╗   ██╗ ██████╗ ████████╗██╗  ██╗██╗ ██████╗ ███████╗████████╗██╗ ██████╗ ████████╗██╗ ██████╗ ███╗   ██╗
+-- ████╗  ██║██╔═══██╗╚══██╔══╝██║  ██║██║██╔════╝ ██╔════╝╚══██╔══╝██║██╔═══██╗╚══██╔══╝██║██╔═══██╗████╗  ██║
+-- ██╔██╗ ██║██║   ██║   ██║   ███████║██║██║  ███╗█████╗     ██║   ██║██║   ██║   ██║   ██║██║   ██║██╔██╗ ██║
+-- ██║╚██╗██║██║   ██║   ██║   ██╔══██║██║██║   ██║██╔══╝     ██║   ██║██║   ██║   ██║   ██║██║   ██║██║╚██╗██║
+-- ██║ ╚████║╚██████╔╝   ██║   ██║  ██║██║╚██████╔╝███████╗   ██║   ██║╚██████╔╝   ██║   ██║╚██████╔╝██║ ╚████║
+-- ╚═╝  ╚═══╝ ╚═════╝    ╚═╝   ╚═╝  ╚═╝╚═╝ ╚═════╝ ╚══════╝   ╚═╝   ╚═╝ ╚═════╝    ╚═╝   ╚═╝ ╚═════╝ ╚═╝  ╚═══╝
+-- ################################################################################
+-- notification center popup and history management
+
+-- previous implementation: none
+
+local function toggle_notification_center()
+    notification_center.toggle()
+end
+
+local function clear_notification_history()
+    notification_center.clear_history()
+end
+
+local function notification_center_delete_oldest()
+    notification_center.keybindings.delete_oldest()
+end
 
 
 
@@ -1665,12 +1656,21 @@ local keys = keybindings.build({
     -- new: pass global implementation so there's a single source of truth
     cycle_tags_with_clients = cycle_tags_with_clients,
     copy_last_notification = copy_last_notification,
+    toggle_notification_center = toggle_notification_center,
+    clear_notification_history = clear_notification_history,
+    notification_center_delete_oldest = notification_center_delete_oldest,
     -- pavucontrol toggle function
     toggle_pavucontrol = toggle_pavucontrol,
     -- keepassxc toggle function
     toggle_keepassxc = toggle_keepassxc,
+    -- qbittorrent toggle function
+    toggle_qbittorrent = toggle_qbittorrent,
+    -- doublecmd toggle function
+    toggle_doublecmd = toggle_doublecmd,
     -- arandr toggle function
     toggle_arandr = toggle_arandr,
+    -- firefox toggle function
+    toggle_firefox = toggle_firefox,
     -- custom resize function that prevents cursor warping
     resize_no_warp = resize_no_warp,
     -- quake terminal: expose toggle function for hotkey
@@ -2274,6 +2274,18 @@ awful.screen.connect_for_each_screen(function(s)
         screen  = s,
         disable_icon = false,
         -- removed: tasklist_disable_icon (unknown property)
+        source = function()
+            local clients = {}
+            for _, c in ipairs(client.get()) do
+                table.insert(clients, c)
+            end
+            -- reverse the order so newest clients appear on the right
+            local reversed = {}
+            for i = #clients, 1, -1 do
+                table.insert(reversed, clients[i])
+            end
+            return reversed
+        end,
         filter  = function(c, screen)
             if not c or not c.valid or c.screen ~= screen then
                 return false
@@ -2392,7 +2404,7 @@ awful.screen.connect_for_each_screen(function(s)
 
     -- // MARK: --wibox
     -- create the wibox
-    s.mywibox = awful.wibar({ position = "top", screen = s })
+    s.mywibox = awful.wibar({ position = "top", screen = s, height = 22 })
 
     -- add widgets to the wibox
     -- create systray with base size from theme
@@ -2401,6 +2413,10 @@ awful.screen.connect_for_each_screen(function(s)
         local tray_size = (beautiful and (beautiful.systray_icon_size or beautiful.icon_size)) or 16
         mysystray:set_base_size(tray_size)
     end
+    local notification_toggle_widget = notification_center.create_toggle_widget()
+
+    -- previous notification center widget creation: none
+
     s.mywibox:setup {
         layout = wibox.layout.align.horizontal,
         { -- left widgets
@@ -2417,7 +2433,9 @@ awful.screen.connect_for_each_screen(function(s)
         { -- right widgets
             layout = wibox.layout.fixed.horizontal,
             -- add 3px horizontal + 1px top padding to systray and center vertically (only on primary screen)
-            s == screen.primary and wibox.container.margin({ mysystray, valign = "center", widget = wibox.container.place }, 6, 6, 0, 0) or wibox.container.margin({ mysystray, valign = "center", widget = wibox.container.place }, 1, 0, 0, 0),
+            s == screen.primary and wibox.container.margin({ mysystray, valign = "center", widget = wibox.container.place }, 4, 0, 0, 0) or wibox.container.margin({ mysystray, valign = "center", widget = wibox.container.place }, 1, 0, 0, 0),
+            -- previous notification center widgets: none
+            wibox.container.margin(notification_toggle_widget, 1, 0, 0, 0),
             wibox.container.margin(textclock_clr, 0, 0, 0, 0)
         },
     }
@@ -2852,6 +2870,22 @@ client.connect_signal("property::floating", function(c)
         return
     end
     
+    -- skip size reduction for dialog and modal windows (they start floating)
+    if c.type == "dialog" or c.modal then
+        return
+    end
+    
+    -- skip size reduction for windows that are always floating by nature
+    local always_floating_classes = {
+        "Pavucontrol", "pwvucontrol", "Arandr", "KeePassXC", "Blueman-manager",
+        "Gpick", "Kruler", "Sxiv", "qView", "Cadence", "qjackctl", "QjackCtl"
+    }
+    for _, class in ipairs(always_floating_classes) do
+        if c.class == class then
+            return
+        end
+    end
+    
     -- client just became floating - check if we have a stored tiled size
     local tiled_size = client_tiled_sizes[c]
     if not tiled_size then return end
@@ -3281,7 +3315,8 @@ ruled.client.connect_signal("request::rules", function()
             keys = clientkeys,
             buttons = clientbuttons,
             screen = awful.screen.preferred,
-            placement = awful.placement.no_overlap + awful.placement.no_offscreen,
+            -- center all floating windows by default
+            placement = awful.placement.centered + awful.placement.no_overlap + awful.placement.no_offscreen,
         }
     }
 
@@ -3290,6 +3325,33 @@ ruled.client.connect_signal("request::rules", function()
         id = "titlebars",
         rule_any = { type = { "normal", "dialog" } },
         properties = { titlebars_enabled = true }
+    }
+
+    -- dialog windows: ensure floating and set reasonable size for file choosers
+    ruled.client.append_rule {
+        id = "dialogs",
+        rule = { type = "dialog" },
+        properties = {
+            floating = true,
+            -- placement inherited from global defaults (centered)
+        },
+        callback = function(c)
+            -- set minimum size for file chooser dialogs
+            if c.role == "GtkFileChooserDialog" or 
+               (c.name and (c.name:match("Open File") or c.name:match("Save") or c.name:match("Choose"))) then
+                local geo = c:geometry()
+                local min_width = 800
+                local min_height = 600
+                if geo.width < min_width or geo.height < min_height then
+                    c:geometry({
+                        width = math.max(geo.width, min_width),
+                        height = math.max(geo.height, min_height)
+                    })
+                    -- recenter after resizing
+                    awful.placement.centered(c, { honor_workarea = true })
+                end
+            end
+        end
     }
 
     -- arandr size hints
