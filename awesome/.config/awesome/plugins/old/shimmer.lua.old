@@ -1,0 +1,996 @@
+-- plugins/shimmer.lua
+-- Self-contained shimmer animation system for AwesomeWM
+-- Provides animated golden text effects for tags, taskbar titles, and other UI elements
+-- 
+-- Features:
+--   • Multiple animation modes (candle, cloud, char_flicker, border_sync, deep_gold)
+--   • Auto-integration with taglist, tasklist, launcher
+--   • Signal-based coordination with DnD and other plugins
+--   • Plugin registration system for external modules
+--   • Self-contained - no external setup required
+
+local gears = require("gears")
+local awful = require("awful")
+
+local M = {}
+
+
+-- // MARK: CONSTANTS AND CONFIGURATION
+
+-- Base gold color palette
+local base_gold = "#FFD700"
+
+-- Current animation mode
+local shimmer_mode = "warm_light"
+
+-- Widget tracking system (per screen)
+local active_tag_widgets = {}
+
+-- Mode stack for temporary mode changes (e.g., during DnD)
+local mode_stack = {}
+
+-- Integration registrations
+local integrations = {
+    tasklist = { enabled = false, renderers = {} },
+    dnd = { enabled = false, handlers = {} }
+}
+
+-- Plugin registry
+local registered_plugins = {}
+
+-- Color palette cache and generation
+local color_palettes = {}
+local palette_length = 100
+
+-- Gradient generator function (adapted from border_animation)
+local function makeColorGradient(frequency1, frequency2, frequency3, phase1, phase2, phase3, center, width, length)
+    center = center or 200  -- lighter center
+    width = width or 55     -- reduced width for lighter colors
+    length = length or palette_length
+    local palette = {}
+    for i = 0, length - 1 do
+        local r = math.floor(math.sin(frequency1 * i + phase1) * width + center)
+        local g = math.floor(math.sin(frequency2 * i + phase2) * width + center)
+        local b = math.floor(math.sin(frequency3 * i + phase3) * width + center)
+        -- clamp values to valid range
+        r = math.max(0, math.min(255, r))
+        g = math.max(0, math.min(255, g))
+        b = math.max(0, math.min(255, b))
+        palette[i] = string.format("#%02x%02x%02x", r, g, b)
+    end
+    return palette
+end
+
+-- Enhanced shimmer configuration with color cycling
+local shimmer_config = {
+    -- light, warm gold with gentle variation
+    warm_light = {
+        speed = 0.3,
+        gradient = {
+            redFrequency = 0.05,
+            grnFrequency = 0.08,
+            bluFrequency = 0.02,
+            phase1 = 0,
+            phase2 = 2,
+            phase3 = 4,
+            center = 220,
+            width = 35
+        }
+    },
+    -- bright golden shimmer
+    bright_gold = {
+        speed = 0.4,
+        gradient = {
+            redFrequency = 0.08,
+            grnFrequency = 0.1,
+            bluFrequency = 0.03,
+            phase1 = 1,
+            phase2 = 3,
+            phase3 = 5,
+            center = 210,
+            width = 45
+        }
+    },
+    -- soft candlelight effect
+    candle = {
+        speed = 0.25,
+        gradient = {
+            redFrequency = 0.06,
+            grnFrequency = 0.09,
+            bluFrequency = 0.02,
+            phase1 = 0.5,
+            phase2 = 2.5,
+            phase3 = 4.5,
+            center = 200,
+            width = 55
+        }
+    },
+    -- ethereal cloud-like shimmer
+    cloud = {
+        speed = 0.35,
+        gradient = {
+            redFrequency = 0.04,
+            grnFrequency = 0.07,
+            bluFrequency = 0.05,
+            phase1 = 1,
+            phase2 = 3,
+            phase3 = 2,
+            center = 185,
+            width = 70
+        }
+    },
+    -- fast character flicker
+    char_flicker = {
+        speed = 0.15,
+        gradient = {
+            redFrequency = 0.12,
+            grnFrequency = 0.15,
+            bluFrequency = 0.08,
+            phase1 = 0,
+            phase2 = 2,
+            phase3 = 4,
+            center = 200,
+            width = 55
+        }
+    },
+    -- synchronized with border animation
+    border_sync = {
+        speed = 0.4,
+        gradient = {
+            redFrequency = 0.1,
+            grnFrequency = 0.2,
+            bluFrequency = 0.1,
+            phase1 = 1,
+            phase2 = 260,
+            phase3 = 50,
+            center = 180,
+            width = 75
+        }
+    },
+    -- subtle deep gold (lighter version)
+    deep_gold = {
+        speed = 0.6,
+        gradient = {
+            redFrequency = 0.03,
+            grnFrequency = 0.05,
+            bluFrequency = 0.01,
+            phase1 = 0,
+            phase2 = 1,
+            phase3 = 3,
+            center = 190,
+            width = 40
+        }
+    },
+    -- static gold
+    off = {
+        speed = 0,
+        static_color = base_gold
+    }
+}
+
+-- Animation state
+local shimmer_step = 0
+local shimmer_timer = nil
+
+-- Border animation state (integrated from border_animation.lua)
+local border_loop = 1.0
+local border_step = 1.0
+local border_paused = false
+local border_timer = nil
+local border_params = {
+    speed = 0.06,
+    step_size = 0.5
+}
+
+
+-- // MARK: CORE SHIMMER FUNCTIONS
+
+-- Get client status prefix symbols
+local function get_client_status_prefix(c)
+    if not c or not c.valid then return "" end
+    
+    local symbols = {}
+    if c.floating then table.insert(symbols, "✈") end
+    if c.maximized then table.insert(symbols, "+")
+    elseif c.maximized_horizontal then table.insert(symbols, "⬌")
+    elseif c.maximized_vertical then table.insert(symbols, "⬍") end
+    if c.sticky then table.insert(symbols, "▪") end
+    if c.ontop then table.insert(symbols, "⌃")
+    elseif c.above then table.insert(symbols, "▴")
+    elseif c.below then table.insert(symbols, "▾") end
+    
+    return (#symbols > 0) and table.concat(symbols, "") .. " " or ""
+end
+
+-- Generate and cache color palette for a mode
+local function ensure_palette(mode_name)
+    local config = shimmer_config[mode_name]
+    if not config then return nil end
+    
+    if not color_palettes[mode_name] then
+        if config.gradient then
+            local g = config.gradient
+            color_palettes[mode_name] = makeColorGradient(
+                g.redFrequency, g.grnFrequency, g.bluFrequency,
+                g.phase1, g.phase2, g.phase3,
+                g.center, g.width, palette_length
+            )
+        else
+            -- fallback for modes without gradient
+            color_palettes[mode_name] = { config.static_color or base_gold }
+        end
+    end
+    
+    return color_palettes[mode_name]
+end
+
+-- Get shimmer color for current animation state
+function M.get_color(mode_config, text_length)
+    local mode_name = mode_config or shimmer_mode or "border_sync"
+    local config = shimmer_config[mode_name]
+    
+    if not config then
+        return base_gold
+    end
+    
+    -- handle static colors
+    if config.speed == 0 or config.static_color then
+        return config.static_color or base_gold
+    end
+    
+    -- get or generate palette
+    local palette = ensure_palette(mode_name)
+    if not palette or #palette == 0 then
+        return base_gold
+    end
+    
+    -- calculate animation index with text length variation
+    local base_time = shimmer_step * config.speed
+    local length_factor = (text_length or 1) * 0.1
+    local animation_phase = base_time + length_factor
+    
+    -- map to palette index with smooth cycling
+    local palette_index = math.floor(animation_phase * 10) % #palette
+    return palette[palette_index] or base_gold
+end
+
+-- Get base gold color (static, not animated)
+function M.get_base_gold()
+    return base_gold
+end
+
+-- Get status prefix for client
+function M.get_status_prefix(client)
+    return get_client_status_prefix(client)
+end
+
+-- Get current shimmer mode
+function M.get_mode()
+    return shimmer_mode
+end
+
+-- Set shimmer mode
+function M.set_mode(mode)
+    if shimmer_config[mode] then
+        shimmer_mode = mode
+        -- ensure palette is generated for new mode
+        ensure_palette(mode)
+        awesome.emit_signal("shimmer::mode_changed", mode)
+    end
+end
+
+-- Get current palette for external use (border animation integration)
+function M.get_palette(mode_name)
+    local mode = mode_name or shimmer_mode
+    return ensure_palette(mode)
+end
+
+-- Get gradient parameters for a mode (for border animation compatibility)
+function M.get_gradient_params(mode_name)
+    local mode = mode_name or shimmer_mode
+    local config = shimmer_config[mode]
+    return config and config.gradient
+end
+
+-- Set custom gradient parameters for a mode
+function M.set_gradient_params(mode_name, params)
+    if not shimmer_config[mode_name] then return false end
+    
+    shimmer_config[mode_name].gradient = params
+    -- clear cached palette to force regeneration
+    color_palettes[mode_name] = nil
+    
+    awesome.emit_signal("shimmer::gradient_updated", mode_name, params)
+    return true
+end
+
+-- Apply shimmer effect to a widget
+function M.apply_to_widget(widget, text, status_symbols)
+    if not widget or not widget.set_markup then return end
+    if widget.__hover_lock or widget.__hover_fade_lock then return end
+    
+    local display_text = (status_symbols or "") .. (text or "")
+    if display_text == "" then return end
+    
+    local shimmer_color = M.get_color(nil, #display_text)
+    local markup = '<span foreground="' .. shimmer_color .. '">' .. 
+                   gears.string.xml_escape(display_text) .. '</span>'
+    
+    widget:set_markup(markup)
+end
+
+-- Register tag widget for shimmer updates
+function M.register_tag_widget(screen_index, tag, text_widget)
+    if not active_tag_widgets[screen_index] then
+        active_tag_widgets[screen_index] = {}
+    end
+    
+    active_tag_widgets[screen_index][tag] = text_widget
+end
+
+
+-- Timer callback for shimmer animation
+local function shimmer_tick()
+    shimmer_step = shimmer_step + 1
+    
+    -- Update tag widgets
+    for screen_index, screen_tags in pairs(active_tag_widgets) do
+        for tag, text_widget in pairs(screen_tags) do
+            if tag and tag.selected and text_widget then
+                M.apply_to_widget(text_widget, tag.name or "", nil)
+            end
+        end
+    end
+    
+    
+    -- Emit update signal
+    awesome.emit_signal("shimmer::update")
+end
+
+-- Start shimmer animation
+function M.start()
+    if shimmer_timer then return end
+    
+    shimmer_timer = gears.timer {
+        timeout = 0.1,
+        autostart = true,
+        callback = shimmer_tick
+    }
+end
+
+-- Stop shimmer animation
+function M.stop()
+    if shimmer_timer then
+        shimmer_timer:stop()
+        shimmer_timer = nil
+    end
+end
+
+-- Restart shimmer animation
+function M.restart()
+    M.stop()
+    shimmer_step = 0
+    M.start()
+end
+
+
+-- // MARK: ENHANCED API STRUCTURE
+
+-- Core API (backward compatible)
+M.api = {
+    core = {
+        set_mode = M.set_mode,
+        get_mode = M.get_mode,
+        get_color = M.get_color,
+        apply_to_widget = M.apply_to_widget,
+        get_base_gold = M.get_base_gold,
+        get_status_prefix = M.get_status_prefix,
+        start = M.start,
+        stop = M.stop,
+        restart = M.restart
+    },
+    
+    -- gradient and palette management
+    gradient = {
+        get_palette = M.get_palette,
+        get_params = M.get_gradient_params,
+        set_params = M.set_gradient_params,
+        generate = makeColorGradient,
+        get_presets = function() return shimmer_config end,
+        clear_cache = function(mode_name)
+            if mode_name then
+                color_palettes[mode_name] = nil
+            else
+                color_palettes = {}
+            end
+        end
+    },
+    
+    -- user configuration
+    configure = M.configure,
+    
+    -- integrated border animation
+    border = {
+        start = function()
+            if border_timer then return end
+            
+            border_timer = gears.timer {
+                timeout = border_params.speed,
+                autostart = true,
+                callback = function()
+                    if border_paused then return end
+                    local c = client.focus
+                    if not c then
+                        border_timer:stop()
+                        return
+                    end
+                    if c._dnd_dragging then return end
+                    
+                    -- get current palette
+                    local palette = ensure_palette(shimmer_mode)
+                    if not palette then return end
+                    
+                    local len = #palette
+                    
+                    -- step the loop with fractional precision
+                    border_loop = border_loop + border_step
+                    if border_loop >= (len - 1) then
+                        border_loop = len - 1
+                        border_step = -(border_params.step_size or 0.5)
+                    elseif border_loop <= 0 then
+                        border_loop = 0
+                        border_step = (border_params.step_size or 0.5)
+                    end
+                    
+                    -- interpolate between colors
+                    local index = math.floor(border_loop)
+                    local fraction = border_loop - index
+                    local next_index = (index + 1) % len
+                    
+                    local color1 = palette[index] or "#00000000"
+                    local color2 = palette[next_index] or "#00000000"
+                    
+                    local color = color1
+                    if fraction > 0 and color1 ~= color2 then
+                        local r1, g1, b1 = color1:match("#(%x%x)(%x%x)(%x%x)")
+                        local r2, g2, b2 = color2:match("#(%x%x)(%x%x)(%x%x)")
+                        if r1 and g1 and b1 and r2 and g2 and b2 then
+                            r1, g1, b1 = tonumber(r1, 16), tonumber(g1, 16), tonumber(b1, 16)
+                            r2, g2, b2 = tonumber(r2, 16), tonumber(g2, 16), tonumber(b2, 16)
+                            local r = math.floor(r1 + (r2 - r1) * fraction)
+                            local g = math.floor(g1 + (g2 - g1) * fraction)
+                            local b = math.floor(b1 + (b2 - b1) * fraction)
+                            color = string.format("#%02x%02x%02x", r, g, b)
+                        end
+                    end
+                    
+                    c.border_color = color
+                    awesome.emit_signal("shimmer::border_tick", border_loop, len, color)
+                end
+            }
+        end,
+        
+        stop = function()
+            if border_timer then 
+                border_timer:stop()
+                border_timer = nil
+            end
+        end,
+        
+        pause = function()
+            border_paused = true
+        end,
+        
+        resume = function()
+            border_paused = false
+            M.api.border.start()
+        end,
+        
+        set_smoothness = function(level)
+            local smoothness_levels = {
+                [1] = {speed = 0.15, step_size = 1.0},    -- original (jittery)
+                [2] = {speed = 0.08, step_size = 0.8},    -- slightly smoother
+                [3] = {speed = 0.06, step_size = 0.5},    -- smooth (default)
+                [4] = {speed = 0.04, step_size = 0.3},    -- very smooth
+                [5] = {speed = 0.03, step_size = 0.2},    -- ultra smooth
+            }
+            
+            local settings = smoothness_levels[level] or smoothness_levels[3]
+            for k, v in pairs(settings) do border_params[k] = v end
+            if border_timer then border_timer.timeout = border_params.speed end
+        end,
+        
+        get_state = function()
+            return {
+                running = border_timer and border_timer.started or false,
+                paused = border_paused,
+                index = border_loop,
+                mode = shimmer_mode
+            }
+        end
+    }
+}
+
+
+-- // MARK: TASKLIST INTEGRATION
+
+M.api.tasklist = {
+    enabled = false,
+    
+    enable = function()
+        integrations.tasklist.enabled = true
+        M.api.tasklist.enabled = true
+        awesome.emit_signal("shimmer::tasklist_enabled")
+    end,
+    
+    disable = function()
+        integrations.tasklist.enabled = false
+        M.api.tasklist.enabled = false
+        awesome.emit_signal("shimmer::tasklist_disabled")
+    end,
+    
+    register_renderer = function(render_fn)
+        if type(render_fn) == "function" then
+            table.insert(integrations.tasklist.renderers, render_fn)
+        end
+    end,
+    
+    shimmer_client_title = function(client, title_widget)
+        if not integrations.tasklist.enabled then return end
+        if not client or not title_widget then return end
+        
+        local title = client.name or client.class or ""
+        M.apply_to_widget(title_widget, title)
+    end,
+    
+    setup_signals = function()
+        if not integrations.tasklist.enabled then return end
+        
+        -- Hook into tasklist widget updates via signals
+        awesome.connect_signal("shimmer::tasklist_update", function(screen, client_list)
+            if not integrations.tasklist.enabled then return end
+            
+            for _, c in ipairs(client_list or {}) do
+                if c and c.valid then
+                    awesome.emit_signal("shimmer::client_update", c, M.get_color())
+                    
+                    for _, renderer in ipairs(integrations.tasklist.renderers) do
+                        pcall(renderer, c, M.get_color())
+                    end
+                end
+            end
+        end)
+        
+        -- Auto-trigger tasklist updates when shimmer animation ticks
+        awesome.connect_signal("shimmer::update", function()
+            if not integrations.tasklist.enabled then return end
+            
+            local all_clients = client.get()
+            if #all_clients > 0 then
+                awesome.emit_signal("shimmer::tasklist_update", awful.screen.focused(), all_clients)
+            end
+        end)
+    end
+}
+
+
+-- // MARK: DND INTEGRATION
+
+M.api.dnd = {
+    enabled = false,
+    
+    enable = function()
+        integrations.dnd.enabled = true
+        M.api.dnd.enabled = true
+        M._setup_dnd_signals()
+        awesome.emit_signal("shimmer::dnd_enabled")
+    end,
+    
+    disable = function()
+        integrations.dnd.enabled = false
+        M.api.dnd.enabled = false
+        awesome.emit_signal("shimmer::dnd_disabled")
+    end,
+    
+    push_mode = function(mode)
+        table.insert(mode_stack, M.get_mode())
+        M.set_mode(mode)
+    end,
+    
+    pop_mode = function()
+        local previous_mode = table.remove(mode_stack)
+        if previous_mode then
+            M.set_mode(previous_mode)
+        end
+    end,
+    
+    on_drag_start = function(client)
+        if integrations.dnd.enabled then
+            M.api.dnd.push_mode("border_sync")
+            awesome.emit_signal("shimmer::drag_start", client)
+        end
+    end,
+    
+    on_drag_end = function(client)
+        if integrations.dnd.enabled then
+            M.api.dnd.pop_mode()
+            awesome.emit_signal("shimmer::drag_end", client)
+        end
+    end,
+    
+    get_drag_state = function()
+        return {
+            active = #mode_stack > 0,
+            mode_stack = mode_stack,
+            current_mode = M.get_mode()
+        }
+    end,
+    
+    set_drag_mode = function(mode)
+        if integrations.dnd.enabled and mode then
+            M.api.dnd.push_mode(mode)
+            return true
+        end
+        return false
+    end,
+    
+    clear_drag_modes = function()
+        if integrations.dnd.enabled then
+            while #mode_stack > 0 do
+                M.api.dnd.pop_mode()
+            end
+            return true
+        end
+        return false
+    end,
+    
+    setup_awesome_dnd_integration = function()
+        if not integrations.dnd.enabled then return false end
+        
+        local awesome_dnd = package.loaded["plugins.awesome_dnd"]
+        if not awesome_dnd then
+            local success, dnd_module = pcall(require, "plugins.awesome_dnd")
+            if success then
+                awesome_dnd = dnd_module
+            else
+                return false
+            end
+        end
+        
+        if awesome_dnd and awesome_dnd.register_plugin then
+            return awesome_dnd.register_plugin("shimmer", {
+                on_drag_start = M.api.dnd.on_drag_start,
+                on_drag_end = M.api.dnd.on_drag_end,
+                name = "shimmer_integration"
+            })
+        end
+        
+        return false
+    end
+}
+
+-- Internal DnD signal setup
+function M._setup_dnd_signals()
+    if integrations.dnd.handlers.setup_complete then return end
+    
+    awesome.connect_signal("dnd::drag_start", M.api.dnd.on_drag_start)
+    awesome.connect_signal("dnd::drag_end", M.api.dnd.on_drag_end)
+    
+    integrations.dnd.handlers.setup_complete = true
+end
+
+
+-- // MARK: PLUGIN REGISTRATION SYSTEM
+
+-- Register a plugin with shimmer
+function M.register_plugin(plugin_name, plugin_api)
+    if type(plugin_name) ~= "string" or type(plugin_api) ~= "table" then
+        return false
+    end
+    
+    registered_plugins[plugin_name] = {
+        api = plugin_api,
+        registered_at = os.time(),
+        signals = plugin_api.signals or {}
+    }
+    
+    -- Connect plugin signals if provided
+    if plugin_api.signals then
+        for signal_name, handler in pairs(plugin_api.signals) do
+            if type(handler) == "function" then
+                awesome.connect_signal("shimmer::" .. signal_name, handler)
+            end
+        end
+    end
+    
+    -- Notify plugin of successful registration
+    if plugin_api.on_shimmer_registered and type(plugin_api.on_shimmer_registered) == "function" then
+        plugin_api.on_shimmer_registered(M.api)
+    end
+    
+    awesome.emit_signal("shimmer::plugin_registered", plugin_name, plugin_api)
+    return true
+end
+
+-- Unregister a plugin
+function M.unregister_plugin(plugin_name)
+    local plugin = registered_plugins[plugin_name]
+    if not plugin then return false end
+    
+    -- Disconnect plugin signals
+    if plugin.signals then
+        for signal_name, handler in pairs(plugin.signals) do
+            awesome.emit_signal("shimmer::plugin_cleanup", plugin_name, signal_name)
+        end
+    end
+    
+    -- Notify plugin of unregistration
+    if plugin.api.on_shimmer_unregistered and type(plugin.api.on_shimmer_unregistered) == "function" then
+        plugin.api.on_shimmer_unregistered()
+    end
+    
+    registered_plugins[plugin_name] = nil
+    awesome.emit_signal("shimmer::plugin_unregistered", plugin_name)
+    return true
+end
+
+-- Get list of registered plugins
+function M.get_registered_plugins()
+    local plugin_list = {}
+    for name, _ in pairs(registered_plugins) do
+        table.insert(plugin_list, name)
+    end
+    return plugin_list
+end
+
+-- Check if plugin is registered
+function M.is_plugin_registered(plugin_name)
+    return registered_plugins[plugin_name] ~= nil
+end
+
+-- Plugin communication interface
+M.api.plugins = {
+    register = M.register_plugin,
+    unregister = M.unregister_plugin,
+    list = M.get_registered_plugins,
+    is_registered = M.is_plugin_registered,
+    
+    broadcast = function(message, data)
+        for plugin_name, plugin in pairs(registered_plugins) do
+            if plugin.api.on_shimmer_message and type(plugin.api.on_shimmer_message) == "function" then
+                plugin.api.on_shimmer_message(message, data)
+            end
+        end
+        awesome.emit_signal("shimmer::broadcast", message, data)
+    end
+}
+
+
+-- // MARK: AUTO-INTEGRATION SIGNALS
+
+-- Taglist integration
+awesome.connect_signal("shimmer::register_taglist_widget", function(screen_index, tag, text_widget)
+    if text_widget and tag then
+        if tag.selected then
+            pcall(M.apply_to_widget, text_widget, tag.name or "", nil)
+        end
+        pcall(M.register_tag_widget, screen_index, tag, text_widget)
+    end
+end)
+
+awesome.connect_signal("shimmer::update_taglist_widget", function(tag, text_widget)
+    if text_widget and tag and tag.selected then
+        pcall(M.apply_to_widget, text_widget, tag.name or "", nil)
+    end
+end)
+
+-- Tag hover effects
+awesome.connect_signal("shimmer::tag_hover", function(tag_widget, tag, mode)
+    local text_widget = tag_widget and tag_widget:get_children_by_id('text_role')[1]
+    if not text_widget or not text_widget.set_markup then return end
+    
+    local current = tag.name or ''
+    local base_gold = M.get_base_gold()
+    
+    if mode == "enter" then
+        if tag.selected then return end
+        
+        local awesome_dnd = package.loaded["plugins.awesome_dnd"]
+        if awesome_dnd and awesome_dnd.drag_active then return end
+        
+        text_widget.__hover_lock = true
+        text_widget:set_markup('<span color="' .. base_gold .. '">' .. current .. '</span>')
+        tag_widget.__hover_text_colored = true
+        
+    elseif mode == "leave" then
+        if tag_widget.__hover_text_colored then
+            text_widget.__hover_lock = nil
+            tag_widget.__hover_text_colored = nil
+
+            if tag.selected then
+                pcall(M.apply_to_widget, text_widget, current, nil)
+            else
+                if text_widget.__hover_fade_timer and text_widget.__hover_fade_timer.stop then
+                    text_widget.__hover_fade_timer:stop()
+                end
+                
+                local fade_steps = 10
+                local fade_duration = 0.5
+                local step_time = fade_duration / fade_steps
+                local step = 0
+                
+                text_widget.__hover_fade_timer = gears.timer {
+                    timeout = step_time,
+                    autostart = true,
+                    callback = function()
+                        step = step + 1
+                        local progress = step / fade_steps
+                        local r = math.floor(255 - (255 - 255) * progress)
+                        local g = math.floor(215 - (215 - 255) * progress)
+                        local b = math.floor(0 - (0 - 255) * progress)
+                        local color = string.format("#%02x%02x%02x", r, g, b)
+                        text_widget:set_markup('<span color="' .. color .. '">' .. current .. '</span>')
+                        
+                        if step >= fade_steps then
+                            text_widget.__hover_fade_timer:stop()
+                            text_widget.__hover_fade_timer = nil
+                            text_widget:set_markup(current)
+                        end
+                    end
+                }
+            end
+        end
+    elseif mode == "dnd_enter" then
+        text_widget.__hover_lock = true
+        text_widget:set_markup('<span color="' .. base_gold .. '">' .. current .. '</span>')
+        tag_widget.__dnd_hover_active = true
+        
+    elseif mode == "dnd_leave" then
+        if tag_widget.__dnd_hover_active then
+            text_widget.__hover_lock = nil
+            tag_widget.__dnd_hover_active = nil
+            if tag.selected then
+                pcall(M.apply_to_widget, text_widget, current, nil)
+            else
+                if text_widget.__hover_fade_timer and text_widget.__hover_fade_timer.stop then
+                    text_widget.__hover_fade_timer:stop()
+                end
+                text_widget:set_markup(current)
+            end
+        end
+    end
+end)
+
+-- direct launcher registration function (for rc.lua compatibility)
+function M.register_launcher(launcher_widget)
+    if launcher_widget and launcher_widget.set_markup then
+        M._launcher_widget = launcher_widget
+        launcher_widget:set_markup('<span color="' .. M.get_base_gold() .. '">⚙</span>')
+    end
+end
+
+-- launcher integration (signal-based, for backward compatibility)
+awesome.connect_signal("shimmer::register_launcher", function(launcher_widget)
+    M.register_launcher(launcher_widget)
+end)
+
+
+-- // MARK: INITIALIZATION
+
+-- // MARK: USER CONFIGURATION INTERFACE
+
+-- taglist integration functions (for rc.lua compatibility)
+function M.register_taglist(taglist_widget, screen_index)
+    -- store reference for updates
+end
+
+function M.register_tasklist(tasklist_widget)
+    -- store reference for updates  
+end
+
+function M.handle_tag_hover(tag_widget, tag, mode)
+    awesome.emit_signal("shimmer::tag_hover", tag_widget, tag, mode)
+end
+
+-- simple config function for users to call after require
+function M.configure(config)
+    if type(config) ~= "table" then return false end
+    
+    -- set preset/mode
+    if config.preset and shimmer_config[config.preset] then
+        M.set_mode(config.preset)
+    end
+    
+    -- override gradient parameters for current mode
+    if config.gradient and type(config.gradient) == "table" then
+        local current_mode = M.get_mode()
+        local current_config = shimmer_config[current_mode]
+        if current_config and current_config.gradient then
+            -- merge user params with existing gradient config
+            for key, value in pairs(config.gradient) do
+                current_config.gradient[key] = value
+            end
+            -- clear cache to force regeneration
+            color_palettes[current_mode] = nil
+            ensure_palette(current_mode)
+        end
+    end
+    
+    -- create custom preset
+    if config.custom_preset and type(config.custom_preset) == "table" then
+        local name = config.custom_preset.name or "custom"
+        local preset = {
+            speed = config.custom_preset.speed or 0.3,
+            gradient = config.custom_preset.gradient or {
+                redFrequency = 0.05,
+                grnFrequency = 0.08,
+                bluFrequency = 0.02,
+                phase1 = 0, phase2 = 2, phase3 = 4,
+                center = 200, width = 50
+            }
+        }
+        shimmer_config[name] = preset
+        
+        if config.custom_preset.set_active then
+            M.set_mode(name)
+        end
+    end
+    
+    -- configure border animation
+    if config.border and type(config.border) == "table" then
+        if config.border.smoothness then
+            M.api.border.set_smoothness(config.border.smoothness)
+        end
+        if config.border.enabled ~= false then  -- default true
+            M.api.border.start()
+        end
+    elseif config.sync_border ~= false then  -- default true
+        M.api.border.start()
+    end
+    
+    return true
+end
+
+-- Initialize shimmer system automatically
+M.start()
+
+-- Auto-enable integrations
+M.api.tasklist.enable()
+M.api.tasklist.setup_signals()
+
+-- Auto-enable DnD integration if available
+local has_dnd = pcall(require, "plugins.awesome_dnd")
+if has_dnd then
+    M.api.dnd.enable()
+    M.api.dnd.setup_awesome_dnd_integration()
+end
+
+-- Set up integrated border animation
+client.connect_signal("focus", function(c)
+    border_loop = 0.0
+    border_step = border_params.step_size or 0.5
+    local palette = ensure_palette(shimmer_mode)
+    if palette and palette[0] then
+        c.border_color = palette[0]
+        awesome.emit_signal("shimmer::border_tick", border_loop, #palette, palette[0])
+    end
+    if not border_paused then M.api.border.start() end
+end)
+
+client.connect_signal("unfocus", function(c)
+    c.border_color = "#00000000"
+end)
+
+-- listen for external pause/resume requests (e.g., DnD)
+awesome.connect_signal("shimmer::border_pause", function() M.api.border.pause() end)
+awesome.connect_signal("shimmer::border_resume", function() M.api.border.resume() end)
+
+-- restart border animation when shimmer mode changes
+awesome.connect_signal("shimmer::mode_changed", function(mode)
+    if border_timer then
+        M.api.border.stop()
+        M.api.border.start()
+    end
+end)
+
+return M

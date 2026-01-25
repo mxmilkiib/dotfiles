@@ -1,0 +1,1541 @@
+-- plugins/shimmer/animation.lua
+-- Core animation and color generation for shimmer system
+--
+-- ARCHITECTURE:
+-- This module handles the core shimmer animation logic including:
+-- • Color palette generation using sine wave gradients
+-- • Per-character and solid color shimmer modes
+-- • Preset management with cycling support
+-- • Global per-character toggle independent of presets
+-- • Color interpolation for smooth transitions
+-- • Animation timing and widget application
+--
+-- PRESET SYSTEM:
+-- Each preset defines speed, gradient parameters, and per_character_default
+-- Presets with per_character_default=true: candle, cloud, char_flicker, debug
+-- 
+-- PER-CHARACTER LOGIC:
+-- - Global toggle (per_character_enabled) overrides preset defaults
+-- - When switching presets, per_character_default applies if not manually set
+-- - Each character gets phase offset based on position (i * 3.0 for wave mode)
+-- - should_use_per_character() determines final per-character state
+
+local gears = require("gears")
+local awful = require("awful")
+
+local M = {}
+
+-- // MARK: CORE STATE VARIABLES
+
+-- base gold color palette
+local base_gold = "#FFD700"
+
+-- current animation mode
+local shimmer_mode = "gold_contrast"
+
+-- legacy unified mode (kept for backwards compatibility)
+local current_per_character_mode = "wave"
+
+-- separate progression systems
+local current_colour_prog_mode = "wave"
+local current_shine_prog_mode = "wave"
+
+-- preset cycling state - ordered by energy level (low to high activity)
+local preset_list = {
+    -- minimal energy - static/very low activity
+    "static_gold",
+    "deep_gold",
+    "warm_light", 
+    "sepia_soft",
+    "warm_amber",
+    "copper",
+    -- low-medium energy - gentle shimmer
+    "gold_contrast",
+    "bright_gold",
+    "border_sync",
+    -- medium energy - rhythmic effects
+    "amber_pulse",
+    "cloud",
+    "candy_pastel",
+    -- medium-high energy - dynamic movement
+    "candy",
+    "plasma_drift",
+    -- high energy - intense/chaotic effects
+    "electric_buzz",
+    "aurora_scatter",
+    "digital_chaos",
+    "debug"
+}
+
+local current_preset_index = 1  -- start with gold_contrast
+
+-- color palette cache and generation
+local color_palettes = {}
+local palette_length = 256  -- increased for longer animation cycles
+
+-- animation state
+local shimmer_step = 0.1
+local shimmer_timer = nil
+local animation_direction = 1  -- 1 for forward, -1 for reverse
+
+
+-- progression mode cycling order - ordered by energy level (low to high activity)
+local colour_progression_modes_list = {
+    -- minimal energy
+    "colour_prog_off",
+    -- low energy - simple patterns
+    "alternating",
+    "wave", 
+    "reverse_wave",
+    "sine_wave",
+    -- medium energy - rhythmic and geometric
+    "pulse",
+    "center_out",
+    "edges_in", 
+    "fibonacci",
+    "spiral",
+    "heartbeat",
+    -- medium-high energy - organic movement
+    "drift",
+    "ripple",
+    "flow",
+    "breathing",
+    "cascade",
+    "typewriter",
+    "gradient_sweep",
+    "mirror",
+    "zigzag",
+    -- high energy - chaotic/random effects
+    "scatter",
+    "chaos",
+    "strobe",
+    "spotlight",
+    "flicker",
+    "random",
+    "rainbow"
+}
+
+local shine_progression_modes_list = {
+    -- minimal energy
+    "shine_prog_off",
+    "uniform",
+    -- low energy - simple patterns
+    "alternating",
+    "wave", 
+    "reverse_wave",
+    "sine_wave",
+    -- medium energy - rhythmic and geometric
+    "pulse",
+    "center_out",
+    "edges_in", 
+    "fibonacci",
+    "spiral",
+    "heartbeat",
+    -- medium-high energy - organic movement
+    "drift",
+    "ripple",
+    "flow",
+    "breathing",
+    "cascade",
+    "typewriter",
+    "gradient_sweep",
+    "mirror",
+    "zigzag",
+    -- high energy - chaotic/random effects
+    "scatter",
+    "chaos",
+    "strobe",
+    "spotlight",
+    "flicker",
+    "random"
+}
+
+-- legacy compatibility - defaults to colour progression modes
+local progression_modes_list = colour_progression_modes_list
+
+-- progression indices for separate systems
+local current_progression_index = 2  -- legacy unified index (start with alternating)
+local current_colour_prog_index = 2  -- start with alternating for colour
+local current_shine_prog_index = 2  -- start with uniform for shine
+
+
+--[[
+
+FPS PERFORMANCE FACTORS:
+The animation FPS is determined by multiple interconnected factors:
+1. Timer Interval (primary): Fixed at ~16ms (60fps) in M.start()
+2. Global Speed Multiplier: Lower values = smoother but slower animation
+3. Per-preset Speed: Individual preset speeds compound with global multiplier
+4. Palette Length: More colors (256 vs 200) = more memory/computation per step
+5. Animation Mode: 
+    - per_character modes process each character individually (higher CPU)
+    - full-text modes process entire strings at once (lower CPU)
+6. Color Generation: 
+    - sine wave gradients are computationally lighter
+    - HSV conversions and complex gradients add overhead
+7. Text Length: More characters = more processing per frame
+8. Gradient Complexity: Multi-color gradients vs simple color shifts
+
+--]]
+
+
+-- global speed multiplier (applied to all presets)
+local global_speed_multiplier = 1
+
+-- speed multiplier control functions
+function M.set_speed_multiplier(multiplier)
+    global_speed_multiplier = multiplier or 1.0
+end
+
+function M.get_speed_multiplier()
+    return global_speed_multiplier
+end
+
+-- debug function to check timer status
+function M.get_debug_status()
+    return {
+        mode = shimmer_mode,
+        step = shimmer_step,
+        timer_running = shimmer_timer and shimmer_timer.started or false,
+        palette_cached = color_palettes[shimmer_mode] and true or false,
+        palette_length = color_palettes[shimmer_mode] and #color_palettes[shimmer_mode] or 0
+    }
+end
+
+
+-- // MARK: COLOR PALETTE GEN
+
+-- sine wave gradient generator: creates smooth RGB transitions via frequency modulation
+-- each color channel oscillates independently, center/width control shine range
+local function makeColorGradient(frequency1, frequency2, frequency3, phase1, phase2, phase3, center, width, length)
+    center = center or 110  -- higher center for brighter colors
+    width = width or 65     -- reduced width for less contrast
+    length = length or palette_length
+    
+    local palette = {}
+    local expanded_length = length * 2
+    for i = 0, expanded_length - 1 do
+        local r = math.floor(math.sin(frequency1 * i * 0.5 + phase1) * width + center)
+        local g = math.floor(math.sin(frequency2 * i * 0.5 + phase2) * width + center)
+        local b = math.floor(math.sin(frequency3 * i * 0.5 + phase3) * width + center)
+        -- clamp values to valid range
+        r = math.max(0, math.min(255, r))
+        g = math.max(0, math.min(255, g))
+        b = math.max(0, math.min(255, b))
+        -- only store every other color to maintain original palette size but with smoother transitions
+        if i % 2 == 0 and (i / 2) < length then
+            palette[(i / 2) + 1] = string.format("#%02x%02x%02x", r, g, b)
+        end
+    end
+    return palette
+end
+
+-- HSV gold shine generator: natural gold tones via hue/saturation/value modulation
+-- shine_frequency controls shimmer speed, hue_variation adds color depth
+-- value_min/max clamp shine to avoid unreadable extremes~50° (gold), vary value for shine and slightly vary saturation
+local function hsv_to_rgb(h, s, v)
+    -- h in [0,360), s,v in [0,1]
+    local c = v * s
+    local x = c * (1 - math.abs(((h / 60) % 2) - 1))
+    local m = v - c
+    local r1, g1, b1 = 0, 0, 0
+    if h < 60 then r1, g1, b1 = c, x, 0
+    elseif h < 120 then r1, g1, b1 = x, c, 0
+    elseif h < 180 then r1, g1, b1 = 0, c, x
+    elseif h < 240 then r1, g1, b1 = 0, x, c
+    elseif h < 300 then r1, g1, b1 = x, 0, c
+    else r1, g1, b1 = c, 0, x end
+    local r = math.floor((r1 + m) * 255)
+    local g = math.floor((g1 + m) * 255)
+    local b = math.floor((b1 + m) * 255)
+    return string.format("#%02x%02x%02x", r, g, b)
+end
+
+
+local function makeGoldShinePalette(length, opts)
+    length = length or palette_length
+    opts = opts or {}
+    local hue_base = opts.hue_base or 50       -- ~gold hue
+    local hue_var = opts.hue_variation or 8    -- slightly more hue wobble for visibility
+    local sat_base = opts.sat_base or 0.95
+    local sat_var = opts.sat_variation or 0.15  -- more saturation variation
+    local val_min = opts.value_min or 0.5      -- lower floor for more contrast
+    local val_max = opts.value_max or 0.98      -- higher ceiling for more contrast
+    local shine_freq = opts.shine_frequency or 2.0  -- more cycles for visible shimmer
+    local hue_freq = opts.hue_frequency or 0.5
+    local sat_freq = opts.sat_frequency or 0.77
+    
+    local palette = {}
+    for i = 1, length do
+        local t = (i - 1) / length
+        local hue = hue_base + hue_var * math.sin(2 * math.pi * t * hue_freq)
+        local sat = sat_base - sat_var * math.sin(2 * math.pi * t * sat_freq)
+        local shine = 0.5 + 0.5 * math.sin(2 * math.pi * t * shine_freq)
+        local val = val_min + (val_max - val_min) * shine
+        
+        palette[i] = hsv_to_rgb((hue % 360 + 360) % 360, math.max(0, math.min(1, sat)), math.max(0, math.min(1, val)))
+    end
+    return palette
+end
+
+
+
+-- // MARK: PRESET CONF
+-- enhanced shimmer configuration with color cycling
+-- each preset defines: speed, per_character_default, gradient parameters
+local shimmer_config = {
+    -- PRESETS ORDERED BY ACCESS SEQUENCE (matching preset_list)
+    
+    -- no animation - static gold color
+    -- fallback mode, good for performance or when animation is unwanted
+
+    static_gold = {
+        speed = 0,
+        per_character_default = false,
+        static_color = base_gold,
+        default_colour_prog_mode = "colour_prog_off",
+        default_shine_prog_mode = "shine_prog_off"
+    },
+
+    -- gold_contrast: high-contrast gold shine with wide shine range (0.6-0.98)
+    -- uses HSV generator with drift progression mode, fast speed (0.8)
+    gold_contrast = {
+        speed = 0.8,
+        per_character_default = true,
+        default_colour_prog_mode = "spiral",
+        default_shine_prog_mode = "drift",
+        use_gold_shine = true,
+        gold_shine_opts = {
+            hue_base = 50,
+            hue_variation = 6,
+            sat_base = 1.0,
+            sat_variation = 0.20,
+            value_min = 0.8,
+            value_max = 0.98,
+            shine_frequency = 2.4
+        }
+    },
+
+    -- bright_gold: vivid golden shimmer with moderate contrast (0.40-0.98)
+    -- uses HSV generator with per-character mode, fast speed (0.8), tighter hue variation
+    bright_gold = {
+        speed = 0.8,
+        per_character_default = true,
+        default_colour_prog_mode = "wave",
+        default_shine_prog_mode = "pulse",
+        use_gold_shine = true,
+        gold_shine_opts = {
+            hue_base = 48,
+            hue_variation = 4,
+            sat_base = 1.0,
+            sat_variation = 0.08,
+            value_min = 0.40,
+            value_max = 0.98,
+            shine_frequency = 1.8
+        },
+        -- gradient kept for potential future switch; ignored when use_gold_shine=true
+        gradient = {
+            redFrequency = 0.06,
+            grnFrequency = 0.055,
+            bluFrequency = 0.008,
+            phase1 = 0,
+            phase2 = 0.4,
+            phase3 = 2.8,
+            center = 160,
+            width = 80
+        }
+    },
+
+    -- rich deep gold - sophisticated luxury with vibrant golden intensity
+    -- slower, more refined animation with richer golden tones
+    deep_gold = {
+        speed = 0.6,
+        per_character_default = false,
+        default_colour_prog_mode = "colour_prog_off",
+        default_shine_prog_mode = "shine_prog_off",
+        gradient = {
+            redFrequency = 0.05,
+            grnFrequency = 0.042,
+            bluFrequency = 0.0008,
+            phase1 = 0.1,
+            phase2 = 0.4,
+            phase3 = 4.8,
+            center = 195,
+            width = 40
+        }
+    },
+
+    -- amber_pulse: slow pulsing amber with drift progression mode
+    -- uses HSV generator, per-character drift mode, medium speed (0.28), wide shine range
+    amber_pulse = {
+        speed = 0.78,
+        per_character_default = true,
+        default_colour_prog_mode = "drift",
+        default_shine_prog_mode = "breathing",
+        use_gold_shine = true,
+        gold_shine_opts = {
+            hue_base = 48,
+            hue_variation = 4,
+            sat_base = 0.98,
+            sat_variation = 0.06,
+            value_min = 0.68,
+            value_max = 0.96,
+            shine_frequency = 1.2
+        }
+    },
+
+    -- warm_amber: rich RGB gradient amber with deep red/orange tones
+    -- uses sine wave generator, uniform mode, slower speed (0.28), wide contrast (150±90)
+    warm_amber = {
+        speed = 0.28,
+        per_character_default = true,
+        default_colour_prog_mode = "colour_prog_off",
+        default_shine_prog_mode = "shine_prog_off",
+        gradient = {
+            redFrequency = 0.055,
+            grnFrequency = 0.028,
+            bluFrequency = 0.0003,
+            phase1 = 0.2,
+            phase2 = 0.8,
+            phase3 = 6.0,
+            center = 150,
+            width = 90
+        }
+    },
+
+    -- copper: warm reddish-gold metallic with bronze tones (0.40-0.98)
+    -- uses HSV generator, uniform mode, fast speed (0.40), red-shifted hue (25°)
+    copper = {
+        speed = 0.40,
+        per_character_default = true,
+        default_colour_prog_mode = "colour_prog_off",
+        default_shine_prog_mode = "shine_prog_off",
+        use_gold_shine = true,
+        gold_shine_opts = {
+            hue_base = 25,
+            hue_variation = 8,
+            sat_base = 0.92,
+            sat_variation = 0.08,
+            value_min = 0.6,
+            value_max = 0.98,
+            shine_frequency = 0
+        }
+    },
+
+    -- golden hour warm light - hotter white light with bright intensity
+    -- produces bright white shimmer with warm undertones
+    warm_light = {
+        speed = 0.25,
+        per_character_default = false,
+        default_colour_prog_mode = "colour_prog_off",
+        default_shine_prog_mode = "shine_prog_off",
+        gradient = {
+            redFrequency = 0.038,
+            grnFrequency = 0.040,
+            bluFrequency = 0.035,
+            phase1 = 0.1,
+            phase2 = 0.6,
+            phase3 = 1.8,
+            center = 235,
+            width = 25
+        }
+    },
+
+    -- sepia soft - rich sepia tones with warm brown undertones
+    sepia_soft = {
+        speed = 0.32,
+        per_character_default = false,
+        default_colour_prog_mode = "colour_prog_off",
+        default_shine_prog_mode = "shine_prog_off",
+        gradient = {
+            redFrequency = 0.028,
+            grnFrequency = 0.022,
+            bluFrequency = 0.008,
+            phase1 = 0.2,
+            phase2 = 0.4,
+            phase3 = 2.8,
+            center = 170,
+            width = 35
+        }
+    },
+
+    -- cloud: ethereal warm white with blue accents and sky-like appearance
+    -- uses RGB gradient, per-character mode, medium speed (0.30), enhanced blue channel
+    cloud = {
+        speed = 0.30,
+        per_character_default = true,
+        default_colour_prog_mode = "drift",
+        default_shine_prog_mode = "breathing",
+        gradient = {
+            redFrequency = 0.025,
+            grnFrequency = 0.028,
+            bluFrequency = 0.055,
+            phase1 = 2.1,
+            phase2 = 2.8,
+            phase3 = 0.5,
+            center = 215,
+            width = 32
+        }
+    },
+
+    -- candy: warm flickering candlelight with organic flame colors
+    -- uses RGB gradient generator, per-character mode, slow speed (0.25), authentic candle tones
+    candy = {
+        speed = 0.5,
+        per_character_default = true,
+        default_colour_prog_mode = "heartbeat",
+        default_shine_prog_mode = "flicker",
+        gradient = {
+            redFrequency = 0.175,
+            grnFrequency = 0.165,
+            bluFrequency = 0.08,
+            phase1 = 0.2,
+            phase2 = 1.8,
+            phase3 = 5.2,
+            center = 215,
+            width = 38
+        }
+    },
+
+    -- candy_pastel variant - less contrast, brighter
+    candy_pastel = {
+        speed = 0.25,
+        per_character_default = true,
+        default_colour_prog_mode = "pulse",
+        default_shine_prog_mode = "mirror",
+        gradient = {
+            redFrequency = 0.05,
+            grnFrequency = 0.07,
+            bluFrequency = 0.015,
+            phase1 = 0.8,
+            phase2 = 2.2,
+            phase3 = 4.2,
+            center = 205,
+            width = 35
+        }
+    },
+
+    -- plasma drift - granular drift mode
+    plasma_drift = {
+        speed = 0.35,
+        per_character_default = true,
+        default_colour_prog_mode = "sine_wave",
+        default_shine_prog_mode = "uniform",
+        gradient = {
+            redFrequency = 0.08,
+            grnFrequency = 0.12,
+            bluFrequency = 0.15,
+            phase1 = 1.2,
+            phase2 = 3.8,
+            phase3 = 0.5,
+            center = 180,
+            width = 65
+        }
+    },
+
+    -- rapid electric buzz - high-energy, attention-grabbing with more saturation
+    -- fast animation speed with high frequency changes, best for short bursts
+    electric_buzz = {
+        speed = 0.5,
+        per_character_default = true,
+        default_colour_prog_mode = "chaos",
+        default_shine_prog_mode = "strobe",
+        gradient = {
+            redFrequency = 0.08,
+            grnFrequency = 0.15,
+            bluFrequency = 0.12,
+            phase1 = 0,
+            phase2 = 2,
+            phase3 = 4,
+            center = 190,
+            width = 65
+        }
+    },
+
+    -- aurora scatter - granular scatter mode
+    aurora_scatter = {
+        speed = 0.4,
+        per_character_default = true,
+        default_colour_prog_mode = "scatter",
+        default_shine_prog_mode = "spotlight",
+        use_gold_shine = true,
+        gold_shine_opts = {
+            hue_base = 180,
+            hue_variation = 60,
+            sat_base = 0.9,
+            sat_variation = 0.25,
+            value_min = 0.65,
+            value_max = 0.92,
+            shine_frequency = 1.5
+        }
+    },
+
+    -- digital chaos - granular chaos mode
+    digital_chaos = {
+        speed = 0.4,
+        per_character_default = true,
+        default_colour_prog_mode = "chaos",
+        default_shine_prog_mode = "strobe",
+        gradient = {
+            redFrequency = 0.25,
+            grnFrequency = 0.18,
+            bluFrequency = 0.32,
+            phase1 = 0,
+            phase2 = 1.5,
+            phase3 = 3.0,
+            center = 160,
+            width = 80
+        }
+    },
+
+    -- border sync mode - coordinates with window border animation
+    -- designed to complement border colors, wider color range for variety
+    border_sync = {
+        speed = 0.5,
+        per_character_default = false,
+        default_colour_prog_mode = "colour_prog_off",
+        default_shine_prog_mode = "shine_prog_off",
+        gradient = {
+            redFrequency = 0.1,
+            grnFrequency = 0.2,
+            bluFrequency = 0.1,
+            phase1 = 1,
+            phase2 = 260,
+            phase3 = 50,
+            center = 175,
+            width = 60
+        }
+    },
+
+    -- debug rainbow - obvious color cycling for testing/development
+    -- cycles through red->green->blue->yellow->magenta->cyan for easy visibility
+    debug = {
+        speed = 1,
+        per_character_default = true,  -- debug mode shows per-character clearly
+        default_colour_prog_mode = "rainbow",
+        default_shine_prog_mode = "gradient_sweep",
+        gradient = {
+            redFrequency = 0.3,
+            grnFrequency = 0.2,
+            bluFrequency = 0.4,
+            phase1 = 0,
+            phase2 = 2.1,
+            phase3 = 4.2,
+            center = 127,
+            width = 127
+        }
+    },
+
+
+    -- ADDITIONAL PRESETS (not in preset_list cycling)
+    
+    -- static amber - stable highlight without animation
+    static_amber = {
+        speed = 0,
+        per_character_default = false,
+        static_color = "#FFC107"
+    },
+
+    -- honey_glow: softer gold shine with wide shine range (0.35-0.98)
+    -- uses HSV generator, uniform mode, medium speed (0.30), gentle hue variation
+    honey_glow = {
+        speed = 0.30,
+        per_character_default = true,
+        use_gold_shine = true,
+        gold_shine_opts = {
+            hue_base = 55,
+            hue_variation = 2,
+            sat_base = 0.98,
+            sat_variation = 0.02,
+            value_min = 0.35,
+            value_max = 0.98,
+            shine_frequency = 1.0
+        }
+    }
+}
+
+-- // MARK: PALETTE MANAGEMENT
+
+-- palette cache manager: lazy-loads color arrays per preset to avoid startup blocking
+-- each mode gets 100-color palette generated on first use, cached thereafter
+local function ensure_palette(mode_name)
+    local config = shimmer_config[mode_name]
+    if not config then return nil end
+    
+    -- return cached palette if available
+    if color_palettes[mode_name] then
+        return color_palettes[mode_name]
+    end
+    
+    -- for startup performance, defer expensive palette generation
+    -- use simple fallback during initialization
+    if not shimmer_timer or not shimmer_timer.started then
+        -- startup fallback: simple static color to prevent blocking
+        local simple_palette = { config.static_color or base_gold }
+        return simple_palette
+    end
+    
+    -- generate full palette only after timer is running
+    if config.use_gold_shine then
+        color_palettes[mode_name] = makeGoldShinePalette(palette_length, config.gold_shine_opts)
+    elseif config.gradient then
+        local g = config.gradient
+        color_palettes[mode_name] = makeColorGradient(
+            g.redFrequency, g.grnFrequency, g.bluFrequency,
+            g.phase1, g.phase2, g.phase3,
+            g.center, g.width, palette_length
+        )
+    else
+        -- fallback for modes without gradient
+        color_palettes[mode_name] = { config.static_color or base_gold }
+    end
+    
+    return color_palettes[mode_name]
+end
+
+-- // MARK: CLIENT STATUS HELPERS
+
+-- get client status prefix symbols for window titles
+local function get_client_status_prefix(c)
+    if not c or not c.valid then return "" end
+    
+    local symbols = {}
+    if c.floating then table.insert(symbols, "✈") end
+    if c.maximized then table.insert(symbols, "+")
+    elseif c.maximized_horizontal then table.insert(symbols, "⬌")
+    elseif c.maximized_vertical then table.insert(symbols, "⬍") end
+    if c.sticky then table.insert(symbols, "▪") end
+    if c.ontop then table.insert(symbols, "⌃")
+    elseif c.above then table.insert(symbols, "▴")
+    elseif c.below then table.insert(symbols, "▾") end
+    
+    return (#symbols > 0) and table.concat(symbols, "") .. " " or ""
+end
+
+-- cached reference to avoid repeated require calls
+local integrations_module = nil
+local function get_integrations()
+    if not integrations_module then
+        integrations_module = require("plugins.shimmer.integrations")
+    end
+    return integrations_module
+end
+
+-- timer callback for shimmer animation
+local function shimmer_tick()
+    shimmer_step = shimmer_step + 1
+    get_integrations().update_widgets()
+end
+
+
+
+-- // MARK: COLOUR PROG
+
+-- calculate color progression phase offset for a character
+local function get_color_progression_offset(char_index, total_chars, colour_prog_mode, text_seed)
+    if colour_prog_mode == "colour_prog_off" or colour_prog_mode == "uniform" then
+        return 0 -- no phase offset
+    end
+    
+    local offset = 0
+    
+    if colour_prog_mode == "wave" then
+        offset = (char_index - 1) * 0.4
+    elseif colour_prog_mode == "reverse_wave" then
+        offset = (total_chars - char_index + 1) * 0.4
+    elseif colour_prog_mode == "sine_wave" then
+        offset = math.sin((char_index - 1) * 0.6) * 4.0
+    elseif colour_prog_mode == "center_out" then
+        local center = (total_chars + 1) / 2
+        local distance = math.abs(char_index - center)
+        offset = distance * 0.8
+    elseif colour_prog_mode == "edges_in" then
+        local center = (total_chars + 1) / 2
+        local distance_from_edge = math.min(char_index - 1, total_chars - char_index)
+        offset = distance_from_edge * 0.6
+    elseif colour_prog_mode == "pulse" then
+        local pulse_freq = 0.5
+        offset = math.sin((char_index - 1) * pulse_freq) * 3.0
+    elseif colour_prog_mode == "alternating" then
+        offset = (char_index % 2 == 0) and 6.0 or 0
+    elseif colour_prog_mode == "fibonacci" then
+        local function fib(n)
+            if n <= 1 then return n end
+            local a, b = 0, 1
+            for j = 2, n do a, b = b, a + b end
+            return b
+        end
+        offset = fib(char_index % 12) * 0.2
+    elseif colour_prog_mode == "spiral" then
+        local angle = (char_index - 1) * 0.8
+        offset = angle + math.sin(angle * 0.3) * 2.0
+    elseif colour_prog_mode == "rainbow" then
+        offset = ((char_index - 1) / math.max(1, total_chars - 1)) * 20.0
+    elseif colour_prog_mode == "heartbeat" then
+        local beat_pos = (char_index - 1) % 8
+        local heartbeat_pattern = {0, 3, 0.5, 0, 0, 2, 0.3, 0}
+        offset = heartbeat_pattern[beat_pos + 1]
+    elseif colour_prog_mode == "drift" then
+        math.randomseed(text_seed + char_index)
+        offset = math.random() * 0.8
+    elseif colour_prog_mode == "scatter" then
+        math.randomseed(text_seed + char_index)
+        offset = math.random() * 2.5
+    elseif colour_prog_mode == "chaos" then
+        math.randomseed(text_seed + char_index)
+        offset = math.random() * 10.0
+    elseif colour_prog_mode == "random" then
+        math.randomseed(text_seed + char_index)
+        offset = math.random() * 15.0
+    elseif colour_prog_mode == "ripple" then
+        local center = (total_chars + 1) / 2
+        local distance = math.abs(char_index - center)
+        local ripple_freq = 0.8
+        local decay = math.exp(-distance * 0.3)
+        offset = math.sin(distance * ripple_freq) * 3.0 * decay
+    elseif colour_prog_mode == "flow" then
+        local flow_base = (char_index - 1) / total_chars * 4.0
+        math.randomseed(text_seed + char_index)
+        local turbulence = (math.random() - 0.5) * 0.6
+        offset = flow_base + turbulence
+    elseif colour_prog_mode == "breathing" then
+        local breath_cycle = math.sin((char_index - 1) * 0.3) * 2.0
+        offset = breath_cycle + math.sin((char_index - 1) * 0.1) * 0.5
+    elseif colour_prog_mode == "cascade" then
+        local cascade_delay = (char_index - 1) * 0.8
+        offset = cascade_delay + math.sin(cascade_delay * 0.4) * 1.5
+    elseif colour_prog_mode == "typewriter" then
+        local reveal_pos = (char_index - 1) / math.max(1, total_chars - 1)
+        offset = reveal_pos * 8.0 + math.sin(reveal_pos * 6.0) * 2.0
+    elseif colour_prog_mode == "gradient_sweep" then
+        local sweep_pos = (char_index - 1) / math.max(1, total_chars - 1)
+        offset = sweep_pos * 12.0
+    elseif colour_prog_mode == "mirror" then
+        local center = (total_chars + 1) / 2
+        local distance = math.abs(char_index - center)
+        local mirror_phase = distance * 0.6
+        offset = mirror_phase + math.sin(mirror_phase * 0.8) * 1.2
+    elseif colour_prog_mode == "zigzag" then
+        local zigzag_freq = 0.7
+        local zigzag_amp = 3.0
+        offset = math.sin((char_index - 1) * zigzag_freq) * zigzag_amp + (char_index - 1) * 0.2
+    elseif colour_prog_mode == "strobe" then
+        math.randomseed(text_seed + char_index)
+        local strobe_state = math.random() > 0.5 and 8.0 or 0
+        offset = strobe_state
+    elseif colour_prog_mode == "spotlight" then
+        local center = (total_chars + 1) / 2
+        local distance = math.abs(char_index - center)
+        local spotlight_intensity = math.exp(-distance * 0.4)
+        offset = spotlight_intensity * 6.0
+    elseif colour_prog_mode == "flicker" then
+        math.randomseed(text_seed + char_index * 3)
+        local base_flicker = math.sin((char_index - 1) * 0.5) * 2.0
+        local random_flicker = (math.random() - 0.5) * 1.5
+        offset = base_flicker + random_flicker
+    end
+    
+    return offset
+end
+
+
+-- // MARK: SHINE PROG
+
+-- calculate shine progression modifier for a character
+local function get_shine_progression_modifier(char_index, total_chars, shine_prog_mode, text_seed)
+    if shine_prog_mode == "shine_prog_off" then
+        return 1.0 -- no modification
+    end
+    
+    local modifier = 1.0
+    
+    if shine_prog_mode == "uniform" then
+        modifier = 1.0 -- uniform shine
+    elseif shine_prog_mode == "wave" then
+        modifier = 0.7 + 0.3 * math.sin((char_index - 1) / total_chars * 2 * math.pi)
+    elseif shine_prog_mode == "reverse_wave" then
+        modifier = 0.7 + 0.3 * math.sin(((total_chars - char_index + 1) - 1) / total_chars * 2 * math.pi)
+    elseif shine_prog_mode == "sine_wave" then
+        modifier = 0.7 + 0.3 * math.sin((char_index - 1) * 0.6)
+    elseif shine_prog_mode == "center_out" then
+        local center = (total_chars + 1) / 2
+        local distance = math.abs(char_index - center) / (total_chars / 2)
+        modifier = 1.0 - (distance * 0.4) -- 0.6 to 1.0 range
+    elseif shine_prog_mode == "edges_in" then
+        local center = (total_chars + 1) / 2
+        local distance = math.abs(char_index - center) / (total_chars / 2)
+        modifier = 0.6 + (distance * 0.4) -- 0.6 to 1.0 range
+    elseif shine_prog_mode == "pulse" then
+        local pulse_freq = 0.5
+        modifier = 0.6 + 0.4 * math.abs(math.sin((char_index - 1) * pulse_freq))
+    elseif shine_prog_mode == "alternating" then
+        modifier = (char_index % 2 == 0) and 1.0 or 0.7
+    elseif shine_prog_mode == "fibonacci" then
+        local function fib(n)
+            if n <= 1 then return n end
+            local a, b = 0, 1
+            for j = 2, n do a, b = b, a + b end
+            return b
+        end
+        local fib_val = fib(char_index % 12)
+        modifier = 0.6 + (fib_val % 5) * 0.08 -- 0.6 to 0.92 range
+    elseif shine_prog_mode == "spiral" then
+        local angle = (char_index - 1) * 0.8
+        modifier = 0.7 + 0.3 * math.abs(math.sin(angle * 0.3))
+    elseif shine_prog_mode == "rainbow" then
+        modifier = 0.7 + 0.3 * ((char_index - 1) / math.max(1, total_chars - 1))
+    elseif shine_prog_mode == "heartbeat" then
+        local beat_pos = (char_index - 1) % 8
+        local heartbeat_pattern = {1.0, 0.9, 1.0, 0.7, 0.7, 0.8, 0.7, 0.7}
+        modifier = heartbeat_pattern[beat_pos + 1]
+    elseif shine_prog_mode == "drift" then
+        local flow_shine = (char_index - 1) / math.max(1, total_chars - 1)
+        math.randomseed(text_seed + char_index)
+        local variation = (math.random() - 0.5) * 0.1
+        modifier = 0.7 + 0.3 * flow_shine + variation
+    elseif shine_prog_mode == "scatter" or shine_prog_mode == "chaos" or shine_prog_mode == "random" then
+        math.randomseed(text_seed + char_index)
+        modifier = 0.6 + (math.random() * 0.4) -- 0.6 to 1.0 range
+    elseif shine_prog_mode == "ripple" then
+        local center = (total_chars + 1) / 2
+        local distance = math.abs(char_index - center)
+        local decay = math.exp(-distance * 0.2)
+        modifier = 0.6 + 0.4 * decay -- bright center, fade to edges
+    elseif shine_prog_mode == "flow" then
+        local flow_brightness = (char_index - 1) / math.max(1, total_chars - 1)
+        math.randomseed(text_seed + char_index)
+        local variation = (math.random() - 0.5) * 0.1
+        modifier = 0.7 + 0.3 * flow_brightness + variation
+    elseif shine_prog_mode == "breathing" then
+        local breath_phase = math.sin((char_index - 1) * 0.3) * 0.2
+        modifier = 0.8 + breath_phase -- gentle breathing brightness
+    elseif shine_prog_mode == "cascade" then
+        local cascade_pos = (char_index - 1) / math.max(1, total_chars - 1)
+        local cascade_wave = math.sin(cascade_pos * 4.0) * 0.3
+        modifier = 0.7 + cascade_wave
+    elseif shine_prog_mode == "typewriter" then
+        local reveal_pos = (char_index - 1) / math.max(1, total_chars - 1)
+        modifier = 0.5 + 0.5 * reveal_pos -- progressive brightness reveal
+    elseif shine_prog_mode == "gradient_sweep" then
+        local sweep_pos = (char_index - 1) / math.max(1, total_chars - 1)
+        modifier = 0.4 + 0.6 * sweep_pos -- smooth brightness gradient
+    elseif shine_prog_mode == "mirror" then
+        local center = (total_chars + 1) / 2
+        local distance = math.abs(char_index - center)
+        local mirror_brightness = 1.0 - (distance / (total_chars / 2)) * 0.4
+        modifier = math.max(0.6, mirror_brightness)
+    elseif shine_prog_mode == "zigzag" then
+        local zigzag_brightness = math.sin((char_index - 1) * 0.7) * 0.2
+        modifier = 0.8 + zigzag_brightness
+    elseif shine_prog_mode == "strobe" then
+        math.randomseed(text_seed + char_index)
+        modifier = math.random() > 0.5 and 1.0 or 0.3 -- sharp on/off
+    elseif shine_prog_mode == "spotlight" then
+        local center = (total_chars + 1) / 2
+        local distance = math.abs(char_index - center)
+        local spotlight_brightness = math.exp(-distance * 0.4)
+        modifier = 0.3 + 0.7 * spotlight_brightness -- bright center spotlight
+    elseif shine_prog_mode == "flicker" then
+        math.randomseed(text_seed + char_index * 3)
+        local base_brightness = 0.8
+        local flicker_amount = (math.random() - 0.5) * 0.4
+        modifier = base_brightness + flicker_amount
+    end
+    
+    return math.max(0.3, math.min(1.0, modifier)) -- clamp to reasonable range
+end
+
+
+-- per-letter shimmer function - applies different colors to each character
+function M.get_letter_shimmer_markup(text, base_phase_offset, options)
+    if not text or text == "" then return "" end
+    
+    options = options or {}
+    local colour_prog_mode = options.colour_prog_mode or current_colour_prog_mode
+    local shine_prog_mode = options.shine_prog_mode or current_shine_prog_mode
+    
+    -- validate UTF-8 and escape XML before processing
+    local escaped_text = gears.string.xml_escape(text)
+    
+    -- check for invalid UTF-8 sequences and replace with safe fallback
+    local safe_text = escaped_text:gsub("[\128-\255]+", function(match)
+        -- replace problematic UTF-8 sequences with safe ASCII
+        return "*"
+    end)
+    
+    local chars = {}
+    
+    -- split into individual characters (handle utf-8 safely)
+    for i = 1, safe_text:len() do
+        local char = safe_text:sub(i, i)
+        if char ~= "" then
+            table.insert(chars, char)
+        end
+    end
+    
+    -- generate random seed based on text for consistent random phases
+    local text_seed = 0
+    for i = 1, #text do
+        text_seed = text_seed + string.byte(text, i)
+    end
+    
+    local colored_chars = {}
+    for i, char in ipairs(chars) do
+        if char:match("%s") then
+            -- preserve whitespace
+            table.insert(colored_chars, char)
+        else
+            local letter_phase = base_phase_offset or 0
+            
+            -- calculate color progression phase offset using new function
+            local color_phase_offset = get_color_progression_offset(i, #chars, colour_prog_mode, text_seed)
+            letter_phase = letter_phase + color_phase_offset
+            
+            -- get base color from palette
+            local color = M.get_color(nil, 1, letter_phase)
+            
+            -- apply progression-based shine modification for HSV presets
+            local config = shimmer_config[shimmer_mode]
+            if config and config.use_gold_shine then
+                -- parse the hex color to HSV, modify shine, convert back
+                local function hex_to_hsv(hex)
+                    hex = hex:gsub("#", "")
+                    local r, g, b = tonumber(hex:sub(1,2), 16) / 255, tonumber(hex:sub(3,4), 16) / 255, tonumber(hex:sub(5,6), 16) / 255
+                    local max = math.max(r, g, b)
+                    local min = math.min(r, g, b)
+                    local h, s, v = 0, 0, max
+                    local d = max - min
+                    s = max == 0 and 0 or d / max
+                    if max ~= min then
+                        if max == r then h = (g - b) / d + (g < b and 6 or 0)
+                        elseif max == g then h = (b - r) / d + 2
+                        elseif max == b then h = (r - g) / d + 4 end
+                        h = h / 6
+                    end
+                    return h * 360, s, v
+                end
+                
+                local shine_mod = get_shine_progression_modifier(i, #chars, shine_prog_mode, text_seed)
+                local h, s, v = hex_to_hsv(color)
+                v = v * shine_mod -- modify shine
+                color = hsv_to_rgb(h, s, v)
+            end
+            
+            table.insert(colored_chars, '<span foreground="' .. color .. '">' .. char .. '</span>')
+        end
+    end
+    
+    local result = table.concat(colored_chars)
+    return result
+end
+
+-- // MARK: CORE API FUNCTIONS
+
+-- main animation control functions
+function M.set_mode(mode)
+    if shimmer_config[mode] then
+        shimmer_mode = mode
+        
+        -- clear all cached palettes to force regeneration with new preset
+        color_palettes = {}
+        
+        -- update per-character mode based on preset default (if not manually overridden)
+        local config = shimmer_config[mode]
+        
+        -- update progression modes based on preset default (if not manually overridden)
+        if config.default_progression_mode then
+            current_per_character_mode = config.default_progression_mode
+            -- sync both color and shine progression modes with the preset default
+            current_colour_prog_mode = config.default_progression_mode
+            current_shine_prog_mode = config.default_progression_mode
+        end
+        
+        -- defer border notification to prevent cascading calls
+        -- gears.timer.start_new(0.1, function()
+            local border = require("plugins.shimmer.border")
+            border.on_mode_changed(mode)
+            return false
+        -- end)
+    end
+end
+
+function M.get_mode()
+    return shimmer_mode
+end
+
+-- core color calculation with palette sampling for progression modes
+function M.get_color(mode_config, text_length, phase_offset)
+    local mode_name = mode_config or shimmer_mode or "warm_light"
+    local config = shimmer_config[mode_name]
+    
+    if not config then
+        return base_gold
+    end
+    
+    -- handle static colors
+    if config.speed == 0 or config.static_color then
+        return config.static_color or base_gold
+    end
+    
+    -- get pre-generated palette
+    local palette = ensure_palette(mode_name)
+    if not palette or #palette == 0 then
+        return base_gold
+    end
+    
+    if #palette < 2 then
+        return palette[1] or base_gold
+    end
+    
+    -- calculate animation phase
+    local effective_speed = config.speed * global_speed_multiplier * 0.5
+    local base_time = shimmer_step * effective_speed * animation_direction
+    local length_factor = (text_length or 1) * 0.1
+    local phase_factor = (phase_offset or 0) * 0.3  -- phase offset affects palette position
+    local animation_phase = base_time + length_factor + phase_factor
+    
+    -- sample from palette with ping-pong animation
+    local cycle_length = #palette * 2 - 2
+    local raw_index = math.floor(math.abs(animation_phase) * 8) % cycle_length
+    local palette_index
+    
+    if raw_index < #palette then
+        palette_index = raw_index
+    else
+        palette_index = cycle_length - raw_index
+    end
+    
+    return palette[palette_index + 1] or base_gold
+end
+
+function M.start()
+    if shimmer_timer then return end
+    
+    -- create timer with reduced frequency to prevent glib_poll blocking
+    shimmer_timer = gears.timer {
+        timeout = 0.1,  -- reduced from 0.05s to prevent blocking
+        autostart = true,  -- don't start immediately during config load
+        callback = shimmer_tick
+    }
+    
+    -- defer startup to avoid blocking main loop during initialization
+    -- gears.timer.start_new(0.5, function()
+        if shimmer_timer then
+            shimmer_timer:start()
+        end
+        return false
+    -- end)
+end
+
+function M.stop()
+    if shimmer_timer then
+        shimmer_timer:stop()
+        shimmer_timer = nil
+    end
+end
+
+function M.restart()
+    M.stop()
+    shimmer_step = 0
+    M.start()
+end
+
+function M.get_base_gold()
+    return base_gold
+end
+
+function M.get_status_prefix(client)
+    return get_client_status_prefix(client)
+end
+
+function M.apply_to_widget(widget, text, status_symbols, options)
+    if not widget or not widget.set_markup then return end
+    if widget.__hover_lock or widget.__hover_fade_lock then return end
+    
+    local display_text = (status_symbols or "") .. (text or "")
+    if display_text == "" then return end
+    
+    options = options or {}
+    local phase_offset = options.phase_offset or 0
+    
+    -- use enhanced per-character logic
+    local use_per_character = M.should_use_per_character(options)
+    
+    if use_per_character then
+        local markup = M.get_letter_shimmer_markup(display_text, phase_offset, options)
+        -- use original method if widget is protected, otherwise use normal method
+        if widget.__original_set_markup then
+            widget.__original_set_markup(widget, markup)
+        else
+            widget:set_markup(markup)
+        end
+    else
+        -- when per-character is off, optionally allow phase_offset for targeted variance
+        -- default: keep widgets synchronized (phase 0) unless explicitly overridden
+        local solid_phase = (options and options.use_phase_when_solid) and (options.phase_offset or 0) or 0
+        local shimmer_color = M.get_color(nil, #display_text, solid_phase)
+        local markup = '<span foreground="' .. shimmer_color .. '">' .. 
+                       gears.string.xml_escape(display_text) .. '</span>'
+        -- use original method if widget is protected, otherwise use normal method
+        if widget.__original_set_markup then
+            widget.__original_set_markup(widget, markup)
+        else
+            widget:set_markup(markup)
+        end
+    end
+end
+
+function M.get_palette(mode_name)
+    local mode = mode_name or shimmer_mode
+    return ensure_palette(mode)
+end
+
+function M.get_gradient_params(mode_name)
+    local mode = mode_name or shimmer_mode
+    local config = shimmer_config[mode]
+    return config and config.gradient
+end
+
+function M.set_gradient_params(mode_name, params)
+    if not shimmer_config[mode_name] then return false end
+    
+    shimmer_config[mode_name].gradient = params
+    color_palettes[mode_name] = nil
+    
+    return true
+end
+
+function M.clear_palette_cache(mode_name)
+    if mode_name then
+        color_palettes[mode_name] = nil
+    else
+        color_palettes = {}
+    end
+end
+
+function M.add_preset(preset_config)
+    local name = preset_config.name or "custom"
+    local preset = {
+        speed = preset_config.speed or 0.3,
+        gradient = preset_config.gradient or {
+            redFrequency = 0.05,
+            grnFrequency = 0.08,
+            bluFrequency = 0.02,
+            phase1 = 0, phase2 = 2, phase3 = 4,
+            center = 200, width = 50
+        }
+    }
+    shimmer_config[name] = preset
+    
+    -- add to preset list if not already there
+    local found = false
+    for _, preset_name in ipairs(preset_list) do
+        if preset_name == name then
+            found = true
+            break
+        end
+    end
+    if not found then
+        table.insert(preset_list, name)
+    end
+end
+
+function M.get_preset_list()
+    return preset_list
+end
+
+function M.get_progression_modes_list()
+    return progression_modes_list
+end
+
+function M.get_current_preset()
+    return shimmer_mode
+end
+
+function M.get_preset_config(preset_name)
+    local name = preset_name or shimmer_mode
+    return shimmer_config[name]
+end
+
+function M.cycle_preset(direction)
+    direction = direction or 1  -- default to forward
+    
+    if direction > 0 then
+        current_preset_index = current_preset_index + 1
+        if current_preset_index > #preset_list then
+            current_preset_index = 1
+        end
+    else
+        current_preset_index = current_preset_index - 1
+        if current_preset_index < 1 then
+            current_preset_index = #preset_list
+        end
+    end
+    
+    local new_preset = preset_list[current_preset_index]
+    M.set_mode(new_preset)
+    
+    -- force immediate palette regeneration and widget update
+    gears.timer.start_new(0.05, function()
+        get_integrations().update_widgets()
+        return false
+    end)
+    
+    return new_preset, current_preset_index, #preset_list
+end
+
+-- backwards compatibility wrapper
+function M.cycle_preset_reverse()
+    return M.cycle_preset(-1)
+end
+
+-- // MARK: PER-CHARACTER CONTROLS
+
+
+-- direct progression mode setter: applies specific granular mode with visual refresh
+-- validates mode exists before applying, returns success status
+function M.set_per_character_mode(mode)
+    -- validate mode exists in progression_modes_list
+    for _, valid_mode in ipairs(progression_modes_list) do
+        if valid_mode == mode then
+            current_per_character_mode = mode
+            -- force immediate widget update to apply new progression
+            get_integrations().update_widgets()
+            return true
+        end
+    end
+    return false
+end
+
+function M.get_per_character_mode()
+    return current_per_character_mode
+end
+
+-- progression mode cycling: steps through granular animation modes
+-- forces widget refresh to immediately show new character phase patterns
+function M.cycle_per_character_mode(direction)
+    direction = direction or 1  -- default to forward
+    local modes = progression_modes_list
+    local current_index = current_progression_index
+    
+    for i, mode in ipairs(modes) do
+        if mode == current_per_character_mode then
+            current_index = i
+            break
+        end
+    end
+    
+    if direction > 0 then
+        current_index = current_index + 1
+        if current_index > #modes then
+            current_index = 1
+        end
+    else
+        current_index = current_index - 1
+        if current_index < 1 then
+            current_index = #modes
+        end
+    end
+    
+    current_per_character_mode = modes[current_index]
+    current_progression_index = current_index
+    
+    -- force immediate widget update to show new progression
+    get_integrations().update_widgets()
+    
+    return current_per_character_mode, current_index, #modes
+end
+
+-- separate color and shine progression cycling functions
+function M.cycle_colour_prog_mode(direction)
+    direction = direction or 1
+    local modes = progression_modes_list
+    
+    if direction > 0 then
+        current_colour_prog_index = (current_colour_prog_index % #modes) + 1
+    else
+        current_colour_prog_index = current_colour_prog_index - 1
+        if current_colour_prog_index < 1 then
+            current_colour_prog_index = #modes
+        end
+    end
+    
+    current_colour_prog_mode = modes[current_colour_prog_index]
+    get_integrations().update_widgets()
+    return current_colour_prog_mode, current_colour_prog_index, #modes
+end
+
+function M.cycle_shine_prog_mode(direction)
+    direction = direction or 1  -- default to forward
+    
+    local modes = progression_modes_list
+    
+    if direction > 0 then
+        current_shine_prog_index = current_shine_prog_index + 1
+        if current_shine_prog_index > #modes then
+            current_shine_prog_index = 1
+        end
+    else
+        current_shine_prog_index = current_shine_prog_index - 1
+        if current_shine_prog_index < 1 then
+            current_shine_prog_index = #modes
+        end
+    end
+    
+    current_shine_prog_mode = modes[current_shine_prog_index]
+    get_integrations().update_widgets()
+    return current_shine_prog_mode, current_shine_prog_index, #modes
+end
+
+
+function M.get_colour_prog_mode()
+    return current_colour_prog_mode
+end
+
+function M.get_shine_prog_mode()
+    return current_shine_prog_mode
+end
+
+-- get sample progression offsets for display (using middle character of a 10-char string)
+function M.get_colour_prog_offset_sample(mode)
+    return get_color_progression_offset(5, 10, mode or current_colour_prog_mode, 0)
+end
+
+function M.get_shine_progression_offset_sample(mode)
+    return get_shine_progression_modifier(5, 10, mode or current_shine_prog_mode, 0)
+end
+
+function M.set_colour_prog_mode(mode)
+    for i, prog_mode in ipairs(progression_modes_list) do
+        if prog_mode == mode then
+            current_colour_prog_mode = mode
+            current_colour_prog_index = i
+            get_integrations().update_widgets()
+            return true
+        end
+    end
+    return false
+end
+
+function M.set_shine_prog_mode(mode)
+    for i, prog_mode in ipairs(progression_modes_list) do
+        if prog_mode == mode then
+            current_shine_prog_mode = mode
+            current_shine_prog_index = i
+            get_integrations().update_widgets()
+            return true
+        end
+    end
+    return false
+end
+
+-- backwards compatibility wrapper
+function M.cycle_per_character_mode_reverse()
+    return M.cycle_per_character_mode(-1)
+end
+
+function M.get_per_character_modes()
+    return progression_modes_list
+end
+
+-- per-character shimmer logic: applies granular progression modes to text
+-- each character gets phase offset based on position and selected progression mode
+-- modes range from uniform (all same) to chaos (high randomness)
+function M.should_use_per_character(options)
+    options = options or {}
+    
+    -- explicit override in options takes precedence
+    if options.per_letter ~= nil then
+        return options.per_letter
+    end
+    
+    -- check if current progression mode is "uniform (off)"
+    return current_per_character_mode ~= "uniform (off)"
+end
+
+-- // MARK: COLOR UTILITIES
+
+-- enhanced color interpolation for smoother fade transitions
+function M.interpolate_color(color1, color2, factor)
+    -- parse hex colors
+    local function parse_hex(hex)
+        hex = hex:gsub("#", "")
+        return {
+            r = tonumber(hex:sub(1,2), 16) or 0,
+            g = tonumber(hex:sub(3,4), 16) or 0, 
+            b = tonumber(hex:sub(5,6), 16) or 0
+        }
+    end
+    
+    -- convert RGB to HSL for better color interpolation
+    local function rgb_to_hsl(r, g, b)
+        r, g, b = r/255, g/255, b/255
+        local max = math.max(r, g, b)
+        local min = math.min(r, g, b)
+        local h, s, l = 0, 0, (max + min) / 2
+
+        if max == min then
+            h, s = 0, 0 -- achromatic
+        else
+            local d = max - min
+            s = l > 0.5 and d / (2 - max - min) or d / (max + min)
+            if max == r then
+                h = (g - b) / d + (g < b and 6 or 0)
+            elseif max == g then
+                h = (b - r) / d + 2
+            elseif max == b then
+                h = (r - g) / d + 4
+            end
+            h = h / 6
+        end
+        return h, s, l
+    end
+
+    -- convert HSL back to RGB
+    local function hsl_to_rgb(h, s, l)
+        local function hue_to_rgb(p, q, t)
+            if t < 0 then t = t + 1 end
+            if t > 1 then t = t - 1 end
+            if t < 1/6 then return p + (q - p) * 6 * t end
+            if t < 1/2 then return q end
+            if t < 2/3 then return p + (q - p) * (2/3 - t) * 6 end
+            return p
+        end
+
+        local r, g, b
+        if s == 0 then
+            r, g, b = l, l, l -- achromatic
+        else
+            local q = l < 0.5 and l * (1 + s) or l + s - l * s 
+            local p = 2 * l - q
+            r = hue_to_rgb(p, q, h + 1/3)
+            g = hue_to_rgb(p, q, h)
+            b = hue_to_rgb(p, q, h - 1/3)
+        end
+        return math.floor(r * 255), math.floor(g * 255), math.floor(b * 255)
+    end
+    
+    local c1 = parse_hex(color1)
+    local c2 = parse_hex(color2)
+    
+    -- use HSL interpolation for more natural color transitions
+    local h1, s1, l1 = rgb_to_hsl(c1.r, c1.g, c1.b)
+    local h2, s2, l2 = rgb_to_hsl(c2.r, c2.g, c2.b)
+    
+    -- interpolate in HSL space
+    local h = h1 + (h2 - h1) * factor
+    local s = s1 + (s2 - s1) * factor
+    local l = l1 + (l2 - l1) * factor
+    
+    -- convert back to RGB
+    local r, g, b = hsl_to_rgb(h, s, l)
+    
+    -- clamp values
+    r = math.max(0, math.min(255, r))
+    g = math.max(0, math.min(255, g))
+    b = math.max(0, math.min(255, b))
+    
+    return string.format("#%02x%02x%02x", r, g, b)
+end
+
+return M

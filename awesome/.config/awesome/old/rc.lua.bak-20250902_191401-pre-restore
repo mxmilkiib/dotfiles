@@ -1,0 +1,473 @@
+--------------------------------------------------
+-- Milkii's rc.lua                              --
+-- https://github.com/mxmilkiib/dotfiles        --
+--------------------------------------------------
+
+-- // MARK: OVERVIEW
+-- ################################################################################
+-- ██████╗ ██╗██████╗ ███████╗ ██████╗████████╗ ██████╗ ██████╗ ██╗   ██╗
+-- ██╔══██╗██║██╔══██╗██╔════╝██╔════╝╚══██╔══╝██╔═══██╗██╔══██╗╚██╗ ██╔╝
+-- ██║  ██║██║██████╔╝█████╗  ██║        ██║   ██║   ██║██████╔╝ ╚████╔╝
+-- ██║  ██║██║██╔══██╗██╔══╝  ██║        ██║   ██║   ██║██╔══██╗  ╚██╔╝
+-- ██████╔╝██║██║  ██║███████╗╚██████╗   ██║   ╚██████╔╝██║  ██║   ██║
+-- ╚═════╝ ╚═╝╚═╝  ╚═╝╚══════╝ ╚═════╝   ╚═╝    ╚═════╝ ╚═╝  ╚═╝   ╚═╝
+-- ################################################################################
+-- CONFIGURATION DIRECTORY OVERVIEW
+-- This awesome config contains the following components:
+--
+-- 📄 MAIN FILES:
+--   • rc.lua (166KB, 4145 lines) - This comprehensive configuration file
+--   • rc_new.lua (15KB, 307 lines) - Alternative minimal config
+--   • quake.lua (5.6KB, 169 lines) - Dropdown terminal (Quake-style)
+--   • xrandr.lua (3.5KB, 136 lines) - Multi-monitor display management
+--   • test_dialog_sizing.lua (1.5KB, 45 lines) - Dialog sizing test script
+--
+-- 📚 DOCUMENTATION:
+--   • DIALOG_SIZING.md (5.0KB, 171 lines) - Auto-sizing for all dialog types
+--   • CENTERWORK_ADAPTIVE_README.md (2.8KB, 67 lines) - Custom layout behavior
+--   • LAYOUT_ICONS_README.md (4.5KB, 126 lines) - Complete icon reference
+--
+-- 🎨 THEMING:
+--   • milktheme/ - Custom theme with backgrounds, icons, and styling
+--
+-- 🏗️ LAYOUT ENGINES:
+--   • bling/ - Modern layouts (deck, horizontal, equalarea, vertical, mstab, centered)
+--   • lain/ - Classic layouts (centerwork, cascade, termfair) + utilities
+--   • treetile/ - Hierarchical window arrangement
+--   • awesome-workspace-grid/ - Grid-based workspace management
+--
+-- 🎮 WINDOW MANAGEMENT:
+--   • collision/ - Vim-like directional focus navigation
+--   • awesome-switcher/ - Alt-Tab application switcher with previews
+--   • cyclefocus/ - Advanced focus cycling mechanisms
+--   • tyrannical/ - Rule-based dynamic tagging system
+--   • revelation/ - OSX-style window exposé overview
+--
+-- 📱 WIDGETS & STATUS:
+--   • battery-widget/ - Visual battery status and charging indicators
+--   • media-player-widget/ - Media controls and track information
+--   • awesome-wm-widgets/ - Widget collection framework
+--
+-- 🔌 SYSTEM INTEGRATION:
+--   • freedesktop/ - XDG menu integration and .desktop file support
+--   • gobo/ - Custom system integration utilities
+--   • thrizen/ - Additional system tools
+--   • plugins/ - Custom extensions (xrandr + media-player)
+--
+-- 🗂️ BACKUP ARCHIVE (10 generations):
+--   • rc.lua.bak through rc.lua.bak8 - Complete development history
+--   • Evolution: 568 lines → 4,145 lines (22KB → 166KB)
+--
+-- Total: 20+ layouts, 5 focus systems, comprehensive widget ecosystem,
+-- deep system integration, and methodical configuration evolution.
+--
+-- ⚠️  INTENTIONALLY DISABLED FEATURES (commented out by choice):
+-- NAVIGATION ALTERNATIVES:
+--   • awesome-switcher - Alt-Tab application switcher with previews
+--   • gobo.awesome.alttab - Alternative Alt-Tab implementation
+--   • revelation - OSX-style window exposé overview
+--   • awesomewm-vim-tmux-navigator - Cross-app (Vim/Tmux) navigation
+--
+-- LAYOUT EXTENSIONS:
+--   • tyrannical + shortcuts - Dynamic desktop tagging system
+--   • dovetail, thrizen, leaved - Alternative layout scripts
+--   • fenetre - Titlebar customization framework
+--   • awesome-workspace-grid - Grid-based tag navigation system
+--
+-- WIDGETS & UTILITIES:
+--   • battery-widget - Visual battery status and charging indicators
+--   • xrandr - Multi-monitor display management interface
+--   • mpris_widget/media-player - Media controls and track information
+--   • smart_borders - Automatic border width control
+--
+-- OPTIONAL BEHAVIORS:
+--   • awful.hotkeys_popup.keys - Extended hotkey help system
+--   • freedesktop desktop icons - Desktop icon integration
+--   • Sloppy focus - Focus follows mouse behavior
+--   • Alternative client rules, placement, and titlebar processing
+--
+-- NOTE: These features are available but intentionally disabled for current workflow.
+--
+-- 🔍 SUBDIRECTORY STATUS:
+-- ✅ HEALTHY: collision/, bling/, lain/, milktheme/, tyrannical/, awesome-workspace-grid/
+-- ✅ FUNCTIONAL: treetile/, freedesktop/, revelation/, battery-widget/, media-player-widget/
+-- ⚠️  UNKNOWN: gobo/ (directory access issues - may need investigation)
+-- ✅ EMPTY: awesome-wm-widgets/ (placeholder for additional widgets)
+-- 📝 PLUGINS: plugins/ contains xrandr.lua + media-player/ subdirectory
+-- ################################################################################
+
+-- todo outline (work-in-progress cleanups)
+-- - dnd hover styling state management
+--   lines ~2656–2678: refactor `awesome_dnd.set_hover` to stop mutating widget bg/fg; compute styling in a single place (update_callback or `apply_tag_hover`) and keep transient state outside widget fields; clear on drag end.
+-- - duplicate square generation paths
+--   lines 265–297, 316–356: remove one path; keep widget_template imagebox approach; delete `setup_dynamic_squares`/recreations; rely on per-tag signals.
+-- - tag square update wiring overlap
+--   lines 316–353, 3110–3199, 3567: drop the `setup_dynamic_squares()` call and depend only on create_callback connections.
+-- - theme overrides currently in rc.lua
+--   lines 233–241: move these to `milktheme/theme.lua` to centralise theme.
+-- - hover logic duplication (normal vs dnd)
+--   lines 3173–3205 and awesome_dnd.*: add `apply_tag_hover(mode)` and route both paths through it; respect `t.selected`.
+-- - notification/test remnants
+--   lines ~2700–2900, 3170–3210: strip commented debug; ensure no `naughty.notify` remains.
+-- - shimmer system performance/structure
+--   lines ~1160–1520 (+ timer init): extract to `plugins/shimmer.lua`; throttle updates; limit to focused screen; reduce per-tick work.
+-- - geometry polling for drag hover
+--   lines ~2739–2766: remove raw geometry math; use `_is_dnd_tag_target` and mouse signals; keep a minimal fallback if needed.
+-- - border animation interaction
+--   lines ~1200–1410: implement `pause_border_anim(reason)` / `resume_border_anim(reason)` with ref counting.
+-- - global state hygiene
+--   lines ~2625+: split `awesome_dnd` into `drag_state`, `config`, `utils`; add `reset_drag_state()`; avoid attaching transient fields on widgets.
+-- - tag text style vs shimmer
+--   lines ~3151–3154: keep tag text white unless selected; don't let hover/dnd override; audit `beautiful.taglist_fg_*`.
+-- - icon square colours/sizing
+--   lines 249–260: use theme colours for fill/outline; pull size into a single constant.
+
+-- // MARK: TESTING
+-- ################################################################################
+--  ██████╗ ██████╗ ██████╗ ███████╗
+-- ██╔════╝██╔═══██╗██╔══██╗██╔════╝
+-- ██║     ██║   ██║██████╔╝███████╗
+-- ██║     ██║   ██║██╔══██╗██║
+-- ╚██████╗╚██████╔╝██║  ██║███████║
+--  ╚═════╝ ╚═════╝ ╚═╝  ╚═╝╚══════╝
+-- ################################################################################
+-- CORE SETUP - basic awesome configuration foundation and testing setup
+-- ################################################################################
+-- 🧪 TESTING METHODS:
+--
+-- BASIC SYNTAX CHECK (no libraries):
+--   lua -e "dofile('rc.lua')" 2>&1 | head -10
+--   (Expected: "module 'gears' not found" - this is normal outside AwesomeWM)
+--
+-- FULL ENVIRONMENT TEST (with AwesomeWM libraries):
+--   awesome -c ~/.config/awesome/rc.lua --check
+--   (Tests complete configuration with all libraries loaded)
+--
+-- XEPHYR TEST ENVIRONMENT:
+--   Xephyr :1 -ac -br -noreset -screen 1152x720 &
+--   DISPLAY=:1.0 awesome -c ~/.config/awesome/rc.lua
+--   (Runs AwesomeWM in virtual display for safe testing)
+-- Xephyr :1 -ac -br -noreset -screen 1152x720 & DISPLAY=:1.0 awesome -c ~/.config/awesome/rc.lua
+--
+-- LINTING WITH LUA CHECK:
+--   luarocks install luacheck
+--   luacheck rc.lua --no-max-line-length
+--   (Static analysis for common Lua issues)
+--
+-- DEBUG MODE:
+--   awesome -c ~/.config/awesome/rc.lua --debug
+--   (Runs with debug output for troubleshooting)
+--
+-- NOTE: The "module 'gears' not found" error is expected when testing
+-- outside the AwesomeWM environment. Use awesome --check for full validation
+
+-- // MARK: LIBS
+-- ################################################################################
+-- ██╗     ██╗██████╗ ███████╗
+-- ██║     ██║██╔══██╗██╔════╝
+-- ██║     ██║██████╔╝███████╗
+-- ██║     ██║██╔══██╗╚════██║
+-- ███████╗██║██████╔╝███████║
+-- ╚══════╝╚═╝╚═════╝ ╚══════╝
+-- ################################################################################
+-- LIBRARIES - core library imports and external dependencies
+
+-- If LuaRocks is installed, make sure that packages installed through it are found
+pcall(require, "luarocks.loader")
+
+-- Standard awesome libraries
+local gears = require("gears")
+local gmath = require("gears.math")
+local awful = require("awful")
+require("awful.autofocus")
+local wibox = require("wibox") -- Widget and layout library
+local beautiful = require("beautiful") -- Theme handling library
+local naughty = require("naughty") -- Notification library
+local menubar = require("menubar")
+local hotkeys_popup = require("awful.hotkeys_popup")
+
+-- External libraries
+local lain = require("lain") -- Layouts, widgets, utilities
+local bling = require("bling") -- Modern layouts and utilities
+local cyclefocus = require("cyclefocus") -- Cycle between applications
+local freedesktop = require("freedesktop") -- Create a menu from .desktop files
+local treetile = require("treetile") -- Hierarchical window arrangement
+local trizen = require("trizen") -- Trizen layout
+
+-- Enable hotkeys help widget for VIM and other apps
+-- when client with a matching name is opened:
+-- require("awful.hotkeys_popup.keys")
+
+-- Base gold color settings
+local dark_gold = "#8B6914" -- Darker, more dramatic gold
+local base_gold = "#FFD700" -- Base gold color (medium)
+local light_gold = "#FFFACD" -- Lighter, more vibrant gold
+
+
+
+-- // MARK: ERRORS
+-- ################################################################################
+-- ███████╗██████╗ ██████╗  ██████╗ ██████╗ ███████╗
+-- ██╔════╝██╔══██╗██╔══██╗██╔═══██╗██╔══██╗██╔════╝
+-- █████╗  ██████╔╝██████╔╝██║   ██║██████╔╝███████╗
+-- ██╔══╝  ██╔══██╗██╔══██╗██║   ██║██╔══██╗╚════██║
+-- ███████╗██║  ██║██║  ██║╚██████╔╝██║  ██║███████║
+-- ╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═╝╚══════╝
+-- ################################################################################
+-- ERROR HANDLING - startup and runtime error management
+
+-- Check if awesome encountered an error during startup and fell back to another config
+-- (This code will only ever execute for the fallback config)
+if awesome.startup_errors then
+    naughty.notify({
+        preset = naughty.config.presets.critical,
+        title = "Oops, there were errors during startup!",
+        text = awesome.startup_errors
+    })
+end
+
+-- Handle runtime errors after startup
+do
+    local in_error = false
+    awesome.connect_signal("debug::error", function(err)
+        -- Make sure we don't go into an endless error loop
+        if in_error then return end
+        in_error = true
+
+        naughty.notify({
+            preset = naughty.config.presets.critical,
+            title = "Oops, an error happened!",
+            text = tostring(err)
+        })
+        in_error = false
+    end)
+end
+
+
+
+-- // MARK: TERM
+-- ################################################################################
+-- ████████╗███████╗██████╗ ███╗   ███╗
+-- ╚══██╔══╝██╔════╝██╔══██╗████╗ ████║
+--    ██║   █████╗  ██████╔╝██╔████╔██║
+--    ██║   ██╔══╝  ██╔══██╗██║╚██╔╝██║
+--    ██║   ███████╗██║  ██║██║ ╚═╝ ██║
+--    ╚═╝   ╚══════╝╚═╝  ╚═╝╚═╝     ╚═╝
+-- ################################################################################
+-- TERMINAL - terminal and editor application definitions
+
+-- Define default terminal and editor
+terminal = "urxvt"
+-- terminal = "alacritty"
+editor = os.getenv("EDITOR") or "nvim"
+editor_cmd = terminal .. " -e " .. editor
+
+-- Compound terminal command for system monitoring
+terminal_cmd = terminal .. " -e btop;" .. terminal .. " -e journalctl -xeb;" .. terminal .. " -e dmesg"
+
+-- assign generic terminal icon for urxvt clients
+client.connect_signal("manage", function(c)
+    if c.class == "URxvt" or c.class == "urxvt" then
+        local term_icon = gears.filesystem.get_configuration_dir() .. "milktheme/layouts/term.png"
+        if gears.filesystem.file_readable(term_icon) then
+            c.icon = term_icon
+        end
+    end
+end)
+
+-- apply wallpaper and create widgets for each screen
+awful.screen.connect_for_each_screen(function(s)
+    -- wallpaper
+    set_wallpaper(s)
+
+    -- each screen has its own tag table
+    awful.tag({"1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "-", "="}, s, awful.layout.layouts[1])
+
+    -- Quake terminal
+    -- Create a dropdown terminal that appears from the top of the screen
+    s.quake = lain.util.quake(
+        {app = terminal},
+        {settings = function(c) c.followtag = true
+        end})
+end)
+
+-- // MARK: LAYOUT
+-- ################################################################################
+-- ██╗      █████╗ ██╗   ██╗ ██████╗ ██╗   ██╗████████╗
+-- ██║     ██╔══██╗╚██╗ ██╔╝██╔═══██╗██║   ██║╚══██╔══╝
+-- ██║     ███████║ ╚████╔╝ ██║   ██║██║   ██║   ██║
+-- ██║     ██╔══██║  ╚██╔╝  ██║   ██║╚██╗ ██╔╝   ██║
+-- ███████╗██║  ██║   ██║   ╚██████╔╝ ╚███╔╝    ██║
+-- ╚══════╝╚═╝  ╚═╝   ╚═╝    ╚═════╝   ╚══╝     ╚═╝
+-- ################################################################################
+-- LAYOUT - layout management and navigation systems
+
+-- Disabled/Alternative layout scripts (commented out for reference)
+-- local dovetail = require("awesome-dovetail")
+-- local thrizen = require("thrizen")
+-- local leaved = require("awesome-leaved"
+
+-- local tyrannical = require("tyrannical")     -- Dynamic desktop tagging
+-- require("tyrannical.shortcut")               -- Optional tyrannical shortcuts
+
+-- local revelation = require("revelation")     -- App/desktop switching script
+-- revelation.init()
+
+-- NAVIGATION - Movement and collision detection
+-- Navigation system using collision detection
+require("collision") {
+    -- Vim-style movement keys
+    up = {"k"},
+    down = {"j"},
+    left = {"h"},
+    right = {"l"}
+
+    -- Other configurations (commented out)
+    -- Normal arrow keys
+    -- up    = { "Up"    },
+    -- down  = { "Down"  },
+    -- left  = { "Left"  },
+    -- right = { "Right" },
+
+    -- Multiple key options
+    -- up    = { "Up", "&", "k", "F15" },
+    -- down  = { "Down", "KP_Enter", "j", "F14" },
+    -- left  = { "Left", "#", "h", "F13" },
+    -- right = { "Right", "\"", "l", "F17" },
+}
+
+-- LAYOUTS - Layout definitions and configuration
+-- Active layout scripts
+
+-- Custom adaptive layout
+local centerwork_adaptive = require("lain.layout.centerwork_adaptive")
+-- Custom two-thirds layout that gives new window 2/3 screen
+local centerwork_twothirds = require("lain.layout.centerwork_twothirds")
+-- Custom tile.bottom layout with enhanced mouse resize functionality
+local tile_bottom_mouse = require("lain.layout.tile_bottom_mouse")
+
+-- LAYOUT DEFINITIONS
+-- Table of layouts to cover with awful.layout.inc, order matters.
+-- https://awesomewm.org/doc/api/libraries/awful.layout.html
+-- https://github.com/lcpz/lain/wiki/Layouts
+awful.layout.layouts = {
+    -- Active layouts in preferred order
+    centerwork_twothirds.horizontal, -- CUSTOM: Two-thirds for new window
+    centerwork_adaptive.horizontal, -- CUSTOM: Adaptive centerwork horizontal
+    -- lain.layout.centerwork.horizontal,
+    awful.layout.suit.tile.top, awful.layout.suit.tile.bottom,
+    awful.layout.suit.tile, awful.layout.suit.tile.left,
+    -- tile_bottom_mouse,                          -- CUSTOM: Enhanced tile.bottom with mouse resize
+    -- awful.layout.suit.fair.horizontal,
+    -- bling.layout.horizontal,          -- OPTIONAL: Horizontal master layout  
+    -- lain.layout.termfair.center,
+    -- awful.layout.suit.corner.ne,
+    -- awful.layout.suit.corner.nw,
+    -- awful.layout.suit.spiral,                -- RECOMMENDED: Fibonacci spiral layout
+    treetile, bling.layout.equalarea, -- RECOMMENDED: Equal area distribution
+    bling.layout.mstab, -- HIGHLY RECOMMENDED: Master-slave tabbing
+    -- bling.layout.vertical,            -- OPTIONAL: Vertical master layout
+    -- lain.layout.centerwork,
+    -- lain.layout.termfair,
+    awful.layout.suit.magnifier, bling.layout.deck, -- OPTIONAL: Deck-style stacking layout
+    lain.layout.cascade, -- RECOMMENDED: Beautiful cascading windows
+    awful.layout.suit.max, --
+    --    -- BLING LAYOUTS (uncomment if you install Bling):
+    awful.layout.suit.floating, bling.layout.centered -- RECOMMENDED: Centered layout
+    --    -- Disabled layouts (commented out for reference)
+    --    -- awful.layout.suit.corner.nw,
+    --    -- awful.layout.suit.corner.ne,
+    --    -- awful.layout.suit.spiral.dwindle,
+    --    awful.layout.suit.max.fullscreen,
+    --    leaved.layout.suit.tile.right,
+    -- 	leaved.layout.suit.tile.left,
+    -- 	leaved.layout.suit.tile.bottom,
+    -- 	leaved.layout.suit.tile.top,
+
+    -- trizen
+
+    -- dovetail.layout.right,
+    -- dynamite.layout.conditional,
+    -- dynamite.layout.ratio,
+    -- dynamite.layout.stack,
+    -- dynamite.layout.tabbed
+ }
+ 
+ -- Default layout for milk theme
+ milkdefault = lain.layout.termfair.center
+ 
+ -- Ensure modifier keys are defined before any bindings use them
+ modkey = modkey or "Mod4"
+ altkey = altkey or "Mod1"
+ ctrlkey = ctrlkey or "Control"
+ shiftkey = shiftkey or "Shift"
+ 
+ 
+ globalkeys = gears.table.join(globalkeys,
+    -- // MARK -- layout management
+    -- layout control hotkeys for managing window arrangement and master/slave ratios
+
+    -- master client count management - adjusts how many windows get primary positioning
+    awful.key({ modkey, shiftkey }, "h", function() 
+{{ ... }}
+-- ██║  ██║██╔═══██╗╚══██╔══╝██║ ██╔╝██╔════╝╚██╗ ██╔╝██╔════╝
+-- ███████║██║   ██║   ██║   █████╔╝ █████╗   ╚████╔╝ ███████╗
+-- ██╔══██║██║   ██║   ██║   ██╔═██╗ ██╔══╝    ╚██╔╝  ╚════██║
+-- ██║  ██║╚██████╔╝   ██║   ██║  ██╗███████╗   ██║   ███████║
+-- ╚═╝  ╚═╝ ╚═════╝    ╚═╝   ╚═╝  ╚═╝╚══════╝   ╚═╝   ╚══════╝
+ -- ################################################################################
+ -- HOTKEYS - global and client key bindings
+ 
+ 
+ -- Set keys (moved to end after all keybindings are defined)
+ 
+ 
+ ---- utility functions
+
+-- Matcher generator for rules
+local create_matcher = function(class_name)
+    return function(c) return awful.rules.match(c, {class = class_name}) end
+end
+{{ ... }}
+--             previous_tag = nil
+--         end
+--     end
+-- end)
+
+ -- // MARK: BRIGHTNESS
+ globalkeys = gears.table.join(globalkeys, -- Brightness
+     awful.key({}, "XF86MonBrightnessDown", function() 
+         os.execute("brillo -U 10")
+         end, { description = "decrease brightness", group = "hotkeys" }),
+     awful.key({ modkey }, "XF86BrightnessUp", function() 
+         os.execute("brillo -A 10")
+         end, { description = "increase brightness", group = "hotkeys" })
+ )
+ 
+ -- Set keys (finalize after all keybinding joins)
+ root.keys(globalkeys)
+ 
+ -- // MARK: DESKTOP
+ 
+ -- Desktop button bindings
+ root.buttons(gears.table.join(awful.button({}, 3, function() mymainmenu:toggle() end)))
+ 
+ -- Add icon entries to desktop (disabled)
+ -- for s in screen do
+ --     freedesktop.desktop.add_icons({  -- disabled; see freedesktop desktop icons
+ -- [corrupt tail neutralized below]
+ -- end,  
+ -- globalkeys,  -- Op en a terminaln() awful.spawn(terminal)
+ --     end,alTerminal variants awful.key({ modkey, altkey }, "Return", function() awful.util.spawn("urxvt")
+ --     end, { description = "open urxvt terminal", group = "launcher" }),
+ --
+ -- Launch floating terminal
+ -- awful.key({ modkey, shiftkey }, "Return", function() awful.spawn(terminal,
+ --     {floating = true, placement = awful.placementterminal", group = "launcher" }),
+ --
+ -- Launch terminal in current working directory (duplicate removed)
+ -- awful.key({ modkey, ctrlkey }, "Return", function()
+ --     awful.util.spawn("sh -c 'alacritty --working-directory \"$(lastcwd)\"'")
+ --     end, { description = "open a terminal in same directory", group = "launcher" })
+ -- )
+ -- >
