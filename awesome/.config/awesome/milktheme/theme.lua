@@ -132,14 +132,22 @@ theme.hotkeys_label_fg = "#000000"  -- black foreground for section titles
 -- ╚═╝     ╚═╝  ╚═╝╚══════╝╚══════╝   ╚═╝      ╚═╝   ╚══════╝
 
 
-theme.main_purple   = "#623997"
+-- create color table with variations
+theme.main_purple = {
+    base = "#623997",
+    focusstart = "#62399788",
+    focusend = "#62399722",
+    normalstart = "#62399788", 
+    normalend = "#62399722"
+}
+
 -- theme.main_orange   = "#976239"  -- complementary orange: same saturation/lightness as purple
 theme.main_orange   = "#f97316"
 -- border_color = beautiful.main_orange  -- for orange accents
 
 
 -- Keep bg_focus as an alias for compatibility with Awesome/Beautiful expectations
-theme.bg_focus       = theme.main_purple
+theme.bg_focus       = theme.main_purple.base
 theme.fg_focus       = "#fff"
 
 
@@ -162,11 +170,6 @@ theme.fg_urgent      = "#f00"
 -- unified icon sizing (px)
 theme.icon_size = 16
 
-
--- compact titlebar height (roughly 1/4 of typical defaults): icon size + minimal padding
-theme.titlebar_height = theme.icon_size + 2
-
-theme.titlebar_bg_normal = theme.main_purple
 
 
 theme.taglist_bg_normal = "#000"
@@ -211,12 +214,16 @@ theme.border_width  = dpi(2)
 
 -- theme.border_width  = 2
 -- theme.border_width  = 1
-theme.border_radius = 2
-
 
 -- theme.useless_gap   = dpi(3)
--- theme.useless_gap   = 4
-theme.useless_gap = 0
+-- theme.useless_gap   = 4u
+theme.useless_gap = dpi(1)
+
+-- theme.border_radius = 2
+theme.border_radius = dpi(2)
+
+
+
 
 
 
@@ -254,6 +261,8 @@ theme.tasklist_icon_size = theme.icon_size
 theme.tasklist_plain_task_name = true
 
 
+
+
 -- // MARK: TAGLIST
 -- Exported size for custom tag occupancy squares used in rc.lua
 theme.tag_square_size = dpi(7)
@@ -275,10 +284,49 @@ theme.taglist_squares_unsel = theme_assets.taglist_squares_unsel(
 
 
 
-
 -- // MARK: TITLEBAR
+
+
+-- compact titlebar height (roughly 1/4 of typical defaults): icon size + minimal padding
+theme.titlebar_height = theme.icon_size
+
+theme.titlebar_bg_normal = theme.main_purple.base
+
+
 -- theme.titlebar_fg_focus = "#ffd700"
 -- theme.titlebar_fg_normal = "#fff"
+
+-- Create a purple-to-transparent gradient for focused titlebar (horizontal left to right)
+-- try right-to-left gradient (buttons area to title area)
+-- theme.titlebar_bg_focus = "linear:1,0:0,0:0,#66339900:0.3,#66339950:1.0,#663399ff"
+-- theme.titlebar_bg_focus = "linear:1,0:0,0:0,#66339900:1.0,#663399ff"
+
+-- Match the rc.lua gradient for consistency: solid purple start, then fade to transparent
+-- This ensures uniform titlebar appearance across all clients
+
+-- color variations now defined in main_purple table above
+
+theme.titlebar_bg_focus = {
+    type = "linear",
+    from = { 0, 0 },
+    to = { 700, 0 },  -- fallback width
+    stops = {
+        { 0, theme.main_purple.base },    -- purple, full opacity
+        { 0.5, theme.main_purple.base }, -- purple, full opacity
+        { 1, theme.main_purple.focusend },    -- purple, transparent
+    }
+}
+
+theme.titlebar_bg_normal = {
+    type = "linear",
+    from = { 0, 0 },
+    to = { 700, 0 },  -- fallback width
+    stops = {
+        { 0, theme.main_purple.normalstart },    -- purple, reduced opacity
+        { 0.5, theme.main_purple.normalstart }, -- purple, reduced opacity
+        { 1, theme.main_purple.normalend },    -- purple, transparent
+    }
+}
 
 
 
@@ -295,7 +343,6 @@ theme.taglist_squares_unsel = theme_assets.taglist_squares_unsel(
 theme.notification_bg = "#FFD700"    -- gold background
 theme.notification_fg = "#000000"    -- black text
 theme.notification_icon_size = 64
-
 
 
 
@@ -384,14 +431,14 @@ theme.titlebar_maximized_button_focus_active  = themes_path.."default/titlebar/m
 
 theme.layout_icon_config = {
     -- Colors
-    purple_margin_bg = theme.main_purple,    -- Purple margin/background
+    purple_margin_bg = theme.main_purple.base,    -- Purple margin/background
     window_fill = "#CCCCCC",         -- Light grey fills
     window_border = "#AAAAAA",       -- Light grey borders and separators
-    background = "#000000",          -- Black background
+    background = "#222222",          -- Black background
     
     -- Dimensions
     icon_size = 64,                  -- Icon dimensions
-    border_width = 2,                -- Purple margin width
+    border_width = 1,                -- Purple margin width
     corner_radius = 1,               -- Rounded corner radius
     separator_width = 1,             -- Separator width between windows
     min_purple_margin = 2,           -- Minimum purple space around representations

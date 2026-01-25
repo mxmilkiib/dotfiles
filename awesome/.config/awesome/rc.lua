@@ -805,15 +805,18 @@ local function cycle_tags_with_clients(direction)
     local all_tags = current_screen.tags
     local current_tag = current_screen.selected_tag
     local current_index = gears.table.hasitem(all_tags, current_tag)
-
-    for i = 1, #all_tags - 1 do
+    
+    local count = #all_tags
+    
+    for i = 1, count - 1 do
         local idx
         if direction == "next" then
-            idx = ((current_index - 1 + i) % #all_tags) + 1
+            idx = ((current_index + i - 1) % count) + 1
         else
-            idx = ((current_index - 1 - i + #all_tags) % #all_tags) + 1
+            idx = ((current_index - i - 1 + count) % count) + 1
         end
         local tag = all_tags[idx]
+        
         if #tag:clients() > 0 then
             tag:view_only()
             return
@@ -1465,7 +1468,7 @@ ruled.notification.connect_signal("request::rules", function()
         rule = {},
         properties = {
             screen = awful.screen.preferred,
-            implicit_timeout = 5,
+            implicit_timeout = 50,
         }
     }
 end)
@@ -1473,7 +1476,7 @@ end)
 -- explicitly require and configure naughty display - this was the key fix for Xephyr
 
 naughty.config.defaults.ontop = true
--- naughty.config.defaults.timeout = 10
+naughty.config.defaults.timeout = 50
 -- naughty.config.defaults.margin = dpi("16")  
 -- naughty.config.defaults.border_width = 0
 naughty.config.defaults.width = 400  -- Width in pixels instead of percentage string
@@ -1946,6 +1949,14 @@ mymainmenu = freedesktop.menu.build({
     }
 })
 
+-- -- Pre-populate the menu once at startup to avoid a pause on first open
+-- gears.timer.delayed_call(function()
+--     if mymainmenu then
+--         mymainmenu:show({ coords = { x = -10000, y = -10000 } })
+--         mymainmenu:hide()
+--     end
+-- end)
+
 
 -- Create a launcher widget and a main menu
 mylauncher = awful.widget.launcher({
@@ -1982,7 +1993,7 @@ local taglist_buttons = gears.table.join(
     awful.button({ modkey }, 1, function(t)
         if client.focus then
             client.focus:move_to_tag(t)
-        end 
+        end
     end),
     awful.button({ }, 3, awful.tag.viewtoggle),
     awful.button({ modkey }, 3, function(t)
@@ -1991,11 +2002,11 @@ local taglist_buttons = gears.table.join(
         end
     end), 
     -- mousewheel up: cycle to previous tag with clients
-    awful.button({ }, 4, function(t) 
+    awful.button({ }, 4, function(t)
         cycle_tags_with_clients("prev")
     end),
     -- mousewheel down: cycle to next tag with clients  
-    awful.button({ }, 5, function(t) 
+    awful.button({ }, 5, function(t)
         cycle_tags_with_clients("next")
     end),
     -- shift + mousewheel up: cycle to previous tag with visible clients only
@@ -2110,14 +2121,16 @@ end
 
 local tasklist_buttons = gears.table.join(
     awful.button({ }, 1, function (c)
-        if c == client.focus then
-            c.minimized = true
-        else
+        -- toggle minimize/restore only, no client selection
+        if c.minimized then
+            c.minimized = false
             c:emit_signal(
                 "request::activate",
                 "tasklist",
                 {raise = true}
             )
+        else
+            c.minimized = true
         end
     end),
     awful.button({ }, 2, function (c)
@@ -2941,6 +2954,21 @@ end)
 -- new: set once, use keys from module directly
 root.keys(keys.globalkeys)
 
+-- Set global mouse bindings
+-- mod4 + mousewheel: cycle through tags with clients
+root.buttons(gears.table.join(
+    awful.button({ }, 3, function()
+        if mymainmenu then
+            mymainmenu:toggle()
+        end
+    end),
+    awful.button({ modkey }, 4, function()
+        cycle_tags_with_clients("prev")
+    end),
+    awful.button({ modkey }, 5, function()
+        cycle_tags_with_clients("next")
+    end)
+))
 
 -- removed: unused tag_keybindings definition
 
@@ -3465,7 +3493,7 @@ ruled.client.connect_signal("request::rules", function()
         { rule = { class = "Mixxx"                }, properties = { tag = "4" } },
 
         
-        { rule = { class = "mpv"                  }, properties = { screen = 1, tag = "7", ontop = true, switch_to_tags = true } },
+        { rule = { class = "mpv"                  }, properties = { tag = "7", ontop = true, floating = true, switch_to_tags = true } },
 
 
         { rule = { instance = "keepassxc"         }, properties = { tag = "8" } },
@@ -3590,4 +3618,4 @@ awful.spawn.with_shell("pgrep -u $USER -x picom > /dev/null || picom --config ~/
 -- Notifications daemon
 -- awful.spawn.with_shell("dunst")
 
--- Uncomment any of the above or add your own autostart applications
+-- Uncomment any of the above or add your own autostart application                                                                                                                                                                                                                                             x x

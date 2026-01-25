@@ -247,8 +247,7 @@ function M.build(ctx)
     {{modkey}, "Escape", function() awful.tag.history.restore() end, "go back", nil, "tag"},
     {{modkey}, "j", function() awful.client.focus.byidx(1) end, "focus next client", nil, "client"},
     {{modkey}, "k", function() awful.client.focus.byidx(-1) end, "focus previous client", nil, "client"},
-    {{modkey}, "Tab", function() awful.client.focus.history.previous() if client.focus then client.focus:raise() end end,
-      "go back", nil, "client"}
+    {{modkey}, "Tab", function() awful.client.focus.history.previous() if client.focus then client.focus:raise() end end, "go back", nil, "client"}
   }
 
   -- // MARK: LAYOUT
@@ -343,10 +342,7 @@ function M.build(ctx)
     if ctx_has_function(ctx, "clear_notification_history") then
       table.insert(notification_center_keys, {{modkey, altkey, shiftkey}, "n", ctx.clear_notification_history, "clear notification history", nil, "notification"})
     end
-    -- notification center popup keybindings (only work when popup is visible)
-    if ctx_has_function(ctx, "notification_center_escape") then
-      table.insert(notification_center_keys, {{}, "Escape", ctx.notification_center_escape, "close notification center", nil, "notification"})
-    end
+    -- Escape keybinding is now managed dynamically by notification center (added on show, removed on hide)
   end
 
   -- // MARK -- shimmer preset export keys
@@ -540,7 +536,7 @@ function M.build(ctx)
       
       -- Toggle tag display
       table.insert(tag_keys, {
-        {modkey, ctrlkey}, key,
+        {modkey, altkey}, key,
         function()
           local screen = awful.screen.focused()
           local tag = screen.tags[i]
@@ -551,14 +547,29 @@ function M.build(ctx)
       
       -- Move client to tag
       table.insert(tag_keys, {
-        {modkey, shiftkey}, key,
+        {modkey, ctrlkey}, key,
         function()
           if client.focus then
             local tag = client.focus.screen.tags[i]
             if tag then client.focus:move_to_tag(tag) end
           end
         end,
-        "move focused client to tag #" .. i, nil, "tag"
+        "move focused client to tag #" .. i .. " (no follow)", nil, "tag"
+      })
+
+      -- Move client to tag and follow
+      table.insert(tag_keys, {
+        {modkey, shiftkey}, key,
+        function()
+          if client.focus then
+            local tag = client.focus.screen.tags[i]
+            if tag then
+              client.focus:move_to_tag(tag)
+              tag:view_only()
+            end
+          end
+        end,
+        "move focused client to tag #" .. i .. " (follow)", nil, "tag"
       })
       
       -- Toggle tag on focused client
@@ -600,6 +611,7 @@ function M.build(ctx)
     -- {{modkey, ctrlkey}, "Return", function(c) c:swap(awful.client.getmaster()) end, "move to master", nil, "client"},
     {{modkey}, "o", function(c) c:move_to_screen() end, "move to screen", nil, "client"},
     {{modkey}, "t", function(c) c.ontop = not c.ontop end, "toggle keep on top", nil, "client"},
+    {{modkey, shiftkey}, "s", function(c) c.sticky = not c.sticky end, "toggle keep on screen", nil, "client"},
     {{modkey}, "n", function(c) c.minimized = true end, "minimize window", nil, "client"},
     {{modkey}, "m", function(c) c.maximized = not c.maximized c:raise() end, "toggle maximize", nil, "client"},
     {{modkey, ctrlkey}, "m", function(c) c.maximized_vertical = not c.maximized_vertical c:raise() end,
@@ -681,6 +693,18 @@ function M.build(ctx)
             resize_no_warp(c)
         else
             awful.mouse.client.resize(c)
+        end
+    end),
+    
+    -- mousewheel: cycle through tags with clients
+    awful.button({ modkey }, 4, function (c)
+        if ctx_has_function(ctx, "cycle_tags_with_clients") then
+            ctx.cycle_tags_with_clients("prev")
+        end
+    end),
+    awful.button({ modkey }, 5, function (c)
+        if ctx_has_function(ctx, "cycle_tags_with_clients") then
+            ctx.cycle_tags_with_clients("next")
         end
     end)
   )
