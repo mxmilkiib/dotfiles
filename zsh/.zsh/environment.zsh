@@ -23,6 +23,9 @@ export SAVEHIST=50000
 export HISTSIZE=50000
 export HISTFILE=~/.zsh_history
 
+
+export KEYTIMEOUT=30  # 0.5 seconds - more time for ESC-d sequences
+
 # Zsh Reporting
 export REPORTTIME=10
 
@@ -42,11 +45,11 @@ export LOGDEST=/var/log/pacaur
 . /home/milk/.opam/opam-init/init.zsh > /dev/null 2> /dev/null || true
 
 
-XDG_DESKTOP_DIR="$HOME/media/desktop"
-XDG_DOCUMENTS_DIR="$HOME/media"
-XDG_DOWNLOAD_DIR="$HOME/dl"
-XDG_MUSIC_DIR="$HOME/media/audio"
-XDG_PICTURES_DIR="$HOME/media/images"
-XDG_PUBLICSHARE_DIR="$HOME/sync/public"
-XDG_TEMPLATES_DIR="$HOME/media"
-XDG_VIDEOS_DIR="$HOME/media/video"
+# xdg base directory specification
+export XDG_CONFIG_HOME="$HOME/.config"
+export XDG_DATA_HOME="$HOME/.local/share"
+export XDG_CACHE_HOME="$HOME/.cache"
+export XDG_STATE_HOME="$HOME/.local/state"
+
+# xdg user directories - source from config file to avoid duplication
+[[ -f "$HOME/.config/user-dirs.dirs" ]] && source "$HOME/.config/user-dirs.dirs"

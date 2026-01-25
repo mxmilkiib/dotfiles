@@ -63,6 +63,13 @@ zstyle ':completion:*'                 group-name ''
 # For enabling autocompletion of privileged environments in privileged commands
 zstyle ':completion::complete:*' gain-privileges 1
 
+# improve completion of files with restricted permissions
+zstyle ':completion:*' accept-exact-dirs true
+zstyle ':completion:*' path-completion true
+zstyle ':completion:*' glob-complete yes
+# force listing of all files regardless of permissions
+zstyle ':completion:*' file-patterns '%p:globbed-files' '*:all-files'
+
 # alias k="kill"
 # zstyle ':completion:*:*:*:*:processes' command 'ps -ef --no-headers -w -w'
 # zstyle ':fzf-tab:complete:k:argument-rest' extra-opts \

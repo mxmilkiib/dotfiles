@@ -20,34 +20,40 @@ alias :q='exit'
 alias quit='exit'
 
 
-# IRC-style buffer: push lines into history without executing, recall later
-# usage: type command, press alt-down to save to history, continue typing
+function zle-keymap-select {
+		VIMODE="${${KEYMAP/vicmd/-- NORMAL --}/(main|viins)/-- INSERT --}"
+		zle reset-prompt
+}
+
+zle -N zle-keymap-select
+
+# IRC-style buffer: push new lines into history stack and recall later
+# broken??
 fake-accept-line() {
 	# if the Zle buffer is not empty
-	if [[ -n "$BUFFER" ]]; then
-		# save current buffer to history without executing
+	if [[ -n "$BUFFER" ]];
+	then
+		# print the buffer silently
 		print -S "$BUFFER"
+#    zle .send-break
 	fi
 	return 0
 }
+
 zle -N fake-accept-line
 
-# wrapper for down-line that saves buffer when at end of history
-down-or-fake-accept() {
+down-or-fake-accept-line() {
 	# if at the last history line and no newline in right buffer
-	if (( HISTNO == HISTCMD )) && [[ "$RBUFFER" != *$'\n'* ]]; then
+	if (( HISTNO == HISTCMD )) && [[ "$RBUFFER" != *$'\n'* ]];
+	then
 		zle fake-accept-line
 	fi
-	zle down-line-or-history "$@"
+	zle .down-line-or-history "$@"
 }
-zle -N down-or-fake-accept
 
-# bind to alt-down (history-substring-search uses regular down arrow)
-bindkey '^[[1;3B' down-or-fake-accept  # alt-down: save current line to history
+zle -N down-or-fake-accept-line
 
-# debug helper: show raw key codes to diagnose binding issues
-# usage: type 'showkey', press the key combo, then ctrl-c
-alias showkey='cat -v'
+zle -N down-line-or-history down-or-fake-accept-line
 
 # print text normally, in color 214, which happens to be a nice orange
 #$> echo "$FG[214]Hello, World"
@@ -157,7 +163,7 @@ alias chmox='sudo chmod +x'
 alias cxmod='sudo chmod +x'
 
 
-### filesystem navigation
+### looking and moving around
 
 # ls colors for filetype recognition
 if [[ -x "`whence -p dircolors`" ]]; then
@@ -191,11 +197,37 @@ alias lsrd='tree -Cdf | less -RFX'          		  # alternative recursive ls, dire
 # graphical tree of subdirectories
 #alias 'lt=tree -d'
 
-# last modified file
-alias LF='ls -Art | tail -n 1'
 
-# open last modified file
-alias oLF='LF | xargs xdg-open'
+# search in files with ripgrep, showing context lines
+function gcode() { rg -uu --color=always -nC3 -- "$@" . | /usr/bin/less -R; }
+function gcode5() { rg -uu --color=always -nC5 -- "$@" . | /usr/bin/less -R; }
+function gcode7() { rg -uu --color=always -nC7 -- "$@" . | /usr/bin/less -R; }
+function gcode9() { rg -uu --color=always -nC9 -- "$@" . | /usr/bin/less -R; }
+
+
+# display mounts with column output
+alias mounts='mount | column -t'
+
+# human-readable df by default
+alias 'df=df -h'
+
+# dfc sorted by type, showing used size, type, wide filename, wide bar, sum usage for ext/fat/nfs/btrfs/tmpfs
+alias dfcc="dfc -q type -dTws -t ext,vfat,nfs,btrfs,tmpfs"
+
+# cdu with interactive, depth, human-readable flags
+alias du2='cdu -idh'
+
+# list directory items by size
+alias 'dus=du -ms * | sort -n'
+
+# ncdu with dark color scheme and quiet mode
+alias 'ncdu=ncdu --color dark -q'
+
+# check disk usage in ncdu for arch root, excluding common non-data directories
+alias 'ncduar=sudo ncdu / --color dark -q --exclude /home --exclude /mnt --exclude /media --exclude /run/media --exclude /boot --exclude /tmp --exclude /dev --exclude /proc --exclude /var --exclude /run/user --exclude /btrbk_snapshots'
+
+# check logical disk usage in btdu with expert mode
+alias btdul='sudo btdu --du --expert --max-time=30m /'
 
 
 alias ..='cd ..' 		# automatic in zsh (default?)
@@ -272,11 +304,6 @@ function lwd() {
 up() { cd $(eval printf '../'%.0s {1..$1}) && pwd; }
 # use "cd -[N]" or "cd -<TAB>" to get back
 
-# change into directory and long list files
-cl() { cd "$1" && ll . ; }
-
-
-### filesystem operations
 
 # move files as root
 alias smv='sudo mv'
@@ -313,6 +340,9 @@ mkcd() { mkdir -p "$1" && cd "$1"; }
 cpf() { cp "$@" && goto "$_"; }
 mvf() { mv "$@" && goto "$_"; }
 
+# change into directory and long list files
+cl() { cd "$1" && ll . ; }
+
 # make a backup of a file with .bak extension
 mkbk() {
   cp "$1"{,.bak}
@@ -331,46 +361,6 @@ spaces2underscores() {
     mv -iv "$i" "${s2u_temp//_-_/-}";
   done
 }
-
-
-### disk usage
-
-# display mounts with column output
-alias mounts='mount | column -t'
-
-# human-readable df by default
-alias 'df=df -h'
-
-# dfc sorted by type, showing used size, type, wide filename, wide bar, sum usage for ext/fat/nfs/btrfs/tmpfs
-alias dfcc="dfc -q type -dTws -t ext,vfat,nfs,btrfs,tmpfs"
-
-# cdu with interactive, depth, human-readable flags
-alias du2='cdu -idh'
-
-# list directory items by size
-alias 'dus=du -ms * | sort -n'
-
-# ncdu with dark color scheme and quiet mode
-alias 'ncdu=ncdu --color dark -q'
-
-# check disk usage in ncdu for arch root, excluding common non-data directories
-alias 'ncduar=sudo ncdu / --color dark -q --exclude /home --exclude /mnt --exclude /media --exclude /run/media --exclude /boot --exclude /tmp --exclude /dev --exclude /proc --exclude /var --exclude /run/user --exclude /btrbk_snapshots'
-
-# check logical disk usage in btdu with expert mode
-alias btdul='sudo btdu --du --expert --max-time=30m /'
-
-
-### search
-
-# quick [rip]grep
-alias g='rg'
-
-# search in files with ripgrep, showing context lines
-function gcode() { rg -uu --color=always -nC3 -- "$@" . | /usr/bin/less -R; }
-function gcode5() { rg -uu --color=always -nC5 -- "$@" . | /usr/bin/less -R; }
-function gcode7() { rg -uu --color=always -nC7 -- "$@" . | /usr/bin/less -R; }
-function gcode9() { rg -uu --color=always -nC9 -- "$@" . | /usr/bin/less -R; }
-
 
 ### network
 
@@ -538,7 +528,93 @@ alias vP='$EDITOR PKGBUILD'
 alias stow="stow -t ~"
 
 
-### editors
+### utils
+
+# For quick viewing of txt files
+# alias l='less -RF'
+
+# quick [rip]grep
+alias g='rg'
+
+# wrapper for READNULLCMD in environment.zsh
+function less_rfx() {
+	less -RFX "$@"
+}
+
+# add together multiple 24h time ranges
+# usage: invoicesum 1915-2145 1400-2000 0915-1400
+function invoicesum() {
+  for arg
+  do
+    # datediff ${(s:-:)arg} -f%H:%0M
+    for words in $arg; do
+      # echo   arg: $arg
+      DDRANGE=$(echo ${(s:-:)arg})
+      # echo   dd: $DDRANGE
+      DDRANGE2=$(sed -e 's/./&:/7;s/./&:/2' <<< $DDRANGE)
+      # echo   dd2: $DDRANGE2
+      DDANSWER=$(echo $DDRANGE2|xargs datediff -f%S)
+      # echo   dda: $DDANSWER
+      echo "$DDRANGE:  $(date -d@$DDANSWER -u +%H)h $(date -d@$DDANSWER -u +%M)m +"
+      DDSUM=$((DDSUM + DDANSWER))
+    done
+  done
+  # echo $DDSUM
+  if [ $DDSUM -gt 86400 ]; then DDDAYS="0$((DDSUM/86400)) days,"; fi
+  # echo ddd: $DDDAYS
+  echo "= $DDDAYS $(date +%H -d@$DDSUM) hours, $(date +%M -d@$DDSUM) minutes"
+  unset DDANSWER DDSUM DDDAYS
+}
+
+
+### -s suffix aliases, end of the filename
+# alias -s 
+
+
+### -g = Global aliases work at the end of a line
+alias -g L='| less -RF'      # redraw (color), quit under one page, dont init/deinit term
+alias -g LL='| less -RFX'    # redraw (color), quit under one page, allow mousescroll
+
+# grep with ripgrep, case-insensitive, line numbers
+alias -g G='| rg -in'
+# for piping
+alias -g GP='| rg -in --color=never'
+# run app in background without stdout/stderr
+alias -g S='&> /dev/null &'
+# fzf
+alias -g F='`fzf`'
+# vim
+alias -g V='|& $EDITOR -'
+
+# last modified file
+alias LF='ls -Art | tail -n 1'
+
+# open last modified file
+alias oLF='LF | xargs xdg-open'
+
+
+### apps
+
+# tigervnc server
+alias vncs="x0vncserver -rfbauth $XDG_CONFIG_HOME/tigervnc/passwd"
+
+
+# list all 256 ANSI colors
+alias colours='for code in {000..255}; do print -P -- "$code: %F{$code}Test%f"; done'
+
+# alsamixer with both input and output
+alias alsamixer='alsamixer -V=all'
+
+alias ncm='ncmpcpp'
+
+# open file with default application
+function o(){
+	xdg-open "$@" &
+}
+
+
+# get sway window tree as JSON
+alias swaytree='swaymsg -t get_tree'
 
 # quick sudo nano with line numbers
 alias sn='sudo nano -c' # with line numbers
@@ -559,9 +635,6 @@ alias uv='urxvt -e $EDITOR'
 
 # required pkg: vimpager. use vim and plugins to view a file
 alias vp=vimpager
-
-
-### version control
 
 # git shortcuts
 alias g='git show'
@@ -635,20 +708,12 @@ alias cdg='cd $(git rev-parse --show-cdup)'
 # }
 
 
-### media & audio
-
 # audio session manager (NSM based)
 alias rsb="raysession --start-session basic &"
-
-# alsamixer with both input and output
-alias alsamixer='alsamixer -V=all'
-
-alias ncm='ncmpcpp'
 
 # refresh pulseaudio devices by reloading udev module
 alias paref='pacmd unload-module module-udev-detect && pacmd load-module module-udev-detect'
 
-alias repa='systemctl --user restart pulseaudio.service'
 
 alias youtube-dl='youtube-dl --no-mtime'
 alias yt-music='youtube-dl -x --audio-format best --audio-quality 0 --add-metadata --xattrs --embed-thumbnail $*'
@@ -658,7 +723,39 @@ alias mpvyt="mpv --ytdl-format='bestvideo[height<=1080][fps<=?30]'"
 alias mpvhls='mpv --script-opts=ytdl_hook-all_formats=yes'
 
 
-### clipboard
+alias repa='systemctl --user restart pulseaudio.service'
+
+
+
+
+# web
+alias ff="firefox "
+alias trello="google-chrome --app=https://trello.com/b/AdniCH2y/to-do &"
+
+# game
+alias defrag="quake3 +set fs_game defrag +devmap tr1ckhouse-beta3 +sv_cheats '1' +df_promode '1' +r_mode '-1' +r_customwidth '1920' +r_customwidth '1080' +r_customaspect '1' +vm_cgame '0'"
+alias defrag2="quake3 +set fs_game defrag +devmap longtunnel +sv_cheats '1' +df_promode '1' +r_mode '-1' +r_customwidth '1920' +r_customwidth '1080' +r_customaspect '1' +vm_cgame '0'"
+
+
+# etymology
+function etym(){
+		for term in "$@"
+		do
+				url="etymonline.com/index.php?term=$term"
+				curl -s $url | grep "<dd " |
+								sed -e 's/<a[^>]*>\([^<]*\)<[^>]*>/:\1:/g' -e 's/<[^>]*>//g' |
+								fold -sw `[ $COLUMNS -lt 80 ] && echo $COLUMNS || echo 79 `
+				echo
+		done
+}
+
+# get_iplayer radio
+function gr() { get_iplayer -g --modes=flashaacstd --pid=$1; }
+
+function headless(){
+	VBoxHeadless -startvm "$@" &
+}
+
 
 alias xclipc="xclip -selection clipboard "
 
@@ -707,14 +804,9 @@ alias cbwd="pwd | cb"
 alias copyhs="cat $HISTFILE | tail -n 1 | cb"
 
 
-### web
+# prompt bell hook, sends an urgent signal on return to prompt, which is ignored if the terminal is active
+precmd() { [[ -t 0&&  -w 0 ]]&&  print -Pn '\e]2;%~\a' }
 
-# web browsers
-alias ff="firefox "
-alias trello="google-chrome --app=https://trello.com/b/AdniCH2y/to-do &"
-
-# web frameworks - Drupal
-alias dr='drush'
 
 # http://stackoverflow.com/a/187853
 # URL-encode string and print it
@@ -727,6 +819,11 @@ function url-encode; {
 function google; {
 				$BROWSER "http://www.google.com/search?q=`url-encode "${(j: :)@}"`" 1> /dev/null
 }
+
+
+### web frameworks
+# Drupal
+alias dr='drush'
 
 
 ### window managers
@@ -762,81 +859,11 @@ alias picomR='sudo killall picom; picom -b'
 # xev showing only keyboard events
 alias xevk='xev -event keyboard'
 
-### misc utilities
-
-# wrapper for READNULLCMD in environment.zsh
-function less_rfx() {
-	less -RFX "$@"
-}
-
-# add together multiple 24h time ranges
-# usage: invoicesum 1915-2145 1400-2000 0915-1400
-function invoicesum() {
-  for arg
-  do
-    # datediff ${(s:-:)arg} -f%H:%0M
-    for words in $arg; do
-      # echo   arg: $arg
-      DDRANGE=$(echo ${(s:-:)arg})
-      # echo   dd: $DDRANGE
-      DDRANGE2=$(sed -e 's/./&:/7;s/./&:/2' <<< $DDRANGE)
-      # echo   dd2: $DDRANGE2
-      DDANSWER=$(echo $DDRANGE2|xargs datediff -f%S)
-      # echo   dda: $DDANSWER
-      echo "$DDRANGE:  $(date -d@$DDANSWER -u +%H)h $(date -d@$DDANSWER -u +%M)m +"
-      DDSUM=$((DDSUM + DDANSWER))
-    done
-  done
-  # echo $DDSUM
-  if [ $DDSUM -gt 86400 ]; then DDDAYS="0$((DDSUM/86400)) days,"; fi
-  # echo ddd: $DDDAYS
-  echo "= $DDDAYS $(date +%H -d@$DDSUM) hours, $(date +%M -d@$DDSUM) minutes"
-  unset DDANSWER DDSUM DDDAYS
-}
-
-# etymology
-function etym(){
-		for term in "$@"
-		do
-				url="etymonline.com/index.php?term=$term"
-				curl -s $url | grep "<dd " |
-								sed -e 's/<a[^>]*>\([^<]*\)<[^>]*>/:\1:/g' -e 's/<[^>]*>//g' |
-								fold -sw `[ $COLUMNS -lt 80 ] && echo $COLUMNS || echo 79 `
-				echo
-		done
-}
-
-# get_iplayer radio
-function gr() { get_iplayer -g --modes=flashaacstd --pid=$1; }
-
-function headless(){
-	VBoxHeadless -startvm "$@" &
-}
-
-# open file with default application
-function o(){
-	xdg-open "$@" &
-}
-
-# tigervnc server
-alias vncs="x0vncserver -rfbauth $XDG_CONFIG_HOME/tigervnc/passwd"
-
-# list all 256 ANSI colors
-alias colours='for code in {000..255}; do print -P -- "$code: %F{$code}Test%f"; done'
-
-# get sway window tree as JSON
-alias swaytree='swaymsg -t get_tree'
-
-# prompt bell hook, sends an urgent signal on return to prompt, which is ignored if the terminal is active
-precmd() { [[ -t 0&&  -w 0 ]]&&  print -Pn '\e]2;%~\a' }
-
 # filemanager
 alias dcm='doublecmd --no-splash >/dev/null 2>&1 &!'
 
-# game
-alias defrag="quake3 +set fs_game defrag +devmap tr1ckhouse-beta3 +sv_cheats '1' +df_promode '1' +r_mode '-1' +r_customwidth '1920' +r_customwidth '1080' +r_customaspect '1' +vm_cgame '0'"
-alias defrag2="quake3 +set fs_game defrag +devmap longtunnel +sv_cheats '1' +df_promode '1' +r_mode '-1' +r_customwidth '1920' +r_customwidth '1080' +r_customaspect '1' +vm_cgame '0'"
 
+### misc
 # xclock-fork catclock
 alias xcat='xclock -mode cat -hl black -catcolor black -tiecolor purple -bg "#bbb" -ntails 60 &!'
 
@@ -868,23 +895,3 @@ function most_useless_use_of_zsh {
 alias zshhelp='less ~/.zshrc'
 alias adwmhelp='less ~/.config/adwm/keysrc'
 alias i3help='less ~/.config/i3/config'
-
-
-### -s suffix aliases, end of the filename
-# alias -s 
-
-
-### -g global aliases (work at end of line)
-alias -g L='| less -RF'      # redraw (color), quit under one page, dont init/deinit term
-alias -g LL='| less -RFX'    # redraw (color), quit under one page, allow mousescroll
-
-# grep with ripgrep, case-insensitive, line numbers
-alias -g G='| rg -in'
-# for piping
-alias -g GP='| rg -in --color=never'
-# run app in background without stdout/stderr
-alias -g S='&> /dev/null &'
-# fzf
-alias -g F='`fzf`'
-# vim
-alias -g V='|& $EDITOR -'

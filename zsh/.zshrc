@@ -64,21 +64,44 @@ source $Z/options.zsh
 
 # load plugins
 
+# zsh-histdb: SQLite-based command history with directory tracking
+# stores command start/stop times, working directory, hostname, session ID, exit status
+# commands:
+#   histdb [term]          - search history (use % as wildcard, e.g., histdb git%commit)
+#   histdb --help          - show all search options (filter by host, dir, session, time)
+#   histdb-top             - show most frequent commands
+#   histdb-top dir         - show most used directories
+#   histdb --host hostname - filter by specific host
+#   histdb -s 522          - show specific session number
+# config:
+#   HISTORY_IGNORE='(ls|cd|top|htop)' - glob pattern to exclude commands from history
+# database location: ~/.histdb/zsh-history.db
 zi load larkery/zsh-histdb
 
+# liquidprompt: adaptive prompt showing git status, load, battery, etc.
+# automatically adjusts based on terminal width and system state
 zi load nojhan/liquidprompt
 # zi load romkatv/powerlevel10k powerlevel10k
 
+# zsh-256color: enables 256 color support in terminal
+# provides $FG, $BG, $FX arrays for colors (e.g., $FG[214] for orange)
 zi load chrissicool/zsh-256color
 
+# alias-tips: shows existing alias when typing full command
+# helps learn and remember defined aliases
 zi load djui/alias-tips
 
+# zsh-completions: additional completion definitions for common commands
+# provides tab completions for commands not covered by default zsh
 # zi wait lucid atload"zicompinit; zicdreplay" blockf for \
 zi load zsh-users/zsh-completions
 
 # autoload -Uz _zi
 # (( ${+_comps} )) && _comps[zi]=_zi
 
+# zsh-completion-generator: auto-generate completions from --help output
+# usage: gencomp <command> - creates completion for command
+# example: gencomp ggrep, then ggrep -*[TAB]* works
 zi load RobSis/zsh-completion-generator
 # gencomp ggrep
 # source ~/.zshrc # or run `compinit'
@@ -87,6 +110,8 @@ zi load RobSis/zsh-completion-generator
 # compinit
 # zi cdreplay -q
 
+# zsh-reentry-hook: runs hooks when returning to shell prompt
+# used by other plugins to detect terminal re-entry
 zi load RobSis/zsh-reentry-hook
 
 
@@ -96,20 +121,29 @@ zi load RobSis/zsh-reentry-hook
 # [ "${DISPLAY:+X11}${WAYLAND_DISPLAY:+WAYLAND}" ] && zi light laggardkernel/zsh-tmux
 # zi load laggardkernel/zsh-tmux
 
-# zsh-fzf-history-search
-# zi wait lucid for '0'
+# zsh-fzf-history-search: fuzzy search command history with preview
+# ctrl-r: open FZF history search (interactive fuzzy finder)
 zi light joshskidmore/zsh-fzf-history-search
-# ctrl-r
 
+# fzf-tab: replace tab completion with FZF fuzzy finder
+# tab: opens FZF menu for completions, ctrl-/: toggle preview
 # needs to be sourced after compinit, but before plugins which will wrap widgets like zsh-autosuggestions or fast-syntax-highlighting.
 zi load Aloxaf/fzf-tab
 
+# history-substring-search: search history by substring
+# up/down arrows: search history matching typed text (anywhere in command)
+# ctrl-up/ctrl-down: search matching from start of line only
 zi load zsh-users/zsh-history-substring-search
 
+  # fast-syntax-highlighting: real-time syntax highlighting as you type
+  # highlights commands green (valid) or red (invalid), strings, paths, etc.
   # zi load zsh-users/zsh-syntax-highlighting
   # zi load zdharma/fast-syntax-highlighting
   zi load zdharma-continuum/fast-syntax-highlighting
 
+  # zsh-autosuggestions: suggests commands from history as you type
+  # ctrl-space: execute suggestion, right-arrow/end: accept suggestion
+  # alt-f: accept next word of suggestion
   zi load zsh-users/zsh-autosuggestions
   export ZSH_AUTOSUGGEST_USE_ASYNC=1
   export ZSH_AUTOSUGGEST_MANUAL_REBIND=1
@@ -120,9 +154,15 @@ zi load zsh-users/zsh-history-substring-search
   # zi load junegunn/fzf shell/key-bindings.zsh
   # CTRL-T (paste files/dirs), CTRL-R (history), and ALT-C (cd), alias -g F, **<tab>
 
+  # zsh-z: jump to frecent directories (frequency + recency)
+  # usage: z <partial-name> - jump to most used/recent matching directory
+  # example: z dot -> cd ~/dotfiles (if frequently used)
   zi load agkozak/zsh-z
 
 
+# fzf: command-line fuzzy finder for files, history, processes
+# ctrl-t: paste selected files/directories, ctrl-r: search history
+# alt-c: cd into selected directory, **<TAB>: trigger FZF completion
 # Set up fzf key bindings and fuzzy completion
 source <(fzf --zsh)
 
@@ -269,13 +309,22 @@ zstyle ':completion:*' file-sort modification
 _reset_cursor_color() printf '\e]112\a'
 
 zle-keymap-select() {
+    # set VIMODE variable for prompt (if using custom prompt that displays it)
+    VIMODE="${${KEYMAP/vicmd/-- NORMAL --}/(main|viins)/-- INSERT --}"
+    
+    # change cursor color based on mode
     if [[ $KEYMAP = vicmd ]]; then
         printf '\e]12;#0ff\a'  # cyan cursor in vim command mode
     else
-        _reset_cursor_color     # default cursor in emacs/insert mode
+        _reset_cursor_color    # default cursor in emacs/insert mode
     fi
+    
+    zle reset-prompt
 }
 zle -N zle-keymap-select
 
 precmd_functions+=(_reset_cursor_color)
+
+# re-bind ESC to vim command mode (in case plugins override it)
+bindkey -M emacs '^[' vi-cmd-mode
 

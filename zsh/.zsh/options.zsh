@@ -3,54 +3,54 @@
 
 # http://linux.die.net/man/1/zshoptions
 
-# Directory Changing options
-setopt AUTO_CD                      # Automatically cd in to directories if it is not a command name.
-setopt AUTO_PUSHD                   # Automatically push visited directories to the stack.
-setopt PUSHD_IGNORE_DUPS            # ...and do not duplicate them.
+# directory navigation
+setopt AUTO_CD               # automatically cd into directories if the name is not a command
+setopt AUTO_PUSHD            # automatically push visited directories onto the stack
+setopt PUSHD_IGNORE_DUPS     # avoid duplicate entries when pushing directories
 
-# History Options
-setopt APPEND_HISTORY               # Do not overwrite history.
-setopt INC_APPEND_HISTORY						# Add entries to history directly instead of at shell exit
-setopt SHARE_HISTORY								# Share history file between zsh shell instances
-setopt HIST_VERIFY                  # Verify commands that use a history expansion.
-setopt HIST_IGNORE_SPACE            # Ignore commands with leading spaces.
-setopt HIST_IGNORE_ALL_DUPS         # Ignore all duplicate entries in the history.
-setopt HIST_REDUCE_BLANKS           # Tidy up commands before comitting them to history.
-setopt EXTENDED_HISTORY             # Remember all sorts of stuff about the history.
+# history
+setopt APPEND_HISTORY        # append to the history file instead of overwriting it
+setopt INC_APPEND_HISTORY    # add history entries immediately instead of at shell exit
+setopt SHARE_HISTORY         # share history between interactive shells
+setopt HIST_VERIFY           # confirm commands that expand history
+setopt HIST_IGNORE_SPACE     # ignore commands with a leading space
+setopt HIST_IGNORE_ALL_DUPS  # keep only the most recent duplicate command
+setopt HIST_FIND_NO_DUPS     # skip duplicates when navigating history search results
+setopt HIST_REDUCE_BLANKS    # strip superfluous whitespace before saving a command
+setopt EXTENDED_HISTORY      # store timestamp and duration with each history entry
 
-# setopt RM_STAR_WAIT                 # Wait, and ask if the user is serious when doing rm *
+# globbing
+setopt EXTENDED_GLOB         # enable extended glob patterns
+setopt NUMERIC_GLOB_SORT     # sort glob matches numerically (1, 2, 10)
 
-setopt EXTENDED_GLOB                # Give meaning to lots of crazy characters.
+# completion
+setopt AUTO_LIST             # automatically show ambiguous completions
+setopt COMPLETE_IN_WORD      # allow completion from the cursor position
+# setopt NO_ALWAYS_LAST_PROMPT # place the prompt after completion lists
+setopt COMPLETE_ALIASES      # expand completions for aliases
+setopt MENU_COMPLETE         # select the first completion on the initial tab press
+setopt GLOB_DOTS             # include dotfiles when globbing
+setopt AUTO_PARAM_SLASH      # append a trailing slash when completing directories
 
-# Completion Options
-setopt AUTO_LIST                    # Always automatically show a list of ambiguous completions.
-setopt COMPLETE_IN_WORD             # Complete items from the beginning to the cursor.
-# setopt NO_ALWAYS_LAST_PROMPT	      # Put prompt beneath potentials
-setopt COMPLETE_ALIASES		    			# Complete aliased commands
-setopt MENU_COMPLETE								# First tab selects first option
+# interaction
+setopt NO_BEEP               # disable the terminal bell
+setopt LOCAL_OPTIONS         # confine option changes within functions
+setopt INTERACTIVE_COMMENTS  # allow comments in interactive code
+setopt MULTIBYTE             # enable multibyte character support
+unsetopt FLOW_CONTROL        # free ctrl-s/ctrl-q for regular use
 
-setopt NO_BEEP                      # Never, ever, beep at me.
+# correction
+# setopt CORRECT             # spell-check commands before execution
+# setopt CORRECTALL          # spell-check command arguments
 
-setopt LOCAL_OPTIONS                # Options set/unset inside functions, stay within the function.
-setopt INTERACTIVE_COMMENTS         # Allow me to comment lines in an interactive shell.
-
-setopt MULTIBYTE
-unsetopt FLOW_CONTROL
-
-# Correction
-# setopt CORRECT											# spelling correction for commands
-# setopt CORRECTALL										# spelling correction for arguments
-
-
-# Prompt settings
-setopt PROMPT_SUBST                 # Expand parameters within prompts.
+# prompt
+setopt PROMPT_SUBST          # expand parameters within prompts
 
 autoload -U promptinit
 promptinit
 
-# Colour support
-# autoload -U colors && colors			# set in git-prompt
-
+# colour support
+# autoload -U colors && colors  # set in git-prompt
 
 # https://github.com/zsh-users/zsh/blob/master/Functions/Zle/bracketed-paste-magic
 autoload -Uz bracketed-paste-magic

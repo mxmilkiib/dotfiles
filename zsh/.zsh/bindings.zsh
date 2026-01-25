@@ -94,16 +94,22 @@ bindkey -M emacs '^[[OF' end-of-line
 # up/down - history substring search (type then press up/down to search)
 [[ -n "${key[Up]}" ]]   && bindkey -M emacs "${key[Up]}" history-substring-search-up
 [[ -n "${key[Down]}" ]] && bindkey -M emacs "${key[Down]}" history-substring-search-down
-# fallback for terminals not using terminfo
+# fallback for terminals not using terminfo (matches anywhere in command)
 bindkey -M emacs '^[[A' history-substring-search-up
 bindkey -M emacs '^[[B' history-substring-search-down
 
-# ctrl-up/ctrl-down - history beginning search
+# ctrl-up/ctrl-down - history beginning search (matches from start of line only)
 autoload -U history-search-end
 zle -N history-beginning-search-backward-end history-search-end
 zle -N history-beginning-search-forward-end history-search-end
+# xterm/common terminals
 bindkey -M emacs '^[[1;5A' history-beginning-search-backward-end
 bindkey -M emacs '^[[1;5B' history-beginning-search-forward-end
+# urxvt with ctrl modifier (likely what you have)
+bindkey -M emacs '^[Oa' history-beginning-search-backward-end
+bindkey -M emacs '^[Ob' history-beginning-search-forward-end
+bindkey -M emacs '\eOa' history-beginning-search-backward-end
+bindkey -M emacs '\eOb' history-beginning-search-forward-end
 
 # ctrl-left/ctrl-right - word movement (emacs style - lands between words)
 [[ -n "${key[CtrlLeft]}" ]]  && bindkey -M emacs "${key[CtrlLeft]}" emacs-backward-word
@@ -147,6 +153,9 @@ bindkey -M emacs '^[d' kill-word
 
 # ctrl-w - delete word backward (standard readline/emacs)
 bindkey -M emacs '^w' backward-kill-word
+
+# ctrl-backspace - delete word backward
+bindkey -M emacs '^H' backward-kill-word    # urxvt (sends ^H)
 
 # ctrl-k - delete to end of line
 bindkey -M emacs '^k' kill-line
