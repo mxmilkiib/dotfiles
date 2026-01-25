@@ -55,14 +55,15 @@
 --   9. Notifications without icons show emoji bell
 --  10. Wibar widget clicks (systray/clock/etc) don't close - use toggle/header/Esc instead
 --
--- Keyboard shortcuts (configured in rc.lua):
---   Mod+Alt+N                    - toggle popup
---   Mod+Alt+Shift+N              - clear all notifications
---   Escape (when popup visible)  - close popup
+-- Keyboard shortcuts:
+--   Mod+Alt+N                    - toggle popup (configured in rc.lua)
+--   Mod+Alt+Shift+N              - clear all notifications (configured in rc.lua)
+--   Escape                       - close popup (dynamically added when popup opens)
 --
 -- Mouse actions:
 --   Click title/header           - close popup
 --   Click toggle widget          - toggle popup open/closed
+--   Middle-click toggle widget   - clear all notifications
 --   Click outside popup          - close popup (desktop/windows/wibar background only)
 --   Click X button               - delete individual notification
 --   Click "clear" button         - clear all notifications
@@ -76,7 +77,7 @@ local beautiful = require("beautiful")
 local gears = require("gears")
 local naughty = require("naughty")
 -- ensure DBus Notifications service is registered even if rc.lua loads this plugin before naughty.dbus
-pcall(require, "naughty.dbus")
+-- pcall(require, "naughty.dbus")
 local wibox = require("wibox")
 local menubar = require("menubar")
 local root = root
@@ -893,11 +894,16 @@ local function create_popup_header()
                 header_title,
                 nil,
                 {
-                    header_count,
+                    {
+                        header_count,
+                        top = -dpi(2.5),
+                        widget = wibox.container.margin,
+                    },
                     controls,
-                    spacing = dpi(8),
+                    spacing = dpi(4),
                     layout = wibox.layout.fixed.horizontal,
                 },
+                bottom = dpi(8),
                 layout = wibox.layout.align.horizontal,
             },
             top = dpi(0),
@@ -1043,10 +1049,21 @@ function M.show()
                 -- close popup on any wibar click (toggle widget excluded via flag above)
                 M.hide()
             end
-            s.mywibox:connect_signal("button::press", handler)
-            table.insert(popup._screen_handlers, {wibox = s.mywibox, handler = handler})
-        end
+        s.mywibox:connect_signal("button::press", handler)
+        table.insert(popup._screen_handlers, {wibox = s.mywibox, handler = handler})
     end
+end
+
+    -- add Escape keybinding to close popup (only active while popup is visible)
+    popup._old_root_keys = root.keys()
+    root.keys(gtable.join(
+        popup._old_root_keys or {},
+        awful.key({}, "Escape", function()
+            if popup_instance and popup_instance.visible then
+                M.hide()
+            end
+        end)
+    ))
 end
 
 function M.hide()
@@ -1058,6 +1075,12 @@ function M.hide()
     if popup_instance._old_root_buttons then
         root.buttons(popup_instance._old_root_buttons)
         popup_instance._old_root_buttons = nil
+    end
+    
+    -- restore old root keys (remove Escape keybinding)
+    if popup_instance._old_root_keys then
+        root.keys(popup_instance._old_root_keys)
+        popup_instance._old_root_keys = nil
     end
     
     -- disconnect client click handler
@@ -1158,10 +1181,16 @@ function ToggleIndicator:new()
         _icon_label = icon_label,
     }, ToggleIndicator)
 
-    container:buttons(gtable.join(awful.button({}, 1, function()
-        ignore_next_wibar_click = true
-        M.toggle()
-    end)))
+    container:buttons(gtable.join(
+        awful.button({}, 1, function()
+            ignore_next_wibar_click = true
+            M.toggle()
+        end),
+        awful.button({}, 2, function()
+            ignore_next_wibar_click = true
+            M.clear_history()
+        end)
+    ))
 
     container:connect_signal("mouse::enter", function()
         container.fg = COLOR_GOLD

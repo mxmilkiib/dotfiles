@@ -15,6 +15,7 @@ local M = {}
 
 -- Configuration
 local TAG_SQUARE_SIZE = 5
+local TAG_SQUARE_COLOR = "#8DE600"  -- apple green for tag indicators
 
 -- Surface cache for performance
 local square_surface_cache = {}
@@ -170,7 +171,7 @@ local function get_theme_square_size()
 end
 
 local function get_theme_square_color()
-    return beautiful.taglist_fg_occupied or beautiful.taglist_fg_focus or beautiful.fg_normal or "#aaaaaa"
+    return TAG_SQUARE_COLOR or beautiful.taglist_fg_occupied or beautiful.taglist_fg_focus or beautiful.fg_normal or "#aaaaaa"
 end
 
 -- helper: client state
@@ -220,7 +221,7 @@ local _surface_cache = { filled = nil, hollow = nil }
 local function _rebuild_surfaces()
     local sz = get_theme_square_size()
     if type(sz) ~= 'number' then sz = TAG_SQUARE_SIZE end
-    sz = math.max(1, sz - 2) -- 2px smaller than theme size
+    sz = math.max(1, sz - 3) -- 3px smaller than theme size
     _surface_cache.filled = create_square_surface(true, sz, get_theme_square_color())
     _surface_cache.hollow = create_square_surface(false, sz, get_theme_square_color())
 end
@@ -278,7 +279,12 @@ local function wrap_taglist_template(tpl)
             {
                 tpl,
                 {
-                    occ_square,
+                    {
+                        occ_square,
+                        left = 1,
+                        top = 1,
+                        widget = wibox.container.margin,
+                    },
                     halign = 'left',
                     valign = 'top',
                     widget = wibox.container.place,
@@ -313,7 +319,12 @@ local function wrap_taglist_template(tpl)
                     widget = wibox.container.margin,
                 },
                 {
-                    occ_square,
+                    {
+                        occ_square,
+                        left = 1,
+                        top = 1,
+                        widget = wibox.container.margin,
+                    },
                     halign = 'left',
                     valign = 'top',
                     widget = wibox.container.place,
@@ -337,6 +348,13 @@ end
 -- public function for rc.lua to update square widgets
 function M.update_square(square_widget, tag)
     update_occ_square_widget(square_widget, tag)
+end
+
+-- set custom square color (optional)
+function M.set_square_color(color_hex)
+    TAG_SQUARE_COLOR = color_hex
+    _rebuild_surfaces()
+    refresh_all_taglists()
 end
 
 -- Initialize tag indicators system
