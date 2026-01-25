@@ -35,12 +35,99 @@ local M = {}
 -- base gold color palette
 local base_gold = "#FFD700"
 
+-- // MARK: CHARACTER ANIMATION LIMITING SYSTEM
+-- tracks which characters are currently animating when max_animated_chars is set
+local animated_chars_tracker = {}
+local char_animation_rotation_step = 0
+local CHAR_ROTATION_SPEED = 1  -- how fast to rotate animated character selection
+
+-- character selection strategies for max_animated_chars feature
+local function select_animated_chars(text_length, max_chars, strategy, text_seed)
+    strategy = strategy or "wave"
+    max_chars = max_chars or text_length
+    
+    if max_chars <= 0 or max_chars >= text_length then
+        -- animate all characters if limit is disabled or too high
+        local all_chars = {}
+        for i = 1, text_length do
+            all_chars[i] = true
+        end
+        return all_chars
+    end
+    
+    local selected = {}
+    local rotation_offset = math_floor(char_animation_rotation_step * text_length)
+    
+    if strategy == "wave" then
+        -- rolling wave of animated characters
+        for i = 1, max_chars do
+            local pos = ((rotation_offset + i - 1) % text_length) + 1
+            selected[pos] = true
+        end
+    elseif strategy == "random" then
+        -- random selection of characters (with text-based seed for consistency)
+        local rng_state = (text_seed or 0) + math_floor(char_animation_rotation_step * 100)
+        local positions = {}
+        for i = 1, text_length do
+            positions[i] = i
+        end
+        
+        -- simple deterministic shuffle based on rng_state
+        for i = text_length, 2, -1 do
+            rng_state = (rng_state * 1103515245 + 12345) % (2^31)
+            local j = (rng_state % i) + 1
+            positions[i], positions[j] = positions[j], positions[i]
+        end
+        
+        for i = 1, math_min(max_chars, text_length) do
+            selected[positions[i]] = true
+        end
+    elseif strategy == "center_out" then
+        -- animate from center outward
+        local center = math_ceil(text_length / 2)
+        local radius = math_floor(max_chars / 2)
+        local offset = rotation_offset % text_length
+        
+        for i = 1, max_chars do
+            local distance = math_floor((i - 1) / 2)
+            local direction = ((i - 1) % 2 == 0) and 1 or -1
+            local pos = center + (direction * distance) + offset
+            pos = ((pos - 1) % text_length) + 1
+            selected[pos] = true
+        end
+    elseif strategy == "edges_in" then
+        -- animate from edges inward
+        local left_count = math_ceil(max_chars / 2)
+        local right_count = max_chars - left_count
+        local offset = rotation_offset % text_length
+        
+        for i = 1, left_count do
+            local pos = ((i - 1 + offset) % text_length) + 1
+            selected[pos] = true
+        end
+        for i = 1, right_count do
+            local pos = ((text_length - i + offset) % text_length) + 1
+            selected[pos] = true
+        end
+    end
+    
+    return selected
+end
+
+-- update character rotation state
+local function update_char_rotation()
+    char_animation_rotation_step = char_animation_rotation_step + CHAR_ROTATION_SPEED
+    if char_animation_rotation_step >= 100 then
+        char_animation_rotation_step = char_animation_rotation_step - 100
+    end
+end
+
 -- // MARK: PERFORMANCE CACHING SYSTEMS
 -- high-performance caching to avoid expensive per-character processing
 -- cache: text+phase bucket -> full markup; bounded to avoid memory bloat
 local markup_cache = {}
 local PHASE_GRANULARITY = 0.1  -- cache every N animation steps for smooth transitions
-local MAX_CACHE_ENTRIES = 200  -- prevent memory bloat
+local MAX_CACHE_ENTRIES = 256  -- prevent memory bloat
 local cache_stats = { hits = 0, misses = 0, size = 0 }
 
 -- HSV lookup table for shine-modified colors
@@ -54,9 +141,10 @@ local hsv_cache_stats = { hits = 0, misses = 0, size = 0 }
 -- timer base rate; presets/global adjust effective tick interval, not this
 -- local target_fps = 60  -- default 60fps, can be reduced to 30fps for performance
 -- local target_fps = 30
+local target_fps = 20
 -- local target_fps = 15
 -- local target_fps = 10
-local target_fps = 7
+-- local target_fps = 7
 
 -- // MARK: CONSTANT FOLDING & MATH OPTIMIZATION
 -- pre-calculated mathematical constants
@@ -304,7 +392,7 @@ local PHASE_MULTIPLIERS = constants.PHASE_MULTIPLIERS
 local SHINE_MODIFIERS = constants.SHINE_MODIFIERS
 
 -- current animation mode
-local shimmer_mode = "gold_contrast"
+local shimmer_mode = "gold_crumble"
 
 -- legacy unified mode (kept for backwards compatibility)
 local current_per_character_mode = "wave"
@@ -314,37 +402,38 @@ local current_colour_prog_mode = "wave"
 local current_shine_prog_mode = "wave"
 
 -- preset cycling state - ordered by energy level (low to high activity)
-local preset_list = {
-    -- minimal energy - static/very low activity
-    "static_gold",
-    "deep_gold",
-    "warm_light", 
-    "sepia_soft",
-    "warm_amber",
-    "copper",
-    -- low-medium energy - gentle shimmer
-    "gold_contrast",
-    "bright_gold",
-    "border_sync",
-    -- medium energy - rhythmic effects
-    "amber_pulse",
-    "cloud",
-    "candy_pastel",
-    -- medium-high energy - dynamic movement
-    "candy",
-    "plasma_drift",
-    -- high energy - intense/chaotic effects
-    "electric_buzz",
-    "aurora_scatter",
-    "digital_chaos",
-    "debug"
-}
+-- local preset_list = {
+--     -- minimal energy - static/very low activity
+--     "static_gold",
+--     "dull_pastel",
+--     "warm_light", 
+--     "sepia_soft",
+--     "redgreenyello",
+--     "copper",
+--     -- low-medium energy - gentle shimmer
+--     "gold_crumble",
+--     "dull_gold",
+--     "border_sync",
+--     -- medium energy - rhythmic effects
+--     "amber_pulse",
+--     "cloud",
+--     "temp_flux",
+--     -- medium-high energy - dynamic movement
+--     "candy_furnace",
+--     "plasma_drift",
+--     -- high energy - intense/chaotic effects
+--     "electric_buzz",
+--     "aurora_scatter",
+--     "digital_chaos",
+--     "debug"
+-- }
 
-local current_preset_index = 8  -- start with gold_contrast
+local current_preset_index = 2  -- start with gold_crumble (index 2 in preset_list)
 
 -- color palette cache and generation
 local color_palettes = {}
-local palette_length = 256  -- increased for longer animation cycles
+-- local palette_length = 256  -- increased for longer animation cycles
+local palette_length = 1024  -- increased for longer animation cycles
 
 -- animation state
 local shimmer_step = 0.1  -- legacy unified step (kept for compatibility)
@@ -383,7 +472,7 @@ local colour_progression_modes_list = {
     "typewriter",
     "gradient_sweep",
     "mirror",
-    "zigzag",
+    "plasma",
     -- high energy - chaotic/random effects
     "scatter",
     "chaos",
@@ -419,7 +508,7 @@ local shine_progression_modes_list = {
     "typewriter",
     "gradient_sweep",
     "mirror",
-    "zigzag",
+    "plasma",
     -- high energy - chaotic/random effects
     "scatter",
     "chaos",
@@ -547,6 +636,8 @@ end
 
 -- debug function to check timer status
 function M.get_debug_status()
+    local preset_config = get_preset_config(shimmer_mode)
+    local max_chars = M.get_max_animated_chars()  -- use function to get global override if set
     return {
         mode = shimmer_mode,
         step = shimmer_step,
@@ -556,8 +647,41 @@ function M.get_debug_status()
         shine_speed = shine_speed_multiplier,
         timer_running = shimmer_timer and shimmer_timer.started or false,
         palette_cached = color_palettes[shimmer_mode] and true or false,
-        palette_length = color_palettes[shimmer_mode] and #color_palettes[shimmer_mode] or 0
+        palette_length = color_palettes[shimmer_mode] and #color_palettes[shimmer_mode] or 0,
+        max_animated_chars = max_chars or "unlimited",
+        max_animated_chars_global_override = global_max_animated_chars,
+        char_selection_strategy = preset_config and preset_config.char_selection_strategy or "wave",
+        char_rotation_step = char_animation_rotation_step
     }
+end
+
+-- character animation control functions
+function M.set_max_animated_chars(count)
+    local preset_config = get_preset_config(shimmer_mode)
+    if preset_config then
+        preset_config.max_animated_chars = count
+    end
+end
+
+function M.get_max_animated_chars()
+    -- global override takes precedence
+    if global_max_animated_chars ~= nil then
+        return global_max_animated_chars
+    end
+    local preset_config = get_preset_config(shimmer_mode)
+    return preset_config and preset_config.max_animated_chars
+end
+
+function M.set_char_selection_strategy(strategy)
+    local preset_config = get_preset_config(shimmer_mode)
+    if preset_config then
+        preset_config.char_selection_strategy = strategy
+    end
+end
+
+function M.get_char_selection_strategy()
+    local preset_config = get_preset_config(shimmer_mode)
+    return preset_config and preset_config.char_selection_strategy or "wave"
 end
 
 
@@ -659,6 +783,33 @@ local function makeGoldShinePalette(length, opts)
 end
 
 
+-- preset cycling state - ordered by energy level (low to high activity)
+local preset_list = {
+    -- minimal energy - static/very low activity
+    "static_gold",
+    "gold_crumble",
+    -- low-medium energy - gentle shimmer
+    "dull_gold",
+    -- medium energy - rhythmic effects
+    "copper",
+    "amber_pulse",
+    "redgreenyello",
+    "dull_pastel",
+    "sepia_soft",
+    "warm_light", 
+    "cloud",
+    "temp_flux",
+    -- medium-high energy - dynamic movement
+    "candy_furnace",
+    "plasma_drift",
+    -- high energy - intense/chaotic effects
+    "electric_buzz",
+    "aurora_scatter",
+    "digital_chaos",
+    "border_sync",
+    "debug"
+}
+
 
 -- // MARK: PRESET CONF
 -- normalized shimmer preset structure
@@ -689,9 +840,9 @@ local shimmer_config = {
         }
     },
 
-    -- gold_contrast: high-contrast gold shine with wide shine range (0.6-0.98)
+    -- gold_crumble: high-contrast gold shine with wide shine range (0.6-0.98)
     -- uses HSV generator with drift progression mode, fast speed (0.8)
-    gold_contrast = {
+    gold_crumble = {
         -- color generation
         color_gen = {
             type = "hsv",
@@ -700,7 +851,7 @@ local shimmer_config = {
                 hue_variation = 6,
                 sat_base = 1.0,
                 sat_variation = 0.20,
-                value_min = 0.8,
+                value_min = 0.9,
                 value_max = 0.98,
                 shine_frequency = 2.4
             }
@@ -712,73 +863,45 @@ local shimmer_config = {
         },
         -- animation settings
         animation = {
-            speed = 0.5,
-            color_speed = 1.0,
-            shine_speed = 1.0,  -- slightly faster shine for contrast
+            speed = 0.8,
+            color_speed = 0.3,
+            shine_speed = 0.3,  -- slightly faster shine for contrast
             per_character_default = false
         }
     },
 
-    -- bright_gold: vivid golden shimmer with moderate contrast (0.40-0.98)
+    -- dull_gold: vivid golden shimmer with high minimum brightness (0.75-0.98)
     -- uses HSV generator with per-character mode, fast speed (0.8), tighter hue variation
-    bright_gold = {
+    dull_gold = {
         -- color generation
         color_gen = {
             type = "hsv",
             params = {
                 hue_base = 48,
-                hue_variation = 4,
+                hue_variation = 8,
                 sat_base = 1.0,
                 sat_variation = 0.08,
-                value_min = 0.40,
+                value_min = 0.91,
                 value_max = 0.98,
-                shine_frequency = 1.8
+                shine_frequency = 0.6
             }
         },
         -- progression modes
         progression = {
-            color_mode = "wave",
-            shine_mode = "pulse"
+            color_mode = "breathing",
+            shine_mode = "breathing"
         },
         -- animation settings
         animation = {
-            speed = 0.8,
-            color_speed = 1.0,
-            shine_speed = 1.5,  -- faster pulse effect
-            per_character_default = true
+            speed = 0.2,
+            color_speed = 0.4,
+            shine_speed = 0.1,  -- faster pulse effect
+            per_character_default = true,
+            max_animated_chars = 8,  -- limit to 8 characters animating at once
+            char_selection_strategy = "wave"  -- rolling wave effect
         }
     },
 
-    -- rich deep gold - sophisticated luxury with vibrant golden intensity
-    -- slower, more refined animation with richer golden tones
-    deep_gold = {
-        -- color generation
-        color_gen = {
-            type = "gradient",
-            params = {
-                redFrequency = 0.05,
-                grnFrequency = 0.042,
-                bluFrequency = 0.0008,
-                phase1 = 0.1,
-                phase2 = 0.4,
-                phase3 = 4.8,
-                center = 195,
-                width = 40
-            }
-        },
-        -- progression modes
-        progression = {
-            color_mode = "colour_prog_off",
-            shine_mode = "shine_prog_off"
-        },
-        -- animation settings
-        animation = {
-            speed = 0.6,
-            color_speed = 0.8,  -- slower color transitions
-            shine_speed = 0.5,  -- very slow shine for sophistication
-            per_character_default = false
-        }
-    },
 
     -- amber_pulse: slow pulsing amber with drift progression mode
     -- uses HSV generator, per-character drift mode, medium speed (0.28), wide shine range
@@ -787,10 +910,10 @@ local shimmer_config = {
         color_gen = {
             type = "hsv",
             params = {
-                hue_base = 48,
+                hue_base = 38,
                 hue_variation = 4,
-                sat_base = 0.98,
-                sat_variation = 0.06,
+                sat_base = 1.0,
+                sat_variation = 0.04,
                 value_min = 0.68,
                 value_max = 0.96,
                 shine_frequency = 1.2
@@ -810,9 +933,9 @@ local shimmer_config = {
         }
     },
 
-    -- warm_amber: rich RGB gradient amber with deep red/orange tones
+    -- redgreenyello: rich RGB gradient amber with deep red/orange tones
     -- uses sine wave generator, uniform mode, slower speed (0.28), wide contrast (150±90)
-    warm_amber = {
+    redgreenyello = {
         -- color generation
         color_gen = {
             type = "gradient",
@@ -823,8 +946,8 @@ local shimmer_config = {
                 phase1 = 0.2,
                 phase2 = 0.8,
                 phase3 = 6.0,
-                center = 150,
-                width = 90
+                center = 170,
+                width = 80
             }
         },
         -- progression modes
@@ -848,13 +971,13 @@ local shimmer_config = {
         color_gen = {
             type = "hsv",
             params = {
-                hue_base = 25,
+                hue_base = 32,
                 hue_variation = 8,
-                sat_base = 0.92,
+                sat_base = 0.85,
                 sat_variation = 0.08,
                 value_min = 0.6,
                 value_max = 0.98,
-                shine_frequency = 0
+                shine_frequency = 0.2
             }
         },
         -- progression modes
@@ -879,13 +1002,13 @@ local shimmer_config = {
             type = "gradient",
             params = {
                 redFrequency = 0.038,
-                grnFrequency = 0.040,
+                grnFrequency = 0.038,
                 bluFrequency = 0.035,
-                phase1 = 0.1,
-                phase2 = 0.6,
-                phase3 = 1.8,
-                center = 235,
-                width = 25
+                phase1 = 0.0,
+                phase2 = 0.3,
+                phase3 = 1.2,
+                center = 238,
+                width = 22
             }
         },
         -- progression modes
@@ -909,12 +1032,12 @@ local shimmer_config = {
             params = {
                 redFrequency = 0.028,
                 grnFrequency = 0.022,
-                bluFrequency = 0.008,
-                phase1 = 0.2,
-                phase2 = 0.4,
-                phase3 = 2.8,
-                center = 170,
-                width = 35
+                bluFrequency = 0.005,
+                phase1 = 0.0,
+                phase2 = 0.3,
+                phase3 = 3.5,
+                center = 165,
+                width = 40
             }
         },
         -- progression modes
@@ -939,13 +1062,13 @@ local shimmer_config = {
             type = "gradient",
             params = {
                 redFrequency = 0.025,
-                grnFrequency = 0.028,
+                grnFrequency = 0.030,
                 bluFrequency = 0.055,
-                phase1 = 2.1,
+                phase1 = 2.8,
                 phase2 = 2.8,
                 phase3 = 0.5,
-                center = 215,
-                width = 32
+                center = 218,
+                width = 28
             }
         },
         -- progression modes
@@ -958,13 +1081,15 @@ local shimmer_config = {
             speed = 0.30,
             color_speed = 0.8,  -- gentle cloud drift
             shine_speed = 0.4,  -- slow breathing effect
-            per_character_default = true
+            per_character_default = true,
+            max_animated_chars = 5,  -- limit to 5 characters for ethereal effect
+            char_selection_strategy = "random"  -- random sparkle pattern
         }
     },
 
     -- candy: warm flickering candlelight with organic flame colors
     -- uses RGB gradient generator, per-character mode, slow speed (0.25), authentic candle tones
-    candy = {
+    candy_furnace = {
         -- color generation
         color_gen = {
             type = "gradient",
@@ -986,15 +1111,46 @@ local shimmer_config = {
         },
         -- animation settings
         animation = {
-            speed = 0.5,
+            speed = 0.1,
             color_speed = 1.2,  -- dynamic flame colors
             shine_speed = 1.8,  -- active flickering
             per_character_default = true
         }
     },
 
-    -- candy_pastel variant - less contrast, brighter
-    candy_pastel = {
+    -- rich deep gold - sophisticated luxury with vibrant golden intensity
+    -- slower, more refined animation with richer golden tones
+    dull_pastel = {
+        -- color generation
+        color_gen = {
+            type = "gradient",
+            params = {
+                redFrequency = 0.05,
+                grnFrequency = 0.042,
+                bluFrequency = 0.0008,
+                phase1 = 0.1,
+                phase2 = 0.4,
+                phase3 = 4.8,
+                center = 200,
+                width = 40
+            }
+        },
+        -- progression modes
+        progression = {
+            color_mode = "colour_prog_off",
+            shine_mode = "shine_prog_off"
+        },
+        -- animation settings
+        animation = {
+            speed = 0.6,
+            color_speed = 0.8,  -- slower color transitions
+            shine_speed = 0.5,  -- very slow shine for sophistication
+            per_character_default = false
+        }
+    },
+
+    -- temp_flux variant - less contrast, brighter
+    temp_flux = {
         -- color generation
         color_gen = {
             type = "gradient",
@@ -1005,20 +1161,18 @@ local shimmer_config = {
                 phase1 = 0.8,
                 phase2 = 2.2,
                 phase3 = 4.2,
-                center = 205,
-                width = 35
+                center = 218,
+                width = 28
             }
         },
         -- progression modes
         progression = {
-            color_mode = "pulse",
-            shine_mode = "mirror"
+            color_mode = "reverse_wave",
+            shine_mode = "center_out"
         },
         -- animation settings
         animation = {
-            speed = 0.25,
-            color_speed = 0.8,  -- gentle pastel shifts
-            shine_speed = 0.6,  -- soft mirrored shine
+            speed = 0.5,
             per_character_default = true
         }
     },
@@ -1041,8 +1195,8 @@ local shimmer_config = {
         },
         -- progression modes
         progression = {
-            color_mode = "sine_wave",
-            shine_mode = "uniform"
+            color_mode = "gradient_sweep",
+            shine_mode = "reverse_wave"
         },
         -- animation settings
         animation = {
@@ -1061,13 +1215,13 @@ local shimmer_config = {
             type = "gradient",
             params = {
                 redFrequency = 0.08,
-                grnFrequency = 0.15,
-                bluFrequency = 0.12,
+                grnFrequency = 0.08,
+                bluFrequency = 0.03,
                 phase1 = 0,
-                phase2 = 2,
-                phase3 = 4,
-                center = 190,
-                width = 65
+                phase2 = 0.5,
+                phase3 = 2.5,
+                center = 210,
+                width = 50
             }
         },
         -- progression modes
@@ -1078,8 +1232,8 @@ local shimmer_config = {
         -- animation settings
         animation = {
             speed = 0.5,
-            color_speed = 2.0,  -- rapid electric changes
-            shine_speed = 2.5,  -- intense strobing
+            color_speed = 0.8,  -- rapid electric changes
+            shine_speed = 0.5,  -- intense strobing
             per_character_default = true
         }
     },
@@ -1091,11 +1245,11 @@ local shimmer_config = {
             type = "hsv",
             params = {
                 hue_base = 180,
-                hue_variation = 60,
-                sat_base = 0.9,
-                sat_variation = 0.25,
-                value_min = 0.65,
-                value_max = 0.92,
+                hue_variation = 35,
+                sat_base = 0.95,
+                sat_variation = 0.15,
+                value_min = 0.75,
+                value_max = 0.98,
                 shine_frequency = 1.5
             }
         },
@@ -1119,26 +1273,26 @@ local shimmer_config = {
         color_gen = {
             type = "gradient",
             params = {
-                redFrequency = 0.25,
-                grnFrequency = 0.18,
-                bluFrequency = 0.32,
+                redFrequency = 0.35,
+                grnFrequency = 0.28,
+                bluFrequency = 0.42,
                 phase1 = 0,
                 phase2 = 1.5,
                 phase3 = 3.0,
                 center = 160,
-                width = 80
+                width = 95
             }
         },
         -- progression modes
         progression = {
-            color_mode = "chaos",
-            shine_mode = "strobe"
+            color_mode = "random",
+            shine_mode = "random"
         },
         -- animation settings
         animation = {
             speed = 0.4,
-            color_speed = 1.8,  -- chaotic digital shifts
-            shine_speed = 2.2,  -- aggressive strobing
+            color_speed = 0.8,  -- chaotic digital shifts
+            shine_speed = 0.2,  -- aggressive strobing
             per_character_default = true
         }
     },
@@ -1167,9 +1321,9 @@ local shimmer_config = {
         },
         -- animation settings
         animation = {
-            speed = 0.5,
+            speed = 0.06,
             color_speed = 1.0,  -- synchronized with border
-            shine_speed = 0.8,  -- subtle coordination
+            shine_speed = 1.0,  -- synchronized coordination
             per_character_default = false
         }
     },
@@ -1199,8 +1353,8 @@ local shimmer_config = {
         -- animation settings
         animation = {
             speed = 1,
-            color_speed = 2.0,  -- fast debug cycling
-            shine_speed = 1.5,  -- clear sweep effects
+            color_speed = 1.0,  -- slowed debug cycling
+            shine_speed = 1.0,  -- slowed sweep effects
             per_character_default = true  -- debug mode shows per-character clearly
         }
     },
@@ -1538,16 +1692,16 @@ local function init_helper_optimization()
     end
     
     -- precompute color progression lookup tables for spatial patterns
-    color_progression_lut.zigzag = {}
+    color_progression_lut.plasma = {}
     color_progression_lut.cascade = {}
     color_progression_lut.pulse = {}
     color_progression_lut.breathing = {}
     
     for char_index = 1, 200 do
-        -- zigzag pattern
-        local zigzag_wave = math_sin((char_index - 1) * PHASE_MULTIPLIERS.ZIGZAG_FREQ) * PHASE_MULTIPLIERS.ZIGZAG_AMP
-        local zigzag_base = (char_index - 1) * PHASE_MULTIPLIERS.ZIGZAG_BASE_STEP
-        color_progression_lut.zigzag[char_index] = zigzag_base + zigzag_wave
+        -- plasma pattern
+        local plasma_wave = math_sin((char_index - 1) * PHASE_MULTIPLIERS.ZIGZAG_FREQ) * PHASE_MULTIPLIERS.ZIGZAG_AMP
+        local plasma_base = (char_index - 1) * PHASE_MULTIPLIERS.ZIGZAG_BASE_STEP
+        color_progression_lut.plasma[char_index] = plasma_base + plasma_wave
         
         -- cascade pattern
         local cascade_delay = (char_index - 1) * PHASE_MULTIPLIERS.CASCADE_STEP
@@ -1889,6 +2043,7 @@ local function shimmer_tick()
     shimmer_step = shimmer_step + 1  -- legacy unified step
     color_step = color_step + color_speed_multiplier
     shine_step = shine_step + shine_speed_multiplier
+    update_char_rotation()  -- update character animation rotation
     get_integrations().update_widgets()
 end
 
@@ -1905,6 +2060,11 @@ local progression_strategies = strategies.get_registry()
 -- // MARK: TEST SWITCHES
 -- testing toggles to isolate subsystems
 local SHIMMER_SHINE_ONLY = false
+local SHIMMER_DISABLE_SHINE = false  -- disable shine aspect entirely
+local SHIMMER_DISABLE_COLOR = false  -- disable color mode entirely
+
+-- global override for max animated characters (nil = use preset defaults)
+local global_max_animated_chars = nil
 
 
 
@@ -1917,12 +2077,65 @@ function M.get_shine_only()
     return SHIMMER_SHINE_ONLY
 end
 
+-- disable shine aspect entirely (all shine modifiers = 1.0)
+-- deprecated: use M.set_shine_speed(0) instead
+function M.set_disable_shine(enabled)
+    if enabled then
+        M.set_shine_speed(0)
+    else
+        -- re-enable with default speed if disabled
+        if shine_speed_multiplier == 0 then
+            M.set_shine_speed(1.0)
+        end
+    end
+    SHIMMER_DISABLE_SHINE = not not enabled
+end
+
+function M.get_disable_shine()
+    return shine_speed_multiplier == 0 or SHIMMER_DISABLE_SHINE
+end
+
+-- disable color mode entirely (all color offsets = 0)
+-- deprecated: use M.set_color_speed(0) instead
+function M.set_disable_color(enabled)
+    if enabled then
+        M.set_color_speed(0)
+    else
+        -- re-enable with default speed if disabled
+        if color_speed_multiplier == 0 then
+            M.set_color_speed(1.0)
+        end
+    end
+    SHIMMER_DISABLE_COLOR = not not enabled
+end
+
+function M.get_disable_color()
+    return color_speed_multiplier == 0 or SHIMMER_DISABLE_COLOR
+end
+
+-- global max animated chars override (nil = use preset defaults)
+function M.set_global_max_animated_chars(count)
+    global_max_animated_chars = count
+end
+
+function M.get_global_max_animated_chars()
+    return global_max_animated_chars
+end
+
 -- // MARK: COLOUR PROG
 
 -- calculate color progression phase offset for a character
 get_color_progression_offset = function(char_index, total_chars, colour_prog_mode, text_seed)
     if colour_prog_mode == "colour_prog_off" or colour_prog_mode == "uniform" then
         return 0 -- no phase offset
+    end
+    -- check if color speed is disabled (0 = disabled)
+    if color_speed_multiplier == 0 then
+        return 0
+    end
+    -- legacy: config option: disable color progression entirely
+    if SHIMMER_DISABLE_COLOR then
+        return 0
     end
     -- shine-only testing: disable color progression entirely
     if SHIMMER_SHINE_ONLY then
@@ -1987,9 +2200,9 @@ get_color_progression_offset = function(char_index, total_chars, colour_prog_mod
     elseif colour_prog_mode == "mirror" then
         offset = (color_progression_lut.mirror[total_chars] and color_progression_lut.mirror[total_chars][char_index]) or 
                  cached_helper_call("mirror_offset", helpers.calc_mirror_offset, char_index, total_chars)
-    elseif colour_prog_mode == "zigzag" then
-        offset = color_progression_lut.zigzag[char_index] or 
-                 cached_helper_call("zigzag_offset", helpers.calc_zigzag_offset, char_index)
+    elseif colour_prog_mode == "plasma" then
+        offset = color_progression_lut.plasma[char_index] or 
+                 cached_helper_call("plasma_offset", helpers.calc_plasma_offset, char_index)
     elseif colour_prog_mode == "strobe" then
         offset = cached_helper_call("strobe_offset", helpers.calc_strobe_offset, char_index, text_seed)
     elseif colour_prog_mode == "spotlight" then
@@ -2012,6 +2225,14 @@ end
 calculate_shine_modifier_internal = function(char_index, total_chars, shine_prog_mode, text_seed, time_factor)
     if shine_prog_mode == "shine_prog_off" then
         return 1.0 -- no modification
+    end
+    -- check if shine speed is disabled (0 = disabled)
+    if shine_speed_multiplier == 0 then
+        return 1.0 -- no shine modification
+    end
+    -- legacy: config option: disable shine entirely
+    if SHIMMER_DISABLE_SHINE then
+        return 1.0 -- no shine modification
     end
     
     local modifier = 1.0
@@ -2115,10 +2336,10 @@ calculate_shine_modifier_internal = function(char_index, total_chars, shine_prog
         modifier = cached_helper_call("mirror_shine", helpers.calc_mirror_shine, char_index, total_chars)
         local overlay = 1.0 + 0.12 * math.sin(shine_time_factor * 0.6)
         modifier = modifier * overlay
-    elseif shine_prog_mode == "zigzag" then
-        -- old: static zigzag by index
-        -- modifier = helpers.calc_zigzag_shine(char_index)
-        modifier = cached_helper_call("zigzag_shine", helpers.calc_zigzag_shine, char_index)
+    elseif shine_prog_mode == "plasma" then
+        -- old: static plasma by index
+        -- modifier = helpers.calc_plasma_shine(char_index)
+        modifier = cached_helper_call("plasma_shine", helpers.calc_plasma_shine, char_index)
         local overlay = 1.0 + 0.12 * math.sin(shine_time_factor * 1.1 + char_index * 0.15)
         modifier = modifier * overlay
     elseif shine_prog_mode == "strobe" then
@@ -2245,6 +2466,12 @@ local function generate_differential_markup(text, base_phase_offset, options)
         text_seed = text_seed + string.byte(text, i)
     end
     
+    -- character animation limiting - determine which characters should animate
+    local preset_config = get_preset_config(shimmer_mode)
+    local max_animated_chars = M.get_max_animated_chars()  -- use function to get global override if set
+    local char_selection_strategy = preset_config and preset_config.char_selection_strategy or "wave"
+    local animated_chars = select_animated_chars(#chars, max_animated_chars, char_selection_strategy, text_seed)
+    
     local changed_chars = {}
     local needs_full_rebuild = false
     
@@ -2276,12 +2503,17 @@ local function generate_differential_markup(text, base_phase_offset, options)
             
             if char:match("%s") then
                 colored_chars[i] = char
-            else
+            elseif animated_chars[i] then
+                -- animate this character
                 local letter_phase = (base_phase_offset or 0) + get_color_progression_offset(i, #chars, colour_prog_mode, text_seed)
                 local color = M.get_color(mode_name, #chars, letter_phase)
                 local shine_mod = get_shine_progression_modifier(i, #chars, shine_prog_mode, text_seed)
                 color = get_shine_modified_color(color, shine_mod)
                 colored_chars[i] = string.format('<span foreground="%s">%s</span>', color, char)
+            else
+                -- static character - use base color without animation
+                local static_color = M.get_color(mode_name, #chars, 0)  -- phase 0 for static
+                colored_chars[i] = string.format('<span foreground="%s">%s</span>', static_color, char)
             end
         end
     else
@@ -2301,12 +2533,17 @@ local function generate_differential_markup(text, base_phase_offset, options)
                 
                 if char:match("%s") then
                     colored_chars[i] = char
-                else
+                elseif animated_chars[i] then
+                    -- animate this character
                     local letter_phase = (base_phase_offset or 0) + get_color_progression_offset(i, #chars, colour_prog_mode, text_seed)
                     local color = M.get_color(mode_name, #chars, letter_phase)
                     local shine_mod = get_shine_progression_modifier(i, #chars, shine_prog_mode, text_seed)
                     color = get_shine_modified_color(color, shine_mod)
                     colored_chars[i] = string_format('<span foreground="%s">%s</span>', color, char)
+                else
+                    -- static character - use base color without animation
+                    local static_color = M.get_color(mode_name, #chars, 0)  -- phase 0 for static
+                    colored_chars[i] = string_format('<span foreground="%s">%s</span>', static_color, char)
                 end
             end
         end
@@ -2388,6 +2625,14 @@ end
 function M.set_mode(mode)
     if shimmer_config[mode] then
         shimmer_mode = mode
+        
+        -- sync current_preset_index to match the mode
+        for i, preset_name in ipairs(preset_list) do
+            if preset_name == mode then
+                current_preset_index = i
+                break
+            end
+        end
         
         -- apply speed settings from preset
         local config = get_preset_config(mode)
@@ -2472,15 +2717,25 @@ function M.get_color(mode_config, text_length, phase_offset)
     local animation_phase = base_time + length_factor + phase_factor
     
     -- sample from palette with ping-pong animation
-    local cycle_length = #palette * 2 - 2
+    local palette_size = #palette
+    
+    -- guard against small palettes
+    if palette_size < 2 then
+        return palette[1] or base_gold
+    end
+    
+    local cycle_length = palette_size * 2 - 2
     local raw_index = math.floor(math.abs(animation_phase) * 8) % cycle_length
     local palette_index
     
-    if raw_index < #palette then
+    if raw_index < palette_size then
         palette_index = raw_index
     else
         palette_index = cycle_length - raw_index
     end
+    
+    -- clamp palette_index to valid range [0, palette_size-1]
+    palette_index = math.max(0, math.min(palette_size - 1, palette_index))
     
     return palette[palette_index + 1] or base_gold
 end
@@ -2524,14 +2779,14 @@ end
 
 -- // MARK: SPEED CONTROL API
 
--- set color progression speed multiplier
+-- set color progression speed multiplier (0 = disabled)
 function M.set_color_speed(speed)
-    color_speed_multiplier = math.max(0.1, math.min(5.0, speed or 1.0))
+    color_speed_multiplier = math.max(0, math.min(5.0, speed or 1.0))
 end
 
--- set shine progression speed multiplier  
+-- set shine progression speed multiplier (0 = disabled)
 function M.set_shine_speed(speed)
-    shine_speed_multiplier = math.max(0.1, math.min(5.0, speed or 1.0))
+    shine_speed_multiplier = math.max(0, math.min(5.0, speed or 1.0))
 end
 
 -- get current speed multipliers
@@ -3266,6 +3521,12 @@ M.get_diff_cache_stats = function()
         update_rate = update_rate,
         max_size = DIFF_CACHE_MAX_ENTRIES
     }
+end
+
+-- get current progression strategy for external use (e.g., border animation)
+M.get_current_strategy = function()
+    local strategy = progression_strategies[current_colour_prog_mode]
+    return strategy
 end
 
 return M

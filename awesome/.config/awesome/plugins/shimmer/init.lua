@@ -10,14 +10,16 @@
 -- • Widget integration (tags, tasks, launcher)
 -- • Preset management with cycling support
 -- • Per-character toggle independent of presets
--- • Smooth color interpolation for transitions
 --
 -- USAGE:
--- shimmer.configure({ preset = "debug", border = { smoothness = 3 } })
+-- shimmer.configure({ preset = "debug", border = { smoothness = 3 }, disable_shine = false, disable_color = false, max_animated_chars = 5 })
 -- shimmer.cycle_preset()                 -- cycle through presets
 -- shimmer.set_mode("candle")             -- set specific preset
 -- shimmer.cycle_colour_prog_mode(±1)     -- cycle colour progression modes
 -- shimmer.cycle_shine_prog_mode(±1)      -- cycle shine progression modes
+-- shimmer.set_shine_speed(0)             -- disable shine aspect (0 = disabled)
+-- shimmer.set_color_speed(0)             -- disable color aspect (0 = disabled)
+-- shimmer.set_global_max_animated_chars(5)  -- limit animated characters globally (nil = use preset defaults)
 --
 -- HOTKEYS (defined in keybindings.lua):
 -- Mod4+Shift+Alt+c         = cycle presets
@@ -46,6 +48,8 @@ local string_format = string.format
 -- single notification tracking to prevent clutter during rapid cycling
 local current_notification = nil
 local notification_persistent = false  -- toggle for persistent notifications
+local notification_width = 530  -- notification width matches rc.lua NOTIFICATION_WIDTH
+
 -- single-shot notifier; always clears previous to avoid stacking
 local function show_shimmer_notification(title, text, timeout)
     -- dismiss any existing shimmer notification
@@ -62,12 +66,12 @@ local function show_shimmer_notification(title, text, timeout)
         title = title,
         text = text,
         timeout = actual_timeout,
-        bg = beautiful.main_purple or "#5330EA",     -- darker, more purple background
+        bg = (beautiful.main_purple and beautiful.main_purple.base) or "#5330EA",     -- darker, more purple background
         fg = beautiful.fg_normal or "#f1f5f9",     -- slightly brighter text for better contrast
         border_color = beautiful.main_orange or "#f97316",  -- orange border
         border_width = 1,
         font = "monospace 9",
-        width = 450,        -- even wider notification to prevent line wrapping
+        width = notification_width,        -- even wider notification to prevent line wrapping
         -- position = "top_middle"  -- force top position for visibility
     })
     
@@ -106,12 +110,12 @@ function M.toggle_notification_persistence()
                 title = "shimmer notifications",
                 text = "notifications now: " .. status,
                 timeout = 3,
-                bg = beautiful.main_purple or "#5330CA",
+                bg = (beautiful.main_purple and beautiful.main_purple.base) or "#5330CA",
                 fg = beautiful.fg_normal or "#f1f5f9",
                 border_color = beautiful.main_orange or "#f97316",
                 border_width = 1,
                 font = "monospace 9",
-                width = 450,
+                width = notification_width,
                 -- position = "top_middle"  -- force top position for visibility
             })
             return false  -- don't repeat
@@ -127,13 +131,20 @@ end
 
 
 
+
 -- // MARK: USER-FACING FUNCTIONS
 -- primary interface functions for end users
 
 -- unified shimmer control with notification: direction -1=back, 0=show, 1=forward
--- central control entry: direction -1=back, 0=show-only, 1=forward
+-- central control entry: direction -1=back, 0=show-only, 1=forward  
 function M.shimmer_control_notify(control_type, direction)
     direction = direction or 0  -- default to show only
+    
+    -- special case: if control_type is "copyable_preset", show copyable state
+    if control_type == "copyable_preset" then
+        M.show_state_as_copyable_preset()
+        return
+    end
     
     -- perform the cycling action if direction is not 0
     if direction ~= 0 then
@@ -151,6 +162,112 @@ function M.shimmer_control_notify(control_type, direction)
     
     -- always show current state after any change
     M.show_current_state_notify()
+end
+
+-- show current shimmer state without cycling
+
+-- show current shimmer state as copyable preset text
+function M.show_state_as_copyable_preset()
+    -- gather all current state information
+    local current_preset = animation.get_current_preset()
+    local preset_config = animation.get_preset_config(current_preset)
+    local colour_mode = animation.get_colour_prog_mode()
+    local shine_mode = animation.get_shine_prog_mode()
+    local per_char_mode = animation.get_per_character_mode()
+    local should_use_per_char = animation.should_use_per_character()
+    
+    -- format as proper lua preset definition
+    local preset_name = current_preset and (current_preset .. "_custom") or "custom_preset"
+    local comment = string.format("-- exported from: %s (color: %s, shine: %s)", 
+        current_preset or "unknown", colour_mode or "off", shine_mode or "off")
+    
+    local preset_text = string.format([[%s
+%s = {
+    -- color generation
+    color_gen = {
+        type = "%s",
+        params = {%s
+        }
+    },
+    -- progression modes
+    progression = {
+        color_mode = "%s",
+        shine_mode = "%s"
+    },
+    -- animation settings
+    animation = {
+        speed = %s,
+        color_speed = %s,
+        shine_speed = %s,
+        per_character_default = %s%s%s
+    }
+},]], 
+        comment,
+        preset_name,
+        preset_config and preset_config.color_gen_type or "gradient",
+        preset_config and preset_config.color_gen_params and 
+            M.format_color_params({type = preset_config.color_gen_type, params = preset_config.color_gen_params}) or "\n            -- params not available",
+        colour_mode or "uniform",
+        shine_mode or "uniform", 
+        preset_config and preset_config.speed or "0.15",
+        preset_config and preset_config.color_speed or "1.0",
+        preset_config and preset_config.shine_speed or "1.0",
+        preset_config and tostring(preset_config.per_character_default) or "false",
+        preset_config and preset_config.max_animated_chars and 
+            string.format(",\n        max_animated_chars = %s", preset_config.max_animated_chars) or "",
+        preset_config and preset_config.char_selection_strategy and 
+            string.format(",\n        char_selection_strategy = \"%s\"", preset_config.char_selection_strategy) or ""
+    )
+    
+    -- show as notification for copying
+    naughty.notify({
+        title = "shimmer preset (right-click to copy)",
+        text = preset_text,
+        timeout = 0,  -- persistent until clicked
+        bg = (beautiful.main_purple and beautiful.main_purple.base) or "#623997",
+        fg = beautiful.fg_normal or "#f1f5f9",
+        border_color = beautiful.main_orange or "#f97316",
+        border_width = 2,
+        font = "monospace 7",
+        width = notification_width + 150,  -- wider for config text
+        position = "top_middle"  -- prominent position for copying
+    })
+end
+
+-- helper to format color generation parameters
+function M.format_color_params(color_gen)
+    if not color_gen or not color_gen.params then
+        return "\n            -- params not available"
+    end
+    
+    local params = color_gen.params
+    local formatted = {}
+    
+    -- format different parameter types
+    if color_gen.type == "gradient" then
+        if params.redFrequency then table.insert(formatted, string.format("redFrequency = %s", params.redFrequency)) end
+        if params.grnFrequency then table.insert(formatted, string.format("grnFrequency = %s", params.grnFrequency)) end  
+        if params.bluFrequency then table.insert(formatted, string.format("bluFrequency = %s", params.bluFrequency)) end
+        if params.phase1 then table.insert(formatted, string.format("phase1 = %s", params.phase1)) end
+        if params.phase2 then table.insert(formatted, string.format("phase2 = %s", params.phase2)) end
+        if params.phase3 then table.insert(formatted, string.format("phase3 = %s", params.phase3)) end
+        if params.center then table.insert(formatted, string.format("center = %s", params.center)) end
+        if params.width then table.insert(formatted, string.format("width = %s", params.width)) end
+    elseif color_gen.type == "hsv" then
+        if params.hue_base then table.insert(formatted, string.format("hue_base = %s", params.hue_base)) end
+        if params.hue_variation then table.insert(formatted, string.format("hue_variation = %s", params.hue_variation)) end
+        if params.sat_base then table.insert(formatted, string.format("sat_base = %s", params.sat_base)) end
+        if params.sat_variation then table.insert(formatted, string.format("sat_variation = %s", params.sat_variation)) end
+        if params.value_min then table.insert(formatted, string.format("value_min = %s", params.value_min)) end
+        if params.value_max then table.insert(formatted, string.format("value_max = %s", params.value_max)) end
+        if params.shine_frequency then table.insert(formatted, string.format("shine_frequency = %s", params.shine_frequency)) end
+    end
+    
+    if #formatted > 0 then
+        return "\n            " .. table.concat(formatted, ",\n            ")
+    else
+        return "\n            -- no params available"
+    end
 end
 
 -- show current shimmer state without cycling
@@ -421,7 +538,8 @@ end
 -- colour progression speed controls with notification
 function M.increase_color_speed_notify()
     local current = animation.get_color_speed()
-    local new_speed = math.min(current * 1.2, 5.0)
+    -- if currently disabled (0), jump to minimum active speed
+    local new_speed = current == 0 and 0.1 or math.min(current * 1.2, 5.0)
     animation.set_color_speed(new_speed)
     M.shimmer_control_notify("speed", 0)
     return new_speed
@@ -429,7 +547,7 @@ end
 
 function M.decrease_color_speed_notify()
     local current = animation.get_color_speed()
-    local new_speed = math.max(current / 1.2, 0.1)
+    local new_speed = math.max(current / 1.2, 0)  -- allow decreasing to 0 (disabled)
     animation.set_color_speed(new_speed)
     M.shimmer_control_notify("speed", 0)
     return new_speed
@@ -439,7 +557,8 @@ end
 -- shine progression speed controls with notification
 function M.increase_shine_speed_notify()
     local current = animation.get_shine_speed()
-    local new_speed = math.min(current * 1.2, 5.0)
+    -- if currently disabled (0), jump to minimum active speed
+    local new_speed = current == 0 and 0.1 or math.min(current * 1.2, 5.0)
     animation.set_shine_speed(new_speed)
     M.shimmer_control_notify("speed", 0)
     return new_speed
@@ -447,7 +566,7 @@ end
 
 function M.decrease_shine_speed_notify()
     local current = animation.get_shine_speed()
-    local new_speed = math.max(current / 1.2, 0.1)
+    local new_speed = math.max(current / 1.2, 0)  -- allow decreasing to 0 (disabled)
     animation.set_shine_speed(new_speed)
     M.shimmer_control_notify("speed", 0)
     return new_speed
@@ -536,6 +655,12 @@ M.get_speed_multiplier = animation.get_speed_multiplier
 M.get_debug_status = animation.get_debug_status
 M.set_shine_only = animation.set_shine_only
 M.get_shine_only = animation.get_shine_only
+M.set_disable_shine = animation.set_disable_shine
+M.get_disable_shine = animation.get_disable_shine
+M.set_disable_color = animation.set_disable_color
+M.get_disable_color = animation.get_disable_color
+M.set_global_max_animated_chars = animation.set_global_max_animated_chars
+M.get_global_max_animated_chars = animation.get_global_max_animated_chars
 
 -- // MARK: PERFORMANCE CACHING
 -- high-performance markup caching functions
@@ -640,10 +765,27 @@ function M.configure(config)
         animation.set_mode(config.preset)
     end
     
+    -- configure animation toggles
+    if config.disable_shine ~= nil then
+        animation.set_disable_shine(config.disable_shine)
+    end
+    if config.disable_color ~= nil then
+        animation.set_disable_color(config.disable_color)
+    end
+    if config.max_animated_chars ~= nil then
+        animation.set_global_max_animated_chars(config.max_animated_chars)
+    end
+    
     -- configure border animation if specified
     if config.border then
         if config.border.smoothness then
             border.set_smoothness(config.border.smoothness)
+        end
+        if config.border.follow_text_style ~= nil then
+            border.set_follow_text_style(config.border.follow_text_style)
+        end
+        if config.border.use_shimmer_palette ~= nil then
+            border.set_use_shimmer_palette(config.border.use_shimmer_palette)
         end
     end
     

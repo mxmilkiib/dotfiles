@@ -139,10 +139,10 @@ local function calc_mirror_offset(char_index, total_chars)
     return mirror_base + mirror_wave
 end
 
-local function calc_zigzag_offset(char_index)
-    local zigzag_wave = math_sin((char_index - 1) * PHASE_MULTIPLIERS.ZIGZAG_FREQ) * PHASE_MULTIPLIERS.ZIGZAG_AMP
-    local zigzag_base = (char_index - 1) * PHASE_MULTIPLIERS.ZIGZAG_BASE_STEP
-    return zigzag_base + zigzag_wave
+local function calc_plasma_offset(char_index)
+    local plasma_wave = math_sin((char_index - 1) * PHASE_MULTIPLIERS.ZIGZAG_FREQ) * PHASE_MULTIPLIERS.ZIGZAG_AMP
+    local plasma_base = (char_index - 1) * PHASE_MULTIPLIERS.ZIGZAG_BASE_STEP
+    return plasma_base + plasma_wave
 end
 
 local function calc_spotlight_offset(char_index, total_chars)
@@ -315,9 +315,9 @@ local function calc_mirror_shine(char_index, total_chars)
     return math_max(SHINE_MODIFIERS.MIRROR_BASE, mirror_brightness)
 end
 
-local function calc_zigzag_shine(char_index)
-    local zigzag_brightness = math_sin((char_index - 1) * PHASE_MULTIPLIERS.ZIGZAG_FREQ) * SHINE_MODIFIERS.ZIGZAG_VARIATION
-    return SHINE_MODIFIERS.ZIGZAG_BASE + zigzag_brightness
+local function calc_plasma_shine(char_index)
+    local plasma_brightness = math_sin((char_index - 1) * PHASE_MULTIPLIERS.ZIGZAG_FREQ) * SHINE_MODIFIERS.ZIGZAG_VARIATION
+    return SHINE_MODIFIERS.ZIGZAG_BASE + plasma_brightness
 end
 
 -- old (kept): static strobe based on seeded RNG
@@ -382,7 +382,7 @@ M.calc_cascade_offset = calc_cascade_offset
 M.calc_typewriter_offset = calc_typewriter_offset
 M.calc_gradient_sweep_offset = calc_gradient_sweep_offset
 M.calc_mirror_offset = calc_mirror_offset
-M.calc_zigzag_offset = calc_zigzag_offset
+M.calc_plasma_offset = calc_plasma_offset
 M.calc_strobe_offset = calc_strobe_offset
 M.calc_spotlight_offset = calc_spotlight_offset
 M.calc_flicker_offset = calc_flicker_offset
@@ -404,7 +404,7 @@ M.calc_cascade_shine = calc_cascade_shine
 M.calc_typewriter_shine = calc_typewriter_shine
 M.calc_gradient_sweep_shine = calc_gradient_sweep_shine
 M.calc_mirror_shine = calc_mirror_shine
-M.calc_zigzag_shine = calc_zigzag_shine
+M.calc_plasma_shine = calc_plasma_shine
 M.calc_strobe_shine = calc_strobe_shine
 M.calc_spotlight_shine = calc_spotlight_shine
 M.calc_flicker_shine = calc_flicker_shine

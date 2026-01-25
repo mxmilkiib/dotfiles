@@ -40,17 +40,60 @@ local border_step = 1.0
 local border_paused = false
 local border_timer = nil
 local border_params = {
-    -- speed = 0.06,         -- animation timer interval
-    step_size = 0.5,      -- animation step increment
-    phase_offset = 3.0    -- border gets its own phase offset for variety
+    speed = 0.15,         -- animation timer interval (default smoothness 1)
+    step_size = 1.0,      -- animation step increment (default smoothness 1)
+    phase_offset = 3.0,   -- border gets its own phase offset for variety
+    follow_text_style = false,  -- if true, border uses same progression strategy as text
+    use_shimmer_palette = true   -- if true, use shimmer colors; if false, use default gradient
 }
 
+-- default gradient palette (original border animation colors)
+local default_palette = {}
+local default_palette_length = 1500
+
 -- // MARK: PALETTE INTEGRATION
+
+-- generate default gradient palette (original border colors)
+local function generate_default_palette()
+    -- original gradient parameters from old border_animation.lua
+    local redFrequency = 0.1
+    local grnFrequency = 0.2
+    local bluFrequency = 0.1
+    local phase1 = 1
+    local phase2 = 260
+    local phase3 = 50
+    local center = 180
+    local width = 75
+    local length = default_palette_length
+    
+    default_palette = {}
+    for i = 0, length - 1 do
+        local r = math_floor(math.sin(redFrequency * i + phase1) * width + center)
+        local g = math_floor(math.sin(grnFrequency * i + phase2) * width + center)
+        local b = math_floor(math.sin(bluFrequency * i + phase3) * width + center)
+        default_palette[i + 1] = string_format("#%02x%02x%02x", r, g, b)
+    end
+end
 
 -- get current palette from animation module (lazy loading)
 local function get_current_palette()
     local animation = require("plugins.shimmer.animation")
     return animation.get_palette()
+end
+
+-- get current progression strategy from animation module
+local function get_current_strategy()
+    local animation = require("plugins.shimmer.animation")
+    return animation.get_current_strategy()
+end
+
+-- get active palette based on configuration
+local function get_active_palette()
+    if border_params.use_shimmer_palette then
+        return get_current_palette()
+    else
+        return default_palette
+    end
 end
 
 -- // MARK: ANIMATION CONTROL
@@ -71,8 +114,8 @@ function M.start()
             end
             if c._dnd_dragging then return end
             
-            -- get current palette
-            local palette = get_current_palette()
+            -- get active palette (shimmer or default)
+            local palette = get_active_palette()
             if not palette then return end
             
             local len = #palette
@@ -87,8 +130,24 @@ function M.start()
                 border_step = (border_params.step_size or HALF)
             end
             
-            -- apply phase offset to color selection (1-based indexing)
-            local phase_adjusted_loop = border_loop + (border_params.phase_offset or 0)
+            -- calculate index with optional strategy-based offset
+            local phase_adjusted_loop
+            if border_params.follow_text_style then
+                -- use same progression strategy as text animation
+                local strategy = get_current_strategy()
+                if strategy and strategy.calculate_color_offset then
+                    -- treat border as single character at position 1 for strategy calculation
+                    local strategy_offset = strategy:calculate_color_offset(1, 1, 0)
+                    phase_adjusted_loop = border_loop + strategy_offset
+                else
+                    -- fallback to phase offset if strategy not available
+                    phase_adjusted_loop = border_loop + (border_params.phase_offset or 0)
+                end
+            else
+                -- use traditional phase offset for variety
+                phase_adjusted_loop = border_loop + (border_params.phase_offset or 0)
+            end
+            
             local base_index = math_floor(phase_adjusted_loop)
             local index = (base_index % len) + 1
             local fraction = phase_adjusted_loop - base_index
@@ -168,6 +227,30 @@ function M.get_phase_offset()
     return border_params.phase_offset
 end
 
+-- set whether border follows text animation style
+function M.set_follow_text_style(follow)
+    border_params.follow_text_style = follow or false
+end
+
+-- get whether border follows text animation style
+function M.get_follow_text_style()
+    return border_params.follow_text_style
+end
+
+-- set whether border uses shimmer palette or default gradient
+function M.set_use_shimmer_palette(use_shimmer)
+    border_params.use_shimmer_palette = use_shimmer
+    if use_shimmer == false then
+        -- generate default palette if switching to it
+        generate_default_palette()
+    end
+end
+
+-- get whether border uses shimmer palette
+function M.get_use_shimmer_palette()
+    return border_params.use_shimmer_palette
+end
+
 function M.get_state()
     return {
         running = border_timer and border_timer.started or false,
@@ -176,11 +259,14 @@ function M.get_state()
     }
 end
 
+-- initialize default palette on module load
+generate_default_palette()
+
 -- set up client signals
 client.connect_signal("focus", function(c)
     border_loop = 0.0
     border_step = border_params.step_size or 0.5
-    local palette = get_current_palette()
+    local palette = get_active_palette()
     if palette and palette[1] then
         c.border_color = palette[1]
         awesome.emit_signal("shimmer::border_tick", border_loop, #palette, palette[1])
