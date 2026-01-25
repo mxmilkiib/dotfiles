@@ -52,7 +52,10 @@ nvidia-settings --assign CurrentMetaMode="nvidia-auto-select +0+0 { ForceFullCom
 # sleep 3 && ~/.screenlayout/___lx-3screen.sh
 # sleep 3 && ~/.screenlayout/__4s.sh
 # sleep 8 && ~/.screenlayout/___4-.sh
-sleep 8 && ~/.screenlayout/_3-.sh
+# sleep 8 && ~/.screenlayout/_3-.sh
+
+#sleep 8 && ~/.screenlayout/3-.sh
+
 # sleep 8 && ~/.screenlayout/_3.sh
 
 
@@ -234,8 +237,9 @@ unclutter --timeout 15 &
 # ██║  ██║
 # ╚═╝  ╚═╝
 #         
-picom -b -o 0 -i 1 -D 3 -m 0.98 --backend xrender
+#picom -b -o 0 -i 1 -D 3 -m 0.98 --backend xrender
 # picom --backend xrender &
+picom -b --no-fading-openclose --backend xrender
 
 
 # screen brightness based on ambient brightness
@@ -375,7 +379,7 @@ keepassxc ~/sync/keepassxc-mb.kdbx &
 # sxhkd &
 
 
-deskflow &
+# deskflow &
 
 
 # Make sure pulseaudio out is set to jack
@@ -398,11 +402,6 @@ deskflow &
 #
 
 
-# Change screen colour temp/brightness
-# redshift-gtk -l 55.978301:-3.228586 -t 6000:4500 &
-# sleep 3 && screendimmer &
-sleep 2 && ~/bin/start-gammy-auto-close-dialog.sh &
-
 # Logitech settings, start hidden to tray
 sleep 5 && solaar -w hide &
 
@@ -412,7 +411,7 @@ sleep 10 && blueman-applet &
 
 
 # screenshot systray helper
-# sleep 8 && flameshot &
+sleep 18 && flameshot &
 
 # sleep 6 && agordejo --session-root ~/media/audio/projects/NSM --load-session 0_base --hide &
 
@@ -433,7 +432,7 @@ kmix --keepvisibility &
 #volumeicon &
 
 
-sleep 7 && indicator-sound-switcher &
+# sleep 7 && indicator-sound-switcher &
 
 
 # Emoji picker app - ctrl-alt-ez
@@ -469,10 +468,15 @@ arandr-indicator &
 (sleep 20 && copyq &)
 
 
+# Change screen colour temp/brightness
+# redshift-gtk -l 55.978301:-3.228586 -t 6000:4500 &
+# sleep 3 && screendimmer &
+(sleep 20 && ~/bin/start-gammy-auto-close-dialog.sh &)
+
 # ssh-agent
 #broken in bspwm
 # ssh agent handled by KeePassXC; do not start a standalone agent here
-# eval "$(ssh-agent)"
+eval "$(ssh-agent)"
 
 
 # dockd --daemon &
@@ -511,6 +515,8 @@ xcalib -s 0 ~/.local/share/icc/thinkpad_p50_icc_LP156WF6_SPK1.icm
 #~/.screenlayout/__nvidia_laptop-screenabove.sh
 
 
+# exec windsurf
+
 # ██╗    ██╗██╗███╗   ██╗██████╗  ██████╗ ██╗    ██╗
 # ██║    ██║██║████╗  ██║██╔══██╗██╔═══██╗██║    ██║
 # ██║ █╗ ██║██║██╔██╗ ██║██║  ██║██║   ██║██║ █╗ ██║
@@ -542,7 +548,7 @@ xcalib -s 0 ~/.local/share/icc/thinkpad_p50_icc_LP156WF6_SPK1.icm
 
 # exec selectwm
 # exec xterm
-#exec urxvt
+# exec urxvt
 
 
 # xlayoutdisplay &
