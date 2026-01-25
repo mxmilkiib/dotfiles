@@ -1,0 +1,1 @@
+ rofi -modi combi -combi-modes 'run' -show combi -matching fuzzy -combi-hide-mode-prefix -show-icons -theme-str 'window {width: env( WIDTH, 40%); height: env( WIDTH, 70%) ;}' -theme purple.rasi
