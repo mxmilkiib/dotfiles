@@ -25,8 +25,8 @@ key[PageUp]=${terminfo[kpp]}
 key[PageDown]=${terminfo[knp]}
 
 # ctrl-left, ctrl-right - terminfo entries often missing, provide fallbacks
-key[CtrlLeft]=${terminfo[kLFT5]:-'^[[1;5D'}
-key[CtrlRight]=${terminfo[kRFT5]:-'^[[1;5C'}
+key[CtrlLeft]=${terminfo[kLFT5]:-$'\e[1;5D'}
+key[CtrlRight]=${terminfo[kRIT5]:-$'\e[1;5C'}
 
 # f-keys
 key[F1]=${terminfo[kf1]}
@@ -43,10 +43,16 @@ key[F11]=${terminfo[kf11]}
 key[F12]=${terminfo[kf12]}
 
 # fix ncurses application mode quirk ($'\eO'* -> $'\e['*)
-for k in ${(k)key} ; do
-    [[ ${key[$k]} == $'\eO'* ]] && key[$k]=${key[$k]/O/[}
-done
-unset k
+# convert application mode sequences to what modern terminals actually send
+# TEMPORARILY DISABLED FOR DEBUGGING
+# for k in ${(k)key} ; do
+#     case ${key[$k]} in
+#         $'\eOH') key[$k]=$'\e[1~' ;;  # Home: application -> normal mode
+#         $'\eOF') key[$k]=$'\e[4~' ;;  # End: application -> normal mode
+#         $'\eO'*) key[$k]=${key[$k]/O/[} ;;  # other keys: O -> [
+#     esac
+# done
+# unset k
 
 # enable application keypad mode (allows terminfo keys to work correctly)
 if (( ${+terminfo[smkx]} )) && (( ${+terminfo[rmkx]} )); then
@@ -77,11 +83,11 @@ bindkey -M emacs '^[' vi-cmd-mode
 [[ -n "${key[End]}" ]]  && bindkey -M emacs "${key[End]}" end-of-line
 bindkey -M emacs '^a' beginning-of-line
 bindkey -M emacs '^e' end-of-line
-# common terminal variations
-bindkey -M emacs '^[[1~' beginning-of-line
-bindkey -M emacs '^[[4~' end-of-line
-bindkey -M emacs '^[[OH' beginning-of-line
-bindkey -M emacs '^[[OF' end-of-line
+# explicit bindings for both application and normal mode sequences
+bindkey -M emacs '^[[1~' beginning-of-line  # normal mode Home
+bindkey -M emacs '^[[4~' end-of-line        # normal mode End
+bindkey -M emacs '^[[OH' beginning-of-line  # application mode Home
+bindkey -M emacs '^[[OF' end-of-line        # application mode End
 
 # arrow keys - basic character movement
 [[ -n "${key[Left]}" ]]  && bindkey -M emacs "${key[Left]}" backward-char
@@ -114,11 +120,12 @@ bindkey -M emacs '\eOb' history-beginning-search-forward-end
 # ctrl-left/ctrl-right - word movement (emacs style - lands between words)
 [[ -n "${key[CtrlLeft]}" ]]  && bindkey -M emacs "${key[CtrlLeft]}" emacs-backward-word
 [[ -n "${key[CtrlRight]}" ]] && bindkey -M emacs "${key[CtrlRight]}" emacs-forward-word
+# xterm/konsole/vte fallbacks
+bindkey -M emacs '^[[1;5D' emacs-backward-word
+bindkey -M emacs '^[[1;5C' emacs-forward-word
 # urxvt fallbacks
 bindkey -M emacs '\eOd' emacs-backward-word
 bindkey -M emacs '\eOc' emacs-forward-word
-bindkey -M emacs 'Od' emacs-backward-word
-bindkey -M emacs 'Oc' emacs-forward-word
 bindkey -M emacs '^[Od' emacs-backward-word
 bindkey -M emacs '^[Oc' emacs-forward-word
 
@@ -155,7 +162,8 @@ bindkey -M emacs '^[d' kill-word
 bindkey -M emacs '^w' backward-kill-word
 
 # ctrl-backspace - delete word backward
-bindkey -M emacs '^H' backward-kill-word    # urxvt (sends ^H)
+bindkey -M emacs '^H' backward-kill-word    # urxvt/konsole (sends ^H)
+bindkey -M emacs '^[[127;5u' backward-kill-word  # konsole (kitty protocol)
 
 # ctrl-k - delete to end of line
 bindkey -M emacs '^k' kill-line
@@ -173,7 +181,17 @@ bindkey -M emacs '\e[Z' reverse-menu-complete
 bindkey -M emacs '^_' accept-and-hold
 
 
-## MARK: -- special functions
+# MARK: -- special functions
+
+# debug widget to show what key was pressed
+function debug-key() {
+  local key_seq=$KEYS
+  echo "Key pressed: ${(q)key_seq} -> $(od -c <<< $key_seq)" >&2
+  zle -I
+}
+zle -N debug-key
+# bind to ctrl-x ? to test
+bindkey -M emacs '^X?' debug-key
 
 # f1 - show help for command under cursor
 [[ -n "${key[F1]}" ]] && bindkey -M emacs "${key[F1]}" run-help
@@ -196,6 +214,82 @@ bindkey -M emacs '^[s' insert-sudo
 autoload edit-command-line
 zle -N edit-command-line
 [[ -n "${key[F4]}" ]] && bindkey -M emacs "${key[F4]}" edit-command-line
+
+
+
+
+# MARK: -- FILE BROWSER WIDGET
+
+# fzf file/dir browser with left/right tree navigation (ncdu-style)
+# left arrow: go to parent directory
+# right arrow: enter selected directory
+# enter: insert selected path at cursor
+# ctrl-c/esc: cancel
+function fzf-file-browser() {
+  local dir="${PWD}"
+  local result sentinel
+
+  while true; do
+    # sentinel values returned via fzf --expect to signal navigation
+    result=$(
+      fd --hidden --follow --exclude '.git' --exclude 'node_modules' . "$dir" \
+        --max-depth 3 --color always 2>/dev/null \
+      | sed "s|^${dir}/||" \
+      | fzf \
+          --ansi \
+          --prompt="${dir}/ > " \
+          --header="left: parent  right: enter dir  enter: select  esc: cancel" \
+          --expect='left,right,ctrl-c,esc' \
+          --bind='tab:down,btab:up' \
+          --height=60% \
+          --layout=reverse \
+          --border \
+          --no-sort \
+          --tiebreak=end
+    )
+
+    [[ -z "$result" ]] && break
+
+    # first line is the key that triggered exit (from --expect)
+    sentinel="${result%%$'\n'*}"
+    local selected="${result#*$'\n'}"
+
+    case "$sentinel" in
+      left)
+        # go to parent directory
+        dir="${dir:h}"
+        ;;
+      right)
+        # enter selected item if it's a directory, else select it
+        local full="${dir}/${selected}"
+        if [[ -d "$full" ]]; then
+          dir="$full"
+        else
+          LBUFFER="${LBUFFER}${full}"
+          zle reset-prompt
+          break
+        fi
+        ;;
+      ctrl-c|esc|'')
+        break
+        ;;
+      *)
+        # enter key: insert selected path
+        if [[ -n "$selected" ]]; then
+          local full="${dir}/${selected}"
+          LBUFFER="${LBUFFER}${full}"
+          zle reset-prompt
+        fi
+        break
+        ;;
+    esac
+  done
+}
+zle -N fzf-file-browser
+
+# alt-f - open fzf file browser
+bindkey -M emacs '^[f' fzf-file-browser
+bindkey -M viins '^[f' fzf-file-browser
 
 
 # MARK: VIM COMMAND MODE BINDINGS

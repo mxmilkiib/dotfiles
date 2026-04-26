@@ -11,22 +11,22 @@ function echo_color() {
 # hybrid emacs/vim mode: emacs bindings by default, vim motions after esc
 if [[ ${COLUMNS:-80} -le 80 ]]; then
   # compact version for narrow terminals (80 chars or less)
-  echo_color "  c-a " "start    " "  c-e " "end      " " Home " "start    " "  End " "end"
-  echo_color "  c-k " "kill->   " "  c-u " "kill line" "  c-w " "kill <-  " "  a-d " "kill ->"
+  echo_color "  c-a " "start    " "  c-e " "end      " "  c-k " "kill->   " "  c-u " "kill line"
+  echo_color "  c-w " "kill <-  " "  a-d " "kill ->  " "c-Del " "kill ->  " "  c-d " "del/list"
   echo_color "c-</> " "jmp word " "a-</> " "jmp word " "  ^v  " "history  " "c-^v  " "hist-pfx"
-  echo_color " PgUp " "hist top " "PgDwn " "hist end " "Space " "expand ! " "  ESC " "vi-cmd"
+  echo_color " PgUp " "hist top " "PgDwn " "hist end " "c-up  " "hist-pfx^" "c-dn  " "hist-pfxv"
   echo_color "   F1 " "help     " "   F2 " "sudo     " "   F4 " "edit     " "  a-s " "sudo"
-  echo_color "  Tab " "complete " "S-Tab " "back cpl " "  c-_ " "keep menu" " c-sp " "run sugg"
-  echo_color "  Del " "del char " " BkSp " "del back " "  Ins " "overwrit " "c-Del " "kill ->"
+  echo_color "  c-_ " "keep menu" " c-sp " "run sugg " "Space " "expand ! " "  ESC " "vi-cmd"
+  echo_color "  a-f " "file brws" "  Ins " "overwrit " " c-x? " "debug key" "" ""
 else
   # full version for wider terminals
-  echo_color "  c-a "  "Line start         " "  c-e "  "Line end            "  " Home "  "Line start           " "  End "  "Line end"
-  echo_color "  c-k "  "Kill to line end   " "  c-u "  "Kill entire line    "  "  c-w "  "Kill word backward   " "  a-d "  "Kill word forward"
+  echo_color "  c-a "  "Line start         " "  c-e "  "Line end            "  "  c-k "  "Kill to line end     " "  c-u "  "Kill entire line"
+  echo_color "  c-w "  "Kill word backward " "  a-d "  "Kill word forward   "  "c-Del "  "Kill word forward    " "  c-d "  "Delete char or list"
   echo_color "c-</> "  "Jump words (emacs) " "a-</> "  "Jump words (vim)    "  "  ^v  "  "Search typed history " "c-^v  "  "Search line start"
-  echo_color " PgUp "  "History top        " "PgDwn "  "History end         "  "Space "  "Expand history !     " "  ESC "  "Vim command mode"
-  echo_color "   F1 "  "Help on command    " "   F2 "  "Prepend sudo        "  "   F4 "  "Edit in $EDITOR      " "  a-s "  "Insert sudo"
-  echo_color "  Tab "  "Completion         " "S-Tab "  "Reverse completion  "  "  c-_ "  "Keep menu open       " " c-sp "  "Run suggestion"
-  echo_color "  Del "  "Delete char        " " BkSp "  "Delete backward     "  "  Ins "  "Overwrite mode       " "c-Del "  "Kill word forward"
+  echo_color " PgUp "  "History top        " "PgDwn "  "History end         "  "c-up  "  "Hist search (prefix) " "c-dn  "  "Hist search (prefix)"
+  echo_color "   F1 "  "Help on command    " "   F2 "  "Prepend sudo        "  "   F4 "  "Edit in \$EDITOR      " "  a-s "  "Insert sudo"
+  echo_color "  c-_ "  "Keep menu open     " " c-sp "  "Run suggestion      "  "Space "  "Expand history !     " "  ESC "  "Vim command mode"
+  echo_color "  a-f "  "File browser (fzf) " "  Ins "  "Overwrite mode      "  "  c-x?"  "Debug key sequence   " "" ""
 fi
 
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
@@ -42,8 +42,8 @@ fi
 
 # Plugin managament with zinit
 ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
-# [ ! -d $ZINIT_HOME ] && mkdir -p "$(dirname $ZINIT_HOME)"
-# [ ! -d $ZINIT_HOME/.git ] && git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
+[ ! -d $ZINIT_HOME ] && mkdir -p "$(dirname $ZINIT_HOME)"
+[ ! -d $ZINIT_HOME/.git ] && git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
 source "${ZINIT_HOME}/zinit.zsh"
 # source <(curl -sL init.zshell.dev); zzinit
 
