@@ -38,6 +38,10 @@ export XDG_DATA_HOME=${XDG_DATA_HOME:-"$HOME/.local/share"}
 export XDG_CACHE_HOME=${XDG_CACHE_HOME:-"$HOME/.cache"}
 
 
+export KDE=false
+export KDE_FULL_SESSION=false
+
+
 # gives fuller GUI 
 # export XDG_SESSION_DESKTOP=bspwm
 # export XDG_SESSION_TYPE=x11
@@ -54,7 +58,7 @@ export XDG_CACHE_HOME=${XDG_CACHE_HOME:-"$HOME/.cache"}
 
 
 
-export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent.socket"
+#export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent.socket"
 
 # if ! pgrep -x ssh-agent -u $(id -u) >/dev/null; then
 #  # This sets SSH_AUTH_SOCK and SSH_AGENT_PID variables
@@ -99,6 +103,9 @@ export LIBVA_DRIVER_NAME=nvidia
 export MOZ_DISABLE_RDD_SANDBOX=1
 export MOZ_X11_EGL=1
 
+
+# GitHub CLI token (bypass KeePassXC Secret Service prompts)
+# export GH_TOKEN="..."  # set in ~/.profile.local, not tracked
 
 # pacmatic
 export pacman_program="yay"

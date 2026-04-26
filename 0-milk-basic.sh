@@ -1,1 +1,4 @@
-stow {base,zsh,systemd,bin,git,liquidprompt,tmux,yay,awesome,X11,wallpapers,screenlayout,mpv,mpd,ncmpcpp,vim,xdg,polybar,quassel,compton}
+#enmase
+stow {base,bin,systemd,zsh,git,liquidprompt,tmux,yay,wallpapers,screenlayout,mpv,mpd,ncmpcpp,vim,xdg,picom}
+
+#awesome, X11, quassel, compton, polybar
