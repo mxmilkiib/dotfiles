@@ -1,0 +1,24 @@
+[Unit]
+Description=Persistent MPV audio-reactive visualizer (refuses to die)
+After=pipewire.service pipewire-pulse.service graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/mpv /dev/video0 \
+  --idle=yes \
+  --keep-open=always \
+  --force-window=yes \
+  --title="Reactive CQT Viz — Always On" \
+  --geometry=1280x720 \
+  --no-osc \
+  --input-ipc-server=/tmp/mpv-viz-socket \
+  --really-quiet \
+  --no-terminal \
+  --loop=inf
+Restart=always
+RestartSec=3
+KillMode=process          # only kill main process (not children if any)
+TimeoutStopSec=10
+
+[Install]
+WantedBy=default.target
