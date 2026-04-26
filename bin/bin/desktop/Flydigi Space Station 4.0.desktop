@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=Flydigi Space Station 4.0
+Exec=env "WINEPREFIX=/home/milkii/.wine" wine "C:\\\\users\\\\Public\\\\Desktop\\\\Flydigi Space Station 4.0.lnk"
+Type=Application
+StartupNotify=true
+Path=/home/milkii/.wine/drive_c/Program Files/Flydigi Space Station
+Icon=7328_Flydigi Space Station.0
+StartupWMClass=flydigi space station.exe

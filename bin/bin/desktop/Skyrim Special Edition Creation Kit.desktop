@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=Skyrim Special Edition: Creation Kit
+Comment=Play this game on Steam
+Exec=steam steam://rungameid/1946180
+Icon=steam_icon_1946180
+Terminal=false
+Type=Application
+Categories=Game;

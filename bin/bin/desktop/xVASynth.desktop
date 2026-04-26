@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=xVASynth
+Comment=Play this game on Steam
+Exec=steam steam://rungameid/1765720
+Icon=steam_icon_1765720
+Terminal=false
+Type=Application
+Categories=Game;

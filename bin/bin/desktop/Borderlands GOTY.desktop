@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=Borderlands GOTY
+Comment=Play this game on Steam
+Exec=steam steam://rungameid/8980
+Icon=steam_icon_8980
+Terminal=false
+Type=Application
+Categories=Game;
