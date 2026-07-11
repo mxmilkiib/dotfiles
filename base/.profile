@@ -1,4 +1,5 @@
-# Shell agnostic env setup
+### Milkii's Profile
+## Shell agnostic env setup
 
 # Important applications.
 export EDITOR=nvim
@@ -37,6 +38,11 @@ export XDG_CONFIG_HOME=${XDG_CONFIG_HOME:-"$HOME/.config"}
 export XDG_DATA_HOME=${XDG_DATA_HOME:-"$HOME/.local/share"}
 export XDG_CACHE_HOME=${XDG_CACHE_HOME:-"$HOME/.cache"}
 
+# AI model cache — all tools read from the same location
+export LLAMA_CACHE="$HOME/media/models"
+export HF_HUB_CACHE="$HOME/media/models"
+export LMSTUDIO_MODELS_DIR="$HOME/media/models"
+
 
 export KDE=false
 export KDE_FULL_SESSION=false
@@ -58,7 +64,7 @@ export KDE_FULL_SESSION=false
 
 
 
-#export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent.socket"
+export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent.socket"
 
 # if ! pgrep -x ssh-agent -u $(id -u) >/dev/null; then
 #  # This sets SSH_AUTH_SOCK and SSH_AGENT_PID variables
@@ -134,3 +140,8 @@ CITY="Edinburgh"
 
 # urxvt crash on exit fix https://www.reddit.com/r/archlinux/comments/htq7hk/urxvt_segfaults_on_exit_for_whatever_reason/
 PERL_DESTRUCT_LEVEL=2
+
+# Added by LM Studio CLI (lms)
+export PATH="$PATH:/home/milkii/.lmstudio/bin"
+# End of LM Studio CLI section
+

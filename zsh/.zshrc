@@ -328,3 +328,8 @@ precmd_functions+=(_reset_cursor_color)
 # re-bind ESC to vim command mode (in case plugins override it)
 bindkey -M emacs '^[' vi-cmd-mode
 
+
+# Added by LM Studio CLI (lms)
+export PATH="$PATH:/home/milkii/.lmstudio/bin"
+# End of LM Studio CLI section
+

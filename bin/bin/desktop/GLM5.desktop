@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=GLM5
+Exec=env "WINEPREFIX=/home/milkii/.wine" wine "C:\\\\users\\\\Public\\\\Desktop\\\\GLM5.lnk"
+Type=Application
+StartupNotify=true
+Path=/home/milkii/.wine/drive_c/Program Files (x86)/Genelec/GLMv5
+Icon=BA1D_GLMv5.0
+StartupWMClass=glmv5.exe

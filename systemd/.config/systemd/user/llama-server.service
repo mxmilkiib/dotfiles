@@ -1,0 +1,21 @@
+[Unit]
+Description=llama-server (AMD Strix Halo, local LLM inference)
+After=graphical-session.target
+Wants=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=%h/.local/bin/llama-serve
+Restart=on-failure
+RestartSec=10
+Environment=LLAMA_CACHE=%h/media/models
+
+# Strix Halo Vulkan fallback env (harmless if using ROCm)
+Environment=GGML_VK_PREFER_HOST_MEMORY=1
+Environment=RADV_PERFTEST=bfloat16
+
+# Resource limits
+LimitNOFILE=65536
+
+[Install]
+WantedBy=default.target

@@ -1,0 +1,15 @@
+[Unit]
+Description=Kokoro TTS Server (OpenAI-compatible /v1/audio/speech)
+After=default.target
+
+[Service]
+Type=simple
+Environment=KOKORO_VOICE=af_heart
+Environment=KOKORO_SPEED=1.0
+Environment=KOKORO_PORT=8880
+ExecStart=/usr/bin/python3 %h/.local/bin/kokoro-server
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target

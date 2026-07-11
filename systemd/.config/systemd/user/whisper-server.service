@@ -1,0 +1,16 @@
+[Unit]
+Description=Whisper STT Server (OpenAI-compatible)
+After=default.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/whisper-server \
+    -m %h/media/models/whisper/ggml-large-v3-turbo.bin \
+    --port 8082 \
+    --host 127.0.0.1 \
+    -t 4
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target

@@ -103,6 +103,7 @@ alias pls='sudo $(fc -ln -1)'
 # kill processes by command name
 alias ska='killall'
 alias sska='sudo killall'
+compdef sska=killall
 
 # check if command exists
 command_exists () {
@@ -154,7 +155,9 @@ history
 
 # misspelt chmod
 alias chmox='sudo chmod +x'
+compdef chmox=chmod
 alias cxmod='sudo chmod +x'
+compdef cxmod=chmod
 
 
 ### filesystem navigation
@@ -280,6 +283,7 @@ cl() { cd "$1" && ll . ; }
 
 # move files as root
 alias smv='sudo mv'
+compdef smv=mv
 
 # backup a file by appending .bak
 bak() { cp "$1" "$1".bak; }
@@ -321,6 +325,7 @@ mkbk() {
 # remove directory recursively
 alias rd='rm -rf'
 alias srd='sudo rm -rf'
+compdef srd=rm
 
 # https://lobste.rs/s/vyfhpm/bash_aliases_are_great_so_is_dired
 spaces2underscores() {
@@ -436,12 +441,14 @@ alias slo='loginctl kill-session self' # logout
 # systemd
 alias sy='systemctl '
 alias ssy='sudo systemctl'
+compdef ssy=systemctl
 alias syu='systemctl --user'
 alias sys='systemctl status'
 alias sysu='systemctl --user status'
 compdef sy=systemctl
 compdef sys=systemctl
 alias  syr='systemctl restart'
+compdef syr=systemctl
 alias syy='systemctl --all -t service'
 
 alias jctl='journalctl -xeb'
@@ -474,7 +481,8 @@ alias pP='yay -S --editmenu --bottomup'
 # interactive search (pkg number + prompt)
 # alias pS='yay --answeredit none --answerdiff n --bottomup --sudoloop --answerclean n'
 # interactive search of AUR sorted by popularity
-alias pS='yay --answeredit none --answerdiff n --bottomup --sudoloop --answerclean n --sortby popularity --bottomup'
+# alias pS='yay --answeredit none --answerdiff n --sudoloop --answerclean n --sortby popularity --bottomup'
+alias pS='yay --answeredit none --answerdiff n --sudoloop --answerclean n --sortby votes --bottomup'
 # interactive search with editing of PKGBUILD
 alias pSe='yay --editmenu --bottomup'
 
@@ -514,7 +522,9 @@ function pQp(){ whereis -b $1 | awk '{print $2}' | xargs ldd | awk '{print $1}' 
 
 # alias pR='sudo pacman -R'	  								# remove, rm deps
 alias pR='sudo pacman -Rcsn'								# remove, rm deps, recursive, remove config files
+compdef pR=pacman
 alias pU='sudo pacman -U'									# install a local package file
+compdef pU=pacman
 alias pL='sudo rm /var/lib/pacman/db.lck'                   # remove lockfile if pacman doesn't exit gracefully
 
 alias pF='pacman -F'
@@ -542,9 +552,11 @@ alias stow="stow -t ~"
 
 # quick sudo nano with line numbers
 alias sn='sudo nano -c' # with line numbers
+compdef sn=nano
 
 # quick sudo vim (uses $EDITOR)
 alias sv='sudo $EDITOR'
+compdef sv=sudoedit
 
 alias svv='sudoedit '
 compdef svv=sudoedit
@@ -888,3 +900,12 @@ alias -g S='&> /dev/null &'
 alias -g F='`fzf`'
 # vim
 alias -g V='|& $EDITOR -'
+
+
+
+### for testing Mixxx
+
+
+
+# basic test profile
+alias mixxx-test='mixxx --settingsPath ~/.mixxx-test'
