@@ -804,10 +804,11 @@ local function cycle_tags_with_clients(direction)
     local current_screen = awful.screen.focused()
     local all_tags = current_screen.tags
     local current_tag = current_screen.selected_tag
-    local current_index = gears.table.hasitem(all_tags, current_tag)
-    
+    local current_index = current_tag and gears.table.hasitem(all_tags, current_tag)
+    if not current_index then return end
+
     local count = #all_tags
-    
+
     for i = 1, count - 1 do
         local idx
         if direction == "next" then
@@ -828,7 +829,8 @@ local function cycle_tags_with_visible_clients(direction)
     local current_screen = awful.screen.focused()
     local all_tags = current_screen.tags
     local current_tag = current_screen.selected_tag
-    local current_index = gears.table.hasitem(all_tags, current_tag)
+    local current_index = current_tag and gears.table.hasitem(all_tags, current_tag)
+    if not current_index then return end
 
     for i = 1, #all_tags - 1 do
         local idx
@@ -3340,11 +3342,9 @@ ruled.client.connect_signal("request::rules", function()
             border_color = beautiful.border_normal,
             focus = awful.client.focus.filter,
             raise = true,
-            keys = clientkeys,
             buttons = clientbuttons,
             screen = awful.screen.preferred,
-            -- center all floating windows by default
-            placement = awful.placement.centered + awful.placement.no_overlap + awful.placement.no_offscreen,
+            placement = awful.placement.no_overlap + awful.placement.no_offscreen,
         }
     }
 
@@ -3361,7 +3361,7 @@ ruled.client.connect_signal("request::rules", function()
         rule = { type = "dialog" },
         properties = {
             floating = true,
-            -- placement inherited from global defaults (centered)
+            placement = awful.placement.centered + awful.placement.no_overlap + awful.placement.no_offscreen,
         },
         callback = function(c)
             -- set minimum size for file chooser dialogs
@@ -3429,7 +3429,10 @@ ruled.client.connect_signal("request::rules", function()
             name = { "Event Tester" },
             role = { "AlarmWindow", "ConfigManager", "pop-up" },
         },
-        properties = { floating = true }
+        properties = {
+            floating = true,
+            placement = awful.placement.centered + awful.placement.no_overlap + awful.placement.no_offscreen,
+        }
     }
 
     -- extended floating rules (consolidated from original)
@@ -3618,4 +3621,4 @@ awful.spawn.with_shell("pgrep -u $USER -x picom > /dev/null || picom --config ~/
 -- Notifications daemon
 -- awful.spawn.with_shell("dunst")
 
--- Uncomment any of the above or add your own autostart application                                                                                                                                                                                                                                             x x
+-- Uncomment any of the above or add your own autostart applications
