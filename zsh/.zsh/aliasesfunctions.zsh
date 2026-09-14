@@ -103,7 +103,6 @@ alias pls='sudo $(fc -ln -1)'
 # kill processes by command name
 alias ska='killall'
 alias sska='sudo killall'
-compdef sska=killall
 
 # check if command exists
 command_exists () {
@@ -135,6 +134,7 @@ uname -a
 grep -H  /etc/*release /proc/version
 df -h
 free -m
+who
 who
 id
 netstat -tlpnu
@@ -307,8 +307,18 @@ alias mkdir='mkdir -p'
 
 alias cp='cp --no-clobber'
 
-# rsync-based copy with archive, recursive, human-readable, hard links, full progress, partial tmp dir
-alias ccp='rsync -arhHP --info=progress2 --no-i-r --partial-dir=.rsync-partial'
+# rsync-based copy with archive, human-readable, hard links, progress, partial tmp dir, mkpath
+# no ---pre-allocate due to incompatability with nfs
+alias ccp='rsync -ahH --info=progress2 --no-i-r --partial-dir=.rsync-partial --mkpath'
+
+# rsync-based move; removes source files after transfer and cleans up empty source dirs
+cmv() {
+  rsync -ahH --info=progress2 --no-i-r --partial-dir=.rsync-partial --mkpath --remove-source-files "$@" && {
+    for src in "${@:1:-2}"; do
+      [[ -d "$src" ]] && find "$src" -depth -type d -empty -delete 2>/dev/null
+    done
+  }
+}
 
 # make and change into new directory
 mkcd() { mkdir -p "$1" && cd "$1"; }
@@ -443,12 +453,20 @@ alias sy='systemctl '
 alias ssy='sudo systemctl'
 compdef ssy=systemctl
 alias syu='systemctl --user'
+compdef syu=systemctl
 alias sys='systemctl status'
 alias sysu='systemctl --user status'
 compdef sy=systemctl
-compdef sys=systemctl
+_comp_sysctl_status() {
+    local user_mode=""
+    [[ $service = sysu ]] && user_mode="--user"
+    local -a units
+    units=(${${(f)"$(systemctl $user_mode --full --legend=no --no-pager --plain list-unit-files)"}%% *} ${${(f)"$(systemctl $user_mode --full --legend=no --no-pager --plain list-units --all)"}%% *})
+    units=(${units:#*@.*})
+    _wanted systemd-units expl unit compadd "$@" - ${(u)units}
+}
+compdef _comp_sysctl_status sys sysu syr
 alias  syr='systemctl restart'
-compdef syr=systemctl
 alias syy='systemctl --all -t service'
 
 alias jctl='journalctl -xeb'
@@ -488,7 +506,7 @@ alias pSe='yay --editmenu --bottomup'
 
 # upgrades
 alias pp='sudo pacman -Syu'
-alias pu='paru -Syu --noconfirm --noupgrademenu --skipreview --sudoloop --nocheck'
+alias pu='sudo pacman -Syu && paru -Syu --noconfirm --noupgrademenu --skipreview --sudoloop --nocheck'
 alias puu='paru -Syu --noconfirm --noupgrademenu --skipreview --sudoloop --nocheck && topgrade'
 alias puuu='paru -S --rebuild --noconfirm $(paru -Quq)'
 
@@ -817,36 +835,6 @@ function etym(){
 				echo
 		done
 }
-
-# get_iplayer radio
-function gr() { get_iplayer -g --modes=flashaacstd --pid=$1; }
-
-function headless(){
-	VBoxHeadless -startvm "$@" &
-}
-
-# open file with default application
-function o(){
-	xdg-open "$@" &
-}
-
-# tigervnc server
-alias vncs="x0vncserver -rfbauth $XDG_CONFIG_HOME/tigervnc/passwd"
-
-# list all 256 ANSI colors
-alias colours='for code in {000..255}; do print -P -- "$code: %F{$code}Test%f"; done'
-
-# get sway window tree as JSON
-alias swaytree='swaymsg -t get_tree'
-
-# prompt bell hook, sends an urgent signal on return to prompt, which is ignored if the terminal is active
-precmd() { [[ -t 0&&  -w 0 ]]&&  print -Pn '\e]2;%~\a' }
-
-# filemanager
-alias dcm='doublecmd --no-splash >/dev/null 2>&1 &!'
-
-# game
-alias defrag="quake3 +set fs_game defrag +devmap tr1ckhouse-beta3 +sv_cheats '1' +df_promode '1' +r_mode '-1' +r_customwidth '1920' +r_customwidth '1080' +r_customaspect '1' +vm_cgame '0'"
 alias defrag2="quake3 +set fs_game defrag +devmap longtunnel +sv_cheats '1' +df_promode '1' +r_mode '-1' +r_customwidth '1920' +r_customwidth '1080' +r_customaspect '1' +vm_cgame '0'"
 
 # xclock-fork catclock
