@@ -1,0 +1,57 @@
+[colors.primary]
+#background = "#1d1f21"
+background = "#000000"
+foreground = "#c5c8c6"
+
+[colors.cursor]
+text = "#1d1f21"
+cursor = "#c5c8c6"
+
+[colors.normal]
+black   = "#282a2e"
+red     = "#ff3042"
+green   = "#42ff24"
+yellow  = "#e6b86f"
+blue    = "#70cfff"
+magenta = "#db72ff"
+cyan    = "#45a89e"
+white   = "#707880"
+
+[colors.bright]
+black   = "#373b41"
+red     = "#ff2034"
+green   = "#20ff00"
+yellow  = "#f0a45f"
+blue    = "#55b6e8"
+magenta = "#c45ee8"
+cyan    = "#68c8bd"
+white   = "#c5c8c6"
+
+[window]
+decorations = "none"
+padding.x = 4
+padding.y = 4
+
+[scrolling]
+history = 10000
+
+[[mouse.bindings]]
+mouse = "WheelUp"
+mods = "Control"
+action = "IncreaseFontSize"
+
+[[mouse.bindings]]
+mouse = "WheelDown"
+mods = "Control"
+action = "DecreaseFontSize"
+
+[[mouse.bindings]]
+mouse = "WheelUp"
+mods = "Control|Shift"
+action = "ResetFontSize"
+
+[font]
+size = 11.0
+
+[font.normal]
+family = "monospace"
