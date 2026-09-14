@@ -1542,7 +1542,8 @@ naughty.connect_signal("added", function(n)
                 elseif button == 3 then
                     -- right click: copy to clipboard
                     if text_to_copy ~= "" then
-                        awful.spawn.with_shell("echo '" .. text_to_copy:gsub("'", "'\"'\"'") .. "' | xclip -selection clipboard")
+                        -- awful.spawn.with_shell("echo '" .. text_to_copy:gsub("'", "'\"'\"'") .. "' | xclip -selection clipboard")
+                        awful.spawn.with_shell("echo '" .. text_to_copy:gsub("'", "'\"'\"'") .. "' | wl-copy")
                         naughty.notify({
                             title = "copied",
                             text = "notification copied to clipboard",
@@ -1825,9 +1826,9 @@ require("collision") {
 -- Active layout scripts
 
 -- Custom adaptive layout
-local centerwork_adaptive = require("lain.layout.centerwork_adaptive")
+-- local centerwork_adaptive = require("lain.layout.centerwork_adaptive")
 -- Custom two-thirds layout that gives new window 2/3 screen
-local centerwork_twothirds = require("lain.layout.centerwork_twothirds")
+-- local centerwork_twothirds = require("lain.layout.centerwork_twothirds")
 -- Custom tile.bottom layout with enhanced mouse resize functionality
 -- removed: tile_bottom_mouse require (unused)
 
@@ -1848,9 +1849,9 @@ awesome.connect_signal("request::default_layouts", function()
     -- assert only these layouts are available (not a superset)
     awful.layout.layouts = {
         -- active layouts in preferred order
-        centerwork_twothirds.horizontal,            -- custom: two-thirds for new window
-        centerwork_adaptive.horizontal,             -- custom: adaptive centerwork horizontal
-        -- lain.layout.centerwork.horizontal,
+        -- centerwork_twothirds.horizontal,            -- custom: two-thirds for new window
+        -- centerwork_adaptive.horizontal,             -- custom: adaptive centerwork horizontal
+        lain.layout.centerwork.horizontal,
         awful.layout.suit.tile.top,
         awful.layout.suit.tile.bottom,
         awful.layout.suit.tile,
@@ -1893,7 +1894,7 @@ end)
 
 -- now that custom layouts are loaded, set preferred default
 -- overrides the temporary safe default set earlier
-milkdefault = centerwork_twothirds.horizontal
+milkdefault = lain.layout.centerwork.horizontal
 
 
 
@@ -3064,7 +3065,8 @@ awful.rules.rules = {
                 -- System utilities
                 "Arandr", "Blueman-manager", "Lxappearance", "Gsmartcontrol",
                 "hp-toolbox", "Protonvpn-gui", "Syncthing GTK", "netctl-gui",
-                "Solaar", "Font-manager", "Font Manager", "qt5ct", "Deskflow",
+                "Solaar", "Font-manager", "Font Manager", "Deskflow",
+		-- "qt5ct", 
 
                 -- Audio/Video tools
                 "Cadence", "qjackctl", "Studio-controls", "QjackCtl",
@@ -3075,7 +3077,8 @@ awful.rules.rules = {
 
                 -- Image & Graphics
                 "Gpick", "Kruler", "emulsion", "Sxiv", "qimgv", "qView",
-                "Image Lounge", "Image Menu", "spectacle", "flameshot",
+                "Image Lounge", "Image Menu", "spectacle"
+		--, "flameshot",
 
                 -- Security & Privacy
                 "KeePassXC", "Tor Browser", -- Tor needs fixed window size to avoid fingerprinting

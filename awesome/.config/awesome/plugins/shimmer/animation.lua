@@ -21,6 +21,7 @@
 -- - should_use_per_character() determines final per-character state
 
 local gears = require("gears")
+local bit = require("bit")
 -- local awful = require("awful")  -- unused
 
 -- import modular components
@@ -1516,7 +1517,7 @@ local function set_widget_lock(widget)
     end
     
     -- set bit in bitmap
-    lock_bitmap[byte_idx] = lock_bitmap[byte_idx] | (1 << bit_idx)
+    lock_bitmap[byte_idx] = bit.bor(lock_bitmap[byte_idx], bit.lshift(1, bit_idx))
     
     -- also set in weak table as fallback
     widget_locks[widget] = true
@@ -1536,7 +1537,7 @@ local function is_widget_locked(widget)
     
     -- check bitmap first (fast path)
     if lock_bitmap[byte_idx] then
-        local is_locked = (lock_bitmap[byte_idx] & (1 << bit_idx)) ~= 0
+        local is_locked = bit.band(lock_bitmap[byte_idx], bit.lshift(1, bit_idx)) ~= 0
         if is_locked then
             lock_stats.bitmap_hits = lock_stats.bitmap_hits + 1
             return true
@@ -1563,7 +1564,7 @@ local function clear_widget_lock(widget)
         
         -- clear bit in bitmap
         if lock_bitmap[byte_idx] then
-            lock_bitmap[byte_idx] = lock_bitmap[byte_idx] & ~(1 << bit_idx)
+            lock_bitmap[byte_idx] = bit.band(lock_bitmap[byte_idx], bit.bnot(bit.lshift(1, bit_idx)))
         end
     end
     

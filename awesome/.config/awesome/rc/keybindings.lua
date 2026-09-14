@@ -379,7 +379,8 @@ function M.build(ctx)
   -- // MARK: UTILITY
   -- Utility keys
   local utility_keys = {
-    {{modkey}, "Print", "flameshot gui", "take a screenshot with flameshot", nil, "utility"},
+    -- {{modkey}, "Print", "flameshot gui", "take a screenshot with flameshot", nil, "utility"},
+    {{modkey}, "Print", "wayshot -g", "take a screenshot with wayshot", nil, "utility"},
     {{modkey, altkey}, "e", "emote", "run emote emoji picker", nil, "utility"},
     {{modkey, altkey}, "q", "xkill", "xkill to kill a hung gui app", nil, "utility"},
     {{modkey, altkey}, "c", "xcolor -s clipboard", "colour picker to clipboard", nil, "utility"},
@@ -387,8 +388,9 @@ function M.build(ctx)
     {{modkey, altkey}, "f", "$HOME/.config/awesome/rc/add-floating-rule.sh", "add focused window to floating rules", nil, "utility"},
     {{modkey, ctrlkey}, "a", "arandr", "run arandr", nil, "utility"},
     -- screen blanking / DPMS controls
-    {{modkey, altkey}, "b", "xset dpms force off", "blank screens immediately (DPMS)", nil, "utility"},
-    {{modkey, shiftkey, altkey}, "b", "xset dpms force suspend", "suspend screens (DPMS)", nil, "utility"}
+    -- {{modkey, altkey}, "b", "xset dpms force off", "blank screens immediately (DPMS)", nil, "utility"},
+    {{modkey, altkey}, "b", "wlopm --off '*'", "blank screens immediately (DPMS)", nil, "utility"},
+    -- {{modkey, shiftkey, altkey}, "b", "xset dpms force suspend", "suspend screens (DPMS)", nil, "utility"}
   }
   
   -- // MARK: MENU

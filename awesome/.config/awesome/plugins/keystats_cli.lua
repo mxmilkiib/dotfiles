@@ -313,11 +313,11 @@ local function run()
   elseif cmd == "notify-top" then
     local N = args.N or 10
     if has_awesome_client() then
-      local cmd = string.format("awesome-client 'pcall(function() require(\\"plugins.keystats\\").notify_top(%d) end)'", N)
+      local cmd = string.format("awesome-client 'pcall(function() require(\"plugins.keystats\").notify_top(%d) end)'", N)
       os.execute(cmd)
     else
       io.stderr:write("awesome-client not found in PATH. Run within Awesome via: \n")
-      io.stderr:write(string.format("  awesome-client 'require(\\"plugins.keystats\\").notify_top(%d)'\n", N))
+      io.stderr:write(string.format("  awesome-client 'require(\"plugins.keystats\").notify_top(%d)'\n", N))
     end
 
   else
