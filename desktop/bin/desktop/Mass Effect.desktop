@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=Mass Effect™ Legendary Edition
+Comment=Play this game on Steam
+Exec=steam steam://rungameid/1328670
+Icon=steam_icon_1328670
+Terminal=false
+Type=Application
+Categories=Game;
