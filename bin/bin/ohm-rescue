@@ -1,0 +1,19 @@
+#!/bin/sh
+# Send SPA to unban your IP from ohm's banip
+# Usage: ohm-rescue [public-ip]
+# If no IP given, resolves it automatically
+
+if [ -n "$1" ]; then
+    IP="$1"
+else
+    IP=$(curl -s https://api.ipify.org 2>/dev/null)
+fi
+
+if [ -z "$IP" ]; then
+    echo "Could not determine public IP"
+    exit 1
+fi
+
+echo "Sending SPA rescue for $IP..."
+fwknop -A tcp/321 -a "$IP" -D ohm.thingsandstuff.org -C "/usr/local/bin/fwknop-rescue $IP"
+echo "Done. SSH to ohm should work within a few seconds."
