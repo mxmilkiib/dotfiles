@@ -31,3 +31,24 @@
 [submodule "awesome/.config/awesome/media-player-widget"]
 	path = awesome/.config/awesome/media-player-widget
 	url = https://github.com/macunha1/awesomewm-media-player-widget
+[submodule "awesome/.config/awesome/bling"]
+	path = awesome/.config/awesome/bling
+	url = https://github.com/BlingCorp/bling
+[submodule "awesome/.config/awesome/collision"]
+	path = awesome/.config/awesome/collision
+	url = https://github.com/Elv13/collision
+[submodule "awesome/.config/awesome/awesome-switcher"]
+	path = awesome/.config/awesome/awesome-switcher
+	url = https://github.com/berlam/awesome-switcher
+[submodule "awesome/.config/awesome/awesome-workspace-grid"]
+	path = awesome/.config/awesome/awesome-workspace-grid
+	url = https://github.com/lmanul/awesome-workspace-grid
+[submodule "awesome/.config/awesome/battery-widget"]
+	path = awesome/.config/awesome/battery-widget
+	url = https://github.com/deficient/battery-widget
+[submodule "awesome/.config/awesome/gobo"]
+	path = awesome/.config/awesome/gobo
+	url = https://github.com/gobolinux/gobo-awesome
+[submodule "awesome/.config/awesome/thrizen"]
+	path = awesome/.config/awesome/thrizen
+	url = https://github.com/ciiqr/thrizen
