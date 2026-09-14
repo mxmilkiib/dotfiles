@@ -1,0 +1,6 @@
+[Unit]
+Description=Check btrbk log for failures and notify
+
+[Service]
+Type=oneshot
+ExecStart=%h/.local/bin/btrbk-notify

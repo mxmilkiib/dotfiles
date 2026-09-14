@@ -1,0 +1,6 @@
+[Unit]
+Description=Check llama.cpp PR #27742 (Qwen3.8-Flash-Next) merge status
+
+[Service]
+Type=oneshot
+ExecStart=%h/.local/bin/check-qwen4exp-pr

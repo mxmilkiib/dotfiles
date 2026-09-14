@@ -1,0 +1,9 @@
+[Unit]
+Description=Check btrbk result after daily run
+
+[Timer]
+OnCalendar=*-*-* 00:05:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target
