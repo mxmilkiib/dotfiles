@@ -14,3 +14,10 @@ mpd/.config/mpd/password_secret.conf
 neovim/.config/nvim/plugged/
 neovim/.config/nvim/undodir/
 somewm/.config/somewm/luac.out
+
+# instant-grep index
+.ig/
+
+# editor/backup archives - never track
+*.bak
+*.bak.*
