@@ -52,3 +52,6 @@
 [submodule "awesome/.config/awesome/thrizen"]
 	path = awesome/.config/awesome/thrizen
 	url = https://github.com/ciiqr/thrizen
+[submodule "somewm"]
+	path = somewm
+	url = git@github.com:mxmilkiib/somewm-milkii.git
