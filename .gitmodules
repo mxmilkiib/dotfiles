@@ -2,10 +2,6 @@
 	path = awesome/.config/awesome/plugins/media-player
 	url = https://github.com/macunha1/awesomewm-media-player-widget
 	branch = master
-[submodule "lain"]
-	path = awesome/.config/awesome/lain
-	url = https://github.com/lcpz/lain
-	branch = master
 [submodule "widgets"]
 	path = awesome/.config/awesome/awesome-wm-widgets
 	url = https://github.com/streetturtle/awesome-wm-widgets
@@ -18,7 +14,8 @@
 	url = https://github.com/blueyed/awesome-cyclefocus
 [submodule "awesome/.config/awesome/lain"]
 	path = awesome/.config/awesome/lain
-	url = https://github.com/lcpz/lain
+	url = git@github.com:mxmilkiib/lain.git
+	branch = local/weather-luajit
 [submodule "awesome/.config/awesome/revelation"]
 	path = awesome/.config/awesome/revelation
 	url = https://github.com/guotsuan/awesome-revelation
@@ -36,7 +33,8 @@
 	url = https://github.com/BlingCorp/bling
 [submodule "awesome/.config/awesome/collision"]
 	path = awesome/.config/awesome/collision
-	url = https://github.com/Elv13/collision
+	url = git@github.com:mxmilkiib/collision.git
+	branch = local/api-compat
 [submodule "awesome/.config/awesome/awesome-switcher"]
 	path = awesome/.config/awesome/awesome-switcher
 	url = https://github.com/berlam/awesome-switcher
@@ -46,9 +44,6 @@
 [submodule "awesome/.config/awesome/battery-widget"]
 	path = awesome/.config/awesome/battery-widget
 	url = https://github.com/deficient/battery-widget
-[submodule "awesome/.config/awesome/gobo"]
-	path = awesome/.config/awesome/gobo
-	url = https://github.com/gobolinux/gobo-awesome
 [submodule "awesome/.config/awesome/thrizen"]
 	path = awesome/.config/awesome/thrizen
 	url = https://github.com/ciiqr/thrizen
