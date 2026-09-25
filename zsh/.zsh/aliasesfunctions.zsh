@@ -380,6 +380,28 @@ alias btdul='sudo btdu --du --expert --max-time=30m /'
 # quick [rip]grep
 alias g='rg'
 
+# rg wrapper: blocks NFS/autofs mounts and btrfs COW snapshot dirs from
+# recursive searches. Uses a global ignore file (~/.config/rg-ignore) with
+# gitignore syntax to exclude media/ mounts and snapshot patterns, plus
+# --one-file-system to prevent crossing regular mount points.
+# Pass --raw to bypass entirely (e.g. rg --raw --files /media/backup)
+function rg() {
+  local raw=0
+  local -a args
+  for arg in "$@"; do
+    if [[ "$arg" == "--raw" ]]; then
+      raw=1
+    else
+      args+=("$arg")
+    fi
+  done
+  if (( raw )); then
+    command rg "${args[@]}"
+  else
+    command rg --one-file-system --ignore-file ~/.config/rg-ignore "${args[@]}"
+  fi
+}
+
 # search in files with ripgrep, showing context lines
 function gcode() { rg -uu --color=always -nC3 -- "$@" . | /usr/bin/less -R; }
 function gcode5() { rg -uu --color=always -nC5 -- "$@" . | /usr/bin/less -R; }
