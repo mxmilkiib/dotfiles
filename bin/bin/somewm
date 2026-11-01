@@ -1,0 +1,31 @@
+#!/bin/sh
+# somewm - always the personal perf build.
+#
+# The session's compositor is the somewm-plus tree's binary with its own
+# Lua tree (-L). This wrapper rebuilds it when the tree has changed
+# since the last build, so a login can never pick up a stale binary or a
+# cleaned build dir. The installed /usr/bin/somewm is the fallback only
+# when the build cannot run.
+
+TREE=/home/milkii/src/somewm-plus
+BUILD=$TREE/build
+BIN=$BUILD/somewm
+
+stale() {
+    [ ! -x "$BIN" ] && return 0
+    ! ninja -C "$BUILD" -n somewm 2>/dev/null | grep -q 'no work to do'
+}
+
+if stale; then
+    [ -f "$BUILD/build.ninja" ] \
+        || (cd "$TREE" && meson setup build -Dbuildtype=release -Db_sanitize=none)
+    ninja -C "$BUILD" somewm
+fi
+
+if [ -x "$BIN" ]; then
+    # the build is never installed, so its compiled-in /usr/local themes dir does not exist
+    export AWESOME_THEMES_PATH="$TREE/themes"
+    exec "$BIN" -L "$TREE/lua" "$@"
+fi
+
+exec /usr/bin/somewm "$@"
