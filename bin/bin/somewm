@@ -25,6 +25,14 @@ fi
 if [ -x "$BIN" ]; then
     # the build is never installed, so its compiled-in /usr/local themes dir does not exist
     export AWESOME_THEMES_PATH="$TREE/themes"
+    # HDR needs the output color transform only the vulkan renderer applies;
+    # wlroots autocreate picks gles2 first, and output.hdr errors without it.
+    # somewm falls back to autocreate if vulkan cannot init. An explicit
+    # WLR_RENDERER still wins so gles2 remains reachable.
+    if [ "$SOMEWM_HDR_UNSAFE" = 1 ]; then
+        : "${WLR_RENDERER:=vulkan}"
+        export WLR_RENDERER
+    fi
     exec "$BIN" -L "$TREE/lua" "$@"
 fi
 
