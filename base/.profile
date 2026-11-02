@@ -45,7 +45,7 @@ export LMSTUDIO_MODELS_DIR="$HOME/media/models"
 
 
 export KDE=false
-export KDE_FULL_SESSION=false
+export KDE_FULL_SESSION=
 
 
 # gives fuller GUI 
