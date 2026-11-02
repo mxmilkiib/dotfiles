@@ -1,13 +1,13 @@
 #!/bin/sh
 # somewm - always the personal perf build.
 #
-# The session's compositor is the somewm-plus tree's binary with its own
+# The session's compositor is the somewm-next tree's binary with its own
 # Lua tree (-L). This wrapper rebuilds it when the tree has changed
 # since the last build, so a login can never pick up a stale binary or a
 # cleaned build dir. The installed /usr/bin/somewm is the fallback only
 # when the build cannot run.
 
-TREE=/home/milkii/src/somewm-plus
+TREE=/home/milkii/src/somewm-next
 BUILD=$TREE/build
 BIN=$BUILD/somewm
 
